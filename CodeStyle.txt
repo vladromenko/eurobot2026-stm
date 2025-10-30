@@ -1,0 +1,5 @@
+1. PascalCase for function names, snake_case for variables
+2. Abbreviations in variables are written in lower case, e.g. usart_buffer, usb_device
+3. In function names, abbreviations or any kind of words containing digits are separated by underlining
+   e.g. TIM14_PWM_Init(), TIM14_TimerInit(), USART_123_Init(), Dynamixel_Master2(),
+        Word32_ToByte(), ByteTo_Word32()
