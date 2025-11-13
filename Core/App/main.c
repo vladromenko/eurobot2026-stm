@@ -109,7 +109,9 @@ int main(void)
   USARTx.BindProtocol(UART4, DynamixelMaster.GetProtocol());
   USARTx.BindProtocol(UART5, Serial.GetProtocol());
   USARTx.BindProtocol(USART1, HL_RTU.GetProtocol());
-
+	
+	IWDG_Init();
+	
   /*  Creating tasks  */
 	ButtonsPollTask.CreateTask(3);
   ButtonsCallbackTask.CreateTask(2);
@@ -120,10 +122,9 @@ int main(void)
   //DemoTask.CreateTask(1);
 	StepperTask.CreateTask(1);
 
-
+	
   /*  Run scheduler  */
   vTaskStartScheduler();
-	
   while (1);
 }
 	

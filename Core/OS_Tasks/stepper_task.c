@@ -23,12 +23,15 @@
 
 #include "os_tasks.h"
 #include "stepper.h" 
+#include "robot_behavior_routine.h"
 
+int16_t stepper1_goal_position = 0;
+int16_t stepper2_goal_position = 0;
+int16_t stepper3_goal_position = 0;
 
-int32_t stepper1_goal_position = 0;
-int32_t stepper2_goal_position = 0;
-int32_t stepper3_goal_position = 0;
-int32_t stepper4_goal_position = 0;
+uint8_t stepper1_calibrate = 0;
+uint8_t stepper2_calibrate = 0;
+uint8_t stepper3_calibrate = 0;
 
 
 #define TASK_STACK_SIZE             512
@@ -46,17 +49,56 @@ static void Task(void *arg)
 	Stepper.Init(STEPPER_MOTOR_1);
 	Stepper.Init(STEPPER_MOTOR_2);
 	Stepper.Init(STEPPER_MOTOR_3);
-	Stepper.Init(STEPPER_MOTOR_4);
 
 	Stepper.SetZeroPosisition(STEPPER_MOTOR_1);
 	Stepper.SetZeroPosisition(STEPPER_MOTOR_2);
 	Stepper.SetZeroPosisition(STEPPER_MOTOR_3);
-	Stepper.SetZeroPosisition(STEPPER_MOTOR_4);
 	
 	
 	while(1)
 	{
     vTaskDelay(50);
+		
+		if(stepper1_calibrate){
+			if(robot_ctrl.linear_switch_1 != LINEAR_SWITCH_PRESSED){
+				if(Stepper.GetPresentPosisition(STEPPER_MOTOR_1) == stepper1_goal_position){
+					stepper1_goal_position = stepper1_goal_position-50;
+					Stepper.StepToPosisition(STEPPER_MOTOR_1, stepper1_goal_position, 32, 16, 800);
+				}	
+			} else {
+				stepper1_calibrate = 0;
+				stepper1_goal_position = 0;
+				Stepper.SetZeroPosisition(STEPPER_MOTOR_1);
+			}
+		}
+		
+		if(stepper2_calibrate){
+			if(robot_ctrl.linear_switch_2 != LINEAR_SWITCH_PRESSED){
+				if(Stepper.GetPresentPosisition(STEPPER_MOTOR_2) == stepper2_goal_position){
+					stepper2_goal_position = stepper2_goal_position-50;
+					Stepper.StepToPosisition(STEPPER_MOTOR_2, stepper2_goal_position, 32, 16, 800);
+				}	
+			} else {
+				stepper2_calibrate = 0;
+				stepper2_goal_position = 0;
+				Stepper.SetZeroPosisition(STEPPER_MOTOR_2);
+			}
+		}
+		
+		if(stepper3_calibrate){
+			if(robot_ctrl.linear_switch_3 != LINEAR_SWITCH_PRESSED){
+				if(Stepper.GetPresentPosisition(STEPPER_MOTOR_3) == stepper3_goal_position){
+					stepper3_goal_position = stepper3_goal_position-50;
+					Stepper.StepToPosisition(STEPPER_MOTOR_3, stepper3_goal_position, 32, 16, 800);
+				}	
+			} else {
+				stepper3_calibrate = 0;
+				stepper3_goal_position = 0;
+				Stepper.SetZeroPosisition(STEPPER_MOTOR_3);
+			}
+		}
+		
+		
 		
 		if(Stepper.GetPresentPosisition(STEPPER_MOTOR_1) != stepper1_goal_position) {
 			Stepper.Enable(STEPPER_MOTOR_1);
@@ -76,11 +118,9 @@ static void Task(void *arg)
 			Stepper.Disable(STEPPER_MOTOR_3);
 		}
 		
-		if(Stepper.GetPresentPosisition(STEPPER_MOTOR_4) != stepper4_goal_position) {
-			Stepper.Enable(STEPPER_MOTOR_4);
-		} else {
-			Stepper.Disable(STEPPER_MOTOR_4);
-		}
+		
+		
+		
 		
 		
 				

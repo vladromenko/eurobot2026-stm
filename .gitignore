@@ -1,0 +1,6 @@
+MDK-ARM/Main_Board_Output/
+MDK-ARM/Main_Board.uvguix.*
+MDK-ARM/startup_stm32f407xx.lst
+MDK-ARM/Main_Board.*
+!MDK-ARM/Main_Board.uvoptx
+!MDK-ARM/Main_Board.uvprojx

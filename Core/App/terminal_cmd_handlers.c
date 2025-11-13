@@ -43,10 +43,15 @@
 #include "rc_servo.h" 
 #include "stepper.h" 
 
-extern int32_t stepper1_goal_position;
-extern int32_t stepper2_goal_position;
-extern int32_t stepper3_goal_position;
-extern int32_t stepper4_goal_position;
+extern int16_t stepper1_goal_position;
+extern int16_t stepper2_goal_position;
+extern int16_t stepper3_goal_position;
+
+extern uint8_t stepper1_calibrate;
+extern uint8_t stepper2_calibrate;
+extern uint8_t stepper3_calibrate;
+
+uint8_t COMM_ENABLE = 1;
 
 static void Ping(uint8_t* data, uint8_t data_length)
 {
@@ -62,9 +67,9 @@ static void Ping(uint8_t* data, uint8_t data_length)
 
 static void SetRobotSpeed(uint8_t* data, uint8_t data_length)
 {
-  struct terminal_response_s terminal_response;
-
-  struct speed_s speed;
+	
+	if(COMM_ENABLE){
+		struct speed_s speed;
   
   ByteTo_Word32(data,&speed.dx);
   ByteTo_Word32(data+4,&speed.dy);
@@ -72,6 +77,10 @@ static void SetRobotSpeed(uint8_t* data, uint8_t data_length)
 
   Odometry.SetSpeed(&speed);
 
+	}
+  struct terminal_response_s terminal_response;
+
+  
   terminal_response.cmd = BOARD_SetSpeed;
   terminal_response.data_length = 0;
 
@@ -80,6 +89,7 @@ static void SetRobotSpeed(uint8_t* data, uint8_t data_length)
 
 static void GetRobotSpeed(uint8_t* data, uint8_t data_length)
 {
+	
   struct terminal_response_s terminal_response;
 
   struct speed_s speed;
@@ -98,15 +108,18 @@ static void GetRobotSpeed(uint8_t* data, uint8_t data_length)
 
 static void SetRobotCoord(uint8_t* data, uint8_t data_length)
 {
-  struct terminal_response_s terminal_response;
-
-  struct coord_s coord;
+	if(COMM_ENABLE){
+		struct coord_s coord;
   
   ByteTo_Word32(data,&coord.x);
   ByteTo_Word32(data+4,&coord.y);
   ByteTo_Word32(data+8,&coord.phi);
 
   Odometry.SetCoord(&coord);
+	}
+  struct terminal_response_s terminal_response;
+
+  
 
   terminal_response.cmd = BOARD_SetCoord;
   terminal_response.data_length = 0;
@@ -176,6 +189,7 @@ static void GetAxAngle(uint8_t* data, uint8_t data_length)
 
 static void SetAxAngle(uint8_t* data, uint8_t data_length)
 {
+	if(COMM_ENABLE){
   uint8_t id = data[0];
   uint16_t angle;
   ByteTo_Word16(data+1,&angle);
@@ -190,7 +204,7 @@ static void SetAxAngle(uint8_t* data, uint8_t data_length)
 	
   Dynamixel_AX.TorqueEnable(USART3,id);
   Dynamixel_AX.SetAngle(USART3,id,angle);
-
+}
   struct terminal_response_s terminal_response;
 
   terminal_response.cmd = BOARD_SET_AX_ANGLE;
@@ -201,29 +215,23 @@ static void SetAxAngle(uint8_t* data, uint8_t data_length)
 
 static void SetStepperZero(uint8_t* data, uint8_t data_length)
 {
+	
 	uint8_t id = data[0];
-  
+  if(COMM_ENABLE){
 	switch(id){
 		case 0:
-			Stepper.SetZeroPosisition(STEPPER_MOTOR_1);
-			stepper1_goal_position = 0;
+			stepper1_calibrate = 1;
 			break;
 		case 1:
-			Stepper.SetZeroPosisition(STEPPER_MOTOR_2);
-		stepper2_goal_position = 0;
+			stepper2_calibrate = 1;
 			break;
 		case 2:
-			Stepper.SetZeroPosisition(STEPPER_MOTOR_3);
-		stepper3_goal_position = 0;
-			break;
-		case 3:
-			Stepper.SetZeroPosisition(STEPPER_MOTOR_4);
-		stepper4_goal_position = 0;
+			stepper3_calibrate = 1;
 			break;
 		default:
 			break;
 	}
-	
+}
   struct terminal_response_s terminal_response;
   terminal_response.cmd = BOARD_SET_STEPPER_ZERO;
 	
@@ -249,9 +257,6 @@ static void GetStepperPosition(uint8_t* data, uint8_t data_length)
 		case 2:
 			position = Stepper.GetPresentPosisition(STEPPER_MOTOR_3);
 			break;
-		case 3:
-			position = Stepper.GetPresentPosisition(STEPPER_MOTOR_4);
-			break;
 		default:
 			break;
 	}
@@ -264,32 +269,36 @@ static void GetStepperPosition(uint8_t* data, uint8_t data_length)
 
 static void SetStepperPosition(uint8_t* data, uint8_t data_length)
 {
+	if(COMM_ENABLE){
   uint8_t id = data[0];
   int16_t position;
   
   ByteTo_Word16(data+1,&position);
-	
-	switch(id){
-		case 0:
-			stepper1_goal_position = position;
-			Stepper.StepToPosisition(STEPPER_MOTOR_1, position, 32, 16, 800);
-			break;
-		case 1:
-			stepper2_goal_position = position;
-			Stepper.StepToPosisition(STEPPER_MOTOR_2, position, 32, 16, 800);
-			break;
-		case 2:
-			stepper3_goal_position = position;
-		  Stepper.StepToPosisition(STEPPER_MOTOR_3, position, 32, 16, 800);
-			break;
-		case 3:
-			stepper4_goal_position = position;
-		  Stepper.StepToPosisition(STEPPER_MOTOR_4, position, 32, 16, 800);
-			break;
-		default:
-			break;
+	if(position >=0){
+		switch(id){
+			case 0:
+				if(!stepper1_calibrate){
+					stepper1_goal_position = position;
+					Stepper.StepToPosisition(STEPPER_MOTOR_1, position, 32, 16, 800);
+				}
+				break;
+			case 1:
+				if(!stepper2_calibrate){
+					stepper2_goal_position = position;
+					Stepper.StepToPosisition(STEPPER_MOTOR_2, position, 32, 16, 800);
+				}
+				break;
+			case 2:
+				if(!stepper3_calibrate){
+					stepper3_goal_position = position;
+					Stepper.StepToPosisition(STEPPER_MOTOR_3, position, 32, 16, 800);
+				}
+				break;
+			default:
+				break;
+		}
 	}
-
+}
   struct terminal_response_s terminal_response;
 
   terminal_response.cmd = BOARD_SET_STEPPER_POSITION;
@@ -301,8 +310,8 @@ static void SetStepperPosition(uint8_t* data, uint8_t data_length)
 static void TogglePump(uint8_t* data, uint8_t data_length)
 {
   uint8_t pump_state;
-  struct terminal_response_s terminal_response;
-
+  
+	if(COMM_ENABLE){
   pump_state = 2*data[0] + data[1];
   switch (pump_state)
     {
@@ -321,8 +330,8 @@ static void TogglePump(uint8_t* data, uint8_t data_length)
 			default:
 				break;
     }
-
-  
+	}
+  struct terminal_response_s terminal_response;
   terminal_response.cmd = BOARD_TOGGLE_PUMP;
   terminal_response.data_length = 0;
   
@@ -331,11 +340,12 @@ static void TogglePump(uint8_t* data, uint8_t data_length)
 
 static void SetMagnetAngle(uint8_t* data, uint8_t data_length)
 {
+	if(COMM_ENABLE){
   uint8_t magnet_id = data[0];
 	int16_t position;
   ByteTo_Word16(data+1,&position);
 	
-  struct terminal_response_s terminal_response;
+  
  
   switch (magnet_id)
     {
@@ -358,8 +368,9 @@ static void SetMagnetAngle(uint8_t* data, uint8_t data_length)
 			default:
 				break;
     }
-
-  
+	}
+	
+  struct terminal_response_s terminal_response;
   terminal_response.cmd = BOARD_SET_MAGNET_ANGLE;
   terminal_response.data_length = 0;
   
@@ -368,6 +379,9 @@ static void SetMagnetAngle(uint8_t* data, uint8_t data_length)
 
 static void GetKey(uint8_t* data, uint8_t data_length)
 {
+	if(COMM_ENABLE){
+	}
+	
  
   struct terminal_response_s terminal_response;
 
@@ -380,12 +394,119 @@ static void GetKey(uint8_t* data, uint8_t data_length)
 
 static void GetToggle(uint8_t* data, uint8_t data_length)
 {
-  
+  if(COMM_ENABLE){
+	}
   struct terminal_response_s terminal_response;
 
   terminal_response.cmd = BOARD_GET_TOGGLE;
-  terminal_response.data[0] = (robot_ctrl.maxons_state == MAXONS_ENABLED)?1:0;
+  terminal_response.data[0] = (robot_ctrl.playground_side == LEFT_SIDE)?1:0;
   terminal_response.data_length = 1;
+
+  Terminal.SendResponse(&terminal_response);
+}
+
+static void GetDebugMessage(uint8_t* data, uint8_t data_length)
+{
+	if(COMM_ENABLE){
+	}
+  struct terminal_response_s terminal_response;
+
+  terminal_response.cmd = BOARD_GET_DEBUG_MESSAGE;
+
+  // Example message (must be <= 32 characters)
+  const char* debug_msg = "Robot systems: all OK";
+
+  // Copy to response buffer (pad with 0 if shorter)
+  memset(terminal_response.data, 0, 32);
+  strncpy((char*)terminal_response.data, debug_msg, 32);
+  terminal_response.data_length = 32;
+  Terminal.SendResponse(&terminal_response);
+}
+
+static void GetSwitchesState(uint8_t* data, uint8_t data_length)
+{
+	if(COMM_ENABLE){
+	}
+	
+  struct terminal_response_s terminal_response;
+  terminal_response.cmd = BOARD_GET_LINEAR_SWITCHES_STATE;
+  terminal_response.data[0] = (robot_ctrl.linear_switch_1 == LINEAR_SWITCH_PRESSED) ? 1 : 0;
+  terminal_response.data[1] = (robot_ctrl.linear_switch_2 == LINEAR_SWITCH_PRESSED) ? 1 : 0;
+	terminal_response.data[2] = (robot_ctrl.linear_switch_3 == LINEAR_SWITCH_PRESSED) ? 1 : 0;
+	terminal_response.data[3] = (robot_ctrl.linear_switch_4 == LINEAR_SWITCH_PRESSED) ? 1 : 0;
+  terminal_response.data[4] = (robot_ctrl.linear_switch_5 == LINEAR_SWITCH_PRESSED) ? 1 : 0;
+	terminal_response.data[5] = (robot_ctrl.linear_switch_6 == LINEAR_SWITCH_PRESSED) ? 1 : 0;
+	terminal_response.data[6] = (robot_ctrl.linear_switch_7 == LINEAR_SWITCH_PRESSED) ? 1 : 0;
+	terminal_response.data[7] = (robot_ctrl.linear_switch_8 == LINEAR_SWITCH_PRESSED) ? 1 : 0;
+	terminal_response.data[8] = (robot_ctrl.linear_switch_9 == LINEAR_SWITCH_PRESSED) ? 1 : 0;
+  terminal_response.data_length = 9;
+  Terminal.SendResponse(&terminal_response);
+}
+
+static void SetMaxonsState(uint8_t* data, uint8_t data_length){
+	if(COMM_ENABLE){
+	uint8_t state = data[0];
+	
+	if(state){
+		MaxonsEnable();
+	} else {
+		MaxonsDisable();
+	}
+}
+	struct terminal_response_s terminal_response;
+	terminal_response.cmd = BOARD_SET_MAXONS_STATE;
+  terminal_response.data_length = 0;
+  Terminal.SendResponse(&terminal_response);
+}
+
+static void SetCommState(uint8_t* data, uint8_t data_length){
+	uint8_t state = data[0];
+	
+	if(state){
+		COMM_ENABLE = 1;
+	} else {
+		COMM_ENABLE = 0;
+	}
+	
+	struct terminal_response_s terminal_response;
+	terminal_response.cmd = BOARD_SET_COMM_STATE;
+  terminal_response.data_length = 0;
+  Terminal.SendResponse(&terminal_response);
+	
+}
+
+static void BoardReset(uint8_t* data, uint8_t data_length){
+	struct terminal_response_s terminal_response;
+	terminal_response.cmd = BOARD_RESET;
+  terminal_response.data_length = 0;
+  Terminal.SendResponse(&terminal_response);
+	SCB->AIRCR = 0x05FA0004;
+}
+
+static void BoardGetReset(uint8_t* data, uint8_t data_length)
+{
+	if(COMM_ENABLE){
+	}
+	
+  struct terminal_response_s terminal_response;
+
+  terminal_response.cmd = BOARD_GET_RESET;
+  terminal_response.data[0] = (robot_ctrl.reset_state == RESETED)?1:0;
+  terminal_response.data_length = 1;
+
+  Terminal.SendResponse(&terminal_response);
+}
+
+static void BoardClearReset(uint8_t* data, uint8_t data_length)
+{
+	if(COMM_ENABLE){
+	}
+	
+  struct terminal_response_s terminal_response;
+
+  terminal_response.cmd = BOARD_CLEAR_RESET;
+  robot_ctrl.reset_state = NOT_RESETED;
+  terminal_response.data_length = 0;
 
   Terminal.SendResponse(&terminal_response);
 }
@@ -405,7 +526,14 @@ void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t da
 																																															[BOARD_TOGGLE_PUMP] = TogglePump,
 																																															[BOARD_SET_MAGNET_ANGLE] = SetMagnetAngle,
 																																															[BOARD_GET_KEY] = GetKey,
-																																															[BOARD_GET_TOGGLE] = GetToggle
+																																															[BOARD_GET_TOGGLE] = GetToggle,
+                                                                                              [BOARD_GET_DEBUG_MESSAGE] = GetDebugMessage,
+                                                                                              [BOARD_GET_LINEAR_SWITCHES_STATE] = GetSwitchesState,
+																																															[BOARD_SET_MAXONS_STATE] = SetMaxonsState,
+																																															[BOARD_SET_COMM_STATE] = SetCommState,
+																																															[BOARD_RESET] = BoardReset,
+																																															[BOARD_GET_RESET] = BoardGetReset,
+																																															[BOARD_CLEAR_RESET] = BoardClearReset
 };
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

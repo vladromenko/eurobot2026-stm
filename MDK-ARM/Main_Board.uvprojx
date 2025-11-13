@@ -674,11 +674,6 @@
               <FilePath>..\Core\BSP\spi_gpo.c</FilePath>
             </File>
             <File>
-              <FileName>stepper.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\BSP\stepper.c</FilePath>
-            </File>
-            <File>
               <FileName>usartx_communication.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Core\BSP\usartx_communication.c</FilePath>
@@ -687,6 +682,11 @@
               <FileName>usartx_timeout.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Core\BSP\usartx_timeout.c</FilePath>
+            </File>
+            <File>
+              <FileName>stepper.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\BSP\stepper.c</FilePath>
             </File>
             <File>
               <FileName>ws2812b.c</FileName>

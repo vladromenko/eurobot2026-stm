@@ -66,7 +66,88 @@ void Robot_GPIO_Config(void)
 	GPIO_Struct.Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH;
 	
 	LL_GPIO_Init(GPIOE, &GPIO_Struct);
+
+	/* Linear switches pins en*/
+	// linear switch 1
+	GPIO_Struct.Pin = LINEAR_SWITCH_1_GPIO28;
+	GPIO_Struct.Mode = LL_GPIO_MODE_INPUT;
+	GPIO_Struct.OutputType = LL_GPIO_OUTPUT_OPENDRAIN;
+	GPIO_Struct.Pull = LL_GPIO_PULL_DOWN;
+	GPIO_Struct.Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH;
+	LL_GPIO_Init(GPIOC, &GPIO_Struct);
+
+	// linear switch 2
+	GPIO_Struct.Pin = LINEAR_SWITCH_2_GPIO26;
+	GPIO_Struct.Mode = LL_GPIO_MODE_INPUT;
+	GPIO_Struct.OutputType = LL_GPIO_OUTPUT_OPENDRAIN;
+	GPIO_Struct.Pull = LL_GPIO_PULL_DOWN;
+	GPIO_Struct.Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH;
+	LL_GPIO_Init(GPIOC, &GPIO_Struct);
 	
+	// linear switch 3
+	GPIO_Struct.Pin = LINEAR_SWITCH_3_GPIO24;
+	GPIO_Struct.Mode = LL_GPIO_MODE_INPUT;
+	GPIO_Struct.OutputType = LL_GPIO_OUTPUT_OPENDRAIN;
+	GPIO_Struct.Pull = LL_GPIO_PULL_DOWN;
+	GPIO_Struct.Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH;
+	LL_GPIO_Init(GPIOE, &GPIO_Struct);
+	
+	// linear switch 4
+	GPIO_Struct.Pin = LINEAR_SWITCH_4_GPIO22;
+	GPIO_Struct.Mode = LL_GPIO_MODE_INPUT;
+	GPIO_Struct.OutputType = LL_GPIO_OUTPUT_OPENDRAIN;
+	GPIO_Struct.Pull = LL_GPIO_PULL_DOWN;
+	GPIO_Struct.Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH;
+	LL_GPIO_Init(GPIOE, &GPIO_Struct);
+	
+	// linear switch 5
+	GPIO_Struct.Pin = LINEAR_SWITCH_5_GPIO20;
+	GPIO_Struct.Mode = LL_GPIO_MODE_INPUT;
+	GPIO_Struct.OutputType = LL_GPIO_OUTPUT_OPENDRAIN;
+	GPIO_Struct.Pull = LL_GPIO_PULL_DOWN;
+	GPIO_Struct.Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH;
+	LL_GPIO_Init(GPIOE, &GPIO_Struct);
+	
+	// linear switch 6
+	GPIO_Struct.Pin = LINEAR_SWITCH_6_GPIO18;
+	GPIO_Struct.Mode = LL_GPIO_MODE_INPUT;
+	GPIO_Struct.OutputType = LL_GPIO_OUTPUT_OPENDRAIN;
+	GPIO_Struct.Pull = LL_GPIO_PULL_DOWN;
+	GPIO_Struct.Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH;
+	LL_GPIO_Init(GPIOB, &GPIO_Struct);
+	
+	// linear switch 7
+	GPIO_Struct.Pin = LINEAR_SWITCH_7_GPIO16;
+	GPIO_Struct.Mode = LL_GPIO_MODE_INPUT;
+	GPIO_Struct.OutputType = LL_GPIO_OUTPUT_OPENDRAIN;
+	GPIO_Struct.Pull = LL_GPIO_PULL_DOWN;
+	GPIO_Struct.Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH;
+	LL_GPIO_Init(GPIOB, &GPIO_Struct);
+	
+	// linear switch 8
+	GPIO_Struct.Pin = LINEAR_SWITCH_8_GPIO14;
+	GPIO_Struct.Mode = LL_GPIO_MODE_INPUT;
+	GPIO_Struct.OutputType = LL_GPIO_OUTPUT_OPENDRAIN;
+	GPIO_Struct.Pull = LL_GPIO_PULL_DOWN;
+	GPIO_Struct.Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH;
+	LL_GPIO_Init(GPIOB, &GPIO_Struct);
+	
+	// linear switch 9
+	GPIO_Struct.Pin = LINEAR_SWITCH_9_GPIO12;
+	GPIO_Struct.Mode = LL_GPIO_MODE_INPUT;
+	GPIO_Struct.OutputType = LL_GPIO_OUTPUT_OPENDRAIN;
+	GPIO_Struct.Pull = LL_GPIO_PULL_DOWN;
+	GPIO_Struct.Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH;
+	LL_GPIO_Init(GPIOD, &GPIO_Struct);
+
+	// // Enable ANALOG pin
+	// GPIO_Struct.Pin = AIN1_PC3;
+	// GPIO_Struct.Mode = LL_GPIO_MODE_INPUT;
+	// GPIO_Struct.OutputType = LL_GPIO_OUTPUT_OPENDRAIN;
+	// GPIO_Struct.Pull = LL_GPIO_PULL_DOWN;
+	// GPIO_Struct.Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH;
+	// LL_GPIO_Init(GPIOE, &GPIO_Struct);
+
 
 	/*	Specific Robot Pins ------------------------------------------------------------------*/
 
