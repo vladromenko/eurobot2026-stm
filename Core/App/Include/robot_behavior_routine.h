@@ -80,6 +80,26 @@ enum reset_state_e{
 	NOT_RESETED
 };
 
+enum valve_1_enable_e{
+	VALVE_1_DISABLED = 0,
+	VALVE_1_ENABLED = 1
+};
+
+enum valve_2_enable_e{
+	VALVE_2_DISABLED = 0,
+	VALVE_2_ENABLED = 1
+};
+
+enum valve_3_enable_e{
+	VALVE_3_DISABLED = 0,
+	VALVE_3_ENABLED = 1
+};
+
+enum valve_4_enable_e{
+	VALVE_4_DISABLED = 0,
+	VALVE_4_ENABLED = 1
+};
+
 struct robot_ctrl_s{
 	enum starting_cord_state_e starting_cord;
 	enum playground_side_e playground_side;
@@ -96,6 +116,10 @@ struct robot_ctrl_s{
 	enum linear_switch_state_e linear_switch_8;
 	enum linear_switch_state_e linear_switch_9;
 	enum reset_state_e reset_state;
+	enum valve_1_enable_e valve_1_enable;
+	enum valve_2_enable_e valve_2_enable;
+	enum valve_2_enable_e valve_3_enable;
+	enum valve_2_enable_e valve_4_enable;
 };
 
 extern struct robot_ctrl_s robot_ctrl;
