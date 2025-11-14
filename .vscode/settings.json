@@ -2,7 +2,9 @@
     "files.associations": {
         "robot_gpio_defines.h": "c",
         "dynamixel_ax.h": "c",
-        "stm32f4xx_ll_gpio.h": "c"
+        "stm32f4xx_ll_gpio.h": "c",
+        "h_bridge.h": "c",
+        "maxon.h": "c"
     },
     "C_Cpp.default.compilerPath": ""
 }

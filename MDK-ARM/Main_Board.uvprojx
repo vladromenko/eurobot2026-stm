@@ -801,7 +801,7 @@
             <File>
               <FileName>gripper_task.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\Robotics_HW1\eurobot_stm_2025\Core\OS_Tasks\gripper_task.c</FilePath>
+              <FilePath>..\..\eurobot2026-stm\Core\OS_Tasks\gripper_task.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -1215,10 +1215,10 @@
       <GroupNumber>8</GroupNumber>
       <FileNumber>77</FileNumber>
       <FileType>1</FileType>
-      <tvExp>1</tvExp>
+      <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\Robotics_HW1\eurobot_stm_2025\Core\OS_Tasks\gripper_task.c</PathWithFileName>
+      <PathWithFileName>..\..\eurobot2026-stm\Core\OS_Tasks\gripper_task.c</PathWithFileName>
       <FilenameWithoutPath>gripper_task.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>

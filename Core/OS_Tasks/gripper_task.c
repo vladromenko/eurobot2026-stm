@@ -53,6 +53,9 @@
 #include "ws2812b.h" 
 #include "robot_behavior_routine.h"
 
+#include "bus_device.h"
+
+
 uint8_t gripper_state;
 
 #define TASK_STACK_SIZE             512
@@ -62,149 +65,13 @@ static TaskHandle_t task_handle;
 static StackType_t stack_buffer[TASK_STACK_SIZE];
 static StaticTask_t task_buffer;
 
-/*
-static void ValveEnable(uint8_t valve_id)
-{
-	switch(valve_id){
-		case 1:
-			LL_GPIO_SetOutputPin(GPIOD, GPIO1_PD12);
-			LL_GPIO_ResetOutputPin(GPIOD, GPIO2_PD13);
-			break;
-		case 2:
-			LL_GPIO_SetOutputPin(GPIOD, GPIO3_PD15);
-			LL_GPIO_ResetOutputPin(GPIOD, GPIO4_PD14);
-			break;
-		case 3:
-			LL_GPIO_SetOutputPin(GPIOD, GPIO7_PD1);
-			LL_GPIO_ResetOutputPin(GPIOD, GPIO8_PD0);
-			break;
-		case 4:
-			LL_GPIO_SetOutputPin(GPIOB, GPIO9_PB9);
-			LL_GPIO_ResetOutputPin(GPIOB, GPIO10_PB8);
-			break;
-		default:
-			break;
-	}
-}
-
-static void ValveDisable(uint8_t valve_id)
-{
-	switch(valve_id){
-		case 1:
-			LL_GPIO_ResetOutputPin(GPIOD, GPIO1_PD12);
-			LL_GPIO_ResetOutputPin(GPIOD, GPIO2_PD13);
-			break;
-		case 2:
-			LL_GPIO_ResetOutputPin(GPIOD, GPIO3_PD15);
-			LL_GPIO_ResetOutputPin(GPIOD, GPIO4_PD14);
-			break;
-		case 3:
-			LL_GPIO_ResetOutputPin(GPIOD, GPIO7_PD1);
-			LL_GPIO_ResetOutputPin(GPIOD, GPIO8_PD0);
-			break;
-		case 4:
-			LL_GPIO_ResetOutputPin(GPIOB, GPIO9_PB9);
-			LL_GPIO_ResetOutputPin(GPIOB, GPIO10_PB8);
-			break;
-		default:
-			break;
-	}
-}
-
-*/
-static void ValveEnable(uint8_t valve_id)
-{
-	switch(valve_id){
-		case 1:
-			SPI_GPO_SetOutputPin(SPI_POWER_OUTPUT_14);
-			break;
-		case 2:
-			SPI_GPO_SetOutputPin(SPI_POWER_OUTPUT_16);
-			break;
-		case 3:
-			SPI_GPO_SetOutputPin(SPI_POWER_OUTPUT_13);
-			break;
-		case 4:
-			SPI_GPO_SetOutputPin(SPI_POWER_OUTPUT_15);
-			break;
-		default:
-			break;
-	}
-}
-
-static void ValveDisable(uint8_t valve_id)
-{
-	switch(valve_id){
-		case 1:
-			SPI_GPO_ResetOutputPin(SPI_POWER_OUTPUT_14);
-			break;
-		case 2:
-			SPI_GPO_ResetOutputPin(SPI_POWER_OUTPUT_16);
-			break;
-		case 3:
-			SPI_GPO_ResetOutputPin(SPI_POWER_OUTPUT_13);
-			break;
-		case 4:
-			SPI_GPO_ResetOutputPin(SPI_POWER_OUTPUT_15);
-			break;
-		default:
-			break;
-	}
-}
-
-/*
-static void ValveDisable(uint8_t valve_id)
-{
-	switch(valve_id){
-		case 1:
-			LL_GPIO_SetOutputPin(GPIOB, GPIO15_PB5);
-			LL_GPIO_ResetOutputPin(GPIOB, GPIO16_PB4);
-			break;
-		case 2:
-			LL_GPIO_SetOutputPin(GPIOB, GPIO17_PB6);
-			LL_GPIO_ResetOutputPin(GPIOB, GPIO18_PB7);
-			break;
-		case 3:
-			LL_GPIO_SetOutputPin(GPIOE, GPIO19_PE1);
-			LL_GPIO_ResetOutputPin(GPIOE, GPIO20_PE0);
-			break;
-		case 4:
-			LL_GPIO_SetOutputPin(GPIOE, GPIO21_PE2);
-			LL_GPIO_ResetOutputPin(GPIOE, GPIO22_PE3);
-			break;
-		default:
-			break;
-	}
-}
-
-static void ValveEnable(uint8_t valve_id)
-{
-	switch(valve_id){
-		case 1:
-			LL_GPIO_ResetOutputPin(GPIOB, GPIO15_PB5);
-			LL_GPIO_SetOutputPin(GPIOB, GPIO16_PB4);
-			break;
-		case 2:
-			LL_GPIO_ResetOutputPin(GPIOB, GPIO17_PB6);
-			LL_GPIO_SetOutputPin(GPIOB, GPIO18_PB7);
-			break;
-		case 3:
-			LL_GPIO_ResetOutputPin(GPIOE, GPIO19_PE1);
-			LL_GPIO_SetOutputPin(GPIOE, GPIO20_PE0);
-			break;
-		case 4:
-			LL_GPIO_ResetOutputPin(GPIOE, GPIO21_PE2);
-			LL_GPIO_SetOutputPin(GPIOE, GPIO22_PE3);
-			break;
-		default:
-			break;
-	}
-}
-*/
+#define MAXON
+//#define VALVES_4
+//#define SERVO
 
 static void Task(void *arg)
 {
-  vTaskDelay(50);
+  	vTaskDelay(50);
 	uint8_t dynamixel_id_1 = 98;
 	uint8_t dynamixel_id_2 = 112;
 	uint16_t dynamixel_speed = 200; //0-1024
@@ -217,14 +84,6 @@ static void Task(void *arg)
 	ValveDisable(4);
 	*/
 	//uint8_t dynamixel_id = 0xFE;
-	
-	// Attempt to turn on power outputs +12V (failure)
-	/* 
-	SPI_GPO_ResetOutputPin(SPI_GPO_ALL);
-	vTaskDelay(5000);
-	SPI_GPO_SetOutputPin(SPI_GPO_ALL);
-  vTaskDelay(5000);
-	*/
 	
 	// Set custom id to single dynamixel (DISCONNECT ANY OTHER DYNAMIXELS!)
 	/*
@@ -240,66 +99,35 @@ static void Task(void *arg)
 	Dynamixel_AX.SetAngle(USART3, 15, 0);
 	*/
 
+
+	#ifdef VALVES_4
+		Dynamixel_AX.SetMovingSpeed(USART3, dynamixel_id_1, dynamixel_speed);
+		Dynamixel_AX.SetMovingSpeed(USART3, dynamixel_id_2, dynamixel_speed);
+		Dynamixel_AX.SetAngle(USART3, dynamixel_id_1, 70);
+		Dynamixel_AX.SetAngle(USART3, dynamixel_id_2, 70);
+		vTaskDelay(100);
+		//Dynamixel_AX.SetAngle(USART3, dynamixel_id_1, -10);
+		//Dynamixel_AX.SetAngle(USART3, dynamixel_id_2, -10);
+	#endif
+
+
+	#ifdef SERVO
+		RC_Servo.Enable(RC_SERVO_1);
+	#endif
 	
-	Dynamixel_AX.SetMovingSpeed(USART3, dynamixel_id_1, dynamixel_speed);
-	Dynamixel_AX.SetMovingSpeed(USART3, dynamixel_id_2, dynamixel_speed);
-	Dynamixel_AX.SetAngle(USART3, dynamixel_id_1, 70);
-	Dynamixel_AX.SetAngle(USART3, dynamixel_id_2, 70);
-	vTaskDelay(100);
-	//Dynamixel_AX.SetAngle(USART3, dynamixel_id_1, -10);
-	//Dynamixel_AX.SetAngle(USART3, dynamixel_id_2, -10);
-	
-	
+	#ifdef MAXON
+		//Maxon.Enable(bus_devices[MAXON_MOTOR_1].usart, bus_devices[MAXON_MOTOR_1].id);
+		MaxonsDisable();
+    	Kinematics.MatrixInit();
+    	MaxonsEnable();
+		vTaskDelay(500);
+	#endif
+
 	while(1)
 	{
-		
-		/*
-		Dynamixel_AX.Enable_LED(USART3, dynamixel_id_1);
-		Dynamixel_AX.SetAngle(USART3, dynamixel_id_1,0);
-		vTaskDelay(1000);
-		Dynamixel_AX.Disable_LED(USART3, dynamixel_id_1);
-		Dynamixel_AX.SetAngle(USART3, dynamixel_id_1,180);
-		vTaskDelay(1000);
-		
-		Dynamixel_AX.Enable_LED(USART3, dynamixel_id_2);
-		Dynamixel_AX.SetAngle(USART3, dynamixel_id_2,0);
-		vTaskDelay(1000);
-		Dynamixel_AX.Disable_LED(USART3, dynamixel_id_2);
-		Dynamixel_AX.SetAngle(USART3, dynamixel_id_2,180);
-		vTaskDelay(1000);
-		*/
-
 		vTaskDelay(100);
 		
-		/*
-		ValveEnable(1);
-		vTaskDelay(1000);
-		ValveDisable(1);
-		vTaskDelay(1000);
-		ValveEnable(2);
-		vTaskDelay(1000);
-		ValveDisable(2);
-		vTaskDelay(1000);
-		ValveEnable(3);
-		vTaskDelay(1000);
-		ValveDisable(3);
-		vTaskDelay(1000);
-		ValveEnable(4);
-		vTaskDelay(1000);
-		ValveDisable(4);
-		vTaskDelay(1000);
-		
-		ValveEnable(1);
-		ValveEnable(2);
-		ValveEnable(3);
-		ValveEnable(4);
-		vTaskDelay(5000);
-		ValveDisable(1);
-		ValveDisable(2);
-		ValveDisable(3);
-		ValveDisable(4);
-		*/
-		
+		#ifdef VALVES_4
 		if(robot_ctrl.linear_switch_1 == LINEAR_SWITCH_PRESSED)
 		{
 			SPI_GPO_SetOutputPin(SPI_POWER_OUTPUT_5);
@@ -426,62 +254,62 @@ static void Task(void *arg)
 			SPI_GPO_ResetOutputPin(SPI_POWER_OUTPUT_5);
 			SPI_GPO_ResetOutputPin(SPI_POWER_OUTPUT_6);
 			
-			
-			
-			
-			
-			/*
-			// 2nd step
-			ValveEnable(1);
-			ValveEnable(2);
-			//ValveEnable(3);
-			//ValveEnable(4);
-				
-			Dynamixel_AX.SetAngle(USART3, dynamixel_id_1, start_angle);
-			Dynamixel_AX.SetAngle(USART3, dynamixel_id_2, start_angle);
-			vTaskDelay(2000);
-			Dynamixel_AX.SetAngle(USART3, dynamixel_id_1, end_angle);
-			Dynamixel_AX.SetAngle(USART3, dynamixel_id_2, end_angle);
-			vTaskDelay(2000);
-			
-			// 3rd step
-			ValveEnable(1);
-			ValveEnable(2);
-			ValveEnable(3);
-			//ValveEnable(4);
-				
-			Dynamixel_AX.SetAngle(USART3, dynamixel_id_1, start_angle);
-			Dynamixel_AX.SetAngle(USART3, dynamixel_id_2, start_angle);
-			vTaskDelay(2000);
-			Dynamixel_AX.SetAngle(USART3, dynamixel_id_1, end_angle);
-			Dynamixel_AX.SetAngle(USART3, dynamixel_id_2, end_angle);
-			vTaskDelay(2000);
-			
-			// 4th step
-			ValveEnable(1);
-			ValveEnable(2);
-			ValveEnable(3);
-			ValveEnable(4);
-				
-			Dynamixel_AX.SetAngle(USART3, dynamixel_id_1, start_angle);
-			Dynamixel_AX.SetAngle(USART3, dynamixel_id_2, start_angle);
-			vTaskDelay(2000);
-			Dynamixel_AX.SetAngle(USART3, dynamixel_id_1, end_angle);
-			Dynamixel_AX.SetAngle(USART3, dynamixel_id_2, end_angle);
-			vTaskDelay(2000);
-			
-			// final step (blocks dropping)
-			Dynamixel_AX.SetAngle(USART3, dynamixel_id_1, start_angle);
-			Dynamixel_AX.SetAngle(USART3, dynamixel_id_2, start_angle);
-			vTaskDelay(2000);
-			ValveDisable(1);
-			ValveDisable(2);
-			ValveDisable(3);
-			ValveDisable(4);
-			*/
 		
 		}
+		#endif
 		
+		#ifdef SERVO
+			RC_Servo.SetServoAngle(RC_SERVO_1, 700, 1900, 180, 0);
+			vTaskDelay(200);
+			RC_Servo.SetServoAngle(RC_SERVO_1, 700, 1900, 180, 135);
+		#endif
+
+
+		#ifdef MAXON
+			/*
+			Maxon.Set_TPM(bus_devices[MAXON_MOTOR_1].usart, bus_devices[MAXON_MOTOR_1].id, 10000000);
+			vTaskDelay(2000);
+
+			Maxon.Set_TPM(bus_devices[MAXON_MOTOR_1].usart, bus_devices[MAXON_MOTOR_1].id, -10000000);
+			vTaskDelay(2000);
+			*/
+			struct speed_s speed;
+
+			speed.dphi = 1.57f;
+			speed.dx = 0;
+			speed.dy = 0;
+			Odometry.SetSpeed(&speed);
+			vTaskDelay(1000);
+
+			speed.dphi = -1.57f;
+			Odometry.SetSpeed(&speed);
+			vTaskDelay(1000);
+
+			speed.dphi = 0;
+			speed.dx = 0.1;
+			speed.dy = 0;
+			Odometry.SetSpeed(&speed);
+			vTaskDelay(1000);
+			
+			speed.dphi = 0;
+			speed.dx = -0.1;
+			speed.dy = 0;
+			Odometry.SetSpeed(&speed);
+			vTaskDelay(1000);
+
+			speed.dphi = 0;
+			speed.dx = 0;
+			speed.dy = 0.1;
+			Odometry.SetSpeed(&speed);
+			vTaskDelay(1000);
+			
+			speed.dphi = 0;
+			speed.dx = 0;
+			speed.dy = -0.1;
+			Odometry.SetSpeed(&speed);
+			vTaskDelay(1000);
+		#endif
+
 	}
 	
 }
