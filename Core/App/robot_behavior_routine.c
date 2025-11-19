@@ -120,7 +120,87 @@ void ButtonsCallback(enum buttons_e button_id, enum button_callback_type_s callb
 				}
 			}
 			break;
-			
+		case LINEAR_SWITCH_1_BTN:
+			if((callback_type == STATE_CHANGED_CALLBACK) || (callback_type == INIT_COMPLETE_CALLBACK))
+			{
+				if(button_state == BUTTON_STATE_PRESSED)
+					robot_ctrl.linear_switch_1= LINEAR_SWITCH_RELEASED;
+				if(button_state == BUTTON_STATE_RELEASED)
+					robot_ctrl.linear_switch_1 = LINEAR_SWITCH_PRESSED;
+			}
+			break;
+		case LINEAR_SWITCH_2_BTN:
+			if((callback_type == STATE_CHANGED_CALLBACK) || (callback_type == INIT_COMPLETE_CALLBACK))
+			{
+				if(button_state == BUTTON_STATE_PRESSED)
+					robot_ctrl.linear_switch_2 = LINEAR_SWITCH_RELEASED;
+				if(button_state == BUTTON_STATE_RELEASED)
+					robot_ctrl.linear_switch_2 = LINEAR_SWITCH_PRESSED;
+			}
+			break;
+		case LINEAR_SWITCH_3_BTN:
+			if((callback_type == STATE_CHANGED_CALLBACK) || (callback_type == INIT_COMPLETE_CALLBACK))
+			{
+				if(button_state == BUTTON_STATE_PRESSED)
+					robot_ctrl.linear_switch_3 = LINEAR_SWITCH_RELEASED;
+				if(button_state == BUTTON_STATE_RELEASED)
+					robot_ctrl.linear_switch_3 = LINEAR_SWITCH_PRESSED;
+			}
+			break;
+			case LINEAR_SWITCH_4_BTN:
+			if((callback_type == STATE_CHANGED_CALLBACK) || (callback_type == INIT_COMPLETE_CALLBACK))
+			{
+				if(button_state == BUTTON_STATE_PRESSED)
+					robot_ctrl.linear_switch_4 = LINEAR_SWITCH_RELEASED;
+				if(button_state == BUTTON_STATE_RELEASED)
+					robot_ctrl.linear_switch_4 = LINEAR_SWITCH_PRESSED;
+			}
+			break;
+			case LINEAR_SWITCH_5_BTN:
+			if((callback_type == STATE_CHANGED_CALLBACK) || (callback_type == INIT_COMPLETE_CALLBACK))
+			{
+				if(button_state == BUTTON_STATE_PRESSED)
+					robot_ctrl.linear_switch_5 = LINEAR_SWITCH_RELEASED;
+				if(button_state == BUTTON_STATE_RELEASED)
+					robot_ctrl.linear_switch_5 = LINEAR_SWITCH_PRESSED;
+			}
+			break;
+			case LINEAR_SWITCH_6_BTN:
+			if((callback_type == STATE_CHANGED_CALLBACK) || (callback_type == INIT_COMPLETE_CALLBACK))
+			{
+				if(button_state == BUTTON_STATE_PRESSED)
+					robot_ctrl.linear_switch_6 = LINEAR_SWITCH_RELEASED;
+				if(button_state == BUTTON_STATE_RELEASED)
+					robot_ctrl.linear_switch_6 = LINEAR_SWITCH_PRESSED;
+			}
+			break;
+			case LINEAR_SWITCH_7_BTN:
+			if((callback_type == STATE_CHANGED_CALLBACK) || (callback_type == INIT_COMPLETE_CALLBACK))
+			{
+				if(button_state == BUTTON_STATE_PRESSED)
+					robot_ctrl.linear_switch_7 = LINEAR_SWITCH_RELEASED;
+				if(button_state == BUTTON_STATE_RELEASED)
+					robot_ctrl.linear_switch_7 = LINEAR_SWITCH_PRESSED;
+			}
+			break;
+			case LINEAR_SWITCH_8_BTN:
+			if((callback_type == STATE_CHANGED_CALLBACK) || (callback_type == INIT_COMPLETE_CALLBACK))
+			{
+				if(button_state == BUTTON_STATE_PRESSED)
+					robot_ctrl.linear_switch_8 = LINEAR_SWITCH_RELEASED;
+				if(button_state == BUTTON_STATE_RELEASED)
+					robot_ctrl.linear_switch_8 = LINEAR_SWITCH_PRESSED;
+			}
+			break;
+			case LINEAR_SWITCH_9_BTN:
+			if((callback_type == STATE_CHANGED_CALLBACK) || (callback_type == INIT_COMPLETE_CALLBACK))
+			{
+				if(button_state == BUTTON_STATE_PRESSED)
+					robot_ctrl.linear_switch_9 = LINEAR_SWITCH_RELEASED;
+				if(button_state == BUTTON_STATE_RELEASED)
+					robot_ctrl.linear_switch_9 = LINEAR_SWITCH_PRESSED;
+			}
+			break;
 		default:
 			break;
 	}

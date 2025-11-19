@@ -64,6 +64,18 @@ static void Task(void *arg)
   Button.AddButton(STRATEGY_BTN, GPIOE, STRATEGY_BTN_GPIO12_PE5, BUTTON_POLARITY_HI, ButtonCallbackRedirect);
   Button.AddButton(MAXON_ENABLE_BTN, GPIOE, MAXON_ENABLE_BTN_GPIO11_PE2, BUTTON_POLARITY_HI, ButtonCallbackRedirect);
 
+  // linear switches 
+  Button.AddButton(LINEAR_SWITCH_1_BTN, GPIOC, LINEAR_SWITCH_1_GPIO28, BUTTON_POLARITY_HI, ButtonCallbackRedirect);
+  Button.AddButton(LINEAR_SWITCH_2_BTN, GPIOC, LINEAR_SWITCH_2_GPIO26, BUTTON_POLARITY_HI, ButtonCallbackRedirect);
+	Button.AddButton(LINEAR_SWITCH_3_BTN, GPIOE, LINEAR_SWITCH_3_GPIO24, BUTTON_POLARITY_HI, ButtonCallbackRedirect);
+	Button.AddButton(LINEAR_SWITCH_4_BTN, GPIOE, LINEAR_SWITCH_4_GPIO22, BUTTON_POLARITY_HI, ButtonCallbackRedirect);
+  Button.AddButton(LINEAR_SWITCH_5_BTN, GPIOE, LINEAR_SWITCH_5_GPIO20, BUTTON_POLARITY_HI, ButtonCallbackRedirect);
+	Button.AddButton(LINEAR_SWITCH_6_BTN, GPIOB, LINEAR_SWITCH_6_GPIO18, BUTTON_POLARITY_HI, ButtonCallbackRedirect);
+	Button.AddButton(LINEAR_SWITCH_7_BTN, GPIOB, LINEAR_SWITCH_7_GPIO16, BUTTON_POLARITY_HI, ButtonCallbackRedirect);
+	Button.AddButton(LINEAR_SWITCH_8_BTN, GPIOB, LINEAR_SWITCH_8_GPIO14, BUTTON_POLARITY_HI, ButtonCallbackRedirect);
+	Button.AddButton(LINEAR_SWITCH_9_BTN, GPIOD, LINEAR_SWITCH_9_GPIO12, BUTTON_POLARITY_HI, ButtonCallbackRedirect);
+
+
   button_callbacks_queue_handle = xQueueCreateStatic(BUTTON_CALLBACKS_QUEUE_LENGTH, BUTTON_CALLBACKS_QUEUE_ITEM_SIZE, ucQueueStorageBuffer, &xStaticQueue);
 
 	while(1)

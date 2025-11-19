@@ -75,8 +75,9 @@ int main(void)
 	UART4_RS485_Init();
   UART5_SerialInit();
 	USART6_RS485_Init();
-
 	
+
+
 	
 	TIM1_Steppers_PWM_Init();
 	TIM4_PWM_Group1234_Init();
@@ -109,7 +110,9 @@ int main(void)
   USARTx.BindProtocol(UART4, DynamixelMaster.GetProtocol());
   USARTx.BindProtocol(UART5, Serial.GetProtocol());
   USARTx.BindProtocol(USART1, HL_RTU.GetProtocol());
-
+	
+	IWDG_Init();
+	
   /*  Creating tasks  */
 	ButtonsPollTask.CreateTask(3);
   ButtonsCallbackTask.CreateTask(2);
@@ -117,13 +120,12 @@ int main(void)
 	TerminalTask.CreateTask(1);
   GameTask.CreateTask(1);
 
-  //DemoTask.CreateTask(1);
+  DemoTask.CreateTask(1);
 	StepperTask.CreateTask(1);
-
+	DebugTerminalTask.CreateTask(1);
 
   /*  Run scheduler  */
   vTaskStartScheduler();
-	
   while (1);
 }
 	
@@ -134,6 +136,7 @@ int main(void)
   * @brief  This function is executed in case of error occurrence.
   * @retval None
   */
+
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */

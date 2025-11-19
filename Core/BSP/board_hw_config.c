@@ -31,6 +31,7 @@
 #include "stm32f4xx_ll_tim.h"
 #include "stm32f4xx_ll_bus.h"
 #include "stm32f4xx_ll_spi.h"
+#include "stm32f4xx_ll_iwdg.h"
 #include "stm32f4xx_ll_system.h"
 
 
@@ -74,6 +75,11 @@ void SystemClockConfig(void)
 	
 	while(LL_RCC_HSE_IsReady()==0x0);
 	
+	LL_RCC_LSI_Enable();
+
+   /* Wait till LSI is ready */
+  while(LL_RCC_LSI_IsReady()==0x0);
+	
 	/*	Configure PLL	for getting 168 MHz from 16 MHz*/
 	LL_RCC_PLL_ConfigDomain_SYS(LL_RCC_PLLSOURCE_HSE,LL_RCC_PLLM_DIV_8,168,LL_RCC_PLLP_DIV_2);
 	LL_RCC_PLL_ConfigDomain_48M(LL_RCC_PLLSOURCE_HSE,LL_RCC_PLLM_DIV_8,168,LL_RCC_PLLQ_DIV_4);
@@ -115,6 +121,20 @@ void HW_ClockConfig(void)
 	LL_AHB1_GRP1_ReleaseReset(LL_AHB1_GRP1_PERIPH_DMA1);
 	/*	Enable DMA1 clock	*/
 	LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_DMA1);
+}
+
+void IWDG_Init(void)
+{
+  LL_IWDG_Enable(IWDG);
+  LL_IWDG_EnableWriteAccess(IWDG);
+  LL_IWDG_SetPrescaler(IWDG, LL_IWDG_PRESCALER_4);
+  LL_IWDG_SetReloadCounter(IWDG, 2047);
+  while (LL_IWDG_IsReady(IWDG) != 1)
+  {
+  }
+
+  LL_IWDG_ReloadCounter(IWDG);
+
 }
 
 void USART1_TerminalInit(void)
@@ -306,7 +326,7 @@ void UART5_SerialInit(void)
 	LL_USART_SetOverSampling(UART5,LL_USART_OVERSAMPLING_8);
 	LL_USART_SetDataWidth(UART5,LL_USART_DATAWIDTH_8B);
 	LL_USART_SetParity(UART5,LL_USART_PARITY_NONE);
-	LL_USART_SetTransferDirection(UART5,LL_USART_DIRECTION_RX);
+	LL_USART_SetTransferDirection(UART5,LL_USART_DIRECTION_TX_RX);
 
 	LL_USART_Enable(UART5);
 	

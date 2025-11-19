@@ -70,12 +70,32 @@ enum maxons_state_e{
   MAXONS_ENABLED
 };
 
+enum linear_switch_state_e{
+  LINEAR_SWITCH_PRESSED,
+  LINEAR_SWITCH_RELEASED
+};
+
+enum reset_state_e{
+	RESETED,
+	NOT_RESETED
+};
+
 struct robot_ctrl_s{
 	enum starting_cord_state_e starting_cord;
 	enum playground_side_e playground_side;
 	enum strategy_e strategy;
   enum maxons_state_e maxons_state;
   enum robot_mode_e robot_mode;
+  enum linear_switch_state_e linear_switch_1;
+  enum linear_switch_state_e linear_switch_2;
+	enum linear_switch_state_e linear_switch_3;
+	enum linear_switch_state_e linear_switch_4;
+	enum linear_switch_state_e linear_switch_5;
+	enum linear_switch_state_e linear_switch_6;
+	enum linear_switch_state_e linear_switch_7;
+	enum linear_switch_state_e linear_switch_8;
+	enum linear_switch_state_e linear_switch_9;
+	enum reset_state_e reset_state;
 };
 
 extern struct robot_ctrl_s robot_ctrl;

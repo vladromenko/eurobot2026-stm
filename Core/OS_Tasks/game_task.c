@@ -31,7 +31,10 @@
 #include "kinematics.h"
 #include "odometry.h"
 #include "rc_servo.h"
-
+#include "stepper.h"
+#include "odometry.h"
+#include "bus_device.h"
+#include "stm32f4xx_ll_iwdg.h"     
 
 #define TASK_STACK_SIZE             512
 
@@ -39,41 +42,43 @@
 static TaskHandle_t TaskHandle;
 static StackType_t StackBuffer[TASK_STACK_SIZE];
 static StaticTask_t TaskBuffer;
-extern int8_t gripper_state;
-extern int8_t stepper_state;
+
 
 static void Task(void *arg)
 {
 //  TickType_t xGameStartTime;
 
-  robot_ctrl.starting_cord = STARTING_CORD_ATTACHED;
+  //robot_ctrl.starting_cord = STARTING_CORD_ATTACHED;
   //robot_ctrl.robot_mode = DEBUG_MODE;
-
+	robot_ctrl.reset_state = RESETED;
   vTaskDelay(50);
   // PrepareRobot();
-	
+	MaxonsStop();
+  MaxonsEnable();
   
 	while(1)
 	{
+		vTaskDelay(50);
+		LL_IWDG_ReloadCounter(IWDG);
     /*  PREPARE ROBOT FOR THE GAME, SET IT TO THE INITIAL CONDITION  */
-    MaxonsStop();
-    MaxonsEnable();
-
-    /*  WAITING FOR THE STARTING CORD EXTRACTION  */
-    while(robot_ctrl.starting_cord == STARTING_CORD_ATTACHED)
-      taskYIELD();
-
-    /*  INITIALISE GAMING 100 SECONDS TIMEOUT  */
-//    xGameStartTime = xTaskGetTickCount();
-
-    /*  START THE GAME AND WAIT UNTIL 100 SECONDS ARE RUNNNING OUT OR THE STARTING CORD IS ATTACHED AGAIN  */
-    while(robot_ctrl.starting_cord == STARTING_CORD_RELEASED)
-    {
-			taskYIELD();
-    }
-
-    /*  DO NOTHING UNTIL THE STARTING CORD WILL BE ATTACHED AGAIN */
     
+
+//    /*  WAITING FOR THE STARTING CORD EXTRACTION  */
+//    while(robot_ctrl.starting_cord == STARTING_CORD_ATTACHED){
+//      taskYIELD();
+//		}
+//    /*  INITIALISE GAMING 100 SECONDS TIMEOUT  */
+////    xGameStartTime = xTaskGetTickCount();
+
+//    /*  START THE GAME AND WAIT UNTIL 100 SECONDS ARE RUNNNING OUT OR THE STARTING CORD IS ATTACHED AGAIN  */
+//    while(robot_ctrl.starting_cord == STARTING_CORD_RELEASED)
+//    {
+//      
+//			taskYIELD();
+//    }
+
+//    /*  DO NOTHING UNTIL THE STARTING CORD WILL BE ATTACHED AGAIN */
+//    
 	}
 }
 

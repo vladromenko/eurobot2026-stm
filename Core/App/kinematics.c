@@ -28,8 +28,8 @@
 
 
 
-#define DIST_CENTER_TO_WHEEL_m 			0.1075f // [m]
-#define WHEEL_RADIUS_m					0.03f   // [m]
+#define DIST_CENTER_TO_WHEEL_m 			0.1216f // [m]
+#define WHEEL_RADIUS_m					0.0245f   // [m]
 #define	GEAR_RATIO						21.0f
 #define ENCODER_TICKS_PER_TURN			4096	// [ticks]
 
@@ -38,14 +38,15 @@
 
 #define cos30 	0.8660254f
 #define cos60 	0.5f
+// result = linear_wheel_speed(m/s, m/s, m/s)  = inverse_matrix * body_speed(m/s, ms/s, rad/s)
+float inverse_matrix[9] = {cos30, -cos60,   -DIST_CENTER_TO_WHEEL_m,
+														0, 			1, 			-DIST_CENTER_TO_WHEEL_m,
+													-cos30,	-cos60,		-DIST_CENTER_TO_WHEEL_m};
 
-float direct_matrix[9] = { 	cos30, cos60, 1,
-							-cos30, cos60, 1,
-							0,		-1,		1	};
-
-float inverse_matrix[9] = {	1/(2.0f*cos30), -1/(2.0f*cos30), 0,
-							0.3333333f, 0.3333333f,	-0.6666666f,
-							0.3333333f,	0.3333333f,	 0.3333333f	};
+// result = body_speed(m/s, ms/s, rad/s) = direct_matrix * wheel_speed (m/s, m/s, m/s)
+float direct_matrix[9] = {	1/(2*cos30), 				0,							-1 / (2*cos30),
+							-1/3.0f, 						2/3.0f,							-1/3.0f,
+							-1/3.0f/DIST_CENTER_TO_WHEEL_m,	-1/3.0f/DIST_CENTER_TO_WHEEL_m,	-1/3.0f/DIST_CENTER_TO_WHEEL_m};
 
 														
 
@@ -54,7 +55,7 @@ arm_matrix_instance_f32 arm_inverse_matrix;
 
 
 
-float ms_to_tpm, ticks_to_m;
+float ms_to_tpm, ticks_to_m, tpm_to_ms;
 
 													
 static void MatrixInit(void)
@@ -62,64 +63,52 @@ static void MatrixInit(void)
 	arm_mat_init_f32(&arm_direct_matrix, 3, 3, direct_matrix);
 	arm_mat_init_f32(&arm_inverse_matrix, 3, 3, inverse_matrix);
 	
-	ms_to_tpm = (30.0f*GEAR_RATIO)/(PI*WHEEL_RADIUS_m)*ENCODER_TICKS_PER_TURN;
-	ticks_to_m = (2*PI*WHEEL_RADIUS_m)/GEAR_RATIO/ENCODER_TICKS_PER_TURN;
-	
+	// wheel's ticks_per_minute = wheel_linear_speed(m/s) * ms_to_tpm
+	ms_to_tpm = (60.0f*GEAR_RATIO*ENCODER_TICKS_PER_TURN)/(2*PI*WHEEL_RADIUS_m);
 
-	float direct_gain[9] = {1,0,0,
-							0,1,0,
-							0,0,DIST_CENTER_TO_WHEEL_m};
-	
-	arm_matrix_instance_f32 direct_gain_matrix;
-	arm_mat_init_f32(&direct_gain_matrix, 3, 3, direct_gain);
-												
-																									
-	arm_mat_mult_f32(&arm_direct_matrix, &direct_gain_matrix, &arm_direct_matrix);
+	// linear_path = wheel_ticks_per_minute * ticks_to_m 
+	ticks_to_m =  2*PI*WHEEL_RADIUS_m / (GEAR_RATIO*ENCODER_TICKS_PER_TURN);
+
+	// wheel_linear_speed(m/s) = wheel_ticks_per_minute * ticks_to_m
+	tpm_to_ms = 2*PI*WHEEL_RADIUS_m / (60.0f*GEAR_RATIO*ENCODER_TICKS_PER_TURN);
 													
-	
-													
-	float inverse_gain[9] = {1,0,0,
-							0,1,0,
-							0,0,1/DIST_CENTER_TO_WHEEL_m};
-	
-	arm_matrix_instance_f32 inverse_gain_matrix;
-	arm_mat_init_f32(&inverse_gain_matrix, 3, 3, inverse_gain);
-																									
-	arm_mat_mult_f32(&inverse_gain_matrix, &arm_inverse_matrix, &arm_inverse_matrix);
 }
-
-static void SpeedTo_TPM(struct speed_s* speed, int32_t* tpm)
+/*from speed to robot's body (m/s), calculate speed of 3 wheels(ticks per minutes)*/
+static void SpeedTo_TPM(struct speed_s* desired_body_speed, int32_t* tpm)
 {
-	arm_matrix_instance_f32 speed_matrix;
-	arm_matrix_instance_f32 ms_matrix;
+	arm_matrix_instance_f32 desired_body_speed_matrix;
+	arm_matrix_instance_f32 rad_per_second;
 	float ms[3];
 	
-	arm_mat_init_f32(&speed_matrix, 3, 1, (float*)speed);
-	arm_mat_init_f32(&ms_matrix, 3, 1, ms);
+	arm_mat_init_f32(&desired_body_speed_matrix, 3, 1, (float*)desired_body_speed);
+	arm_mat_init_f32(&rad_per_second, 3, 1, ms);
 											
-	arm_mat_mult_f32(&arm_direct_matrix, &speed_matrix, &ms_matrix);
+	arm_mat_mult_f32(&arm_inverse_matrix, &desired_body_speed_matrix, &rad_per_second);
 
+	// wheel's ticks_per_minute = wheel_linear_speed(m/s) * ms_to_tpm
 	tpm[0] = ms[0]*ms_to_tpm;
 	tpm[1] = ms[1]*ms_to_tpm;
 	tpm[2] = ms[2]*ms_to_tpm;
 }
 
-static void TPM_ToSpeed(int32_t* tpm, struct speed_s* speed)
+/* from linear speed of 3 wheels(ticks per minutes) to robot's body velocity (m/s, m/s, rad/s)*/
+static void TPM_ToSpeed(int32_t* tpm, struct speed_s* real_body_speed)
 {
-	arm_matrix_instance_f32 speed_matrix;
-	arm_matrix_instance_f32 ms_matrix;
+	arm_matrix_instance_f32 real_body_speed_matrix;
+	arm_matrix_instance_f32 linear_wheel_speed_matrix;
 	float ms[3];
-
-	ms[0] = tpm[0]/ms_to_tpm;
-	ms[1] = tpm[1]/ms_to_tpm;
-	ms[2] = tpm[2]/ms_to_tpm;
+	// find linear speed of 3 wheels (m/s) = ticks_per_minute * tpm_to_ms
+	ms[0] = tpm[0]*tpm_to_ms;
+	ms[1] = tpm[1]*tpm_to_ms;
+	ms[2] = tpm[2]*tpm_to_ms;
 	
-	arm_mat_init_f32(&speed_matrix, 3, 1, (float*)speed);
-	arm_mat_init_f32(&ms_matrix, 3, 1, ms);
+	arm_mat_init_f32(&real_body_speed_matrix, 3, 1, (float*)real_body_speed);
+	arm_mat_init_f32(&linear_wheel_speed_matrix, 3, 1, ms);
 											
-	arm_mat_mult_f32(&arm_inverse_matrix, &ms_matrix, &speed_matrix);
+	arm_mat_mult_f32(&arm_direct_matrix, &linear_wheel_speed_matrix, &real_body_speed_matrix);
 }
 
+// d_ticks is in ticks per 10ms
 static void UpdatePath(int32_t* d_ticks, struct coord_s* path)
 {
 	float d_m[3];
@@ -139,31 +128,13 @@ static void UpdatePath(int32_t* d_ticks, struct coord_s* path)
 
 	path->phi += d_coord.phi;
 
-	while(path->phi>2*PI)
+	while(path->phi>PI)
 		path->phi -= 2*PI;
-	while(path->phi<-2*PI)
+	while(path->phi<-PI)
 		path->phi += 2*PI;
 
 	path->x += d_coord.x*arm_cos_f32(path->phi) - d_coord.y*arm_sin_f32(path->phi);
 	path->y += d_coord.x*arm_sin_f32(path->phi) + d_coord.y*arm_cos_f32(path->phi);
-}
-
-void SpeedTo_TPM_2(struct speed_s* speed, int32_t* tpm)
-{
-	arm_matrix_instance_f32 speed_matrix;
-	arm_matrix_instance_f32 ms_matrix;
-	float ms[3];
-	
-	arm_mat_init_f32(&speed_matrix, 3, 1, (float*)speed);
-	arm_mat_init_f32(&ms_matrix, 3, 1, ms);
-											
-	arm_mat_mult_f32(&arm_direct_matrix, &speed_matrix, &ms_matrix);
-LL_GPIO_SetOutputPin(GPIOA, PWM7_PA2);
-	tpm[0] = ms[0]*ms_to_tpm;
-	tpm[1] = ms[1]*ms_to_tpm;
-	tpm[2] = ms[2]*ms_to_tpm;
-
-	
 }
 
 const struct kinematics_s Kinematics = {.MatrixInit = MatrixInit,

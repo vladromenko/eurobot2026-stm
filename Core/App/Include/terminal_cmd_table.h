@@ -45,11 +45,18 @@
 #define BOARD_SET_MAGNET_ANGLE							0X10		/* Command Description  */
 #define BOARD_GET_KEY                       0X11		/* Command Description  */
 #define BOARD_GET_TOGGLE                    0X12		/* Command Description  */
+#define BOARD_GET_DEBUG_MESSAGE             0X13		/* Command Description  */
+#define BOARD_GET_LINEAR_SWITCHES_STATE     0X14		/* Command Description  */
+#define BOARD_SET_MAXONS_STATE							0X15		/* Command Description  */
+#define BOARD_SET_COMM_STATE								0X16		/* Command Description  */
+#define BOARD_RESET													0X17		/* Command Description  */
+#define BOARD_GET_RESET											0X18		/* Command Description  */
+#define BOARD_CLEAR_RESET										0X19		/* Command Description  */
 
 
 
 /*  Do not forget to update the table size with the last one command! */
-#define TERMINAL_CMD_TABLE_SIZE             (BOARD_GET_TOGGLE + 1)
+#define TERMINAL_CMD_TABLE_SIZE             (BOARD_CLEAR_RESET + 1)
 
 
 #ifdef __cplusplus

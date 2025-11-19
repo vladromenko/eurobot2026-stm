@@ -78,10 +78,13 @@ static void GetSpeed(struct speed_s* speed)
   Maxon.Get_TPM(bus_devices[MAXON_MOTOR_1].usart, bus_devices[MAXON_MOTOR_1].id, tpm);
   Maxon.Get_TPM(bus_devices[MAXON_MOTOR_2].usart, bus_devices[MAXON_MOTOR_2].id, tpm+1);
   Maxon.Get_TPM(bus_devices[MAXON_MOTOR_3].usart, bus_devices[MAXON_MOTOR_3].id, tpm+2);
-
+	tpm[0] = tpm[0] * 0.86f;
+	tpm[1] = tpm[1] * 0.86f;
+	tpm[2] = tpm[2] * 0.86f;
   Kinematics.TPM_ToSpeed(tpm,speed);
 }
 
+// this update path will be called with frequency of 100 Hz
 static void UpdatePath(void)
 {
   static int32_t ticks_old[3] = {0};
@@ -101,6 +104,7 @@ static void UpdatePath(void)
   d_ticks[1] = ticks_new[1] - ticks_old[1];
   d_ticks[2] = ticks_new[2] - ticks_old[2];
 
+  // d_ticks is in ticks per 10ms
   Kinematics.UpdatePath(d_ticks,&path);
 
   memcpy(ticks_old,ticks_new,12);
