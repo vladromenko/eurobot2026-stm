@@ -67,7 +67,6 @@ int main(void)
 
 	SPI1_Board_HW_Init();
 	SPI_GPO_ResetOutputPin(SPI_GPO_ALL);
-	//SPI_GPO_SetOutputPin(SPI_GPO_ALL);
 
 	
 
@@ -118,10 +117,10 @@ int main(void)
   ButtonsCallbackTask.CreateTask(2);
 	OdometryTask.CreateTask(1);
 	TerminalTask.CreateTask(1);
-  //GameTask.CreateTask(1);
+  GameTask.CreateTask(1);
 
   //DemoTask.CreateTask(4);
-	//StepperTask.CreateTask(1);
+	StepperTask.CreateTask(1);
 	GripperTask.CreateTask(1);
 	
   /*  Run scheduler  */

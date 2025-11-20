@@ -65,7 +65,7 @@ static TaskHandle_t task_handle;
 static StackType_t stack_buffer[TASK_STACK_SIZE];
 static StaticTask_t task_buffer;
 
-#define MAXON
+//#define MAXON
 //#define VALVES_4
 //#define SERVO
 
@@ -259,9 +259,11 @@ static void Task(void *arg)
 		#endif
 		
 		#ifdef SERVO
-			RC_Servo.SetServoAngle(RC_SERVO_1, 700, 1900, 180, 0);
-			vTaskDelay(200);
-			RC_Servo.SetServoAngle(RC_SERVO_1, 700, 1900, 180, 135);
+			// this PWM range is working (wide enough)
+			RC_Servo.SetServoAngle(RC_SERVO_1, 500, 2500, 180, 0);
+			vTaskDelay(2000);
+			RC_Servo.SetServoAngle(RC_SERVO_1, 500, 2500, 180, 180);
+			vTaskDelay(2000);
 		#endif
 
 
