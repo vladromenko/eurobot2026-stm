@@ -4,7 +4,12 @@
         "dynamixel_ax.h": "c",
         "stm32f4xx_ll_gpio.h": "c",
         "h_bridge.h": "c",
-        "maxon.h": "c"
+        "maxon.h": "c",
+        "stm32f4xx_ll_spi.h": "c",
+        "dynamixel_master.h": "c"
     },
-    "C_Cpp.default.compilerPath": ""
+    "C_Cpp.default.compilerPath": "",
+    "python-envs.defaultEnvManager": "ms-python.python:system",
+    "python-envs.defaultPackageManager": "ms-python.python:pip",
+    "python-envs.pythonProjects": []
 }
