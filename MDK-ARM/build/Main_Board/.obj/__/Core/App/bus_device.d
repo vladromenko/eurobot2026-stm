@@ -1,0 +1,12 @@
+.\build\Main_Board\.obj\__\Core\App\bus_device.o: .\..\Core\App\bus_device.c
+.\build\Main_Board\.obj\__\Core\App\bus_device.o: ../Core/App/Include/bus_device.h
+.\build\Main_Board\.obj\__\Core\App\bus_device.o: ../Core/App/Include/std_def.h
+.\build\Main_Board\.obj\__\Core\App\bus_device.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h
+.\build\Main_Board\.obj\__\Core\App\bus_device.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h
+.\build\Main_Board\.obj\__\Core\App\bus_device.o: ../Drivers/CMSIS/Include/core_cm4.h
+.\build\Main_Board\.obj\__\Core\App\bus_device.o: ../Drivers/CMSIS/Include/cmsis_version.h
+.\build\Main_Board\.obj\__\Core\App\bus_device.o: ../Drivers/CMSIS/Include/cmsis_compiler.h
+.\build\Main_Board\.obj\__\Core\App\bus_device.o: ../Drivers/CMSIS/Include/cmsis_armcc.h
+.\build\Main_Board\.obj\__\Core\App\bus_device.o: ../Drivers/CMSIS/Include/mpu_armv7.h
+.\build\Main_Board\.obj\__\Core\App\bus_device.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/system_stm32f4xx.h
+.\build\Main_Board\.obj\__\Core\App\bus_device.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usart.h

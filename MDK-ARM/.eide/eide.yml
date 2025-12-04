@@ -1,0 +1,278 @@
+version: "4.1"
+name: Main_Board
+type: ARM
+deviceName: null
+packDir: null
+srcDirs: []
+virtualFolder:
+  name: <virtual_root>
+  files: []
+  folders:
+    - name: MDK-ARM
+      files:
+        - path: startup_stm32f407xx.s
+      folders: []
+    - name: Drivers
+      files: []
+      folders:
+        - name: STM32F4xx_HAL_Driver*LL
+          files:
+            - path: ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_adc.c
+            - path: ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_crc.c
+            - path: ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dac.c
+            - path: ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dma.c
+            - path: ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dma2d.c
+            - path: ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_exti.c
+            - path: ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fmpi2c.c
+            - path: ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_gpio.c
+            - path: ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_i2c.c
+            - path: ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_lptim.c
+            - path: ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_pwr.c
+            - path: ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rcc.c
+            - path: ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rng.c
+            - path: ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rtc.c
+            - path: ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_spi.c
+            - path: ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_tim.c
+            - path: ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usart.c
+            - path: ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_utils.c
+          folders: []
+        - name: CMSIS
+          files: []
+          folders:
+            - name: DSP
+              files:
+                - path: ../Drivers/CMSIS/DSP/Source/MatrixFunctions/arm_mat_add_f32.c
+                - path: ../Drivers/CMSIS/DSP/Source/MatrixFunctions/arm_mat_cmplx_mult_f32.c
+                - path: ../Drivers/CMSIS/DSP/Source/MatrixFunctions/arm_mat_init_f32.c
+                - path: ../Drivers/CMSIS/DSP/Source/MatrixFunctions/arm_mat_inverse_f32.c
+                - path: ../Drivers/CMSIS/DSP/Source/MatrixFunctions/arm_mat_mult_f32.c
+                - path: ../Drivers/CMSIS/DSP/Source/MatrixFunctions/arm_mat_scale_f32.c
+                - path: ../Drivers/CMSIS/DSP/Source/MatrixFunctions/arm_mat_sub_f32.c
+                - path: ../Drivers/CMSIS/DSP/Source/MatrixFunctions/arm_mat_trans_f32.c
+                - path: ../Drivers/CMSIS/DSP/Source/FastMathFunctions/arm_cos_f32.c
+                - path: ../Drivers/CMSIS/DSP/Source/FastMathFunctions/arm_sin_f32.c
+                - path: ../Drivers/CMSIS/DSP/Source/CommonTables/arm_common_tables.c
+              folders: []
+    - name: Middlewares
+      files: []
+      folders:
+        - name: FreeRTOS-Kernel
+          files:
+            - path: ../Middlewares/FreeRTOS-Kernel/croutine.c
+            - path: ../Middlewares/FreeRTOS-Kernel/event_groups.c
+            - path: ../Middlewares/FreeRTOS-Kernel/list.c
+            - path: ../Middlewares/FreeRTOS-Kernel/queue.c
+            - path: ../Middlewares/FreeRTOS-Kernel/stream_buffer.c
+            - path: ../Middlewares/FreeRTOS-Kernel/tasks.c
+            - path: ../Middlewares/FreeRTOS-Kernel/timers.c
+            - path: ../Middlewares/FreeRTOS-Kernel/portable/RVDS/ARM_CM4F/port.c
+          folders: []
+    - name: Core
+      files: []
+      folders:
+        - name: App
+          files:
+            - path: ../Core/App/bus_device.c
+            - path: ../Core/App/kinematics.c
+            - path: ../Core/App/main.c
+            - path: ../Core/App/odometry.c
+            - path: ../Core/App/robot_behavior_routine.c
+            - path: ../Core/App/robot_gpio_config.c
+            - path: ../Core/App/stm32f4xx_it.c
+            - path: ../Core/App/system_stm32f4xx.c
+            - path: ../Core/App/terminal.c
+            - path: ../Core/App/terminal_cmd_handlers.c
+          folders: []
+        - name: BSP
+          files:
+            - path: ../Core/BSP/board_gpio_config.c
+            - path: ../Core/BSP/board_hw_config.c
+            - path: ../Core/BSP/l6474_drvr.c
+            - path: ../Core/BSP/pwm.c
+            - path: ../Core/BSP/spi_gpo.c
+            - path: ../Core/BSP/usartx_communication.c
+            - path: ../Core/BSP/usartx_timeout.c
+            - path: ../Core/BSP/stepper.c
+            - path: ../Core/BSP/ws2812b.c
+          folders: []
+        - name: Lib
+          files:
+            - path: ../Core/Lib/bms_board.c
+            - path: ../Core/Lib/button.c
+            - path: ../Core/Lib/dynamixel_ax.c
+            - path: ../Core/Lib/dynamixel_master.c
+            - path: ../Core/Lib/dynamixel_mx.c
+            - path: ../Core/Lib/fifo_routine.c
+            - path: ../Core/Lib/h_bridge.c
+            - path: ../Core/Lib/maxon.c
+            - path: ../Core/Lib/rc_servo.c
+            - path: ../Core/Lib/serial.c
+            - path: ../Core/Lib/hl_rtu.c
+          folders: []
+        - name: OS_Tasks
+          files:
+            - path: ../Core/OS_Tasks/buttons_callback_task.c
+            - path: ../Core/OS_Tasks/buttons_poll_task.c
+            - path: ../Core/OS_Tasks/demo_task.c
+            - path: ../Core/OS_Tasks/freertos_routine_plug.c
+            - path: ../Core/OS_Tasks/game_task.c
+            - path: ../Core/OS_Tasks/odometry_task.c
+            - path: ../Core/OS_Tasks/terminal_task.c
+            - path: ../Core/OS_Tasks/stepper_task.c
+            - path: ../Core/OS_Tasks/gripper_task.c
+          folders: []
+    - name: ::CMSIS
+      files: []
+      folders: []
+dependenceList: []
+outDir: build
+miscInfo:
+  uid: c1a9f8f7faca7316b63d1e50bc71d78e
+targets:
+  Main_Board:
+    cppPreprocessAttrs:
+      defineList:
+        - USE_FULL_LL_DRIVER
+        - ARM_MATH_CM4
+        - __FPU_PRESENT=1U
+      incList:
+        - ../Drivers/STM32F4xx_HAL_Driver/Inc
+        - ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy
+        - ../Drivers/CMSIS/Device/ST/STM32F4xx/Include
+        - ../Drivers/CMSIS/Include
+        - ../Drivers/CMSIS/DSP/Include
+        - ../Middlewares/FreeRTOS-Kernel
+        - ../Middlewares/FreeRTOS-Kernel/include
+        - ../Middlewares/FreeRTOS-Kernel/portable/RVDS/ARM_CM4F
+        - ../Core/App/Include
+        - ../Core/BSP/Include
+        - ../Core/Lib/Include
+        - ../Core/OS_Tasks/Include
+        - .cmsis/include
+        - RTE/_Main_Board
+      libList: []
+    excludeList: []
+    toolchain: AC5
+    toolchainConfigMap:
+      AC5:
+        archExtensions: ""
+        cpuType: Cortex-M4
+        floatingPointHardware: single
+        options:
+          version: 4
+          afterBuildTasks: []
+          asm-compiler: {}
+          beforeBuildTasks: []
+          c/cpp-compiler:
+            CXX_FLAGS: --diag_suppress=1 --diag_suppress=1295
+            C_FLAGS: --diag_suppress=1 --diag_suppress=1295
+            c99-mode: true
+            one-elf-section-per-function: true
+            optimization: level-0
+            warnings: all-warnings
+          global:
+            output-debug-info: enable
+            use-microLIB: true
+          linker:
+            $outputTaskExcludes:
+              - .bin
+            output-format: elf
+            ro-base: ""
+            rw-base: ""
+            xo-base: ""
+        scatterFilePath: STM32F407.sct
+        storageLayout:
+          RAM:
+            - id: 1
+              isChecked: false
+              mem:
+                size: "0x0"
+                startAddr: "0x0"
+              noInit: false
+              tag: RAM
+            - id: 2
+              isChecked: false
+              mem:
+                size: "0x0"
+                startAddr: "0x0"
+              noInit: false
+              tag: RAM
+            - id: 3
+              isChecked: false
+              mem:
+                size: "0x0"
+                startAddr: "0x0"
+              noInit: false
+              tag: RAM
+            - id: 1
+              isChecked: true
+              mem:
+                size: "0x20000"
+                startAddr: "0x20000000"
+              noInit: false
+              tag: IRAM
+            - id: 2
+              isChecked: true
+              mem:
+                size: "0x10000"
+                startAddr: "0x10000000"
+              noInit: false
+              tag: IRAM
+          ROM:
+            - id: 1
+              isChecked: false
+              isStartup: false
+              mem:
+                size: "0x0"
+                startAddr: "0x0"
+              tag: ROM
+            - id: 2
+              isChecked: false
+              isStartup: false
+              mem:
+                size: "0x0"
+                startAddr: "0x0"
+              tag: ROM
+            - id: 3
+              isChecked: false
+              isStartup: false
+              mem:
+                size: "0x0"
+                startAddr: "0x0"
+              tag: ROM
+            - id: 1
+              isChecked: true
+              isStartup: true
+              mem:
+                size: "0x100000"
+                startAddr: "0x8000000"
+              tag: IROM
+            - id: 2
+              isChecked: false
+              isStartup: false
+              mem:
+                size: "0x0"
+                startAddr: "0x0"
+              tag: IROM
+        useCustomScatterFile: true
+    uploadConfigMap:
+      JLink:
+        baseAddr: ""
+        bin: ""
+        cpuInfo:
+          cpuName: "null"
+          vendor: "null"
+        otherCmds: ""
+        proType: 1
+        speed: 8000
+      STLink:
+        address: "0x08000000"
+        bin: ""
+        elFile: None
+        optionBytes: .eide/main_board.st.option.bytes.ini
+        otherCmds: ""
+        proType: SWD
+        resetMode: Crst
+        runAfterProgram: true
+        speed: 4000
+    uploader: STLink

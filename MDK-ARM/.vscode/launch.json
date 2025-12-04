@@ -1,0 +1,69 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug (OpenOCD)",
+            "type": "cortex-debug",
+            "request": "launch",
+            "servertype": "openocd", 
+            "cwd": "${workspaceRoot}",
+
+            // Путь к вашему файлу прошивки (проверенный)
+            "executable": "${workspaceRoot}/build/Main_Board/Main_Board.axf",
+
+            "device": "STM32F407VG",
+
+            // Путь к GDB (из вашего лога, он верный)
+            "armToolchainPath": "D:/Tools/arm-gnu-toolchain/bin",
+
+            // Конфигурация для STM32 F4
+            "configFiles": [
+                "interface/stlink.cfg",
+                "target/stm32f4x.cfg" 
+            ],
+
+            // ВАЖНО: Это лечит проблему с "Unable to reset target"
+            // Отключает поиск физического пина Reset
+            "openOCDLaunchCommands": [
+                "transport select hla_swd",
+                "reset_config none separate"
+            ],
+            
+            // Заставляет OpenOCD игнорировать ошибки структуры файла Keil
+            "gdbPath": "D:/Tools/arm-gnu-toolchain/bin/arm-none-eabi-gdb.exe",
+            
+            "runToEntryPoint": "main",
+            "showDevDebugOutput": "none"
+        },
+        
+        {
+            "name": "Cortex Debug (ST-Link)",
+            "cwd": "${workspaceRoot}",
+            "executable": "C:/Users/artem/Documents/Skoltech/Eurobot/Electronics/STM32/eurobot2026-stm/MDK-ARM/build/Main_Board/Main_Board.axf",
+            "request": "launch",
+            "type": "cortex-debug",
+            "servertype": "stlink",
+            "device": "STM32F407VG",
+            "interface": "swd",
+
+            // ПУТЬ К GDB (Компилятору/Отладчику)
+            // Убедитесь, что в этой папке лежит файл arm-none-eabi-gdb.exe
+            "armToolchainPath": "D:/Tools/arm-gnu-toolchain/bin",
+
+            // ПУТЬ К СЕРВЕРУ ST-LINK (Исправлены слеши)
+            "serverpath": "D:/ST/STM32CubeIDE_1.19.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.stlink-gdb-server.win32_2.2.200.202505060755/tools/bin/ST-LINK_gdbserver.exe",
+
+            // Настройка сброса: Connect to running target (без аппаратного Reset)
+            "serverArgs": [
+                "-m", "2"
+            ],
+
+            // Путь к CubeProgrammer (иногда нужен GDB серверу для работы)
+            // EIDE обычно ставит его сюда. Если не заработает - попробуйте закомментировать эту строку.
+            "stm32cubeprogrammer": "C:/Users/artem/.eide/tools/st_cube_programer/bin",
+
+            "runToEntryPoint": "main",
+            "showDevDebugOutput": "none"
+        }
+    ]
+}

@@ -1,0 +1,8 @@
+.\build\Main_Board\.obj\__\Core\OS_Tasks\freertos_routine_plug.o: .\..\Core\OS_Tasks\freertos_routine_plug.c
+.\build\Main_Board\.obj\__\Core\OS_Tasks\freertos_routine_plug.o: ../Middlewares/FreeRTOS-Kernel/include/FreeRTOS.h
+.\build\Main_Board\.obj\__\Core\OS_Tasks\freertos_routine_plug.o: ../Middlewares/FreeRTOS-Kernel/include/FreeRTOSConfig.h
+.\build\Main_Board\.obj\__\Core\OS_Tasks\freertos_routine_plug.o: ../Middlewares/FreeRTOS-Kernel/include/projdefs.h
+.\build\Main_Board\.obj\__\Core\OS_Tasks\freertos_routine_plug.o: ../Middlewares/FreeRTOS-Kernel/include/portable.h
+.\build\Main_Board\.obj\__\Core\OS_Tasks\freertos_routine_plug.o: ../Middlewares/FreeRTOS-Kernel/include/deprecated_definitions.h
+.\build\Main_Board\.obj\__\Core\OS_Tasks\freertos_routine_plug.o: ../Middlewares/FreeRTOS-Kernel/portable/RVDS/ARM_CM4F/portmacro.h
+.\build\Main_Board\.obj\__\Core\OS_Tasks\freertos_routine_plug.o: ../Middlewares/FreeRTOS-Kernel/include/mpu_wrappers.h

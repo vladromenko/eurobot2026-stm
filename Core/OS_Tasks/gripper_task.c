@@ -68,7 +68,42 @@ static StaticTask_t task_buffer;
 //#define MAXON
 //#define VALVES_4
 //#define SERVO
-#define GRIPPER_V2
+//#define GRIPPER_V2
+//#define DYNAMIXEL
+
+
+/**
+ * @brief Rotate two Dynamixels by a given angle synchronously.
+ * @param usart USART bus of the Dynamixels
+ * @param id_1 Dynamixel ID 1
+ * @param angle Dynamixel ID 2
+ * @param angle Goal angle in deg (0-300)
+ */
+static void RotateGripper(USART_TypeDef* usart, uint8_t id_1, uint8_t id_2, uint16_t angle)
+{
+    // Dynamixels ID
+    uint8_t device_ids[] = {id_1, id_2};
+    uint8_t num_devices = sizeof(device_ids) / sizeof(device_ids[0]); // universal counter of devices
+
+    // Transform angle from deg to Goal Position Register (0-1023)
+    if (angle > 300) angle = 300; // Ограничиваем максимальный угол
+    uint16_t goal_position_value = (uint16_t)(((float)angle * 1023.0f) / 300.0f);
+
+    // Prepare data for SyncWrite
+    // 2 bytes for each servo (Low byte (LB), then High byte (HB))
+    uint8_t data_to_write[4];
+
+    // Data for 1st Dynamixel
+    data_to_write[0] = (uint8_t)(goal_position_value & 0xFF); // LB
+    data_to_write[1] = (uint8_t)(goal_position_value >> 8);  // HB
+
+    // Data for 2nd Dynamixel
+    data_to_write[2] = (uint8_t)(goal_position_value & 0xFF); // LB
+    data_to_write[3] = (uint8_t)(goal_position_value >> 8);  // HB
+
+    // Call the SyncWrite command
+    DynamixelMaster.SyncWrite(usart, device_ids, num_devices, AX_GoalPosition, data_to_write, 2, NULL);
+}
 
 static void Task(void *arg)
 {
@@ -143,6 +178,7 @@ static void Task(void *arg)
 		RC_Servo.Enable(RC_SERVO_4);
 		RC_Servo.Enable(RC_SERVO_5);
 		RC_Servo.Enable(RC_SERVO_6);
+		RC_Servo.Enable(RC_SERVO_7);
 	#endif
 	
 	#ifdef MAXON
@@ -157,13 +193,10 @@ static void Task(void *arg)
 		// dynamixels init
 		Dynamixel_AX.TorqueEnable(USART3, dynamixel_id_1);
 		Dynamixel_AX.TorqueEnable(USART3, dynamixel_id_2);
-		
-		// place for sync write
 
 		Dynamixel_AX.SetMovingSpeed(USART3, dynamixel_id_1, dynamixel_speed);
 		Dynamixel_AX.SetMovingSpeed(USART3, dynamixel_id_2, dynamixel_speed);
-		Dynamixel_AX.SetAngle(USART3, dynamixel_id_1, 70);
-		Dynamixel_AX.SetAngle(USART3, dynamixel_id_2, 70);
+		RotateGripper(USART3, dynamixel_id_1, dynamixel_id_2, 70);
 		vTaskDelay(100);
 
 		// maxons init
@@ -325,6 +358,13 @@ static void Task(void *arg)
 		#endif
 		
 		#ifdef SERVO
+
+			RC_Servo.SetServoAngle(RC_SERVO_7, 450, 2600, 200, 0);
+			vTaskDelay(2000);
+			RC_Servo.SetServoAngle(RC_SERVO_7, 450, 2600, 200, 200);
+			vTaskDelay(2000);
+
+			/*
 			// this PWM range is working (wide enough)
 			RC_Servo.SetServoAngle(RC_SERVO_1, 500, 2500, 180, 0);
 			vTaskDelay(1000);
@@ -340,6 +380,7 @@ static void Task(void *arg)
 			vTaskDelay(1000);
 			RC_Servo.SetServoAngle(RC_SERVO_6, 500, 2500, 180, servo6_end_angle);
 			vTaskDelay(1000);
+			*/
 
 		#endif
 
@@ -432,8 +473,7 @@ static void Task(void *arg)
 
 			//if(robot_ctrl.linear_switch_3 == LINEAR_SWITCH_RELEASED)
 			//{
-				Dynamixel_AX.SetAngle(USART3, dynamixel_id_1, start_angle);
-				Dynamixel_AX.SetAngle(USART3, dynamixel_id_2, start_angle);
+				RotateGripper(USART3, dynamixel_id_1, dynamixel_id_2, start_angle);
 				//vTaskDelay(1000);
 			//}
 			vTaskDelay(1000);
@@ -453,8 +493,7 @@ static void Task(void *arg)
 
 			//if(robot_ctrl.linear_switch_2 == LINEAR_SWITCH_RELEASED)
 			//{
-				Dynamixel_AX.SetAngle(USART3, dynamixel_id_1, end_angle);
-				Dynamixel_AX.SetAngle(USART3, dynamixel_id_2, end_angle);
+				RotateGripper(USART3, dynamixel_id_1, dynamixel_id_2, end_angle);
 			//}
 			vTaskDelay(1000);
 
@@ -469,8 +508,7 @@ static void Task(void *arg)
 
 			//if(robot_ctrl.linear_switch_3 == LINEAR_SWITCH_RELEASED)
 			//{
-				Dynamixel_AX.SetAngle(USART3, dynamixel_id_1, start_angle);
-				Dynamixel_AX.SetAngle(USART3, dynamixel_id_2, start_angle);
+				RotateGripper(USART3, dynamixel_id_1, dynamixel_id_2, start_angle);
 				//vTaskDelay(1000);
 			//}
 			vTaskDelay(1000);
@@ -481,8 +519,7 @@ static void Task(void *arg)
 
 			//if(robot_ctrl.linear_switch_2 == LINEAR_SWITCH_RELEASED)
 			//{
-				Dynamixel_AX.SetAngle(USART3, dynamixel_id_1, end_angle);
-				Dynamixel_AX.SetAngle(USART3, dynamixel_id_2, end_angle);
+				RotateGripper(USART3, dynamixel_id_1, dynamixel_id_2, end_angle);
 			//}
 			vTaskDelay(1000);
 
