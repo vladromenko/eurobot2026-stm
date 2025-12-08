@@ -703,6 +703,11 @@
               <FileType>1</FileType>
               <FilePath>..\Core\BSP\ws2812b.c</FilePath>
             </File>
+            <File>
+              <FileName>i2c_pca9685.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\BSP\i2c_pca9685.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -762,6 +767,11 @@
               <FileName>hl_rtu.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Core\Lib\hl_rtu.c</FilePath>
+            </File>
+            <File>
+              <FileName>pca9685.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\Lib\pca9685.c</FilePath>
             </File>
           </Files>
         </Group>

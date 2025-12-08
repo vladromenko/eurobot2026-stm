@@ -43,6 +43,7 @@
 #include "rc_servo.h" 
 #include "stepper.h" 
 #include "serial.h" 
+#include "pca9685.h" 
 
 extern int16_t stepper1_goal_position;
 extern int16_t stepper2_goal_position;
@@ -511,6 +512,32 @@ static void DebugBoardClearReset(uint8_t* data, uint8_t data_length)
   Debug_Terminal.DebugSendResponse(&debug_terminal_response);
 }
 
+/* BOARD_PCA9685_SET_SERVO_ANGLE
+ * data[0] : i2c_addr_7bit (адрес платы PCA9685, например 0x40, 0x41, ...)
+ * data[1] : channel (0..15)
+ * data[2..3]: uint16_t angle_deg
+ */
+static void DebugPCA9685_SetServoAngle(uint8_t* data, uint8_t data_length)
+{
+  struct debug_terminal_response_s debug_terminal_response = {0};
+  int status = 0;
+
+  if(DEBUG_COMM_ENABLE){
+    uint8_t i2c_addr = data[0];
+    enum pca9685_channel_e ch = (enum pca9685_channel_e)data[1];
+    uint16_t angle_deg;
+    ByteTo_Word16(data + 2, &angle_deg);
+
+    status = PCA9685.SetServoAngleWithAddr(i2c_addr, ch, angle_deg);
+  }
+
+  debug_terminal_response.cmd = BOARD_PCA9685_SET_SERVO_ANGLE;
+  debug_terminal_response.data[0] = (uint8_t)(status == 0 ? 0 : 1);  /* 0 = OK, 1 = Error */
+  debug_terminal_response.data_length = 1;
+
+  Debug_Terminal.DebugSendResponse(&debug_terminal_response);
+}
+
 void (*debug_terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t data_length) = {[BOARD_Ping] = DebugPing,
                                                                                               [BOARD_SetSpeed] = DebugSetRobotSpeed,
                                                                                               [BOARD_GetSpeed] = DebugGetRobotSpeed,
@@ -533,7 +560,8 @@ void (*debug_terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint
 																																															[BOARD_SET_COMM_STATE] = DebugSetCommState,
 																																															[BOARD_RESET] = DebugBoardReset,
 																																															[BOARD_GET_RESET] = DebugBoardGetReset,
-																																															[BOARD_CLEAR_RESET] = DebugBoardClearReset
+																																															[BOARD_CLEAR_RESET] = DebugBoardClearReset,
+																																															[BOARD_PCA9685_SET_SERVO_ANGLE] = DebugPCA9685_SetServoAngle
 };
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

@@ -51,3 +51,4 @@
 .\main_board_output\debug_terminal_cmd_handlers.o: ..\Core\BSP\Include\stepper.h
 .\main_board_output\debug_terminal_cmd_handlers.o: ..\Core\BSP\Include\l6474_drvr.h
 .\main_board_output\debug_terminal_cmd_handlers.o: ..\Core\Lib\Include\serial.h
+.\main_board_output\debug_terminal_cmd_handlers.o: ..\Core\Lib\Include\pca9685.h

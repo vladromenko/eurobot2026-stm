@@ -45,6 +45,7 @@
 #include "os_tasks.h" 
 #include "hl_rtu.h"
 #include "serial.h"
+#include "pca9685.h"
 
 
 
@@ -64,6 +65,11 @@ int main(void)
 	HW_ClockConfig();
 	Board_GPIO_Config();
 	Robot_GPIO_Config();
+
+	I2C2_Init();
+	/* Инициализация PCA9685 плат (I2C2, 50 Гц, стандартные параметры сервоприводов) */
+	/* Проверка результата инициализации - если вернет -1, значит плата не отвечает */
+	(void)PCA9685.Init(0x40, 50.0f, 500, 2500, 180);  /* Плата 1 */
 
 	SPI1_Board_HW_Init();
 	SPI_GPO_ResetOutputPin(SPI_GPO_ALL);
@@ -114,14 +120,14 @@ int main(void)
 	IWDG_Init();
 	
   /*  Creating tasks  */
-	ButtonsPollTask.CreateTask(3);
-  ButtonsCallbackTask.CreateTask(2);
-	OdometryTask.CreateTask(1);
-	TerminalTask.CreateTask(1);
-  GameTask.CreateTask(1);
+	//ButtonsPollTask.CreateTask(3);
+  //ButtonsCallbackTask.CreateTask(2);
+	//OdometryTask.CreateTask(1);
+	//TerminalTask.CreateTask(1);
+  //GameTask.CreateTask(1);
 
-  DemoTask.CreateTask(1);
-	StepperTask.CreateTask(1);
+  //DemoTask.CreateTask(1);
+	//StepperTask.CreateTask(1);
 	DebugTerminalTask.CreateTask(1);
 
   /*  Run scheduler  */

@@ -21,5 +21,6 @@
 .\main_board_output\board_hw_config.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_tim.h
 .\main_board_output\board_hw_config.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_bus.h
 .\main_board_output\board_hw_config.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_spi.h
+.\main_board_output\board_hw_config.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_i2c.h
 .\main_board_output\board_hw_config.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_iwdg.h
 .\main_board_output\board_hw_config.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_system.h

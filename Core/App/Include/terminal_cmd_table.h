@@ -53,10 +53,13 @@
 #define BOARD_GET_RESET											0X18		/* Command Description  */
 #define BOARD_CLEAR_RESET										0X19		/* Command Description  */
 
+/* PCA9685 (I2C2, 0x40) debug commands */
+#define BOARD_PCA9685_SET_SERVO_ANGLE       0x1B    /* Set servo angle: i2c_addr, ch, angle_deg */
+
 
 
 /*  Do not forget to update the table size with the last one command! */
-#define TERMINAL_CMD_TABLE_SIZE             (BOARD_CLEAR_RESET + 1)
+#define TERMINAL_CMD_TABLE_SIZE             (BOARD_PCA9685_SET_SERVO_ANGLE + 1)
 
 
 #ifdef __cplusplus

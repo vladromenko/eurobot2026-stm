@@ -46,3 +46,4 @@
 .\main_board_output\main.o: ..\Core\OS_Tasks\Include\os_tasks.h
 .\main_board_output\main.o: ..\Core\Lib\Include\hl_rtu.h
 .\main_board_output\main.o: ..\Core\Lib\Include\serial.h
+.\main_board_output\main.o: ..\Core\Lib\Include\pca9685.h
