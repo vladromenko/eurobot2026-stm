@@ -58,7 +58,7 @@
 ".\main_board_output\usartx_timeout.o"
 ".\main_board_output\stepper.o"
 ".\main_board_output\ws2812b.o"
-".\main_board_output\i2c_pca9685.o"
+".\main_board_output\i2c2.o"
 ".\main_board_output\bms_board.o"
 ".\main_board_output\button.o"
 ".\main_board_output\dynamixel_ax.o"

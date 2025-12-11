@@ -120,14 +120,14 @@ int main(void)
 	IWDG_Init();
 	
   /*  Creating tasks  */
-	//ButtonsPollTask.CreateTask(3);
-  //ButtonsCallbackTask.CreateTask(2);
-	//OdometryTask.CreateTask(1);
-	//TerminalTask.CreateTask(1);
-  //GameTask.CreateTask(1);
+	ButtonsPollTask.CreateTask(3);
+  ButtonsCallbackTask.CreateTask(2);
+	OdometryTask.CreateTask(1);
+	TerminalTask.CreateTask(1);
+  GameTask.CreateTask(1);
 
-  //DemoTask.CreateTask(1);
-	//StepperTask.CreateTask(1);
+  DemoTask.CreateTask(1);
+	StepperTask.CreateTask(1);
 	DebugTerminalTask.CreateTask(1);
 
   /*  Run scheduler  */

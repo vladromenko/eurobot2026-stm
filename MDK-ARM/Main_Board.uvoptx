@@ -154,16 +154,16 @@
           <Type>0</Type>
           <LineNumber>531</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134222146</Address>
+          <Address>0</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
+          <BreakIfRCount>0</BreakIfRCount>
           <Filename>..\Core\App\debug_terminal_cmd_handlers.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\Main_Board\../Core/App/debug_terminal_cmd_handlers.c\531</Expression>
+          <Expression></Expression>
         </Bp>
       </Breakpoint>
       <WatchWindow1>
@@ -1081,8 +1081,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\Core\BSP\i2c_pca9685.c</PathWithFileName>
-      <FilenameWithoutPath>i2c_pca9685.c</FilenameWithoutPath>
+      <PathWithFileName>..\Core\BSP\i2c2.c</PathWithFileName>
+      <FilenameWithoutPath>i2c2.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>

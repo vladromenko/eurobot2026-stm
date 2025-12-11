@@ -704,9 +704,9 @@
               <FilePath>..\Core\BSP\ws2812b.c</FilePath>
             </File>
             <File>
-              <FileName>i2c_pca9685.c</FileName>
+              <FileName>i2c2.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Core\BSP\i2c_pca9685.c</FilePath>
+              <FilePath>..\Core\BSP\i2c2.c</FilePath>
             </File>
           </Files>
         </Group>

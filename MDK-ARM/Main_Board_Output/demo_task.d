@@ -51,3 +51,4 @@
 .\main_board_output\demo_task.o: ..\Core\App\Include\robot_behavior_routine.h
 .\main_board_output\demo_task.o: ..\Core\Lib\Include\button.h
 .\main_board_output\demo_task.o: ..\Core\Lib\Include\buttons_enum.h
+.\main_board_output\demo_task.o: ..\Core\Lib\Include\pca9685.h

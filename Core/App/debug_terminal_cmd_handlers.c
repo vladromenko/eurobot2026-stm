@@ -524,11 +524,21 @@ static void DebugPCA9685_SetServoAngle(uint8_t* data, uint8_t data_length)
 
   if(DEBUG_COMM_ENABLE){
     uint8_t i2c_addr = data[0];
-    enum pca9685_channel_e ch = (enum pca9685_channel_e)data[1];
-    uint16_t angle_deg;
-    ByteTo_Word16(data + 2, &angle_deg);
+    uint8_t ch_raw = data[1];
+    
+    /* Проверка корректности канала */
+    if (ch_raw > 15)
+    {
+      status = -1;
+    }
+    else
+    {
+      enum pca9685_channel_e ch = (enum pca9685_channel_e)ch_raw;
+      uint16_t angle_deg;
+      ByteTo_Word16(data + 2, &angle_deg);
 
-    status = PCA9685.SetServoAngleWithAddr(i2c_addr, ch, angle_deg);
+      status = PCA9685.SetServoAngleWithAddr(i2c_addr, ch, angle_deg);
+    }
   }
 
   debug_terminal_response.cmd = BOARD_PCA9685_SET_SERVO_ANGLE;

@@ -113,6 +113,11 @@ static int PCA9685_Init_Impl(uint8_t i2c_addr_7bit,
   status = WriteReg(PCA9685_REG_MODE2, PCA9685_MODE2_OUTDRV);
   if (status != 0) return status;
 
+  /* Сбросить все каналы в 0 (выключить все выходы) */
+  uint8_t all_off[4] = {0U, 0U, 0U, 0U};
+  status = WriteRegMulti(PCA9685_REG_ALL_LED_ON_L, all_off, 4U);
+  if (status != 0) return status;
+
   /* Небольшая задержка для запуска генератора – здесь просто «холостое» чтение */
   (void)ReadReg(PCA9685_REG_MODE1, &mode1);
 
@@ -125,7 +130,13 @@ static int PCA9685_SetPWM_Impl(enum pca9685_channel_e ch,
 {
   if (ch > PCA9685_CH15) return -1;
 
+  /* Вычисляем адрес регистра для конкретного канала */
+  /* LED0_ON_L = 0x06, каждый канал занимает 4 регистра */
   uint8_t reg = (uint8_t)(PCA9685_REG_LED0_ON_L + 4U * (uint8_t)ch);
+  
+  /* Защита: убеждаемся, что не попадаем в регистры ALL_LED (0xFA-0xFD) */
+  if (reg >= PCA9685_REG_ALL_LED_ON_L) return -1;
+  
   uint8_t buf[4];
 
   buf[0] = (uint8_t)(on  & 0xFFU);

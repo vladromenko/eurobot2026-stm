@@ -473,7 +473,7 @@ I (..\Middlewares\FreeRTOS-Kernel\include\event_groups.h)(0x69022759)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_tim.h)(0x69022757)
 I (..\Core\BSP\Include\board_gpio_defines.h)(0x69022756)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_gpio.h)(0x69022757)
-F (..\Core\App\main.c)(0x6936F63E)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ..\Drivers\CMSIS\DSP\Include -I ..\Middlewares\FreeRTOS-Kernel -I ..\Middlewares\FreeRTOS-Kernel\include -I ..\Middlewares\FreeRTOS-Kernel\portable\RVDS\ARM_CM4F -I ..\Core\App\Include -I ..\Core\BSP\Include -I ..\Core\Lib\Include -I ..\Core\OS_Tasks\Include-I.\RTE\_Main_Board-IC:\Users\mrrom\AppData\Local\Arm\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F407xx -D_RTE_ -DUSE_FULL_LL_DRIVER -DARM_MATH_CM4 -D__FPU_PRESENT="1U"-o .\main_board_output\main.o --omf_browse .\main_board_output\main.crf --depend .\main_board_output\main.d)
+F (..\Core\App\main.c)(0x693AACDC)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ..\Drivers\CMSIS\DSP\Include -I ..\Middlewares\FreeRTOS-Kernel -I ..\Middlewares\FreeRTOS-Kernel\include -I ..\Middlewares\FreeRTOS-Kernel\portable\RVDS\ARM_CM4F -I ..\Core\App\Include -I ..\Core\BSP\Include -I ..\Core\Lib\Include -I ..\Core\OS_Tasks\Include-I.\RTE\_Main_Board-IC:\Users\mrrom\AppData\Local\Arm\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F407xx -D_RTE_ -DUSE_FULL_LL_DRIVER -DARM_MATH_CM4 -D__FPU_PRESENT="1U"-o .\main_board_output\main.o --omf_browse .\main_board_output\main.crf --depend .\main_board_output\main.d)
 I (..\Core\App\Include\main.h)(0x69022756)
 I (..\Core\App\Include\std_def.h)(0x69022756)
 I (../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h)(0x69022756)
@@ -693,7 +693,7 @@ I (../Drivers/CMSIS/Include/cmsis_armcc.h)(0x69022757)
 I (../Drivers/CMSIS/Include/mpu_armv7.h)(0x69022757)
 I (../Drivers/CMSIS/Device/ST/STM32F4xx/Include/system_stm32f4xx.h)(0x69022756)
 I (D:\Keil\ARM\ARMCC\include\string.h)(0x602569CE)
-I (..\Core\App\Include\terminal_cmd_table.h)(0x6936FEAF)
+I (..\Core\App\Include\terminal_cmd_table.h)(0x69370910)
 I (..\Core\Lib\Include\dynamixel_master.h)(0x69022756)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usart.h)(0x69022757)
 I (..\Core\BSP\Include\usartx_communication.h)(0x69022756)
@@ -756,7 +756,7 @@ I (..\Core\BSP\Include\usartx_communication.h)(0x69022756)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_dma.h)(0x69022757)
 I (..\Core\Lib\Include\fifo_routine.h)(0x69022756)
 I (..\Core\App\Include\terminal.h)(0x691B28FE)
-F (..\Core\App\debug_terminal_cmd_handlers.c)(0x6936FEAF)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ..\Drivers\CMSIS\DSP\Include -I ..\Middlewares\FreeRTOS-Kernel -I ..\Middlewares\FreeRTOS-Kernel\include -I ..\Middlewares\FreeRTOS-Kernel\portable\RVDS\ARM_CM4F -I ..\Core\App\Include -I ..\Core\BSP\Include -I ..\Core\Lib\Include -I ..\Core\OS_Tasks\Include-I.\RTE\_Main_Board-IC:\Users\mrrom\AppData\Local\Arm\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F407xx -D_RTE_ -DUSE_FULL_LL_DRIVER -DARM_MATH_CM4 -D__FPU_PRESENT="1U"-o .\main_board_output\debug_terminal_cmd_handlers.o --omf_browse .\main_board_output\debug_terminal_cmd_handlers.crf --depend .\main_board_output\debug_terminal_cmd_handlers.d)
+F (..\Core\App\debug_terminal_cmd_handlers.c)(0x69370A87)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ..\Drivers\CMSIS\DSP\Include -I ..\Middlewares\FreeRTOS-Kernel -I ..\Middlewares\FreeRTOS-Kernel\include -I ..\Middlewares\FreeRTOS-Kernel\portable\RVDS\ARM_CM4F -I ..\Core\App\Include -I ..\Core\BSP\Include -I ..\Core\Lib\Include -I ..\Core\OS_Tasks\Include-I.\RTE\_Main_Board-IC:\Users\mrrom\AppData\Local\Arm\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F407xx -D_RTE_ -DUSE_FULL_LL_DRIVER -DARM_MATH_CM4 -D__FPU_PRESENT="1U"-o .\main_board_output\debug_terminal_cmd_handlers.o --omf_browse .\main_board_output\debug_terminal_cmd_handlers.crf --depend .\main_board_output\debug_terminal_cmd_handlers.d)
 I (..\Core\App\Include\terminal_cmd_handlers.h)(0x69174E9C)
 I (..\Core\App\Include\std_def.h)(0x69022756)
 I (../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h)(0x69022756)
@@ -769,7 +769,7 @@ I (../Drivers/CMSIS/Include/cmsis_armcc.h)(0x69022757)
 I (../Drivers/CMSIS/Include/mpu_armv7.h)(0x69022757)
 I (../Drivers/CMSIS/Device/ST/STM32F4xx/Include/system_stm32f4xx.h)(0x69022756)
 I (D:\Keil\ARM\ARMCC\include\string.h)(0x602569CE)
-I (..\Core\App\Include\terminal_cmd_table.h)(0x6936FEAF)
+I (..\Core\App\Include\terminal_cmd_table.h)(0x69370910)
 I (..\Core\Lib\Include\dynamixel_master.h)(0x69022756)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usart.h)(0x69022757)
 I (..\Core\BSP\Include\usartx_communication.h)(0x69022756)
@@ -1010,7 +1010,7 @@ I (..\Middlewares\FreeRTOS-Kernel\include\timers.h)(0x69022759)
 I (..\Middlewares\FreeRTOS-Kernel\include\queue.h)(0x69022759)
 I (..\Middlewares\FreeRTOS-Kernel\include\semphr.h)(0x69022759)
 I (..\Middlewares\FreeRTOS-Kernel\include\event_groups.h)(0x69022759)
-F (..\Core\BSP\i2c_pca9685.c)(0x6936FEAF)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ..\Drivers\CMSIS\DSP\Include -I ..\Middlewares\FreeRTOS-Kernel -I ..\Middlewares\FreeRTOS-Kernel\include -I ..\Middlewares\FreeRTOS-Kernel\portable\RVDS\ARM_CM4F -I ..\Core\App\Include -I ..\Core\BSP\Include -I ..\Core\Lib\Include -I ..\Core\OS_Tasks\Include-I.\RTE\_Main_Board-IC:\Users\mrrom\AppData\Local\Arm\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F407xx -D_RTE_ -DUSE_FULL_LL_DRIVER -DARM_MATH_CM4 -D__FPU_PRESENT="1U"-o .\main_board_output\i2c_pca9685.o --omf_browse .\main_board_output\i2c_pca9685.crf --depend .\main_board_output\i2c_pca9685.d)
+F (..\Core\BSP\i2c2.c)(0x693AB0C0)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ..\Drivers\CMSIS\DSP\Include -I ..\Middlewares\FreeRTOS-Kernel -I ..\Middlewares\FreeRTOS-Kernel\include -I ..\Middlewares\FreeRTOS-Kernel\portable\RVDS\ARM_CM4F -I ..\Core\App\Include -I ..\Core\BSP\Include -I ..\Core\Lib\Include -I ..\Core\OS_Tasks\Include-I.\RTE\_Main_Board-IC:\Users\mrrom\AppData\Local\Arm\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F407xx -D_RTE_ -DUSE_FULL_LL_DRIVER -DARM_MATH_CM4 -D__FPU_PRESENT="1U"-o .\main_board_output\i2c2.o --omf_browse .\main_board_output\i2c2.crf --depend .\main_board_output\i2c2.d)
 I (..\Core\Lib\Include\pca9685.h)(0x6936FE9F)
 I (D:\Keil\ARM\ARMCC\include\stdint.h)(0x602569CE)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_i2c.h)(0x69022757)
@@ -1309,7 +1309,7 @@ I (..\Middlewares\FreeRTOS-Kernel\include\queue.h)(0x69022759)
 I (..\Middlewares\FreeRTOS-Kernel\include\semphr.h)(0x69022759)
 I (..\Middlewares\FreeRTOS-Kernel\include\event_groups.h)(0x69022759)
 I (..\Core\BSP\Include\usartx_timeout.h)(0x69022756)
-F (..\Core\Lib\pca9685.c)(0x6936DEA0)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ..\Drivers\CMSIS\DSP\Include -I ..\Middlewares\FreeRTOS-Kernel -I ..\Middlewares\FreeRTOS-Kernel\include -I ..\Middlewares\FreeRTOS-Kernel\portable\RVDS\ARM_CM4F -I ..\Core\App\Include -I ..\Core\BSP\Include -I ..\Core\Lib\Include -I ..\Core\OS_Tasks\Include-I.\RTE\_Main_Board-IC:\Users\mrrom\AppData\Local\Arm\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F407xx -D_RTE_ -DUSE_FULL_LL_DRIVER -DARM_MATH_CM4 -D__FPU_PRESENT="1U"-o .\main_board_output\pca9685.o --omf_browse .\main_board_output\pca9685.crf --depend .\main_board_output\pca9685.d)
+F (..\Core\Lib\pca9685.c)(0x69370A87)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ..\Drivers\CMSIS\DSP\Include -I ..\Middlewares\FreeRTOS-Kernel -I ..\Middlewares\FreeRTOS-Kernel\include -I ..\Middlewares\FreeRTOS-Kernel\portable\RVDS\ARM_CM4F -I ..\Core\App\Include -I ..\Core\BSP\Include -I ..\Core\Lib\Include -I ..\Core\OS_Tasks\Include-I.\RTE\_Main_Board-IC:\Users\mrrom\AppData\Local\Arm\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F407xx -D_RTE_ -DUSE_FULL_LL_DRIVER -DARM_MATH_CM4 -D__FPU_PRESENT="1U"-o .\main_board_output\pca9685.o --omf_browse .\main_board_output\pca9685.crf --depend .\main_board_output\pca9685.d)
 I (..\Core\Lib\Include\pca9685.h)(0x6936FE9F)
 I (D:\Keil\ARM\ARMCC\include\stdint.h)(0x602569CE)
 F (..\Core\OS_Tasks\buttons_callback_task.c)(0x69022756)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ..\Drivers\CMSIS\DSP\Include -I ..\Middlewares\FreeRTOS-Kernel -I ..\Middlewares\FreeRTOS-Kernel\include -I ..\Middlewares\FreeRTOS-Kernel\portable\RVDS\ARM_CM4F -I ..\Core\App\Include -I ..\Core\BSP\Include -I ..\Core\Lib\Include -I ..\Core\OS_Tasks\Include-I.\RTE\_Main_Board-IC:\Users\mrrom\AppData\Local\Arm\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F407xx -D_RTE_ -DUSE_FULL_LL_DRIVER -DARM_MATH_CM4 -D__FPU_PRESENT="1U"-o .\main_board_output\buttons_callback_task.o --omf_browse .\main_board_output\buttons_callback_task.crf --depend .\main_board_output\buttons_callback_task.d)
@@ -1376,7 +1376,7 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_gpio.h)(0x69022757)
 I (..\Core\BSP\Include\board_gpio_defines.h)(0x69022756)
 I (..\Core\App\Include\robot_gpio_defines.h)(0x69022756)
 I (..\Core\App\Include\robot_behavior_routine.h)(0x69022756)
-F (..\Core\OS_Tasks\demo_task.c)(0x69022756)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ..\Drivers\CMSIS\DSP\Include -I ..\Middlewares\FreeRTOS-Kernel -I ..\Middlewares\FreeRTOS-Kernel\include -I ..\Middlewares\FreeRTOS-Kernel\portable\RVDS\ARM_CM4F -I ..\Core\App\Include -I ..\Core\BSP\Include -I ..\Core\Lib\Include -I ..\Core\OS_Tasks\Include-I.\RTE\_Main_Board-IC:\Users\mrrom\AppData\Local\Arm\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F407xx -D_RTE_ -DUSE_FULL_LL_DRIVER -DARM_MATH_CM4 -D__FPU_PRESENT="1U"-o .\main_board_output\demo_task.o --omf_browse .\main_board_output\demo_task.crf --depend .\main_board_output\demo_task.d)
+F (..\Core\OS_Tasks\demo_task.c)(0x693AB0BE)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ..\Drivers\CMSIS\DSP\Include -I ..\Middlewares\FreeRTOS-Kernel -I ..\Middlewares\FreeRTOS-Kernel\include -I ..\Middlewares\FreeRTOS-Kernel\portable\RVDS\ARM_CM4F -I ..\Core\App\Include -I ..\Core\BSP\Include -I ..\Core\Lib\Include -I ..\Core\OS_Tasks\Include-I.\RTE\_Main_Board-IC:\Users\mrrom\AppData\Local\Arm\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F407xx -D_RTE_ -DUSE_FULL_LL_DRIVER -DARM_MATH_CM4 -D__FPU_PRESENT="1U"-o .\main_board_output\demo_task.o --omf_browse .\main_board_output\demo_task.crf --depend .\main_board_output\demo_task.d)
 I (..\Core\OS_Tasks\Include\os_tasks.h)(0x69174A02)
 I (..\Core\App\Include\std_def.h)(0x69022756)
 I (../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h)(0x69022756)
@@ -1429,6 +1429,7 @@ I (..\Core\BSP\Include\ws2812b.h)(0x69022756)
 I (..\Core\App\Include\robot_behavior_routine.h)(0x69022756)
 I (..\Core\Lib\Include\button.h)(0x69022756)
 I (..\Core\Lib\Include\buttons_enum.h)(0x69022756)
+I (..\Core\Lib\Include\pca9685.h)(0x6936FE9F)
 F (..\Core\OS_Tasks\freertos_routine_plug.c)(0x69022756)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ..\Drivers\CMSIS\DSP\Include -I ..\Middlewares\FreeRTOS-Kernel -I ..\Middlewares\FreeRTOS-Kernel\include -I ..\Middlewares\FreeRTOS-Kernel\portable\RVDS\ARM_CM4F -I ..\Core\App\Include -I ..\Core\BSP\Include -I ..\Core\Lib\Include -I ..\Core\OS_Tasks\Include-I.\RTE\_Main_Board-IC:\Users\mrrom\AppData\Local\Arm\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F407xx -D_RTE_ -DUSE_FULL_LL_DRIVER -DARM_MATH_CM4 -D__FPU_PRESENT="1U"-o .\main_board_output\freertos_routine_plug.o --omf_browse .\main_board_output\freertos_routine_plug.crf --depend .\main_board_output\freertos_routine_plug.d)
 I (..\Middlewares\FreeRTOS-Kernel\include\FreeRTOS.h)(0x69022759)
 I (D:\Keil\ARM\ARMCC\include\stddef.h)(0x602569CE)
@@ -1470,7 +1471,7 @@ I (..\Core\Lib\Include\button.h)(0x69022756)
 I (..\Core\Lib\Include\buttons_enum.h)(0x69022756)
 I (..\Core\App\Include\robot_behavior_routine.h)(0x69022756)
 I (..\Core\App\Include\terminal_cmd_handlers.h)(0x69174E9C)
-I (..\Core\App\Include\terminal_cmd_table.h)(0x6936FEAF)
+I (..\Core\App\Include\terminal_cmd_table.h)(0x69370910)
 I (..\Core\BSP\Include\spi_gpo.h)(0x69022756)
 I (..\Core\BSP\Include\spi_gpo_defines.h)(0x69022756)
 I (..\Core\App\Include\kinematics.h)(0x69022756)
@@ -1552,7 +1553,7 @@ I (..\Middlewares\FreeRTOS-Kernel\include\event_groups.h)(0x69022759)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_gpio.h)(0x69022757)
 I (..\Core\BSP\Include\board_gpio_defines.h)(0x69022756)
 I (..\Core\App\Include\terminal_cmd_handlers.h)(0x69174E9C)
-I (..\Core\App\Include\terminal_cmd_table.h)(0x6936FEAF)
+I (..\Core\App\Include\terminal_cmd_table.h)(0x69370910)
 I (..\Core\App\Include\terminal.h)(0x691B28FE)
 F (..\Core\OS_Tasks\stepper_task.c)(0x69022756)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ..\Drivers\CMSIS\DSP\Include -I ..\Middlewares\FreeRTOS-Kernel -I ..\Middlewares\FreeRTOS-Kernel\include -I ..\Middlewares\FreeRTOS-Kernel\portable\RVDS\ARM_CM4F -I ..\Core\App\Include -I ..\Core\BSP\Include -I ..\Core\Lib\Include -I ..\Core\OS_Tasks\Include-I.\RTE\_Main_Board-IC:\Users\mrrom\AppData\Local\Arm\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F407xx -D_RTE_ -DUSE_FULL_LL_DRIVER -DARM_MATH_CM4 -D__FPU_PRESENT="1U"-o .\main_board_output\stepper_task.o --omf_browse .\main_board_output\stepper_task.crf --depend .\main_board_output\stepper_task.d)
 I (..\Core\OS_Tasks\Include\os_tasks.h)(0x69174A02)
@@ -1616,5 +1617,5 @@ I (..\Middlewares\FreeRTOS-Kernel\include\event_groups.h)(0x69022759)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_gpio.h)(0x69022757)
 I (..\Core\BSP\Include\board_gpio_defines.h)(0x69022756)
 I (..\Core\App\Include\terminal_cmd_handlers.h)(0x69174E9C)
-I (..\Core\App\Include\terminal_cmd_table.h)(0x6936FEAF)
+I (..\Core\App\Include\terminal_cmd_table.h)(0x69370910)
 I (..\Core\App\Include\terminal.h)(0x691B28FE)
