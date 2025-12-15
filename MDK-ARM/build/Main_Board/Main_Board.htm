@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\build\Main_Board\Main_Board.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\build\Main_Board\Main_Board.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Thu Dec 04 07:00:05 2025
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Thu Dec 11 01:15:27 2025
 <BR><P>
 <H3>Maximum Stack Usage =        160 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -247,7 +247,7 @@ Global Symbols
 <P><STRONG><a name="[90]"></a>__main</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, entry.o(.ARM.Collect$$$$00000000))
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f407xx.o(.text)
 </UL>
-<P><STRONG><a name="[1ca]"></a>_main_stk</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, entry4.o(.ARM.Collect$$$$00000003))
+<P><STRONG><a name="[1cb]"></a>_main_stk</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, entry4.o(.ARM.Collect$$$$00000003))
 
 <P><STRONG><a name="[107]"></a>_main_scatterload</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, entry5.o(.ARM.Collect$$$$00000004))
 <BR><BR>[Calls]<UL><LI><a href="#[108]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__scatterload
@@ -257,27 +257,27 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[108]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__scatterload
 </UL>
 
-<P><STRONG><a name="[1cb]"></a>_main_clock</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, entry7b.o(.ARM.Collect$$$$00000008))
+<P><STRONG><a name="[1cc]"></a>_main_clock</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, entry7b.o(.ARM.Collect$$$$00000008))
 
-<P><STRONG><a name="[1cc]"></a>_main_cpp_init</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, entry8b.o(.ARM.Collect$$$$0000000A))
+<P><STRONG><a name="[1cd]"></a>_main_cpp_init</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, entry8b.o(.ARM.Collect$$$$0000000A))
 
-<P><STRONG><a name="[1cd]"></a>_main_init</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, entry9a.o(.ARM.Collect$$$$0000000B))
+<P><STRONG><a name="[1ce]"></a>_main_init</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, entry9a.o(.ARM.Collect$$$$0000000B))
 
-<P><STRONG><a name="[1ce]"></a>__rt_lib_shutdown_fini</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, entry12b.o(.ARM.Collect$$$$0000000E))
+<P><STRONG><a name="[1cf]"></a>__rt_lib_shutdown_fini</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, entry12b.o(.ARM.Collect$$$$0000000E))
 
-<P><STRONG><a name="[1cf]"></a>__rt_final_cpp</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, entry10a.o(.ARM.Collect$$$$0000000F))
+<P><STRONG><a name="[1d0]"></a>__rt_final_cpp</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, entry10a.o(.ARM.Collect$$$$0000000F))
 
-<P><STRONG><a name="[1d0]"></a>__rt_final_exit</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, entry11a.o(.ARM.Collect$$$$00000011))
+<P><STRONG><a name="[1d1]"></a>__rt_final_exit</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, entry11a.o(.ARM.Collect$$$$00000011))
 
 <P><STRONG><a name="[39]"></a>SVC_Handler</STRONG> (Thumb, 28 bytes, Stack size 0 bytes, port.o(.emb_text))
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f407xx.o(RESET)
 </UL>
-<P><STRONG><a name="[1c5]"></a>__asm___6_port_c_39a90d8d__prvStartFirstTask</STRONG> (Thumb, 36 bytes, Stack size 0 bytes, port.o(.emb_text))
-<BR><BR>[Called By]<UL><LI><a href="#[1c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xPortStartScheduler
+<P><STRONG><a name="[1c6]"></a>__asm___6_port_c_39a90d8d__prvStartFirstTask</STRONG> (Thumb, 36 bytes, Stack size 0 bytes, port.o(.emb_text))
+<BR><BR>[Called By]<UL><LI><a href="#[1c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xPortStartScheduler
 </UL>
 
-<P><STRONG><a name="[1c4]"></a>__asm___6_port_c_39a90d8d__prvEnableVFP</STRONG> (Thumb, 16 bytes, Stack size 0 bytes, port.o(.emb_text))
-<BR><BR>[Called By]<UL><LI><a href="#[1c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xPortStartScheduler
+<P><STRONG><a name="[1c5]"></a>__asm___6_port_c_39a90d8d__prvEnableVFP</STRONG> (Thumb, 16 bytes, Stack size 0 bytes, port.o(.emb_text))
+<BR><BR>[Called By]<UL><LI><a href="#[1c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xPortStartScheduler
 </UL>
 
 <P><STRONG><a name="[3b]"></a>PendSV_Handler</STRONG> (Thumb, 88 bytes, Stack size 0 bytes, port.o(.emb_text))
@@ -285,7 +285,7 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f407xx.o(RESET)
 </UL>
-<P><STRONG><a name="[1d1]"></a>vPortGetIPSR</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, port.o(.emb_text), UNUSED)
+<P><STRONG><a name="[1d2]"></a>vPortGetIPSR</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, port.o(.emb_text), UNUSED)
 
 <P><STRONG><a name="[33]"></a>Reset_Handler</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, startup_stm32f407xx.o(.text))
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f407xx.o(RESET)
@@ -533,8 +533,8 @@ Global Symbols
 <LI><a href="#[f7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ReadBytes
 <LI><a href="#[e9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SendResponse
 <LI><a href="#[ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GetRequest
-<LI><a href="#[1b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvCopyDataToQueue
-<LI><a href="#[1b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvCopyDataFromQueue
+<LI><a href="#[1b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvCopyDataToQueue
+<LI><a href="#[1b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvCopyDataFromQueue
 </UL>
 
 <P><STRONG><a name="[12c]"></a>__aeabi_memcpy4</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, memcpya.o(.text))
@@ -542,7 +542,7 @@ Global Symbols
 <LI><a href="#[cb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GetBatteryState
 </UL>
 
-<P><STRONG><a name="[1d2]"></a>__aeabi_memcpy8</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, memcpya.o(.text), UNUSED)
+<P><STRONG><a name="[1d3]"></a>__aeabi_memcpy8</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, memcpya.o(.text), UNUSED)
 
 <P><STRONG><a name="[10e]"></a>__aeabi_memset</STRONG> (Thumb, 14 bytes, Stack size 0 bytes, memseta.o(.text))
 <BR><BR>[Called By]<UL><LI><a href="#[98]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TxCompleteCallback
@@ -552,9 +552,9 @@ Global Symbols
 <LI><a href="#[10d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr
 </UL>
 
-<P><STRONG><a name="[1d3]"></a>__aeabi_memset4</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, memseta.o(.text), UNUSED)
+<P><STRONG><a name="[1d4]"></a>__aeabi_memset4</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, memseta.o(.text), UNUSED)
 
-<P><STRONG><a name="[1d4]"></a>__aeabi_memset8</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, memseta.o(.text), UNUSED)
+<P><STRONG><a name="[1d5]"></a>__aeabi_memset8</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, memseta.o(.text), UNUSED)
 
 <P><STRONG><a name="[10d]"></a>__aeabi_memclr</STRONG> (Thumb, 4 bytes, Stack size 0 bytes, memseta.o(.text))
 <BR><BR>[Calls]<UL><LI><a href="#[10e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memset
@@ -566,7 +566,7 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[d7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GetAngle
 </UL>
 
-<P><STRONG><a name="[1d5]"></a>__aeabi_memclr8</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, memseta.o(.text), UNUSED)
+<P><STRONG><a name="[1d6]"></a>__aeabi_memclr8</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, memseta.o(.text), UNUSED)
 
 <P><STRONG><a name="[10f]"></a>memset</STRONG> (Thumb, 18 bytes, Stack size 8 bytes, memseta.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[10e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memset
@@ -582,13 +582,13 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[10a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_uldivmod
 </UL>
 
-<P><STRONG><a name="[1d6]"></a>_ll_shift_l</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, llshl.o(.text), UNUSED)
+<P><STRONG><a name="[1d7]"></a>_ll_shift_l</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, llshl.o(.text), UNUSED)
 
 <P><STRONG><a name="[10b]"></a>__aeabi_llsr</STRONG> (Thumb, 32 bytes, Stack size 0 bytes, llushr.o(.text))
 <BR><BR>[Called By]<UL><LI><a href="#[10a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_uldivmod
 </UL>
 
-<P><STRONG><a name="[1d7]"></a>_ll_ushift_r</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, llushr.o(.text), UNUSED)
+<P><STRONG><a name="[1d8]"></a>_ll_ushift_r</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, llushr.o(.text), UNUSED)
 
 <P><STRONG><a name="[108]"></a>__scatterload</STRONG> (Thumb, 28 bytes, Stack size 0 bytes, init.o(.text))
 <BR><BR>[Calls]<UL><LI><a href="#[110]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__main_after_scatterload
@@ -596,11 +596,11 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[107]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_main_scatterload
 </UL>
 
-<P><STRONG><a name="[1d8]"></a>__scatterload_rt2</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, init.o(.text), UNUSED)
+<P><STRONG><a name="[1d9]"></a>__scatterload_rt2</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, init.o(.text), UNUSED)
 
-<P><STRONG><a name="[1d9]"></a>__decompress</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, __dczerorl2.o(.text), UNUSED)
+<P><STRONG><a name="[1da]"></a>__decompress</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, __dczerorl2.o(.text), UNUSED)
 
-<P><STRONG><a name="[1da]"></a>__decompress1</STRONG> (Thumb, 86 bytes, Stack size unknown bytes, __dczerorl2.o(.text), UNUSED)
+<P><STRONG><a name="[1db]"></a>__decompress1</STRONG> (Thumb, 86 bytes, Stack size unknown bytes, __dczerorl2.o(.text), UNUSED)
 
 <P><STRONG><a name="[112]"></a>Board_GPIO_Config</STRONG> (Thumb, 1156 bytes, Stack size 32 bytes, board_gpio_config.o(i.Board_GPIO_Config))
 <BR><BR>[Stack]<UL><LI>Max Depth = 52<LI>Call Chain = Board_GPIO_Config &rArr; LL_GPIO_Init
@@ -646,7 +646,7 @@ Global Symbols
 <LI><a href="#[128]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memcpy
 </UL>
 <BR>[Called By]<UL><LI><a href="#[142]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TransmitCmd
-<LI><a href="#[190]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TransmitBytes
+<LI><a href="#[191]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TransmitBytes
 <LI><a href="#[9e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RxCompleteCallback
 <LI><a href="#[157]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TransmitCmd
 <LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RxCompleteCallback
@@ -662,7 +662,7 @@ Global Symbols
 
 <P><STRONG><a name="[148]"></a>FIFO_IsNotFull</STRONG> (Thumb, 20 bytes, Stack size 0 bytes, fifo_routine.o(i.FIFO_IsNotFull))
 <BR><BR>[Called By]<UL><LI><a href="#[142]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TransmitCmd
-<LI><a href="#[190]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TransmitBytes
+<LI><a href="#[191]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TransmitBytes
 <LI><a href="#[9e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RxCompleteCallback
 <LI><a href="#[157]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TransmitCmd
 <LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RxCompleteCallback
@@ -675,9 +675,9 @@ Global Symbols
 <LI><a href="#[128]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memcpy
 </UL>
 <BR>[Called By]<UL><LI><a href="#[119]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TransmitNext
-<LI><a href="#[191]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TransmitNextQueueElement
+<LI><a href="#[192]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TransmitNextQueueElement
 <LI><a href="#[f7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ReadBytes
-<LI><a href="#[192]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TransmitNext
+<LI><a href="#[193]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TransmitNext
 <LI><a href="#[ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GetRequest
 </UL>
 
@@ -704,7 +704,7 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f407xx.o(RESET)
 </UL>
-<P><STRONG><a name="[1a6]"></a>IWDG_Init</STRONG> (Thumb, 74 bytes, Stack size 0 bytes, board_hw_config.o(i.IWDG_Init))
+<P><STRONG><a name="[1a7]"></a>IWDG_Init</STRONG> (Thumb, 74 bytes, Stack size 0 bytes, board_hw_config.o(i.IWDG_Init))
 <BR><BR>[Called By]<UL><LI><a href="#[8e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
@@ -713,20 +713,20 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[13e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_DMA_SetChannelSelection
 </UL>
-<BR>[Called By]<UL><LI><a href="#[1a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART6_RS485_Init
-<LI><a href="#[1a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART3_DynamixelInit
-<LI><a href="#[1a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART1_TerminalInit
-<LI><a href="#[19e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART5_SerialInit
-<LI><a href="#[194]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART4_RS485_Init
+<BR>[Called By]<UL><LI><a href="#[1a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART6_RS485_Init
+<LI><a href="#[1a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART3_DynamixelInit
+<LI><a href="#[1a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART1_TerminalInit
+<LI><a href="#[19f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART5_SerialInit
+<LI><a href="#[195]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART4_RS485_Init
 <LI><a href="#[188]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM8_WS2812B_Init
 </UL>
 
 <P><STRONG><a name="[189]"></a>LL_DMA_StructInit</STRONG> (Thumb, 34 bytes, Stack size 0 bytes, stm32f4xx_ll_dma.o(i.LL_DMA_StructInit))
-<BR><BR>[Called By]<UL><LI><a href="#[1a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART6_RS485_Init
-<LI><a href="#[1a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART3_DynamixelInit
-<LI><a href="#[1a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART1_TerminalInit
-<LI><a href="#[19e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART5_SerialInit
-<LI><a href="#[194]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART4_RS485_Init
+<BR><BR>[Called By]<UL><LI><a href="#[1a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART6_RS485_Init
+<LI><a href="#[1a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART3_DynamixelInit
+<LI><a href="#[1a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART1_TerminalInit
+<LI><a href="#[19f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART5_SerialInit
+<LI><a href="#[195]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART4_RS485_Init
 <LI><a href="#[188]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM8_WS2812B_Init
 </UL>
 
@@ -753,12 +753,14 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = MaxonsDisable
 </UL>
 <BR>[Called By]<UL><LI><a href="#[12]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SetMaxonsState
+<LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Task
 </UL>
 
 <P><STRONG><a name="[159]"></a>MaxonsEnable</STRONG> (Thumb, 40 bytes, Stack size 8 bytes, robot_behavior_routine.o(i.MaxonsEnable))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = MaxonsEnable
 </UL>
 <BR>[Called By]<UL><LI><a href="#[12]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SetMaxonsState
+<LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Task
 <LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Task
 </UL>
 
@@ -812,6 +814,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TogglePump
 <LI><a href="#[8e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 <LI><a href="#[b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HardReset
+<LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Task
 </UL>
 
 <P><STRONG><a name="[13b]"></a>SPI_GPO_SetOutputPin</STRONG> (Thumb, 130 bytes, Stack size 16 bytes, spi_gpo.o(i.SPI_GPO_SetOutputPin))
@@ -827,6 +830,7 @@ Global Symbols
 </UL>
 <BR>[Called By]<UL><LI><a href="#[c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TogglePump
 <LI><a href="#[b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HardReset
+<LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Task
 </UL>
 
 <P><STRONG><a name="[154]"></a>SYSCFG_PWR_Init</STRONG> (Thumb, 20 bytes, Stack size 8 bytes, board_hw_config.o(i.SYSCFG_PWR_Init))
@@ -1035,27 +1039,27 @@ Global Symbols
 <P><STRONG><a name="[71]"></a>UART4_IRQHandler</STRONG> (Thumb, 10 bytes, Stack size 8 bytes, stm32f4xx_it.o(i.UART4_IRQHandler))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = UART4_IRQHandler &rArr; USARTx_IRQ_Process &rArr; LL_USART_ClearFlag_IDLE
 </UL>
-<BR>[Calls]<UL><LI><a href="#[193]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USARTx_IRQ_Process
+<BR>[Calls]<UL><LI><a href="#[194]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USARTx_IRQ_Process
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f407xx.o(RESET)
 </UL>
-<P><STRONG><a name="[194]"></a>UART4_RS485_Init</STRONG> (Thumb, 184 bytes, Stack size 64 bytes, board_hw_config.o(i.UART4_RS485_Init))
+<P><STRONG><a name="[195]"></a>UART4_RS485_Init</STRONG> (Thumb, 184 bytes, Stack size 64 bytes, board_hw_config.o(i.UART4_RS485_Init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 152<LI>Call Chain = UART4_RS485_Init &rArr; LL_USART_SetBaudRate &rArr; __aeabi_uldivmod
 </UL>
 <BR>[Calls]<UL><LI><a href="#[189]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_DMA_StructInit
 <LI><a href="#[13d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_DMA_Init
 <LI><a href="#[175]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__NVIC_SetPriority
 <LI><a href="#[176]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__NVIC_EnableIRQ
-<LI><a href="#[19a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetTransferDirection
-<LI><a href="#[196]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetStopBitsLength
-<LI><a href="#[199]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetParity
-<LI><a href="#[197]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetOverSampling
-<LI><a href="#[198]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetDataWidth
+<LI><a href="#[19b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetTransferDirection
+<LI><a href="#[197]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetStopBitsLength
+<LI><a href="#[19a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetParity
+<LI><a href="#[198]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetOverSampling
+<LI><a href="#[199]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetDataWidth
 <LI><a href="#[13f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetBaudRate
-<LI><a href="#[19c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_EnableDMAReq_TX
-<LI><a href="#[19d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_EnableDMAReq_RX
-<LI><a href="#[19b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_Enable
-<LI><a href="#[195]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_ConfigHalfDuplexMode
+<LI><a href="#[19d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_EnableDMAReq_TX
+<LI><a href="#[19e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_EnableDMAReq_RX
+<LI><a href="#[19c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_Enable
+<LI><a href="#[196]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_ConfigHalfDuplexMode
 <LI><a href="#[16f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_APB1_GRP1_ReleaseReset
 <LI><a href="#[16e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_APB1_GRP1_ForceReset
 <LI><a href="#[155]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_APB1_GRP1_EnableClock
@@ -1066,27 +1070,27 @@ Global Symbols
 <P><STRONG><a name="[72]"></a>UART5_IRQHandler</STRONG> (Thumb, 10 bytes, Stack size 8 bytes, stm32f4xx_it.o(i.UART5_IRQHandler))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = UART5_IRQHandler &rArr; USARTx_IRQ_Process &rArr; LL_USART_ClearFlag_IDLE
 </UL>
-<BR>[Calls]<UL><LI><a href="#[193]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USARTx_IRQ_Process
+<BR>[Calls]<UL><LI><a href="#[194]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USARTx_IRQ_Process
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f407xx.o(RESET)
 </UL>
-<P><STRONG><a name="[19e]"></a>UART5_SerialInit</STRONG> (Thumb, 190 bytes, Stack size 64 bytes, board_hw_config.o(i.UART5_SerialInit))
+<P><STRONG><a name="[19f]"></a>UART5_SerialInit</STRONG> (Thumb, 190 bytes, Stack size 64 bytes, board_hw_config.o(i.UART5_SerialInit))
 <BR><BR>[Stack]<UL><LI>Max Depth = 152<LI>Call Chain = UART5_SerialInit &rArr; LL_USART_SetBaudRate &rArr; __aeabi_uldivmod
 </UL>
 <BR>[Calls]<UL><LI><a href="#[189]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_DMA_StructInit
 <LI><a href="#[13d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_DMA_Init
 <LI><a href="#[175]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__NVIC_SetPriority
 <LI><a href="#[176]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__NVIC_EnableIRQ
-<LI><a href="#[19a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetTransferDirection
-<LI><a href="#[196]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetStopBitsLength
-<LI><a href="#[199]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetParity
-<LI><a href="#[197]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetOverSampling
-<LI><a href="#[198]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetDataWidth
+<LI><a href="#[19b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetTransferDirection
+<LI><a href="#[197]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetStopBitsLength
+<LI><a href="#[19a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetParity
+<LI><a href="#[198]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetOverSampling
+<LI><a href="#[199]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetDataWidth
 <LI><a href="#[13f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetBaudRate
-<LI><a href="#[19c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_EnableDMAReq_TX
-<LI><a href="#[19d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_EnableDMAReq_RX
-<LI><a href="#[19b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_Enable
-<LI><a href="#[19f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_ConfigAsyncMode
+<LI><a href="#[19d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_EnableDMAReq_TX
+<LI><a href="#[19e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_EnableDMAReq_RX
+<LI><a href="#[19c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_Enable
+<LI><a href="#[1a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_ConfigAsyncMode
 <LI><a href="#[16f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_APB1_GRP1_ReleaseReset
 <LI><a href="#[16e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_APB1_GRP1_ForceReset
 <LI><a href="#[155]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_APB1_GRP1_EnableClock
@@ -1097,27 +1101,27 @@ Global Symbols
 <P><STRONG><a name="[62]"></a>USART1_IRQHandler</STRONG> (Thumb, 10 bytes, Stack size 8 bytes, stm32f4xx_it.o(i.USART1_IRQHandler))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = USART1_IRQHandler &rArr; USARTx_IRQ_Process &rArr; LL_USART_ClearFlag_IDLE
 </UL>
-<BR>[Calls]<UL><LI><a href="#[193]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USARTx_IRQ_Process
+<BR>[Calls]<UL><LI><a href="#[194]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USARTx_IRQ_Process
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f407xx.o(RESET)
 </UL>
-<P><STRONG><a name="[1a0]"></a>USART1_TerminalInit</STRONG> (Thumb, 184 bytes, Stack size 64 bytes, board_hw_config.o(i.USART1_TerminalInit))
+<P><STRONG><a name="[1a1]"></a>USART1_TerminalInit</STRONG> (Thumb, 184 bytes, Stack size 64 bytes, board_hw_config.o(i.USART1_TerminalInit))
 <BR><BR>[Stack]<UL><LI>Max Depth = 152<LI>Call Chain = USART1_TerminalInit &rArr; LL_USART_SetBaudRate &rArr; __aeabi_uldivmod
 </UL>
 <BR>[Calls]<UL><LI><a href="#[189]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_DMA_StructInit
 <LI><a href="#[13d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_DMA_Init
 <LI><a href="#[175]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__NVIC_SetPriority
 <LI><a href="#[176]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__NVIC_EnableIRQ
-<LI><a href="#[19a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetTransferDirection
-<LI><a href="#[196]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetStopBitsLength
-<LI><a href="#[199]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetParity
-<LI><a href="#[197]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetOverSampling
-<LI><a href="#[198]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetDataWidth
+<LI><a href="#[19b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetTransferDirection
+<LI><a href="#[197]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetStopBitsLength
+<LI><a href="#[19a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetParity
+<LI><a href="#[198]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetOverSampling
+<LI><a href="#[199]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetDataWidth
 <LI><a href="#[13f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetBaudRate
-<LI><a href="#[19c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_EnableDMAReq_TX
-<LI><a href="#[19d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_EnableDMAReq_RX
-<LI><a href="#[19b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_Enable
-<LI><a href="#[19f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_ConfigAsyncMode
+<LI><a href="#[19d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_EnableDMAReq_TX
+<LI><a href="#[19e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_EnableDMAReq_RX
+<LI><a href="#[19c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_Enable
+<LI><a href="#[1a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_ConfigAsyncMode
 <LI><a href="#[14b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_APB2_GRP1_ReleaseReset
 <LI><a href="#[14a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_APB2_GRP1_ForceReset
 <LI><a href="#[14c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_APB2_GRP1_EnableClock
@@ -1125,23 +1129,23 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[8e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[1a1]"></a>USART3_DynamixelInit</STRONG> (Thumb, 214 bytes, Stack size 64 bytes, board_hw_config.o(i.USART3_DynamixelInit))
+<P><STRONG><a name="[1a2]"></a>USART3_DynamixelInit</STRONG> (Thumb, 214 bytes, Stack size 64 bytes, board_hw_config.o(i.USART3_DynamixelInit))
 <BR><BR>[Stack]<UL><LI>Max Depth = 152<LI>Call Chain = USART3_DynamixelInit &rArr; LL_USART_SetBaudRate &rArr; __aeabi_uldivmod
 </UL>
 <BR>[Calls]<UL><LI><a href="#[189]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_DMA_StructInit
 <LI><a href="#[13d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_DMA_Init
 <LI><a href="#[175]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__NVIC_SetPriority
 <LI><a href="#[176]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__NVIC_EnableIRQ
-<LI><a href="#[19a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetTransferDirection
-<LI><a href="#[196]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetStopBitsLength
-<LI><a href="#[199]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetParity
-<LI><a href="#[197]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetOverSampling
-<LI><a href="#[198]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetDataWidth
+<LI><a href="#[19b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetTransferDirection
+<LI><a href="#[197]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetStopBitsLength
+<LI><a href="#[19a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetParity
+<LI><a href="#[198]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetOverSampling
+<LI><a href="#[199]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetDataWidth
 <LI><a href="#[13f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetBaudRate
-<LI><a href="#[19c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_EnableDMAReq_TX
-<LI><a href="#[19d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_EnableDMAReq_RX
-<LI><a href="#[19b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_Enable
-<LI><a href="#[195]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_ConfigHalfDuplexMode
+<LI><a href="#[19d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_EnableDMAReq_TX
+<LI><a href="#[19e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_EnableDMAReq_RX
+<LI><a href="#[19c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_Enable
+<LI><a href="#[196]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_ConfigHalfDuplexMode
 <LI><a href="#[16f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_APB1_GRP1_ReleaseReset
 <LI><a href="#[16e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_APB1_GRP1_ForceReset
 <LI><a href="#[155]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_APB1_GRP1_EnableClock
@@ -1152,34 +1156,34 @@ Global Symbols
 <P><STRONG><a name="[64]"></a>USART3_IRQHandler</STRONG> (Thumb, 10 bytes, Stack size 8 bytes, stm32f4xx_it.o(i.USART3_IRQHandler))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = USART3_IRQHandler &rArr; USARTx_IRQ_Process &rArr; LL_USART_ClearFlag_IDLE
 </UL>
-<BR>[Calls]<UL><LI><a href="#[193]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USARTx_IRQ_Process
+<BR>[Calls]<UL><LI><a href="#[194]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USARTx_IRQ_Process
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f407xx.o(RESET)
 </UL>
 <P><STRONG><a name="[84]"></a>USART6_IRQHandler</STRONG> (Thumb, 10 bytes, Stack size 8 bytes, stm32f4xx_it.o(i.USART6_IRQHandler))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = USART6_IRQHandler &rArr; USARTx_IRQ_Process &rArr; LL_USART_ClearFlag_IDLE
 </UL>
-<BR>[Calls]<UL><LI><a href="#[193]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USARTx_IRQ_Process
+<BR>[Calls]<UL><LI><a href="#[194]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USARTx_IRQ_Process
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f407xx.o(RESET)
 </UL>
-<P><STRONG><a name="[1a2]"></a>USART6_RS485_Init</STRONG> (Thumb, 182 bytes, Stack size 64 bytes, board_hw_config.o(i.USART6_RS485_Init))
+<P><STRONG><a name="[1a3]"></a>USART6_RS485_Init</STRONG> (Thumb, 182 bytes, Stack size 64 bytes, board_hw_config.o(i.USART6_RS485_Init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 152<LI>Call Chain = USART6_RS485_Init &rArr; LL_USART_SetBaudRate &rArr; __aeabi_uldivmod
 </UL>
 <BR>[Calls]<UL><LI><a href="#[189]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_DMA_StructInit
 <LI><a href="#[13d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_DMA_Init
 <LI><a href="#[175]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__NVIC_SetPriority
 <LI><a href="#[176]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__NVIC_EnableIRQ
-<LI><a href="#[19a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetTransferDirection
-<LI><a href="#[196]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetStopBitsLength
-<LI><a href="#[199]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetParity
-<LI><a href="#[197]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetOverSampling
-<LI><a href="#[198]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetDataWidth
+<LI><a href="#[19b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetTransferDirection
+<LI><a href="#[197]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetStopBitsLength
+<LI><a href="#[19a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetParity
+<LI><a href="#[198]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetOverSampling
+<LI><a href="#[199]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetDataWidth
 <LI><a href="#[13f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_SetBaudRate
-<LI><a href="#[19c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_EnableDMAReq_TX
-<LI><a href="#[19d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_EnableDMAReq_RX
-<LI><a href="#[19b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_Enable
-<LI><a href="#[195]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_ConfigHalfDuplexMode
+<LI><a href="#[19d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_EnableDMAReq_TX
+<LI><a href="#[19e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_EnableDMAReq_RX
+<LI><a href="#[19c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_Enable
+<LI><a href="#[196]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_ConfigHalfDuplexMode
 <LI><a href="#[14b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_APB2_GRP1_ReleaseReset
 <LI><a href="#[14a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_APB2_GRP1_ForceReset
 <LI><a href="#[14c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_APB2_GRP1_EnableClock
@@ -1187,7 +1191,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[8e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[193]"></a>USARTx_IRQ_Process</STRONG> (Thumb, 104 bytes, Stack size 16 bytes, usartx_communication.o(i.USARTx_IRQ_Process))
+<P><STRONG><a name="[194]"></a>USARTx_IRQ_Process</STRONG> (Thumb, 104 bytes, Stack size 16 bytes, usartx_communication.o(i.USARTx_IRQ_Process))
 <BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = USARTx_IRQ_Process &rArr; LL_USART_ClearFlag_IDLE
 </UL>
 <BR>[Calls]<UL><LI><a href="#[163]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_USART_ClearFlag_IDLE
@@ -1203,7 +1207,7 @@ Global Symbols
 <P><STRONG><a name="[187]"></a>USARTx_Timeout_IRQ_Process</STRONG> (Thumb, 44 bytes, Stack size 8 bytes, usartx_timeout.o(i.USARTx_Timeout_IRQ_Process))
 <BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = USARTx_Timeout_IRQ_Process &rArr; IRQ_Process
 </UL>
-<BR>[Calls]<UL><LI><a href="#[1a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IRQ_Process
+<BR>[Calls]<UL><LI><a href="#[1a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IRQ_Process
 </UL>
 <BR>[Called By]<UL><LI><a href="#[6a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM8_TRG_COM_TIM14_IRQHandler
 </UL>
@@ -1211,13 +1215,13 @@ Global Symbols
 <P><STRONG><a name="[38]"></a>UsageFault_Handler</STRONG> (Thumb, 4 bytes, Stack size 0 bytes, stm32f4xx_it.o(i.UsageFault_Handler))
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f407xx.o(RESET)
 </UL>
-<P><STRONG><a name="[1db]"></a>__scatterload_copy</STRONG> (Thumb, 14 bytes, Stack size unknown bytes, handlers.o(i.__scatterload_copy), UNUSED)
+<P><STRONG><a name="[1dc]"></a>__scatterload_copy</STRONG> (Thumb, 14 bytes, Stack size unknown bytes, handlers.o(i.__scatterload_copy), UNUSED)
 
-<P><STRONG><a name="[1dc]"></a>__scatterload_null</STRONG> (Thumb, 2 bytes, Stack size unknown bytes, handlers.o(i.__scatterload_null), UNUSED)
+<P><STRONG><a name="[1dd]"></a>__scatterload_null</STRONG> (Thumb, 2 bytes, Stack size unknown bytes, handlers.o(i.__scatterload_null), UNUSED)
 
-<P><STRONG><a name="[1dd]"></a>__scatterload_zeroinit</STRONG> (Thumb, 14 bytes, Stack size unknown bytes, handlers.o(i.__scatterload_zeroinit), UNUSED)
+<P><STRONG><a name="[1de]"></a>__scatterload_zeroinit</STRONG> (Thumb, 14 bytes, Stack size unknown bytes, handlers.o(i.__scatterload_zeroinit), UNUSED)
 
-<P><STRONG><a name="[1a4]"></a>arm_cos_f32</STRONG> (Thumb, 132 bytes, Stack size 0 bytes, arm_cos_f32.o(i.arm_cos_f32))
+<P><STRONG><a name="[1a5]"></a>arm_cos_f32</STRONG> (Thumb, 132 bytes, Stack size 0 bytes, arm_cos_f32.o(i.arm_cos_f32))
 <BR><BR>[Called By]<UL><LI><a href="#[a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UpdatePath
 </UL>
 
@@ -1236,19 +1240,19 @@ Global Symbols
 <LI><a href="#[a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SpeedTo_TPM
 </UL>
 
-<P><STRONG><a name="[1a5]"></a>arm_sin_f32</STRONG> (Thumb, 158 bytes, Stack size 0 bytes, arm_sin_f32.o(i.arm_sin_f32))
+<P><STRONG><a name="[1a6]"></a>arm_sin_f32</STRONG> (Thumb, 158 bytes, Stack size 0 bytes, arm_sin_f32.o(i.arm_sin_f32))
 <BR><BR>[Called By]<UL><LI><a href="#[a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UpdatePath
 </UL>
 
 <P><STRONG><a name="[8e]"></a>main</STRONG> (Thumb, 258 bytes, Stack size 0 bytes, main.o(i.main))
 <BR><BR>[Stack]<UL><LI>Max Depth = 152<LI>Call Chain = main &rArr; USART6_RS485_Init &rArr; LL_USART_SetBaudRate &rArr; __aeabi_uldivmod
 </UL>
-<BR>[Calls]<UL><LI><a href="#[1a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskStartScheduler
-<LI><a href="#[1a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART6_RS485_Init
-<LI><a href="#[1a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART3_DynamixelInit
-<LI><a href="#[1a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART1_TerminalInit
-<LI><a href="#[19e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART5_SerialInit
-<LI><a href="#[194]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART4_RS485_Init
+<BR>[Calls]<UL><LI><a href="#[1a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskStartScheduler
+<LI><a href="#[1a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART6_RS485_Init
+<LI><a href="#[1a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART3_DynamixelInit
+<LI><a href="#[1a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART1_TerminalInit
+<LI><a href="#[19f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART5_SerialInit
+<LI><a href="#[195]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART4_RS485_Init
 <LI><a href="#[188]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM8_WS2812B_Init
 <LI><a href="#[186]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM5_PWM_Group5678_Init
 <LI><a href="#[184]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM4_PWM_Group1234_Init
@@ -1259,82 +1263,82 @@ Global Symbols
 <LI><a href="#[139]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI_GPO_ResetOutputPin
 <LI><a href="#[149]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI1_Board_HW_Init
 <LI><a href="#[144]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Robot_GPIO_Config
-<LI><a href="#[1a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IWDG_Init
+<LI><a href="#[1a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IWDG_Init
 <LI><a href="#[135]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HW_ClockConfig
 <LI><a href="#[112]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Board_GPIO_Config
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> entry9a.o(.ARM.Collect$$$$0000000B)
 </UL>
-<P><STRONG><a name="[1b9]"></a>pxPortInitialiseStack</STRONG> (Thumb, 38 bytes, Stack size 0 bytes, port.o(i.pxPortInitialiseStack))
-<BR><BR>[Called By]<UL><LI><a href="#[1b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvInitialiseNewTask
+<P><STRONG><a name="[1ba]"></a>pxPortInitialiseStack</STRONG> (Thumb, 38 bytes, Stack size 0 bytes, port.o(i.pxPortInitialiseStack))
+<BR><BR>[Called By]<UL><LI><a href="#[1b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvInitialiseNewTask
 </UL>
 
-<P><STRONG><a name="[1a9]"></a>uxListRemove</STRONG> (Thumb, 40 bytes, Stack size 0 bytes, list.o(i.uxListRemove))
+<P><STRONG><a name="[1aa]"></a>uxListRemove</STRONG> (Thumb, 40 bytes, Stack size 0 bytes, list.o(i.uxListRemove))
 <BR><BR>[Called By]<UL><LI><a href="#[123]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskResumeAll
-<LI><a href="#[1be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskRemoveFromEventList
-<LI><a href="#[1b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskPriorityDisinherit
+<LI><a href="#[1bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskRemoveFromEventList
+<LI><a href="#[1b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskPriorityDisinherit
 <LI><a href="#[16a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskIncrementTick
-<LI><a href="#[1b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvCheckTasksWaitingTermination
-<LI><a href="#[1a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvAddCurrentTaskToDelayedList
+<LI><a href="#[1b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvCheckTasksWaitingTermination
+<LI><a href="#[1a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvAddCurrentTaskToDelayedList
 </UL>
 
-<P><STRONG><a name="[1c1]"></a>vApplicationGetIdleTaskMemory</STRONG> (Thumb, 14 bytes, Stack size 0 bytes, freertos_routine_plug.o(i.vApplicationGetIdleTaskMemory))
-<BR><BR>[Called By]<UL><LI><a href="#[1a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskStartScheduler
+<P><STRONG><a name="[1c2]"></a>vApplicationGetIdleTaskMemory</STRONG> (Thumb, 14 bytes, Stack size 0 bytes, freertos_routine_plug.o(i.vApplicationGetIdleTaskMemory))
+<BR><BR>[Called By]<UL><LI><a href="#[1a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskStartScheduler
 </UL>
 
-<P><STRONG><a name="[1ba]"></a>vListInitialise</STRONG> (Thumb, 26 bytes, Stack size 0 bytes, list.o(i.vListInitialise))
-<BR><BR>[Called By]<UL><LI><a href="#[1b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xQueueGenericReset
-<LI><a href="#[1ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvInitialiseTaskLists
+<P><STRONG><a name="[1bb]"></a>vListInitialise</STRONG> (Thumb, 26 bytes, Stack size 0 bytes, list.o(i.vListInitialise))
+<BR><BR>[Called By]<UL><LI><a href="#[1b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xQueueGenericReset
+<LI><a href="#[1af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvInitialiseTaskLists
 </UL>
 
-<P><STRONG><a name="[1b8]"></a>vListInitialiseItem</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, list.o(i.vListInitialiseItem))
-<BR><BR>[Called By]<UL><LI><a href="#[1b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvInitialiseNewTask
+<P><STRONG><a name="[1b9]"></a>vListInitialiseItem</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, list.o(i.vListInitialiseItem))
+<BR><BR>[Called By]<UL><LI><a href="#[1b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvInitialiseNewTask
 </UL>
 
-<P><STRONG><a name="[1ab]"></a>vListInsert</STRONG> (Thumb, 52 bytes, Stack size 8 bytes, list.o(i.vListInsert))
+<P><STRONG><a name="[1ac]"></a>vListInsert</STRONG> (Thumb, 52 bytes, Stack size 8 bytes, list.o(i.vListInsert))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = vListInsert
 </UL>
-<BR>[Called By]<UL><LI><a href="#[1c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskPlaceOnEventList
-<LI><a href="#[1a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvAddCurrentTaskToDelayedList
+<BR>[Called By]<UL><LI><a href="#[1c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskPlaceOnEventList
+<LI><a href="#[1a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvAddCurrentTaskToDelayedList
 </UL>
 
-<P><STRONG><a name="[1aa]"></a>vListInsertEnd</STRONG> (Thumb, 24 bytes, Stack size 0 bytes, list.o(i.vListInsertEnd))
+<P><STRONG><a name="[1ab]"></a>vListInsertEnd</STRONG> (Thumb, 24 bytes, Stack size 0 bytes, list.o(i.vListInsertEnd))
 <BR><BR>[Called By]<UL><LI><a href="#[123]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskResumeAll
-<LI><a href="#[1be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskRemoveFromEventList
-<LI><a href="#[1b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskPriorityDisinherit
+<LI><a href="#[1bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskRemoveFromEventList
+<LI><a href="#[1b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskPriorityDisinherit
 <LI><a href="#[16a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskIncrementTick
-<LI><a href="#[1ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvAddNewTaskToReadyList
-<LI><a href="#[1a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvAddCurrentTaskToDelayedList
+<LI><a href="#[1ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvAddNewTaskToReadyList
+<LI><a href="#[1a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvAddCurrentTaskToDelayedList
 </UL>
 
-<P><STRONG><a name="[1ad]"></a>vPortEnterCritical</STRONG> (Thumb, 76 bytes, Stack size 0 bytes, port.o(i.vPortEnterCritical))
+<P><STRONG><a name="[1ae]"></a>vPortEnterCritical</STRONG> (Thumb, 76 bytes, Stack size 0 bytes, port.o(i.vPortEnterCritical))
 <BR><BR>[Called By]<UL><LI><a href="#[123]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskResumeAll
 <LI><a href="#[116]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xQueueGenericSend
 <LI><a href="#[18a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xQueueReceive
-<LI><a href="#[1c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskCheckForTimeOut
-<LI><a href="#[1b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xQueueGenericReset
-<LI><a href="#[1bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvUnlockQueue
-<LI><a href="#[1bc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvIsQueueFull
-<LI><a href="#[1bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvIsQueueEmpty
-<LI><a href="#[1b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvCheckTasksWaitingTermination
-<LI><a href="#[1ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvAddNewTaskToReadyList
+<LI><a href="#[1c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskCheckForTimeOut
+<LI><a href="#[1b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xQueueGenericReset
+<LI><a href="#[1be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvUnlockQueue
+<LI><a href="#[1bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvIsQueueFull
+<LI><a href="#[1bc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvIsQueueEmpty
+<LI><a href="#[1b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvCheckTasksWaitingTermination
+<LI><a href="#[1ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvAddNewTaskToReadyList
 </UL>
 
-<P><STRONG><a name="[1af]"></a>vPortExitCritical</STRONG> (Thumb, 56 bytes, Stack size 0 bytes, port.o(i.vPortExitCritical))
+<P><STRONG><a name="[1b0]"></a>vPortExitCritical</STRONG> (Thumb, 56 bytes, Stack size 0 bytes, port.o(i.vPortExitCritical))
 <BR><BR>[Called By]<UL><LI><a href="#[123]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskResumeAll
 <LI><a href="#[116]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xQueueGenericSend
 <LI><a href="#[18a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xQueueReceive
-<LI><a href="#[1c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskCheckForTimeOut
-<LI><a href="#[1b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xQueueGenericReset
-<LI><a href="#[1bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvUnlockQueue
-<LI><a href="#[1bc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvIsQueueFull
-<LI><a href="#[1bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvIsQueueEmpty
-<LI><a href="#[1b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvCheckTasksWaitingTermination
-<LI><a href="#[1ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvAddNewTaskToReadyList
+<LI><a href="#[1c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskCheckForTimeOut
+<LI><a href="#[1b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xQueueGenericReset
+<LI><a href="#[1be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvUnlockQueue
+<LI><a href="#[1bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvIsQueueFull
+<LI><a href="#[1bc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvIsQueueEmpty
+<LI><a href="#[1b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvCheckTasksWaitingTermination
+<LI><a href="#[1ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvAddNewTaskToReadyList
 </UL>
 
-<P><STRONG><a name="[1c3]"></a>vPortSetupTimerInterrupt</STRONG> (Thumb, 36 bytes, Stack size 0 bytes, port.o(i.vPortSetupTimerInterrupt))
-<BR><BR>[Called By]<UL><LI><a href="#[1c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xPortStartScheduler
+<P><STRONG><a name="[1c4]"></a>vPortSetupTimerInterrupt</STRONG> (Thumb, 36 bytes, Stack size 0 bytes, port.o(i.vPortSetupTimerInterrupt))
+<BR><BR>[Called By]<UL><LI><a href="#[1c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xPortStartScheduler
 </UL>
 
 <P><STRONG><a name="[13a]"></a>vTaskDelay</STRONG> (Thumb, 82 bytes, Stack size 16 bytes, tasks.o(i.vTaskDelay))
@@ -1342,7 +1346,7 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[123]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskResumeAll
 <LI><a href="#[11d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskSuspendAll
-<LI><a href="#[1a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvAddCurrentTaskToDelayedList
+<LI><a href="#[1a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvAddCurrentTaskToDelayedList
 </UL>
 <BR>[Called By]<UL><LI><a href="#[b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HardReset
 <LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Task
@@ -1352,32 +1356,32 @@ Global Symbols
 <LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Task
 </UL>
 
-<P><STRONG><a name="[1c7]"></a>vTaskInternalSetTimeOutState</STRONG> (Thumb, 14 bytes, Stack size 0 bytes, tasks.o(i.vTaskInternalSetTimeOutState))
+<P><STRONG><a name="[1c8]"></a>vTaskInternalSetTimeOutState</STRONG> (Thumb, 14 bytes, Stack size 0 bytes, tasks.o(i.vTaskInternalSetTimeOutState))
 <BR><BR>[Called By]<UL><LI><a href="#[116]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xQueueGenericSend
 <LI><a href="#[18a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xQueueReceive
-<LI><a href="#[1c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskCheckForTimeOut
+<LI><a href="#[1c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskCheckForTimeOut
 </UL>
 
-<P><STRONG><a name="[1bf]"></a>vTaskMissedYield</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, tasks.o(i.vTaskMissedYield))
-<BR><BR>[Called By]<UL><LI><a href="#[1bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvUnlockQueue
+<P><STRONG><a name="[1c0]"></a>vTaskMissedYield</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, tasks.o(i.vTaskMissedYield))
+<BR><BR>[Called By]<UL><LI><a href="#[1be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvUnlockQueue
 </UL>
 
-<P><STRONG><a name="[1c0]"></a>vTaskPlaceOnEventList</STRONG> (Thumb, 52 bytes, Stack size 16 bytes, tasks.o(i.vTaskPlaceOnEventList))
+<P><STRONG><a name="[1c1]"></a>vTaskPlaceOnEventList</STRONG> (Thumb, 52 bytes, Stack size 16 bytes, tasks.o(i.vTaskPlaceOnEventList))
 <BR><BR>[Stack]<UL><LI>Max Depth = 48<LI>Call Chain = vTaskPlaceOnEventList &rArr; prvAddCurrentTaskToDelayedList &rArr; vListInsert
 </UL>
-<BR>[Calls]<UL><LI><a href="#[1ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vListInsert
-<LI><a href="#[1a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvAddCurrentTaskToDelayedList
+<BR>[Calls]<UL><LI><a href="#[1ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vListInsert
+<LI><a href="#[1a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvAddCurrentTaskToDelayedList
 </UL>
 <BR>[Called By]<UL><LI><a href="#[116]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xQueueGenericSend
 <LI><a href="#[18a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xQueueReceive
 </UL>
 
-<P><STRONG><a name="[1a7]"></a>vTaskStartScheduler</STRONG> (Thumb, 150 bytes, Stack size 32 bytes, tasks.o(i.vTaskStartScheduler))
+<P><STRONG><a name="[1a8]"></a>vTaskStartScheduler</STRONG> (Thumb, 150 bytes, Stack size 32 bytes, tasks.o(i.vTaskStartScheduler))
 <BR><BR>[Stack]<UL><LI>Max Depth = 144<LI>Call Chain = vTaskStartScheduler &rArr; xTaskCreateStatic &rArr; prvInitialiseNewTask
 </UL>
-<BR>[Calls]<UL><LI><a href="#[1c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vApplicationGetIdleTaskMemory
+<BR>[Calls]<UL><LI><a href="#[1c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vApplicationGetIdleTaskMemory
 <LI><a href="#[11a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskCreateStatic
-<LI><a href="#[1c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xPortStartScheduler
+<LI><a href="#[1c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xPortStartScheduler
 </UL>
 <BR>[Called By]<UL><LI><a href="#[8e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
@@ -1396,7 +1400,7 @@ Global Symbols
 <LI><a href="#[18e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskDelayUntil
 <LI><a href="#[116]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xQueueGenericSend
 <LI><a href="#[18a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xQueueReceive
-<LI><a href="#[190]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TransmitBytes
+<LI><a href="#[191]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TransmitBytes
 <LI><a href="#[157]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TransmitCmd
 </UL>
 
@@ -1404,33 +1408,33 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PendSV_Handler
 </UL>
 
-<P><STRONG><a name="[1c2]"></a>xPortStartScheduler</STRONG> (Thumb, 330 bytes, Stack size 16 bytes, port.o(i.xPortStartScheduler))
+<P><STRONG><a name="[1c3]"></a>xPortStartScheduler</STRONG> (Thumb, 330 bytes, Stack size 16 bytes, port.o(i.xPortStartScheduler))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = xPortStartScheduler
 </UL>
-<BR>[Calls]<UL><LI><a href="#[1c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vPortSetupTimerInterrupt
-<LI><a href="#[1c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__asm___6_port_c_39a90d8d__prvEnableVFP
-<LI><a href="#[1c5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__asm___6_port_c_39a90d8d__prvStartFirstTask
+<BR>[Calls]<UL><LI><a href="#[1c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vPortSetupTimerInterrupt
+<LI><a href="#[1c5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__asm___6_port_c_39a90d8d__prvEnableVFP
+<LI><a href="#[1c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__asm___6_port_c_39a90d8d__prvStartFirstTask
 </UL>
-<BR>[Called By]<UL><LI><a href="#[1a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskStartScheduler
+<BR>[Called By]<UL><LI><a href="#[1a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskStartScheduler
 </UL>
 
 <P><STRONG><a name="[18c]"></a>xQueueGenericCreateStatic</STRONG> (Thumb, 220 bytes, Stack size 32 bytes, queue.o(i.xQueueGenericCreateStatic))
 <BR><BR>[Stack]<UL><LI>Max Depth = 88<LI>Call Chain = xQueueGenericCreateStatic &rArr; prvInitialiseNewQueue &rArr; xQueueGenericReset &rArr; xTaskRemoveFromEventList
 </UL>
-<BR>[Calls]<UL><LI><a href="#[1b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvInitialiseNewQueue
+<BR>[Calls]<UL><LI><a href="#[1b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvInitialiseNewQueue
 </UL>
 <BR>[Called By]<UL><LI><a href="#[92]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Task
 </UL>
 
-<P><STRONG><a name="[1b6]"></a>xQueueGenericReset</STRONG> (Thumb, 146 bytes, Stack size 16 bytes, queue.o(i.xQueueGenericReset))
+<P><STRONG><a name="[1b7]"></a>xQueueGenericReset</STRONG> (Thumb, 146 bytes, Stack size 16 bytes, queue.o(i.xQueueGenericReset))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = xQueueGenericReset &rArr; xTaskRemoveFromEventList
 </UL>
-<BR>[Calls]<UL><LI><a href="#[1be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskRemoveFromEventList
-<LI><a href="#[1af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vPortExitCritical
-<LI><a href="#[1ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vPortEnterCritical
-<LI><a href="#[1ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vListInitialise
+<BR>[Calls]<UL><LI><a href="#[1bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskRemoveFromEventList
+<LI><a href="#[1b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vPortExitCritical
+<LI><a href="#[1ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vPortEnterCritical
+<LI><a href="#[1bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vListInitialise
 </UL>
-<BR>[Called By]<UL><LI><a href="#[1b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvInitialiseNewQueue
+<BR>[Called By]<UL><LI><a href="#[1b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvInitialiseNewQueue
 </UL>
 
 <P><STRONG><a name="[116]"></a>xQueueGenericSend</STRONG> (Thumb, 420 bytes, Stack size 56 bytes, queue.o(i.xQueueGenericSend))
@@ -1438,16 +1442,16 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[123]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskResumeAll
 <LI><a href="#[11d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskSuspendAll
-<LI><a href="#[1be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskRemoveFromEventList
-<LI><a href="#[1c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskCheckForTimeOut
-<LI><a href="#[1c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskPlaceOnEventList
-<LI><a href="#[1c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskInternalSetTimeOutState
-<LI><a href="#[1bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvUnlockQueue
-<LI><a href="#[1bc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvIsQueueFull
-<LI><a href="#[1b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvCopyDataToQueue
-<LI><a href="#[1c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGetSchedulerState
-<LI><a href="#[1af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vPortExitCritical
-<LI><a href="#[1ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vPortEnterCritical
+<LI><a href="#[1bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskRemoveFromEventList
+<LI><a href="#[1c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskCheckForTimeOut
+<LI><a href="#[1c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskPlaceOnEventList
+<LI><a href="#[1c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskInternalSetTimeOutState
+<LI><a href="#[1be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvUnlockQueue
+<LI><a href="#[1bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvIsQueueFull
+<LI><a href="#[1b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvCopyDataToQueue
+<LI><a href="#[1c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGetSchedulerState
+<LI><a href="#[1b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vPortExitCritical
+<LI><a href="#[1ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vPortEnterCritical
 </UL>
 <BR>[Called By]<UL><LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ButtonCallbackRedirect
 </UL>
@@ -1457,26 +1461,26 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[123]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskResumeAll
 <LI><a href="#[11d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskSuspendAll
-<LI><a href="#[1be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskRemoveFromEventList
-<LI><a href="#[1c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskCheckForTimeOut
-<LI><a href="#[1c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskPlaceOnEventList
-<LI><a href="#[1c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskInternalSetTimeOutState
-<LI><a href="#[1bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvUnlockQueue
-<LI><a href="#[1bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvIsQueueEmpty
-<LI><a href="#[1b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvCopyDataFromQueue
-<LI><a href="#[1c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGetSchedulerState
-<LI><a href="#[1af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vPortExitCritical
-<LI><a href="#[1ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vPortEnterCritical
+<LI><a href="#[1bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskRemoveFromEventList
+<LI><a href="#[1c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskCheckForTimeOut
+<LI><a href="#[1c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskPlaceOnEventList
+<LI><a href="#[1c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskInternalSetTimeOutState
+<LI><a href="#[1be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvUnlockQueue
+<LI><a href="#[1bc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvIsQueueEmpty
+<LI><a href="#[1b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvCopyDataFromQueue
+<LI><a href="#[1c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGetSchedulerState
+<LI><a href="#[1b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vPortExitCritical
+<LI><a href="#[1ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vPortEnterCritical
 </UL>
 <BR>[Called By]<UL><LI><a href="#[91]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Task
 </UL>
 
-<P><STRONG><a name="[1c8]"></a>xTaskCheckForTimeOut</STRONG> (Thumb, 160 bytes, Stack size 16 bytes, tasks.o(i.xTaskCheckForTimeOut))
+<P><STRONG><a name="[1c9]"></a>xTaskCheckForTimeOut</STRONG> (Thumb, 160 bytes, Stack size 16 bytes, tasks.o(i.xTaskCheckForTimeOut))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = xTaskCheckForTimeOut
 </UL>
-<BR>[Calls]<UL><LI><a href="#[1c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskInternalSetTimeOutState
-<LI><a href="#[1af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vPortExitCritical
-<LI><a href="#[1ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vPortEnterCritical
+<BR>[Calls]<UL><LI><a href="#[1c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskInternalSetTimeOutState
+<LI><a href="#[1b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vPortExitCritical
+<LI><a href="#[1ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vPortEnterCritical
 </UL>
 <BR>[Called By]<UL><LI><a href="#[116]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xQueueGenericSend
 <LI><a href="#[18a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xQueueReceive
@@ -1485,10 +1489,10 @@ Global Symbols
 <P><STRONG><a name="[11a]"></a>xTaskCreateStatic</STRONG> (Thumb, 180 bytes, Stack size 56 bytes, tasks.o(i.xTaskCreateStatic))
 <BR><BR>[Stack]<UL><LI>Max Depth = 112<LI>Call Chain = xTaskCreateStatic &rArr; prvInitialiseNewTask
 </UL>
-<BR>[Calls]<UL><LI><a href="#[1b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvInitialiseNewTask
-<LI><a href="#[1ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvAddNewTaskToReadyList
+<BR>[Calls]<UL><LI><a href="#[1b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvInitialiseNewTask
+<LI><a href="#[1ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvAddNewTaskToReadyList
 </UL>
-<BR>[Called By]<UL><LI><a href="#[1a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskStartScheduler
+<BR>[Called By]<UL><LI><a href="#[1a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskStartScheduler
 <LI><a href="#[105]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CreateTask
 <LI><a href="#[103]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CreateTask
 <LI><a href="#[101]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CreateTask
@@ -1503,13 +1507,13 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[123]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskResumeAll
 <LI><a href="#[11d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskSuspendAll
-<LI><a href="#[1a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvAddCurrentTaskToDelayedList
+<LI><a href="#[1a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvAddCurrentTaskToDelayedList
 </UL>
 <BR>[Called By]<UL><LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Task
 <LI><a href="#[92]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Task
 </UL>
 
-<P><STRONG><a name="[1c6]"></a>xTaskGetSchedulerState</STRONG> (Thumb, 24 bytes, Stack size 0 bytes, tasks.o(i.xTaskGetSchedulerState))
+<P><STRONG><a name="[1c7]"></a>xTaskGetSchedulerState</STRONG> (Thumb, 24 bytes, Stack size 0 bytes, tasks.o(i.xTaskGetSchedulerState))
 <BR><BR>[Called By]<UL><LI><a href="#[116]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xQueueGenericSend
 <LI><a href="#[18a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xQueueReceive
 </UL>
@@ -1522,44 +1526,44 @@ Global Symbols
 <P><STRONG><a name="[16a]"></a>xTaskIncrementTick</STRONG> (Thumb, 282 bytes, Stack size 24 bytes, tasks.o(i.xTaskIncrementTick))
 <BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = xTaskIncrementTick
 </UL>
-<BR>[Calls]<UL><LI><a href="#[1aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vListInsertEnd
-<LI><a href="#[1a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;uxListRemove
-<LI><a href="#[1c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvResetNextTaskUnblockTime
+<BR>[Calls]<UL><LI><a href="#[1ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vListInsertEnd
+<LI><a href="#[1aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;uxListRemove
+<LI><a href="#[1ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvResetNextTaskUnblockTime
 </UL>
 <BR>[Called By]<UL><LI><a href="#[123]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskResumeAll
 <LI><a href="#[3c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysTick_Handler
 </UL>
 
-<P><STRONG><a name="[1b4]"></a>xTaskPriorityDisinherit</STRONG> (Thumb, 174 bytes, Stack size 16 bytes, tasks.o(i.xTaskPriorityDisinherit))
+<P><STRONG><a name="[1b5]"></a>xTaskPriorityDisinherit</STRONG> (Thumb, 174 bytes, Stack size 16 bytes, tasks.o(i.xTaskPriorityDisinherit))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = xTaskPriorityDisinherit
 </UL>
-<BR>[Calls]<UL><LI><a href="#[1aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vListInsertEnd
-<LI><a href="#[1a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;uxListRemove
+<BR>[Calls]<UL><LI><a href="#[1ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vListInsertEnd
+<LI><a href="#[1aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;uxListRemove
 </UL>
-<BR>[Called By]<UL><LI><a href="#[1b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvCopyDataToQueue
+<BR>[Called By]<UL><LI><a href="#[1b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvCopyDataToQueue
 </UL>
 
-<P><STRONG><a name="[1be]"></a>xTaskRemoveFromEventList</STRONG> (Thumb, 128 bytes, Stack size 16 bytes, tasks.o(i.xTaskRemoveFromEventList))
+<P><STRONG><a name="[1bf]"></a>xTaskRemoveFromEventList</STRONG> (Thumb, 128 bytes, Stack size 16 bytes, tasks.o(i.xTaskRemoveFromEventList))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = xTaskRemoveFromEventList
 </UL>
-<BR>[Calls]<UL><LI><a href="#[1aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vListInsertEnd
-<LI><a href="#[1a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;uxListRemove
+<BR>[Calls]<UL><LI><a href="#[1ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vListInsertEnd
+<LI><a href="#[1aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;uxListRemove
 </UL>
 <BR>[Called By]<UL><LI><a href="#[116]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xQueueGenericSend
 <LI><a href="#[18a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xQueueReceive
-<LI><a href="#[1b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xQueueGenericReset
-<LI><a href="#[1bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvUnlockQueue
+<LI><a href="#[1b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xQueueGenericReset
+<LI><a href="#[1be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvUnlockQueue
 </UL>
 
 <P><STRONG><a name="[123]"></a>xTaskResumeAll</STRONG> (Thumb, 224 bytes, Stack size 16 bytes, tasks.o(i.xTaskResumeAll))
 <BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = xTaskResumeAll &rArr; xTaskIncrementTick
 </UL>
 <BR>[Calls]<UL><LI><a href="#[16a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskIncrementTick
-<LI><a href="#[1aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vListInsertEnd
-<LI><a href="#[1a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;uxListRemove
-<LI><a href="#[1af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vPortExitCritical
-<LI><a href="#[1ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vPortEnterCritical
-<LI><a href="#[1c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvResetNextTaskUnblockTime
+<LI><a href="#[1ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vListInsertEnd
+<LI><a href="#[1aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;uxListRemove
+<LI><a href="#[1b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vPortExitCritical
+<LI><a href="#[1ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vPortEnterCritical
+<LI><a href="#[1ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvResetNextTaskUnblockTime
 </UL>
 <BR>[Called By]<UL><LI><a href="#[139]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI_GPO_ResetOutputPin
 <LI><a href="#[13a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskDelay
@@ -1574,7 +1578,7 @@ Global Symbols
 <LI><a href="#[18e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskDelayUntil
 <LI><a href="#[116]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xQueueGenericSend
 <LI><a href="#[18a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xQueueReceive
-<LI><a href="#[190]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TransmitBytes
+<LI><a href="#[191]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TransmitBytes
 <LI><a href="#[157]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TransmitCmd
 </UL>
 <P>
@@ -1607,10 +1611,10 @@ Local Symbols
 <P><STRONG><a name="[a6]"></a>UpdatePath</STRONG> (Thumb, 308 bytes, Stack size 64 bytes, kinematics.o(i.UpdatePath))
 <BR><BR>[Stack]<UL><LI>Max Depth = 124<LI>Call Chain = UpdatePath &rArr; arm_mat_mult_f32
 </UL>
-<BR>[Calls]<UL><LI><a href="#[1a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_sin_f32
+<BR>[Calls]<UL><LI><a href="#[1a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_sin_f32
 <LI><a href="#[15f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_mat_mult_f32
 <LI><a href="#[140]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_mat_init_f32
-<LI><a href="#[1a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_cos_f32
+<LI><a href="#[1a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_cos_f32
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> kinematics.o(.constdata)
 </UL>
@@ -1843,9 +1847,9 @@ Local Symbols
 <P><STRONG><a name="[155]"></a>LL_APB1_GRP1_EnableClock</STRONG> (Thumb, 24 bytes, Stack size 8 bytes, board_hw_config.o(i.LL_APB1_GRP1_EnableClock))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = LL_APB1_GRP1_EnableClock
 </UL>
-<BR>[Called By]<UL><LI><a href="#[1a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART3_DynamixelInit
-<LI><a href="#[19e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART5_SerialInit
-<LI><a href="#[194]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART4_RS485_Init
+<BR>[Called By]<UL><LI><a href="#[1a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART3_DynamixelInit
+<LI><a href="#[19f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART5_SerialInit
+<LI><a href="#[195]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART4_RS485_Init
 <LI><a href="#[186]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM5_PWM_Group5678_Init
 <LI><a href="#[184]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM4_PWM_Group1234_Init
 <LI><a href="#[16d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM14_USARTx_TimeoutInit
@@ -1854,18 +1858,18 @@ Local Symbols
 </UL>
 
 <P><STRONG><a name="[16e]"></a>LL_APB1_GRP1_ForceReset</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, board_hw_config.o(i.LL_APB1_GRP1_ForceReset))
-<BR><BR>[Called By]<UL><LI><a href="#[1a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART3_DynamixelInit
-<LI><a href="#[19e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART5_SerialInit
-<LI><a href="#[194]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART4_RS485_Init
+<BR><BR>[Called By]<UL><LI><a href="#[1a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART3_DynamixelInit
+<LI><a href="#[19f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART5_SerialInit
+<LI><a href="#[195]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART4_RS485_Init
 <LI><a href="#[186]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM5_PWM_Group5678_Init
 <LI><a href="#[184]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM4_PWM_Group1234_Init
 <LI><a href="#[16d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM14_USARTx_TimeoutInit
 </UL>
 
 <P><STRONG><a name="[16f]"></a>LL_APB1_GRP1_ReleaseReset</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, board_hw_config.o(i.LL_APB1_GRP1_ReleaseReset))
-<BR><BR>[Called By]<UL><LI><a href="#[1a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART3_DynamixelInit
-<LI><a href="#[19e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART5_SerialInit
-<LI><a href="#[194]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART4_RS485_Init
+<BR><BR>[Called By]<UL><LI><a href="#[1a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART3_DynamixelInit
+<LI><a href="#[19f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART5_SerialInit
+<LI><a href="#[195]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART4_RS485_Init
 <LI><a href="#[186]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM5_PWM_Group5678_Init
 <LI><a href="#[184]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM4_PWM_Group1234_Init
 <LI><a href="#[16d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM14_USARTx_TimeoutInit
@@ -1874,8 +1878,8 @@ Local Symbols
 <P><STRONG><a name="[14c]"></a>LL_APB2_GRP1_EnableClock</STRONG> (Thumb, 24 bytes, Stack size 8 bytes, board_hw_config.o(i.LL_APB2_GRP1_EnableClock))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = LL_APB2_GRP1_EnableClock
 </UL>
-<BR>[Called By]<UL><LI><a href="#[1a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART6_RS485_Init
-<LI><a href="#[1a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART1_TerminalInit
+<BR>[Called By]<UL><LI><a href="#[1a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART6_RS485_Init
+<LI><a href="#[1a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART1_TerminalInit
 <LI><a href="#[188]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM8_WS2812B_Init
 <LI><a href="#[178]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM1_Steppers_PWM_Init
 <LI><a href="#[154]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SYSCFG_PWR_Init
@@ -1883,16 +1887,16 @@ Local Symbols
 </UL>
 
 <P><STRONG><a name="[14a]"></a>LL_APB2_GRP1_ForceReset</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, board_hw_config.o(i.LL_APB2_GRP1_ForceReset))
-<BR><BR>[Called By]<UL><LI><a href="#[1a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART6_RS485_Init
-<LI><a href="#[1a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART1_TerminalInit
+<BR><BR>[Called By]<UL><LI><a href="#[1a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART6_RS485_Init
+<LI><a href="#[1a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART1_TerminalInit
 <LI><a href="#[188]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM8_WS2812B_Init
 <LI><a href="#[178]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM1_Steppers_PWM_Init
 <LI><a href="#[149]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI1_Board_HW_Init
 </UL>
 
 <P><STRONG><a name="[14b]"></a>LL_APB2_GRP1_ReleaseReset</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, board_hw_config.o(i.LL_APB2_GRP1_ReleaseReset))
-<BR><BR>[Called By]<UL><LI><a href="#[1a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART6_RS485_Init
-<LI><a href="#[1a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART1_TerminalInit
+<BR><BR>[Called By]<UL><LI><a href="#[1a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART6_RS485_Init
+<LI><a href="#[1a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART1_TerminalInit
 <LI><a href="#[188]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM8_WS2812B_Init
 <LI><a href="#[178]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM1_Steppers_PWM_Init
 <LI><a href="#[149]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI1_Board_HW_Init
@@ -2018,39 +2022,39 @@ Local Symbols
 <LI><a href="#[16d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM14_USARTx_TimeoutInit
 </UL>
 
-<P><STRONG><a name="[19f]"></a>LL_USART_ConfigAsyncMode</STRONG> (Thumb, 18 bytes, Stack size 0 bytes, board_hw_config.o(i.LL_USART_ConfigAsyncMode))
-<BR><BR>[Called By]<UL><LI><a href="#[1a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART1_TerminalInit
-<LI><a href="#[19e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART5_SerialInit
+<P><STRONG><a name="[1a0]"></a>LL_USART_ConfigAsyncMode</STRONG> (Thumb, 18 bytes, Stack size 0 bytes, board_hw_config.o(i.LL_USART_ConfigAsyncMode))
+<BR><BR>[Called By]<UL><LI><a href="#[1a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART1_TerminalInit
+<LI><a href="#[19f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART5_SerialInit
 </UL>
 
-<P><STRONG><a name="[195]"></a>LL_USART_ConfigHalfDuplexMode</STRONG> (Thumb, 26 bytes, Stack size 0 bytes, board_hw_config.o(i.LL_USART_ConfigHalfDuplexMode))
-<BR><BR>[Called By]<UL><LI><a href="#[1a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART6_RS485_Init
-<LI><a href="#[1a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART3_DynamixelInit
-<LI><a href="#[194]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART4_RS485_Init
+<P><STRONG><a name="[196]"></a>LL_USART_ConfigHalfDuplexMode</STRONG> (Thumb, 26 bytes, Stack size 0 bytes, board_hw_config.o(i.LL_USART_ConfigHalfDuplexMode))
+<BR><BR>[Called By]<UL><LI><a href="#[1a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART6_RS485_Init
+<LI><a href="#[1a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART3_DynamixelInit
+<LI><a href="#[195]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART4_RS485_Init
 </UL>
 
-<P><STRONG><a name="[19b]"></a>LL_USART_Enable</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, board_hw_config.o(i.LL_USART_Enable))
-<BR><BR>[Called By]<UL><LI><a href="#[1a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART6_RS485_Init
-<LI><a href="#[1a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART3_DynamixelInit
-<LI><a href="#[1a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART1_TerminalInit
-<LI><a href="#[19e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART5_SerialInit
-<LI><a href="#[194]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART4_RS485_Init
+<P><STRONG><a name="[19c]"></a>LL_USART_Enable</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, board_hw_config.o(i.LL_USART_Enable))
+<BR><BR>[Called By]<UL><LI><a href="#[1a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART6_RS485_Init
+<LI><a href="#[1a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART3_DynamixelInit
+<LI><a href="#[1a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART1_TerminalInit
+<LI><a href="#[19f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART5_SerialInit
+<LI><a href="#[195]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART4_RS485_Init
 </UL>
 
-<P><STRONG><a name="[19d]"></a>LL_USART_EnableDMAReq_RX</STRONG> (Thumb, 32 bytes, Stack size 0 bytes, board_hw_config.o(i.LL_USART_EnableDMAReq_RX))
-<BR><BR>[Called By]<UL><LI><a href="#[1a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART6_RS485_Init
-<LI><a href="#[1a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART3_DynamixelInit
-<LI><a href="#[1a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART1_TerminalInit
-<LI><a href="#[19e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART5_SerialInit
-<LI><a href="#[194]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART4_RS485_Init
+<P><STRONG><a name="[19e]"></a>LL_USART_EnableDMAReq_RX</STRONG> (Thumb, 32 bytes, Stack size 0 bytes, board_hw_config.o(i.LL_USART_EnableDMAReq_RX))
+<BR><BR>[Called By]<UL><LI><a href="#[1a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART6_RS485_Init
+<LI><a href="#[1a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART3_DynamixelInit
+<LI><a href="#[1a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART1_TerminalInit
+<LI><a href="#[19f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART5_SerialInit
+<LI><a href="#[195]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART4_RS485_Init
 </UL>
 
-<P><STRONG><a name="[19c]"></a>LL_USART_EnableDMAReq_TX</STRONG> (Thumb, 32 bytes, Stack size 0 bytes, board_hw_config.o(i.LL_USART_EnableDMAReq_TX))
-<BR><BR>[Called By]<UL><LI><a href="#[1a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART6_RS485_Init
-<LI><a href="#[1a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART3_DynamixelInit
-<LI><a href="#[1a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART1_TerminalInit
-<LI><a href="#[19e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART5_SerialInit
-<LI><a href="#[194]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART4_RS485_Init
+<P><STRONG><a name="[19d]"></a>LL_USART_EnableDMAReq_TX</STRONG> (Thumb, 32 bytes, Stack size 0 bytes, board_hw_config.o(i.LL_USART_EnableDMAReq_TX))
+<BR><BR>[Called By]<UL><LI><a href="#[1a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART6_RS485_Init
+<LI><a href="#[1a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART3_DynamixelInit
+<LI><a href="#[1a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART1_TerminalInit
+<LI><a href="#[19f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART5_SerialInit
+<LI><a href="#[195]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART4_RS485_Init
 </UL>
 
 <P><STRONG><a name="[13f]"></a>LL_USART_SetBaudRate</STRONG> (Thumb, 440 bytes, Stack size 48 bytes, board_hw_config.o(i.LL_USART_SetBaudRate))
@@ -2058,61 +2062,61 @@ Local Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[10a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_uldivmod
 </UL>
-<BR>[Called By]<UL><LI><a href="#[1a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART6_RS485_Init
-<LI><a href="#[1a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART3_DynamixelInit
-<LI><a href="#[1a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART1_TerminalInit
-<LI><a href="#[19e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART5_SerialInit
-<LI><a href="#[194]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART4_RS485_Init
+<BR>[Called By]<UL><LI><a href="#[1a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART6_RS485_Init
+<LI><a href="#[1a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART3_DynamixelInit
+<LI><a href="#[1a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART1_TerminalInit
+<LI><a href="#[19f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART5_SerialInit
+<LI><a href="#[195]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART4_RS485_Init
 </UL>
 
-<P><STRONG><a name="[198]"></a>LL_USART_SetDataWidth</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, board_hw_config.o(i.LL_USART_SetDataWidth))
-<BR><BR>[Called By]<UL><LI><a href="#[1a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART6_RS485_Init
-<LI><a href="#[1a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART3_DynamixelInit
-<LI><a href="#[1a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART1_TerminalInit
-<LI><a href="#[19e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART5_SerialInit
-<LI><a href="#[194]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART4_RS485_Init
+<P><STRONG><a name="[199]"></a>LL_USART_SetDataWidth</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, board_hw_config.o(i.LL_USART_SetDataWidth))
+<BR><BR>[Called By]<UL><LI><a href="#[1a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART6_RS485_Init
+<LI><a href="#[1a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART3_DynamixelInit
+<LI><a href="#[1a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART1_TerminalInit
+<LI><a href="#[19f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART5_SerialInit
+<LI><a href="#[195]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART4_RS485_Init
 </UL>
 
-<P><STRONG><a name="[197]"></a>LL_USART_SetOverSampling</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, board_hw_config.o(i.LL_USART_SetOverSampling))
-<BR><BR>[Called By]<UL><LI><a href="#[1a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART6_RS485_Init
-<LI><a href="#[1a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART3_DynamixelInit
-<LI><a href="#[1a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART1_TerminalInit
-<LI><a href="#[19e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART5_SerialInit
-<LI><a href="#[194]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART4_RS485_Init
+<P><STRONG><a name="[198]"></a>LL_USART_SetOverSampling</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, board_hw_config.o(i.LL_USART_SetOverSampling))
+<BR><BR>[Called By]<UL><LI><a href="#[1a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART6_RS485_Init
+<LI><a href="#[1a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART3_DynamixelInit
+<LI><a href="#[1a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART1_TerminalInit
+<LI><a href="#[19f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART5_SerialInit
+<LI><a href="#[195]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART4_RS485_Init
 </UL>
 
-<P><STRONG><a name="[199]"></a>LL_USART_SetParity</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, board_hw_config.o(i.LL_USART_SetParity))
-<BR><BR>[Called By]<UL><LI><a href="#[1a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART6_RS485_Init
-<LI><a href="#[1a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART3_DynamixelInit
-<LI><a href="#[1a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART1_TerminalInit
-<LI><a href="#[19e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART5_SerialInit
-<LI><a href="#[194]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART4_RS485_Init
+<P><STRONG><a name="[19a]"></a>LL_USART_SetParity</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, board_hw_config.o(i.LL_USART_SetParity))
+<BR><BR>[Called By]<UL><LI><a href="#[1a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART6_RS485_Init
+<LI><a href="#[1a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART3_DynamixelInit
+<LI><a href="#[1a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART1_TerminalInit
+<LI><a href="#[19f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART5_SerialInit
+<LI><a href="#[195]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART4_RS485_Init
 </UL>
 
-<P><STRONG><a name="[196]"></a>LL_USART_SetStopBitsLength</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, board_hw_config.o(i.LL_USART_SetStopBitsLength))
-<BR><BR>[Called By]<UL><LI><a href="#[1a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART6_RS485_Init
-<LI><a href="#[1a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART3_DynamixelInit
-<LI><a href="#[1a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART1_TerminalInit
-<LI><a href="#[19e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART5_SerialInit
-<LI><a href="#[194]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART4_RS485_Init
+<P><STRONG><a name="[197]"></a>LL_USART_SetStopBitsLength</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, board_hw_config.o(i.LL_USART_SetStopBitsLength))
+<BR><BR>[Called By]<UL><LI><a href="#[1a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART6_RS485_Init
+<LI><a href="#[1a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART3_DynamixelInit
+<LI><a href="#[1a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART1_TerminalInit
+<LI><a href="#[19f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART5_SerialInit
+<LI><a href="#[195]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART4_RS485_Init
 </UL>
 
-<P><STRONG><a name="[19a]"></a>LL_USART_SetTransferDirection</STRONG> (Thumb, 38 bytes, Stack size 8 bytes, board_hw_config.o(i.LL_USART_SetTransferDirection))
+<P><STRONG><a name="[19b]"></a>LL_USART_SetTransferDirection</STRONG> (Thumb, 38 bytes, Stack size 8 bytes, board_hw_config.o(i.LL_USART_SetTransferDirection))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = LL_USART_SetTransferDirection
 </UL>
-<BR>[Called By]<UL><LI><a href="#[1a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART6_RS485_Init
-<LI><a href="#[1a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART3_DynamixelInit
-<LI><a href="#[1a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART1_TerminalInit
-<LI><a href="#[19e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART5_SerialInit
-<LI><a href="#[194]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART4_RS485_Init
+<BR>[Called By]<UL><LI><a href="#[1a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART6_RS485_Init
+<LI><a href="#[1a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART3_DynamixelInit
+<LI><a href="#[1a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART1_TerminalInit
+<LI><a href="#[19f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART5_SerialInit
+<LI><a href="#[195]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART4_RS485_Init
 </UL>
 
 <P><STRONG><a name="[176]"></a>__NVIC_EnableIRQ</STRONG> (Thumb, 26 bytes, Stack size 0 bytes, board_hw_config.o(i.__NVIC_EnableIRQ))
-<BR><BR>[Called By]<UL><LI><a href="#[1a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART6_RS485_Init
-<LI><a href="#[1a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART3_DynamixelInit
-<LI><a href="#[1a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART1_TerminalInit
-<LI><a href="#[19e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART5_SerialInit
-<LI><a href="#[194]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART4_RS485_Init
+<BR><BR>[Called By]<UL><LI><a href="#[1a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART6_RS485_Init
+<LI><a href="#[1a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART3_DynamixelInit
+<LI><a href="#[1a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART1_TerminalInit
+<LI><a href="#[19f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART5_SerialInit
+<LI><a href="#[195]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART4_RS485_Init
 <LI><a href="#[188]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM8_WS2812B_Init
 <LI><a href="#[178]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM1_Steppers_PWM_Init
 <LI><a href="#[16d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM14_USARTx_TimeoutInit
@@ -2121,11 +2125,11 @@ Local Symbols
 <P><STRONG><a name="[175]"></a>__NVIC_SetPriority</STRONG> (Thumb, 32 bytes, Stack size 8 bytes, board_hw_config.o(i.__NVIC_SetPriority))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = __NVIC_SetPriority
 </UL>
-<BR>[Called By]<UL><LI><a href="#[1a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART6_RS485_Init
-<LI><a href="#[1a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART3_DynamixelInit
-<LI><a href="#[1a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART1_TerminalInit
-<LI><a href="#[19e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART5_SerialInit
-<LI><a href="#[194]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART4_RS485_Init
+<BR>[Called By]<UL><LI><a href="#[1a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART6_RS485_Init
+<LI><a href="#[1a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART3_DynamixelInit
+<LI><a href="#[1a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART1_TerminalInit
+<LI><a href="#[19f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART5_SerialInit
+<LI><a href="#[195]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART4_RS485_Init
 <LI><a href="#[188]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM8_WS2812B_Init
 <LI><a href="#[178]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM1_Steppers_PWM_Init
 <LI><a href="#[16d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM14_USARTx_TimeoutInit
@@ -2459,7 +2463,7 @@ Local Symbols
 <BR>[Address Reference Count : 1]<UL><LI> usartx_communication.o(.constdata)
 </UL>
 <P><STRONG><a name="[111]"></a>GetLine</STRONG> (Thumb, 82 bytes, Stack size 0 bytes, usartx_communication.o(i.GetLine))
-<BR><BR>[Called By]<UL><LI><a href="#[193]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USARTx_IRQ_Process
+<BR><BR>[Called By]<UL><LI><a href="#[194]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USARTx_IRQ_Process
 <LI><a href="#[23]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GetLineResources
 <LI><a href="#[c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BindProtocol
 </UL>
@@ -2510,7 +2514,7 @@ Local Symbols
 <P><STRONG><a name="[163]"></a>LL_USART_ClearFlag_IDLE</STRONG> (Thumb, 16 bytes, Stack size 8 bytes, usartx_communication.o(i.LL_USART_ClearFlag_IDLE))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = LL_USART_ClearFlag_IDLE
 </UL>
-<BR>[Called By]<UL><LI><a href="#[193]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USARTx_IRQ_Process
+<BR>[Called By]<UL><LI><a href="#[194]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USARTx_IRQ_Process
 <LI><a href="#[26]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StartRx
 </UL>
 
@@ -2582,7 +2586,7 @@ Local Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> usartx_communication.o(.data)
 </UL>
-<P><STRONG><a name="[1a3]"></a>IRQ_Process</STRONG> (Thumb, 128 bytes, Stack size 16 bytes, usartx_timeout.o(i.IRQ_Process))
+<P><STRONG><a name="[1a4]"></a>IRQ_Process</STRONG> (Thumb, 128 bytes, Stack size 16 bytes, usartx_timeout.o(i.IRQ_Process))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = IRQ_Process
 </UL>
 <BR>[Called By]<UL><LI><a href="#[187]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USARTx_Timeout_IRQ_Process
@@ -2958,12 +2962,12 @@ Local Symbols
 <LI><a href="#[11d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskSuspendAll
 <LI><a href="#[148]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;FIFO_IsNotFull
 <LI><a href="#[127]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;FIFO_Add
-<LI><a href="#[192]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TransmitNext
+<LI><a href="#[193]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TransmitNext
 </UL>
 <BR>[Called By]<UL><LI><a href="#[e9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SendResponse
 </UL>
 
-<P><STRONG><a name="[192]"></a>TransmitNext</STRONG> (Thumb, 38 bytes, Stack size 16 bytes, hl_rtu.o(i.TransmitNext))
+<P><STRONG><a name="[193]"></a>TransmitNext</STRONG> (Thumb, 38 bytes, Stack size 16 bytes, hl_rtu.o(i.TransmitNext))
 <BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = TransmitNext &rArr; FIFO_Remove &rArr; FIFO_MovePtr
 </UL>
 <BR>[Calls]<UL><LI><a href="#[12a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;FIFO_Remove
@@ -2976,7 +2980,7 @@ Local Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 48<LI>Call Chain = TxCompleteCallback &rArr; TransmitNext &rArr; FIFO_Remove &rArr; FIFO_MovePtr
 </UL>
 <BR>[Calls]<UL><LI><a href="#[118]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;FIFO_IsNotEmpty
-<LI><a href="#[192]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TransmitNext
+<LI><a href="#[193]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TransmitNext
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> hl_rtu.o(i.InitLine)
 </UL>
@@ -3107,39 +3111,39 @@ Local Symbols
 <P><STRONG><a name="[9f]"></a>RxTimeoutCallback</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, serial.o(i.RxTimeoutCallback))
 <BR>[Address Reference Count : 1]<UL><LI> serial.o(i.InitLine)
 </UL>
-<P><STRONG><a name="[190]"></a>TransmitBytes</STRONG> (Thumb, 78 bytes, Stack size 16 bytes, serial.o(i.TransmitBytes))
+<P><STRONG><a name="[191]"></a>TransmitBytes</STRONG> (Thumb, 78 bytes, Stack size 16 bytes, serial.o(i.TransmitBytes))
 <BR><BR>[Stack]<UL><LI>Max Depth = 56<LI>Call Chain = TransmitBytes &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
 </UL>
 <BR>[Calls]<UL><LI><a href="#[123]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskResumeAll
 <LI><a href="#[11d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskSuspendAll
 <LI><a href="#[148]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;FIFO_IsNotFull
 <LI><a href="#[127]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;FIFO_Add
-<LI><a href="#[191]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TransmitNextQueueElement
+<LI><a href="#[192]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TransmitNextQueueElement
 </UL>
 <BR>[Called By]<UL><LI><a href="#[f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WriteBytes
 </UL>
 
-<P><STRONG><a name="[191]"></a>TransmitNextQueueElement</STRONG> (Thumb, 30 bytes, Stack size 8 bytes, serial.o(i.TransmitNextQueueElement))
+<P><STRONG><a name="[192]"></a>TransmitNextQueueElement</STRONG> (Thumb, 30 bytes, Stack size 8 bytes, serial.o(i.TransmitNextQueueElement))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = TransmitNextQueueElement &rArr; FIFO_Remove &rArr; FIFO_MovePtr
 </UL>
 <BR>[Calls]<UL><LI><a href="#[12a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;FIFO_Remove
 </UL>
 <BR>[Called By]<UL><LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TxCompleteCallback
-<LI><a href="#[190]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TransmitBytes
+<LI><a href="#[191]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TransmitBytes
 </UL>
 
 <P><STRONG><a name="[9d]"></a>TxCompleteCallback</STRONG> (Thumb, 38 bytes, Stack size 8 bytes, serial.o(i.TxCompleteCallback))
 <BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = TxCompleteCallback &rArr; TransmitNextQueueElement &rArr; FIFO_Remove &rArr; FIFO_MovePtr
 </UL>
 <BR>[Calls]<UL><LI><a href="#[118]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;FIFO_IsNotEmpty
-<LI><a href="#[191]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TransmitNextQueueElement
+<LI><a href="#[192]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TransmitNextQueueElement
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> serial.o(i.InitLine)
 </UL>
 <P><STRONG><a name="[f6]"></a>WriteBytes</STRONG> (Thumb, 56 bytes, Stack size 40 bytes, serial.o(i.WriteBytes))
 <BR><BR>[Stack]<UL><LI>Max Depth = 96<LI>Call Chain = WriteBytes &rArr; TransmitBytes &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
 </UL>
-<BR>[Calls]<UL><LI><a href="#[190]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TransmitBytes
+<BR>[Calls]<UL><LI><a href="#[191]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TransmitBytes
 <LI><a href="#[128]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memcpy
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> serial.o(.constdata)
@@ -3217,10 +3221,21 @@ Local Symbols
 <P><STRONG><a name="[100]"></a>GetTaskHandle</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, gripper_task.o(i.GetTaskHandle))
 <BR>[Address Reference Count : 1]<UL><LI> gripper_task.o(.constdata)
 </UL>
-<P><STRONG><a name="[94]"></a>Task</STRONG> (Thumb, 152 bytes, Stack size 8 bytes, gripper_task.o(i.Task))
-<BR><BR>[Stack]<UL><LI>Max Depth = 64<LI>Call Chain = Task &rArr; vTaskDelay &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
+<P><STRONG><a name="[190]"></a>RotateGripper</STRONG> (Thumb, 128 bytes, Stack size 48 bytes, gripper_task.o(i.RotateGripper))
+<BR><BR>[Stack]<UL><LI>Max Depth = 48<LI>Call Chain = RotateGripper
 </UL>
-<BR>[Calls]<UL><LI><a href="#[13a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskDelay
+<BR>[Called By]<UL><LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Task
+</UL>
+
+<P><STRONG><a name="[94]"></a>Task</STRONG> (Thumb, 1380 bytes, Stack size 24 bytes, gripper_task.o(i.Task))
+<BR><BR>[Stack]<UL><LI>Max Depth = 80<LI>Call Chain = Task &rArr; SPI_GPO_ResetOutputPin &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
+</UL>
+<BR>[Calls]<UL><LI><a href="#[159]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MaxonsEnable
+<LI><a href="#[15a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MaxonsDisable
+<LI><a href="#[139]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI_GPO_ResetOutputPin
+<LI><a href="#[13a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskDelay
+<LI><a href="#[13b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI_GPO_SetOutputPin
+<LI><a href="#[190]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RotateGripper
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> gripper_task.o(i.CreateTask)
 </UL>
@@ -3286,7 +3301,7 @@ Local Symbols
 <P><STRONG><a name="[a1]"></a>prvTaskExitError</STRONG> (Thumb, 60 bytes, Stack size 0 bytes, port.o(i.prvTaskExitError))
 <BR>[Address Reference Count : 1]<UL><LI> port.o(i.pxPortInitialiseStack)
 </UL>
-<P><STRONG><a name="[1b2]"></a>prvCopyDataFromQueue</STRONG> (Thumb, 42 bytes, Stack size 16 bytes, queue.o(i.prvCopyDataFromQueue))
+<P><STRONG><a name="[1b3]"></a>prvCopyDataFromQueue</STRONG> (Thumb, 42 bytes, Stack size 16 bytes, queue.o(i.prvCopyDataFromQueue))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = prvCopyDataFromQueue
 </UL>
 <BR>[Calls]<UL><LI><a href="#[128]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memcpy
@@ -3294,116 +3309,116 @@ Local Symbols
 <BR>[Called By]<UL><LI><a href="#[18a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xQueueReceive
 </UL>
 
-<P><STRONG><a name="[1b3]"></a>prvCopyDataToQueue</STRONG> (Thumb, 126 bytes, Stack size 24 bytes, queue.o(i.prvCopyDataToQueue))
+<P><STRONG><a name="[1b4]"></a>prvCopyDataToQueue</STRONG> (Thumb, 126 bytes, Stack size 24 bytes, queue.o(i.prvCopyDataToQueue))
 <BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = prvCopyDataToQueue &rArr; xTaskPriorityDisinherit
 </UL>
-<BR>[Calls]<UL><LI><a href="#[1b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskPriorityDisinherit
+<BR>[Calls]<UL><LI><a href="#[1b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskPriorityDisinherit
 <LI><a href="#[128]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memcpy
 </UL>
 <BR>[Called By]<UL><LI><a href="#[116]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xQueueGenericSend
 </UL>
 
-<P><STRONG><a name="[1b5]"></a>prvInitialiseNewQueue</STRONG> (Thumb, 38 bytes, Stack size 24 bytes, queue.o(i.prvInitialiseNewQueue))
+<P><STRONG><a name="[1b6]"></a>prvInitialiseNewQueue</STRONG> (Thumb, 38 bytes, Stack size 24 bytes, queue.o(i.prvInitialiseNewQueue))
 <BR><BR>[Stack]<UL><LI>Max Depth = 56<LI>Call Chain = prvInitialiseNewQueue &rArr; xQueueGenericReset &rArr; xTaskRemoveFromEventList
 </UL>
-<BR>[Calls]<UL><LI><a href="#[1b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xQueueGenericReset
+<BR>[Calls]<UL><LI><a href="#[1b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xQueueGenericReset
 </UL>
 <BR>[Called By]<UL><LI><a href="#[18c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xQueueGenericCreateStatic
 </UL>
 
-<P><STRONG><a name="[1bb]"></a>prvIsQueueEmpty</STRONG> (Thumb, 26 bytes, Stack size 16 bytes, queue.o(i.prvIsQueueEmpty))
+<P><STRONG><a name="[1bc]"></a>prvIsQueueEmpty</STRONG> (Thumb, 26 bytes, Stack size 16 bytes, queue.o(i.prvIsQueueEmpty))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = prvIsQueueEmpty
 </UL>
-<BR>[Calls]<UL><LI><a href="#[1af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vPortExitCritical
-<LI><a href="#[1ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vPortEnterCritical
+<BR>[Calls]<UL><LI><a href="#[1b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vPortExitCritical
+<LI><a href="#[1ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vPortEnterCritical
 </UL>
 <BR>[Called By]<UL><LI><a href="#[18a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xQueueReceive
 </UL>
 
-<P><STRONG><a name="[1bc]"></a>prvIsQueueFull</STRONG> (Thumb, 30 bytes, Stack size 16 bytes, queue.o(i.prvIsQueueFull))
+<P><STRONG><a name="[1bd]"></a>prvIsQueueFull</STRONG> (Thumb, 30 bytes, Stack size 16 bytes, queue.o(i.prvIsQueueFull))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = prvIsQueueFull
 </UL>
-<BR>[Calls]<UL><LI><a href="#[1af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vPortExitCritical
-<LI><a href="#[1ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vPortEnterCritical
+<BR>[Calls]<UL><LI><a href="#[1b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vPortExitCritical
+<LI><a href="#[1ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vPortEnterCritical
 </UL>
 <BR>[Called By]<UL><LI><a href="#[116]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xQueueGenericSend
 </UL>
 
-<P><STRONG><a name="[1bd]"></a>prvUnlockQueue</STRONG> (Thumb, 126 bytes, Stack size 16 bytes, queue.o(i.prvUnlockQueue))
+<P><STRONG><a name="[1be]"></a>prvUnlockQueue</STRONG> (Thumb, 126 bytes, Stack size 16 bytes, queue.o(i.prvUnlockQueue))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = prvUnlockQueue &rArr; xTaskRemoveFromEventList
 </UL>
-<BR>[Calls]<UL><LI><a href="#[1be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskRemoveFromEventList
-<LI><a href="#[1bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskMissedYield
-<LI><a href="#[1af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vPortExitCritical
-<LI><a href="#[1ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vPortEnterCritical
+<BR>[Calls]<UL><LI><a href="#[1bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskRemoveFromEventList
+<LI><a href="#[1c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskMissedYield
+<LI><a href="#[1b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vPortExitCritical
+<LI><a href="#[1ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vPortEnterCritical
 </UL>
 <BR>[Called By]<UL><LI><a href="#[116]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xQueueGenericSend
 <LI><a href="#[18a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xQueueReceive
 </UL>
 
-<P><STRONG><a name="[1a8]"></a>prvAddCurrentTaskToDelayedList</STRONG> (Thumb, 134 bytes, Stack size 24 bytes, tasks.o(i.prvAddCurrentTaskToDelayedList))
+<P><STRONG><a name="[1a9]"></a>prvAddCurrentTaskToDelayedList</STRONG> (Thumb, 134 bytes, Stack size 24 bytes, tasks.o(i.prvAddCurrentTaskToDelayedList))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = prvAddCurrentTaskToDelayedList &rArr; vListInsert
 </UL>
-<BR>[Calls]<UL><LI><a href="#[1aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vListInsertEnd
-<LI><a href="#[1ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vListInsert
-<LI><a href="#[1a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;uxListRemove
+<BR>[Calls]<UL><LI><a href="#[1ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vListInsertEnd
+<LI><a href="#[1ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vListInsert
+<LI><a href="#[1aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;uxListRemove
 </UL>
 <BR>[Called By]<UL><LI><a href="#[13a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskDelay
 <LI><a href="#[18e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskDelayUntil
-<LI><a href="#[1c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskPlaceOnEventList
+<LI><a href="#[1c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskPlaceOnEventList
 </UL>
 
-<P><STRONG><a name="[1ac]"></a>prvAddNewTaskToReadyList</STRONG> (Thumb, 150 bytes, Stack size 8 bytes, tasks.o(i.prvAddNewTaskToReadyList))
+<P><STRONG><a name="[1ad]"></a>prvAddNewTaskToReadyList</STRONG> (Thumb, 150 bytes, Stack size 8 bytes, tasks.o(i.prvAddNewTaskToReadyList))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = prvAddNewTaskToReadyList &rArr; prvInitialiseTaskLists
 </UL>
-<BR>[Calls]<UL><LI><a href="#[1aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vListInsertEnd
-<LI><a href="#[1af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vPortExitCritical
-<LI><a href="#[1ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vPortEnterCritical
-<LI><a href="#[1ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvInitialiseTaskLists
+<BR>[Calls]<UL><LI><a href="#[1ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vListInsertEnd
+<LI><a href="#[1b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vPortExitCritical
+<LI><a href="#[1ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vPortEnterCritical
+<LI><a href="#[1af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvInitialiseTaskLists
 </UL>
 <BR>[Called By]<UL><LI><a href="#[11a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskCreateStatic
 </UL>
 
-<P><STRONG><a name="[1b0]"></a>prvCheckTasksWaitingTermination</STRONG> (Thumb, 60 bytes, Stack size 8 bytes, tasks.o(i.prvCheckTasksWaitingTermination))
+<P><STRONG><a name="[1b1]"></a>prvCheckTasksWaitingTermination</STRONG> (Thumb, 60 bytes, Stack size 8 bytes, tasks.o(i.prvCheckTasksWaitingTermination))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = prvCheckTasksWaitingTermination
 </UL>
-<BR>[Calls]<UL><LI><a href="#[1a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;uxListRemove
-<LI><a href="#[1af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vPortExitCritical
-<LI><a href="#[1ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vPortEnterCritical
-<LI><a href="#[1b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvDeleteTCB
+<BR>[Calls]<UL><LI><a href="#[1aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;uxListRemove
+<LI><a href="#[1b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vPortExitCritical
+<LI><a href="#[1ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vPortEnterCritical
+<LI><a href="#[1b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvDeleteTCB
 </UL>
 <BR>[Called By]<UL><LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvIdleTask
 </UL>
 
-<P><STRONG><a name="[1b1]"></a>prvDeleteTCB</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, tasks.o(i.prvDeleteTCB))
-<BR><BR>[Called By]<UL><LI><a href="#[1b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvCheckTasksWaitingTermination
+<P><STRONG><a name="[1b2]"></a>prvDeleteTCB</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, tasks.o(i.prvDeleteTCB))
+<BR><BR>[Called By]<UL><LI><a href="#[1b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvCheckTasksWaitingTermination
 </UL>
 
 <P><STRONG><a name="[a2]"></a>prvIdleTask</STRONG> (Thumb, 32 bytes, Stack size 0 bytes, tasks.o(i.prvIdleTask))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = prvIdleTask &rArr; prvCheckTasksWaitingTermination
 </UL>
-<BR>[Calls]<UL><LI><a href="#[1b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvCheckTasksWaitingTermination
+<BR>[Calls]<UL><LI><a href="#[1b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvCheckTasksWaitingTermination
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> tasks.o(i.vTaskStartScheduler)
 </UL>
-<P><STRONG><a name="[1b7]"></a>prvInitialiseNewTask</STRONG> (Thumb, 184 bytes, Stack size 56 bytes, tasks.o(i.prvInitialiseNewTask))
+<P><STRONG><a name="[1b8]"></a>prvInitialiseNewTask</STRONG> (Thumb, 184 bytes, Stack size 56 bytes, tasks.o(i.prvInitialiseNewTask))
 <BR><BR>[Stack]<UL><LI>Max Depth = 56<LI>Call Chain = prvInitialiseNewTask
 </UL>
-<BR>[Calls]<UL><LI><a href="#[1b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;pxPortInitialiseStack
-<LI><a href="#[1b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vListInitialiseItem
+<BR>[Calls]<UL><LI><a href="#[1ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;pxPortInitialiseStack
+<LI><a href="#[1b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vListInitialiseItem
 </UL>
 <BR>[Called By]<UL><LI><a href="#[11a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskCreateStatic
 </UL>
 
-<P><STRONG><a name="[1ae]"></a>prvInitialiseTaskLists</STRONG> (Thumb, 70 bytes, Stack size 8 bytes, tasks.o(i.prvInitialiseTaskLists))
+<P><STRONG><a name="[1af]"></a>prvInitialiseTaskLists</STRONG> (Thumb, 70 bytes, Stack size 8 bytes, tasks.o(i.prvInitialiseTaskLists))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = prvInitialiseTaskLists
 </UL>
-<BR>[Calls]<UL><LI><a href="#[1ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vListInitialise
+<BR>[Calls]<UL><LI><a href="#[1bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vListInitialise
 </UL>
-<BR>[Called By]<UL><LI><a href="#[1ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvAddNewTaskToReadyList
+<BR>[Called By]<UL><LI><a href="#[1ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvAddNewTaskToReadyList
 </UL>
 
-<P><STRONG><a name="[1c9]"></a>prvResetNextTaskUnblockTime</STRONG> (Thumb, 40 bytes, Stack size 0 bytes, tasks.o(i.prvResetNextTaskUnblockTime))
+<P><STRONG><a name="[1ca]"></a>prvResetNextTaskUnblockTime</STRONG> (Thumb, 40 bytes, Stack size 0 bytes, tasks.o(i.prvResetNextTaskUnblockTime))
 <BR><BR>[Called By]<UL><LI><a href="#[123]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskResumeAll
 <LI><a href="#[16a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskIncrementTick
 </UL>

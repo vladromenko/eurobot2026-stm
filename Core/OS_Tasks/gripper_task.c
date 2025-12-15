@@ -67,9 +67,12 @@ static StaticTask_t task_buffer;
 
 //#define MAXON
 //#define VALVES_4
-#define SERVO
+//#define SERVO
 //#define GRIPPER_V2
 //#define DYNAMIXEL
+//#define DEMO_GRIPPER
+//#define DEMO_MOVE
+#define DEMO_VALVE
 
 
 /**
@@ -86,7 +89,7 @@ static void RotateGripper(USART_TypeDef* usart, uint8_t id_1, uint8_t id_2, uint
     uint8_t num_devices = sizeof(device_ids) / sizeof(device_ids[0]); // universal counter of devices
 
     // Transform angle from deg to Goal Position Register (0-1023)
-    if (angle > 300) angle = 300; // Ограничиваем максимальный угол
+    if (angle > 300) angle = 300; // max angle limit
     uint16_t goal_position_value = (uint16_t)(((float)angle * 1023.0f) / 300.0f);
 
     // Prepare data for SyncWrite
@@ -113,7 +116,7 @@ static void Task(void *arg)
 	uint8_t dynamixel_id_2 = 112;
 	uint16_t dynamixel_speed = 150; //0-1024
 	uint8_t start_angle = 62; //0-300 60
-	uint8_t end_angle = 125; //0-300 150
+	uint8_t end_angle = 135; //0-300 150 125
 
 	uint8_t servo5_start_angle = 90; // left shift servo
 	uint8_t servo5_end_angle = 170;
@@ -125,6 +128,7 @@ static void Task(void *arg)
 	ValveDisable(3);
 	ValveDisable(4);
 	*/
+
 	//uint8_t dynamixel_id = 0xFE;
 	
 	// Set custom id to single dynamixel (DISCONNECT ANY OTHER DYNAMIXELS!)
@@ -134,12 +138,14 @@ static void Task(void *arg)
 		dynamixel_id --;
 		if(Dynamixel_AX.Ping(USART3, dynamixel_id) == 0)
 		{
-			Dynamixel_AX.Set_ID(USART3, dynamixel_id, 22);
+			Dynamixel_AX.Set_ID(USART3, dynamixel_id, 4);
 			break;
 		}
 	}
-	Dynamixel_AX.SetAngle(USART3, 15, 0);
+	Dynamixel_AX.TorqueEnable(USART3, 4);
+	Dynamixel_AX.SetAngle(USART3, 4, 0);
 	*/
+	
 
 	/*
 	uint8_t maxon_id = 0xFE;
@@ -213,8 +219,52 @@ static void Task(void *arg)
 		RC_Servo.Enable(RC_SERVO_5);
 		RC_Servo.Enable(RC_SERVO_6);
 
-		RC_Servo.SetServoAngle(RC_SERVO_1, 500, 2500, 180, 0);
-		RC_Servo.SetServoAngle(RC_SERVO_2, 500, 2500, 180, 0);
+		RC_Servo.SetServoAngle(RC_SERVO_1, 450, 2500, 200, 0);
+		RC_Servo.SetServoAngle(RC_SERVO_2, 450, 2500, 200, 0);
+		RC_Servo.SetServoAngle(RC_SERVO_3, 500, 2500, 180, 0);
+		RC_Servo.SetServoAngle(RC_SERVO_4, 500, 2500, 180, 0);
+		RC_Servo.SetServoAngle(RC_SERVO_5, 500, 2500, 180, servo5_start_angle); //shift servos
+		RC_Servo.SetServoAngle(RC_SERVO_6, 500, 2500, 180, servo6_start_angle);
+		vTaskDelay(500);
+	#endif
+
+	#ifdef DEMO_MOVE
+		MaxonsDisable();
+    	Kinematics.MatrixInit();
+    	MaxonsEnable();
+		vTaskDelay(500);
+	#endif
+
+	#ifdef DEMO_GRIPPER
+
+	#endif
+
+		#ifdef DEMO_VALVE
+		// dynamixels init
+		Dynamixel_AX.TorqueEnable(USART3, dynamixel_id_1);
+		Dynamixel_AX.TorqueEnable(USART3, dynamixel_id_2);
+
+		Dynamixel_AX.SetMovingSpeed(USART3, dynamixel_id_1, dynamixel_speed);
+		Dynamixel_AX.SetMovingSpeed(USART3, dynamixel_id_2, dynamixel_speed);
+		RotateGripper(USART3, dynamixel_id_1, dynamixel_id_2, 70);
+		vTaskDelay(100);
+
+		// maxons init
+		MaxonsDisable();
+    	Kinematics.MatrixInit();
+    	MaxonsEnable();
+		vTaskDelay(500);
+
+		// servos init
+		RC_Servo.Enable(RC_SERVO_1);
+		RC_Servo.Enable(RC_SERVO_2);
+		RC_Servo.Enable(RC_SERVO_3);
+		RC_Servo.Enable(RC_SERVO_4);
+		RC_Servo.Enable(RC_SERVO_5);
+		RC_Servo.Enable(RC_SERVO_6);
+
+		RC_Servo.SetServoAngle(RC_SERVO_1, 450, 2500, 200, 0);
+		RC_Servo.SetServoAngle(RC_SERVO_2, 450, 2500, 200, 0);
 		RC_Servo.SetServoAngle(RC_SERVO_3, 500, 2500, 180, 0);
 		RC_Servo.SetServoAngle(RC_SERVO_4, 500, 2500, 180, 0);
 		RC_Servo.SetServoAngle(RC_SERVO_5, 500, 2500, 180, servo5_start_angle); //shift servos
@@ -445,107 +495,441 @@ static void Task(void *arg)
 		#endif
 
 		#ifdef GRIPPER_V2
-			struct speed_s speed; // local variable [Vx, Vy, omega] to prevent global rewriting and data race
-			/*
-			speed.dphi = 1.57f;
-			speed.dx = 0;
-			speed.dy = 0;
-			Odometry.SetSpeed(&speed);
-			vTaskDelay(1000);
-			*/
-			speed.dphi = 0;
-			speed.dx = -0.1f;
-			speed.dy = 0;
-			Odometry.SetSpeed(&speed);
-			vTaskDelay(500);
+			if(robot_ctrl.linear_switch_1 == LINEAR_SWITCH_PRESSED)
+			{
+				struct speed_s speed; // local variable [Vx, Vy, omega] to prevent global rewriting and data race
+				/*
+				speed.dphi = 1.57f;
+				speed.dx = 0;
+				speed.dy = 0;
+				Odometry.SetSpeed(&speed);
+				vTaskDelay(1000);
+				*/
+				speed.dphi = 0;
+				speed.dx = -0.1f;
+				speed.dy = 0;
+				Odometry.SetSpeed(&speed);
+				vTaskDelay(500);
 
-			speed.dphi = 0;
-			speed.dx = 0;
-			speed.dy = 0;
-			Odometry.SetSpeed(&speed);
-			vTaskDelay(100);
+				speed.dphi = 0;
+				speed.dx = 0;
+				speed.dy = 0;
+				Odometry.SetSpeed(&speed);
+				vTaskDelay(100);
 
-			//SPI_GPO_SetOutputPin(SPI_GPO_ALL);
-			SPI_GPO_ResetOutputPin(SPI_POWER_OUTPUT_3);
-			
-			SPI_GPO_SetOutputPin(SPI_POWER_OUTPUT_1 | SPI_POWER_OUTPUT_2); // turn on pumps
-			vTaskDelay(1000);
-			//SPI_GPO_SetOutputPin(SPI_POWER_OUTPUT_3); // turn on valve
+				//SPI_GPO_SetOutputPin(SPI_GPO_ALL);
+				SPI_GPO_ResetOutputPin(SPI_POWER_OUTPUT_3);
+				
+				SPI_GPO_SetOutputPin(SPI_POWER_OUTPUT_1 | SPI_POWER_OUTPUT_2); // turn on pumps
+				vTaskDelay(1000);
+				//SPI_GPO_SetOutputPin(SPI_POWER_OUTPUT_3); // turn on valve
 
-			RC_Servo.SetServoAngle(RC_SERVO_1, 500, 2500, 180, 0);
-			RC_Servo.SetServoAngle(RC_SERVO_2, 500, 2500, 180, 0);
-			RC_Servo.SetServoAngle(RC_SERVO_3, 500, 2500, 180, 0);
-			RC_Servo.SetServoAngle(RC_SERVO_4, 500, 2500, 180, 0);
-			vTaskDelay(500);
-			RC_Servo.SetServoAngle(RC_SERVO_5, 500, 2500, 180, servo5_start_angle);
-			RC_Servo.SetServoAngle(RC_SERVO_6, 500, 2500, 180, servo6_start_angle);
-			vTaskDelay(500);
+				RC_Servo.SetServoAngle(RC_SERVO_1, 450, 2550, 200, 0);
+				RC_Servo.SetServoAngle(RC_SERVO_2, 450, 2550, 200, 0);
+				RC_Servo.SetServoAngle(RC_SERVO_3, 450, 2550, 200, 0);
+				RC_Servo.SetServoAngle(RC_SERVO_4, 450, 2550, 200, 0);
+				vTaskDelay(500);
+				RC_Servo.SetServoAngle(RC_SERVO_5, 500, 2500, 180, servo5_start_angle);
+				RC_Servo.SetServoAngle(RC_SERVO_6, 500, 2500, 180, servo6_start_angle);
+				vTaskDelay(500);
 
-			//if(robot_ctrl.linear_switch_3 == LINEAR_SWITCH_RELEASED)
-			//{
+				//if(robot_ctrl.linear_switch_3 == LINEAR_SWITCH_RELEASED)
+				//{
+					RotateGripper(USART3, dynamixel_id_1, dynamixel_id_2, start_angle);
+					//vTaskDelay(1000);
+				//}
+				vTaskDelay(1000);
+
+				speed.dphi = 0;
+				speed.dx = -0.05f;
+				speed.dy = 0;
+				Odometry.SetSpeed(&speed);
+				vTaskDelay(1000);
+
+				speed.dphi = 0;
+				speed.dx = 0;
+				speed.dy = 0;
+				Odometry.SetSpeed(&speed);
+				vTaskDelay(1000);
+
+
+				//if(robot_ctrl.linear_switch_2 == LINEAR_SWITCH_RELEASED)
+				//{
+					RotateGripper(USART3, dynamixel_id_1, dynamixel_id_2, end_angle);
+				//}
+				vTaskDelay(1000);
+
+				// rotation of the grabbed blocks
+				RC_Servo.SetServoAngle(RC_SERVO_5, 500, 2500, 180, servo5_end_angle); // move the block #1 apart
+				vTaskDelay(500);
+				RC_Servo.SetServoAngle(RC_SERVO_6, 500, 2500, 180, servo6_end_angle); // move the block #3 apart
+				vTaskDelay(500);
+				RC_Servo.SetServoAngle(RC_SERVO_1, 450, 2550, 200, 200); // flip the block #1
+				//RC_Servo.SetServoAngle(RC_SERVO_2, 450, 2550, 200, 200); // flip the block #2
+				//RC_Servo.SetServoAngle(RC_SERVO_3, 450, 2550, 200, 200);
+				//RC_Servo.SetServoAngle(RC_SERVO_4, 450, 2550, 200, 200);
+				vTaskDelay(500);
+				RC_Servo.SetServoAngle(RC_SERVO_5, 500, 2500, 180, servo5_start_angle); // move the block #1 apart
+				vTaskDelay(500);
+				RC_Servo.SetServoAngle(RC_SERVO_6, 500, 2500, 180, servo6_start_angle); // move the block #3 apart
+				vTaskDelay(1000);
+
+				//if(robot_ctrl.linear_switch_3 == LINEAR_SWITCH_RELEASED)
+				//{
+					RotateGripper(USART3, dynamixel_id_1, dynamixel_id_2, start_angle);
+					//vTaskDelay(1000);
+				//}
+				vTaskDelay(1000);
+
+				SPI_GPO_SetOutputPin(SPI_POWER_OUTPUT_3); // turn off valve
+				SPI_GPO_ResetOutputPin(SPI_POWER_OUTPUT_1 | SPI_POWER_OUTPUT_2); // turn off pumps
+				vTaskDelay(1000);
+
+				//if(robot_ctrl.linear_switch_2 == LINEAR_SWITCH_RELEASED)
+				//{
+					RotateGripper(USART3, dynamixel_id_1, dynamixel_id_2, end_angle);
+				//}
+				vTaskDelay(1000);
+
+				speed.dphi = 0;
+				speed.dx = 0.05f;
+				speed.dy = 0;
+				Odometry.SetSpeed(&speed);
+				vTaskDelay(500);
+
+				speed.dphi = 0;
+				speed.dx = 0;
+				speed.dy = 0;
+				Odometry.SetSpeed(&speed);
+				vTaskDelay(100);
+
+				vTaskDelay(2000);
+			}
+		#endif
+
+		#ifdef DEMO_MOVE
+			if(robot_ctrl.linear_switch_2 == LINEAR_SWITCH_PRESSED)
+			{
+				struct speed_s speed; // local variable [Vx, Vy, omega] to prevent global rewriting and data race
+
+				speed.dphi = 0;
+				speed.dx = 0;
+				speed.dy = 0;
+				Odometry.SetSpeed(&speed);
+				vTaskDelay(3000);
+
+				// rectangular without rotation
+
+				speed.dphi = 0;
+				speed.dx = -0.2f;
+				speed.dy = 0;
+				Odometry.SetSpeed(&speed);
+				vTaskDelay(1500);
+
+				speed.dphi = 0;
+				speed.dx = 0;
+				speed.dy = -0.2f;
+				Odometry.SetSpeed(&speed);
+				vTaskDelay(1500);
+
+				speed.dphi = 0;
+				speed.dx = 0.2f;
+				speed.dy = 0;
+				Odometry.SetSpeed(&speed);
+				vTaskDelay(1500);
+
+				speed.dphi = 0;
+				speed.dx = 0;
+				speed.dy = 0.2f;
+				Odometry.SetSpeed(&speed);
+				vTaskDelay(1500);
+
+				speed.dphi = 0;
+				speed.dx = 0;
+				speed.dy = 0;
+				Odometry.SetSpeed(&speed);
+				vTaskDelay(4000);
+
+
+				// rectangular with rotation
+
+				speed.dphi = 0;
+				speed.dx = -0.2f;
+				speed.dy = 0;
+				Odometry.SetSpeed(&speed);
+				vTaskDelay(1500);
+
+				speed.dphi = -1.6f;
+				speed.dx = 0;
+				speed.dy = 0;
+				Odometry.SetSpeed(&speed);
+				vTaskDelay(1000);
+
+				speed.dphi = 0;
+				speed.dx = -0.2f;
+				speed.dy = 0;
+				Odometry.SetSpeed(&speed);
+				vTaskDelay(1500);
+
+				speed.dphi = -1.6f;
+				speed.dx = 0;
+				speed.dy = 0;
+				Odometry.SetSpeed(&speed);
+				vTaskDelay(1000);
+
+				speed.dphi = 0;
+				speed.dx = -0.2f;
+				speed.dy = 0;
+				Odometry.SetSpeed(&speed);
+				vTaskDelay(1500);
+
+				speed.dphi = -1.6f;
+				speed.dx = 0;
+				speed.dy = 0;
+				Odometry.SetSpeed(&speed);
+				vTaskDelay(1000);
+
+				speed.dphi = 0;
+				speed.dx = -0.2f;
+				speed.dy = 0;
+				Odometry.SetSpeed(&speed);
+				vTaskDelay(1500);
+
+				speed.dphi = -1.8f;
+				speed.dx = 0;
+				speed.dy = 0;
+				Odometry.SetSpeed(&speed);
+				vTaskDelay(1000);
+
+				speed.dphi = 0;
+				speed.dx = 0;
+				speed.dy = 0;
+				Odometry.SetSpeed(&speed);
+				vTaskDelay(2000);
+
+
+				// move across X
+				speed.dphi = 0;
+				speed.dx = -0.2f;
+				speed.dy = 0;
+				Odometry.SetSpeed(&speed);
+				vTaskDelay(1500);
+
+				speed.dphi = 0;
+				speed.dx = 0.2f;
+				speed.dy = 0;
+				Odometry.SetSpeed(&speed);
+				vTaskDelay(1500);
+
+				
+				// move across Y
+				speed.dphi = 0;
+				speed.dx = 0;
+				speed.dy = -0.2f;
+				Odometry.SetSpeed(&speed);
+				vTaskDelay(1500);
+
+				speed.dphi = 0;
+				speed.dx = 0;
+				speed.dy = 0.2f;
+				Odometry.SetSpeed(&speed);
+				vTaskDelay(1500);
+
+				// move across XY+
+				speed.dphi = 0;
+				speed.dx = -0.2f;
+				speed.dy = -0.2f;
+				Odometry.SetSpeed(&speed);
+				vTaskDelay(1500);
+
+				speed.dphi = 0;
+				speed.dx = 0.2f;
+				speed.dy = 0.2f;
+				Odometry.SetSpeed(&speed);
+				vTaskDelay(1500);
+
+				// move across XY-
+				speed.dphi = 0;
+				speed.dx = 0.2f;
+				speed.dy = -0.2f;
+				Odometry.SetSpeed(&speed);
+				vTaskDelay(1500);
+
+				speed.dphi = 0;
+				speed.dx = -0.2f;
+				speed.dy = 0.2f;
+				Odometry.SetSpeed(&speed);
+				vTaskDelay(1500);
+
+				// rotation CW
+				speed.dphi = -1.57f;
+				speed.dx = 0;
+				speed.dy = 0;
+				Odometry.SetSpeed(&speed);
+				vTaskDelay(2000);
+
+				// rotation CCW
+				speed.dphi = 1.57f;
+				speed.dx = 0;
+				speed.dy = 0;
+				Odometry.SetSpeed(&speed);
+				vTaskDelay(2000);
+
+				// stop
+				speed.dphi = 0;
+				speed.dx = 0;
+				speed.dy = 0;
+				Odometry.SetSpeed(&speed);
+				vTaskDelay(2000);
+
+				// circle trajectory
+			}
+		#endif
+
+		#ifdef DEMO_VALVE
+			if(robot_ctrl.linear_switch_1 == LINEAR_SWITCH_PRESSED)
+			{
+				struct speed_s speed; // local variable [Vx, Vy, omega] to prevent global rewriting and data race
+				/*
+				speed.dphi = 1.57f;
+				speed.dx = 0;
+				speed.dy = 0;
+				Odometry.SetSpeed(&speed);
+				vTaskDelay(1000);
+				*/
+				speed.dphi = 0;
+				speed.dx = -0.1f;
+				speed.dy = 0;
+				Odometry.SetSpeed(&speed);
+				vTaskDelay(500);
+
+				speed.dphi = 0;
+				speed.dx = 0;
+				speed.dy = 0;
+				Odometry.SetSpeed(&speed);
+				vTaskDelay(100);
+
+				SPI_GPO_SetOutputPin(SPI_POWER_OUTPUT_3 | SPI_POWER_OUTPUT_4); // turn on valves
+				SPI_GPO_SetOutputPin(SPI_POWER_OUTPUT_1 | SPI_POWER_OUTPUT_2); // turn on pumps
+				vTaskDelay(1000);
+
+				RC_Servo.SetServoAngle(RC_SERVO_1, 450, 2550, 200, 0);
+				RC_Servo.SetServoAngle(RC_SERVO_2, 450, 2550, 200, 0);
+				RC_Servo.SetServoAngle(RC_SERVO_3, 450, 2550, 200, 0);
+				RC_Servo.SetServoAngle(RC_SERVO_4, 450, 2550, 200, 0);
+				vTaskDelay(500);
+				RC_Servo.SetServoAngle(RC_SERVO_5, 500, 2500, 180, servo5_start_angle);
+				RC_Servo.SetServoAngle(RC_SERVO_6, 500, 2500, 180, servo6_start_angle);
+				vTaskDelay(500);
+
 				RotateGripper(USART3, dynamixel_id_1, dynamixel_id_2, start_angle);
-				//vTaskDelay(1000);
-			//}
-			vTaskDelay(1000);
+				vTaskDelay(1000);
 
-			speed.dphi = 0;
-			speed.dx = -0.05f;
-			speed.dy = 0;
-			Odometry.SetSpeed(&speed);
-			vTaskDelay(1000);
+				speed.dphi = 0;
+				speed.dx = -0.05f;
+				speed.dy = 0;
+				Odometry.SetSpeed(&speed);
+				vTaskDelay(1000);
 
-			speed.dphi = 0;
-			speed.dx = 0;
-			speed.dy = 0;
-			Odometry.SetSpeed(&speed);
-			vTaskDelay(1000);
+				speed.dphi = 0;
+				speed.dx = 0;
+				speed.dy = 0;
+				Odometry.SetSpeed(&speed);
+				vTaskDelay(1000);
 
-
-			//if(robot_ctrl.linear_switch_2 == LINEAR_SWITCH_RELEASED)
-			//{
 				RotateGripper(USART3, dynamixel_id_1, dynamixel_id_2, end_angle);
-			//}
-			vTaskDelay(1000);
+				vTaskDelay(1000);
 
-			// rotation of the grabbed blocks
-			RC_Servo.SetServoAngle(RC_SERVO_5, 500, 2500, 180, servo5_end_angle); // move the block #1 apart
-			vTaskDelay(500);
-			RC_Servo.SetServoAngle(RC_SERVO_6, 500, 2500, 180, servo6_end_angle); // move the block #3 apart
-			vTaskDelay(500);
-			RC_Servo.SetServoAngle(RC_SERVO_2, 500, 2500, 180, 180); // flip the block #2
-			RC_Servo.SetServoAngle(RC_SERVO_4, 500, 2500, 180, 180); // flip the block #4
-			vTaskDelay(1000);
+				// rotation of the grabbed blocks
+				RC_Servo.SetServoAngle(RC_SERVO_5, 500, 2500, 180, servo5_end_angle); // move the block #1 apart
+				vTaskDelay(500);
+				RC_Servo.SetServoAngle(RC_SERVO_6, 500, 2500, 180, servo6_end_angle); // move the block #3 apart
+				vTaskDelay(500);
+				RC_Servo.SetServoAngle(RC_SERVO_1, 450, 2550, 200, 200); // flip the block #1
+				//RC_Servo.SetServoAngle(RC_SERVO_2, 450, 2550, 200, 200); // flip the block #2
+				//RC_Servo.SetServoAngle(RC_SERVO_3, 450, 2550, 200, 200);
+				//RC_Servo.SetServoAngle(RC_SERVO_4, 450, 2550, 200, 200);
+				vTaskDelay(500);
+				RC_Servo.SetServoAngle(RC_SERVO_5, 500, 2500, 180, servo5_start_angle); // move the block #1 apart
+				vTaskDelay(500);
+				RC_Servo.SetServoAngle(RC_SERVO_6, 500, 2500, 180, servo6_start_angle); // move the block #3 apart
+				vTaskDelay(1000);
 
-			//if(robot_ctrl.linear_switch_3 == LINEAR_SWITCH_RELEASED)
-			//{
+				
+				// moving part
+				speed.dphi = 0;
+				speed.dx = 0.05f;
+				speed.dy = 0;
+				Odometry.SetSpeed(&speed);
+				vTaskDelay(500);
+
+				speed.dphi = 0;
+				speed.dx = 0;
+				speed.dy = 0;
+				Odometry.SetSpeed(&speed);
+				vTaskDelay(100);
+
+				speed.dphi = -1.5f;
+				speed.dx = 0;
+				speed.dy = 0;
+				Odometry.SetSpeed(&speed);
+				vTaskDelay(2000);
+
+				speed.dphi = 0;
+				speed.dx = -1.0f;
+				speed.dy = 0;
+				Odometry.SetSpeed(&speed);
+				vTaskDelay(2400);
+
+				speed.dphi = -1.5f;
+				speed.dx = 0;
+				speed.dy = 0;
+				Odometry.SetSpeed(&speed);
+				vTaskDelay(1000);
+
+				speed.dphi = 0;
+				speed.dx = -1.0f;
+				speed.dy = 0;
+				Odometry.SetSpeed(&speed);
+				vTaskDelay(1000);
+
+				speed.dphi = -1.6f;
+				speed.dx = 0;
+				speed.dy = 0;
+				Odometry.SetSpeed(&speed);
+				vTaskDelay(1500);
+
+				speed.dphi = 0;
+				speed.dx = 0;
+				speed.dy = 0;
+				Odometry.SetSpeed(&speed);
+				vTaskDelay(1000);
+
+
 				RotateGripper(USART3, dynamixel_id_1, dynamixel_id_2, start_angle);
-				//vTaskDelay(1000);
-			//}
-			vTaskDelay(1000);
+				vTaskDelay(1000);
 
-			SPI_GPO_SetOutputPin(SPI_POWER_OUTPUT_3); // turn off valve
-			SPI_GPO_ResetOutputPin(SPI_POWER_OUTPUT_1 | SPI_POWER_OUTPUT_2); // turn off pumps
-			vTaskDelay(1000);
+				SPI_GPO_ResetOutputPin(SPI_POWER_OUTPUT_3 | SPI_POWER_OUTPUT_4); // turn off valves
+				SPI_GPO_ResetOutputPin(SPI_POWER_OUTPUT_1 | SPI_POWER_OUTPUT_2); // turn off pumps
+				vTaskDelay(1000);
 
-			//if(robot_ctrl.linear_switch_2 == LINEAR_SWITCH_RELEASED)
-			//{
 				RotateGripper(USART3, dynamixel_id_1, dynamixel_id_2, end_angle);
-			//}
-			vTaskDelay(1000);
+				vTaskDelay(1000);
 
-			speed.dphi = 0;
-			speed.dx = 0.05f;
-			speed.dy = 0;
-			Odometry.SetSpeed(&speed);
-			vTaskDelay(500);
+				speed.dphi = 0;
+				speed.dx = 0.05f;
+				speed.dy = 0;
+				Odometry.SetSpeed(&speed);
+				vTaskDelay(500);
 
-			speed.dphi = 0;
-			speed.dx = 0;
-			speed.dy = 0;
-			Odometry.SetSpeed(&speed);
-			vTaskDelay(100);
+				speed.dphi = 0;
+				speed.dx = 0;
+				speed.dy = 0;
+				Odometry.SetSpeed(&speed);
+				vTaskDelay(100);
 
-			vTaskDelay(2000);
+				vTaskDelay(2000);
+			}
 		#endif
 
 	}
