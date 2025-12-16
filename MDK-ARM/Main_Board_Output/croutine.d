@@ -1,0 +1,13 @@
+.\main_board_output\croutine.o: ..\Middlewares\FreeRTOS-Kernel\croutine.c
+.\main_board_output\croutine.o: ..\Middlewares\FreeRTOS-Kernel\include\FreeRTOS.h
+.\main_board_output\croutine.o: D:\Keil\ARM\ARMCC\Bin\..\include\stddef.h
+.\main_board_output\croutine.o: D:\Keil\ARM\ARMCC\Bin\..\include\stdint.h
+.\main_board_output\croutine.o: ..\Middlewares\FreeRTOS-Kernel\include\FreeRTOSConfig.h
+.\main_board_output\croutine.o: ..\Middlewares\FreeRTOS-Kernel\include\projdefs.h
+.\main_board_output\croutine.o: ..\Middlewares\FreeRTOS-Kernel\include\portable.h
+.\main_board_output\croutine.o: ..\Middlewares\FreeRTOS-Kernel\include\deprecated_definitions.h
+.\main_board_output\croutine.o: ..\Middlewares\FreeRTOS-Kernel\portable\RVDS\ARM_CM4F\portmacro.h
+.\main_board_output\croutine.o: ..\Middlewares\FreeRTOS-Kernel\include\mpu_wrappers.h
+.\main_board_output\croutine.o: ..\Middlewares\FreeRTOS-Kernel\include\task.h
+.\main_board_output\croutine.o: ..\Middlewares\FreeRTOS-Kernel\include\list.h
+.\main_board_output\croutine.o: ..\Middlewares\FreeRTOS-Kernel\include\croutine.h

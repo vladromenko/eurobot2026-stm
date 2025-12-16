@@ -1,0 +1,9 @@
+.\main_board_output\arm_mat_scale_f32.o: ..\Drivers\CMSIS\DSP\Source\MatrixFunctions\arm_mat_scale_f32.c
+.\main_board_output\arm_mat_scale_f32.o: ..\Drivers\CMSIS\DSP\Include\arm_math.h
+.\main_board_output\arm_mat_scale_f32.o: ../Drivers/CMSIS/Include/core_cm4.h
+.\main_board_output\arm_mat_scale_f32.o: D:\Keil\ARM\ARMCC\Bin\..\include\stdint.h
+.\main_board_output\arm_mat_scale_f32.o: ../Drivers/CMSIS/Include/cmsis_version.h
+.\main_board_output\arm_mat_scale_f32.o: ../Drivers/CMSIS/Include/cmsis_compiler.h
+.\main_board_output\arm_mat_scale_f32.o: ../Drivers/CMSIS/Include/cmsis_armcc.h
+.\main_board_output\arm_mat_scale_f32.o: D:\Keil\ARM\ARMCC\Bin\..\include\string.h
+.\main_board_output\arm_mat_scale_f32.o: D:\Keil\ARM\ARMCC\Bin\..\include\math.h

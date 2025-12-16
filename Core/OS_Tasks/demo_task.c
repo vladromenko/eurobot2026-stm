@@ -42,6 +42,7 @@
 #include "odometry.h"
 #include "ws2812b.h" 
 #include "robot_behavior_routine.h"
+#include "pca9685.h"
 
 // #define WS2812B_DEMO
 // #define SPI_GPO_DEMO
@@ -50,7 +51,7 @@
 // #define DYNAMIXEL_DEMO_2
 // #define MAXON_DEMO
 // #define SERVO_DEMO
-
+//#define SERVO_PCA9685
 
 #define TASK_STACK_SIZE             512
 
@@ -261,7 +262,20 @@ static void Task(void *arg)
       WS2812B.Set_RGB_Color(ws_led, WS2812B_LEDS_NUMBER);
       vTaskDelay(50);
     #endif
-
+		
+		#ifdef SERVO_PCA9685
+		enum pca9685_channel_e ch = PCA9685_CH0;
+		PCA9685.SetServoAngleWithAddr(0x40, ch, 0x00);
+		PCA9685.SetServoAngleWithAddr(0x40, PCA9685_CH4, 0x00);
+		vTaskDelay(2000);
+		PCA9685.SetServoAngleWithAddr(0x40, ch, 0xB4);
+		PCA9685.SetServoAngleWithAddr(0x40, PCA9685_CH4, 0xB4);
+		vTaskDelay(2000);
+		PCA9685.SetServoAngleWithAddr(0x40, PCA9685_CH8, 0x00);
+		vTaskDelay(2000);
+		PCA9685.SetServoAngleWithAddr(0x40, PCA9685_CH8, 0xB4);
+		vTaskDelay(2000);
+		#endif 
 	}
 }
 

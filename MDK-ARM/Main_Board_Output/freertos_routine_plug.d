@@ -1,0 +1,10 @@
+.\main_board_output\freertos_routine_plug.o: ..\Core\OS_Tasks\freertos_routine_plug.c
+.\main_board_output\freertos_routine_plug.o: ..\Middlewares\FreeRTOS-Kernel\include\FreeRTOS.h
+.\main_board_output\freertos_routine_plug.o: D:\Keil\ARM\ARMCC\Bin\..\include\stddef.h
+.\main_board_output\freertos_routine_plug.o: D:\Keil\ARM\ARMCC\Bin\..\include\stdint.h
+.\main_board_output\freertos_routine_plug.o: ..\Middlewares\FreeRTOS-Kernel\include\FreeRTOSConfig.h
+.\main_board_output\freertos_routine_plug.o: ..\Middlewares\FreeRTOS-Kernel\include\projdefs.h
+.\main_board_output\freertos_routine_plug.o: ..\Middlewares\FreeRTOS-Kernel\include\portable.h
+.\main_board_output\freertos_routine_plug.o: ..\Middlewares\FreeRTOS-Kernel\include\deprecated_definitions.h
+.\main_board_output\freertos_routine_plug.o: ..\Middlewares\FreeRTOS-Kernel\portable\RVDS\ARM_CM4F\portmacro.h
+.\main_board_output\freertos_routine_plug.o: ..\Middlewares\FreeRTOS-Kernel\include\mpu_wrappers.h

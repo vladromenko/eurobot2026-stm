@@ -31,6 +31,7 @@
 #include "stm32f4xx_ll_tim.h"
 #include "stm32f4xx_ll_bus.h"
 #include "stm32f4xx_ll_spi.h"
+#include "stm32f4xx_ll_i2c.h"
 #include "stm32f4xx_ll_iwdg.h"
 #include "stm32f4xx_ll_system.h"
 
@@ -121,6 +122,22 @@ void HW_ClockConfig(void)
 	LL_AHB1_GRP1_ReleaseReset(LL_AHB1_GRP1_PERIPH_DMA1);
 	/*	Enable DMA1 clock	*/
 	LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_DMA1);
+}
+
+void I2C2_Init(void)
+{
+	/* Enable I2C2 clock */
+	LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_I2C2);
+
+	/* Reset I2C2 */
+	LL_APB1_GRP1_ForceReset(LL_APB1_GRP1_PERIPH_I2C2);
+	LL_APB1_GRP1_ReleaseReset(LL_APB1_GRP1_PERIPH_I2C2);
+
+	/* Configure I2C2 (standard mode 100 kHz, 8 MHz APB1 freq assumption) */
+	LL_I2C_Disable(I2C2);
+	LL_I2C_SetClockSpeedMode(I2C2, LL_I2C_CLOCK_SPEED_STANDARD_MODE);
+	LL_I2C_ConfigSpeed(I2C2, 84000000U, 100000U, LL_I2C_DUTYCYCLE_2);
+	LL_I2C_Enable(I2C2);
 }
 
 void IWDG_Init(void)
@@ -326,7 +343,7 @@ void UART5_SerialInit(void)
 	LL_USART_SetOverSampling(UART5,LL_USART_OVERSAMPLING_8);
 	LL_USART_SetDataWidth(UART5,LL_USART_DATAWIDTH_8B);
 	LL_USART_SetParity(UART5,LL_USART_PARITY_NONE);
-	LL_USART_SetTransferDirection(UART5,LL_USART_DIRECTION_RX);
+	LL_USART_SetTransferDirection(UART5,LL_USART_DIRECTION_TX_RX);
 
 	LL_USART_Enable(UART5);
 	

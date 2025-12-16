@@ -87,8 +87,8 @@
 /*	UART5 TX/RX FIFO DEFINITION	*/
 #if defined (UART5_USED)
 
-  #define UART5_TX_BUFFER_SIZE     128
-  #define UART5_RX_BUFFER_SIZE     128
+  #define UART5_TX_BUFFER_SIZE     256
+  #define UART5_RX_BUFFER_SIZE     256
 
   static uint8_t uart5_tx_buffer[UART5_TX_BUFFER_SIZE];
   static uint8_t uart5_rx_buffer[UART5_RX_BUFFER_SIZE];

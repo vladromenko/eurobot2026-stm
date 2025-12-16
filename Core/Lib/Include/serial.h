@@ -28,7 +28,7 @@
 #include "stm32f4xx_ll_usart.h"
 #include "usartx_communication.h"
 
-#define SERIAL_MAX_BYTES_NUMBER    16
+#define SERIAL_MAX_BYTES_NUMBER    64
 
 struct serial_s{
     void (*WriteBytes)(USART_TypeDef* usart, uint8_t* bytes, uint8_t bytes_number);
