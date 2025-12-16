@@ -1,6 +1,8 @@
 --cpu Cortex-M4.fp --library_type=microlib --scatter c:/Users/artem/Documents/Skoltech/Eurobot/Electronics/STM32/eurobot2026-stm/MDK-ARM/STM32F407.sct --strict --summary_stderr --info summarysizes --map --xref --callgraph --symbols --info sizes --info totals --info unused --info veneers
 --list .\build\Main_Board\Main_Board.map
 .\build\Main_Board\.obj\__\Core\App\bus_device.o
+.\build\Main_Board\.obj\__\Core\App\debug_terminal.o
+.\build\Main_Board\.obj\__\Core\App\debug_terminal_cmd_handlers.o
 .\build\Main_Board\.obj\__\Core\App\kinematics.o
 .\build\Main_Board\.obj\__\Core\App\main.o
 .\build\Main_Board\.obj\__\Core\App\odometry.o
@@ -12,6 +14,7 @@
 .\build\Main_Board\.obj\__\Core\App\terminal_cmd_handlers.o
 .\build\Main_Board\.obj\__\Core\BSP\board_gpio_config.o
 .\build\Main_Board\.obj\__\Core\BSP\board_hw_config.o
+.\build\Main_Board\.obj\__\Core\BSP\i2c2.o
 .\build\Main_Board\.obj\__\Core\BSP\l6474_drvr.o
 .\build\Main_Board\.obj\__\Core\BSP\pwm.o
 .\build\Main_Board\.obj\__\Core\BSP\spi_gpo.o
@@ -28,10 +31,12 @@
 .\build\Main_Board\.obj\__\Core\Lib\h_bridge.o
 .\build\Main_Board\.obj\__\Core\Lib\hl_rtu.o
 .\build\Main_Board\.obj\__\Core\Lib\maxon.o
+.\build\Main_Board\.obj\__\Core\Lib\pca9685.o
 .\build\Main_Board\.obj\__\Core\Lib\rc_servo.o
 .\build\Main_Board\.obj\__\Core\Lib\serial.o
 .\build\Main_Board\.obj\__\Core\OS_Tasks\buttons_callback_task.o
 .\build\Main_Board\.obj\__\Core\OS_Tasks\buttons_poll_task.o
+.\build\Main_Board\.obj\__\Core\OS_Tasks\debug_task.o
 .\build\Main_Board\.obj\__\Core\OS_Tasks\demo_task.o
 .\build\Main_Board\.obj\__\Core\OS_Tasks\freertos_routine_plug.o
 .\build\Main_Board\.obj\__\Core\OS_Tasks\game_task.o

@@ -43,3 +43,4 @@
 .\build\Main_Board\.obj\__\Core\App\main.o: ../Core/OS_Tasks/Include/os_tasks.h
 .\build\Main_Board\.obj\__\Core\App\main.o: ../Core/Lib/Include/hl_rtu.h
 .\build\Main_Board\.obj\__\Core\App\main.o: ../Core/Lib/Include/serial.h
+.\build\Main_Board\.obj\__\Core\App\main.o: ../Core/Lib/Include/pca9685.h

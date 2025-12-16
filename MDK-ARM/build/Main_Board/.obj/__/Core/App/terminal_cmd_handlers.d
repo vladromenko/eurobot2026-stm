@@ -19,6 +19,7 @@
 .\build\Main_Board\.obj\__\Core\App\terminal_cmd_handlers.o: ../Core/BSP/Include/board_gpio_defines.h
 .\build\Main_Board\.obj\__\Core\App\terminal_cmd_handlers.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_gpio.h
 .\build\Main_Board\.obj\__\Core\App\terminal_cmd_handlers.o: ../Core/App/Include/terminal.h
+.\build\Main_Board\.obj\__\Core\App\terminal_cmd_handlers.o: ../Core/App/Include/debug_terminal.h
 .\build\Main_Board\.obj\__\Core\App\terminal_cmd_handlers.o: ../Core/Lib/Include/dynamixel_ax.h
 .\build\Main_Board\.obj\__\Core\App\terminal_cmd_handlers.o: ../Core/Lib/Include/dynamixel_mx.h
 .\build\Main_Board\.obj\__\Core\App\terminal_cmd_handlers.o: ../Core/OS_Tasks/Include/os_tasks.h
@@ -47,3 +48,4 @@
 .\build\Main_Board\.obj\__\Core\App\terminal_cmd_handlers.o: ../Core/Lib/Include/rc_servo.h
 .\build\Main_Board\.obj\__\Core\App\terminal_cmd_handlers.o: ../Core/BSP/Include/stepper.h
 .\build\Main_Board\.obj\__\Core\App\terminal_cmd_handlers.o: ../Core/BSP/Include/l6474_drvr.h
+.\build\Main_Board\.obj\__\Core\App\terminal_cmd_handlers.o: ../Core/Lib/Include/pca9685.h

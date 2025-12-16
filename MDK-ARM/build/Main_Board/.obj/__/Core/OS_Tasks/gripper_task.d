@@ -38,6 +38,7 @@
 .\build\Main_Board\.obj\__\Core\OS_Tasks\gripper_task.o: ../Core/Lib/Include/rc_servo.h
 .\build\Main_Board\.obj\__\Core\OS_Tasks\gripper_task.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_tim.h
 .\build\Main_Board\.obj\__\Core\OS_Tasks\gripper_task.o: ../Core/App/Include/terminal.h
+.\build\Main_Board\.obj\__\Core\OS_Tasks\gripper_task.o: ../Core/App/Include/debug_terminal.h
 .\build\Main_Board\.obj\__\Core\OS_Tasks\gripper_task.o: ../Core/Lib/Include/h_bridge.h
 .\build\Main_Board\.obj\__\Core\OS_Tasks\gripper_task.o: ../Core/Lib/Include/serial.h
 .\build\Main_Board\.obj\__\Core\OS_Tasks\gripper_task.o: ../Core/BSP/Include/spi_gpo.h
@@ -49,3 +50,4 @@
 .\build\Main_Board\.obj\__\Core\OS_Tasks\gripper_task.o: ../Core/Lib/Include/button.h
 .\build\Main_Board\.obj\__\Core\OS_Tasks\gripper_task.o: ../Core/Lib/Include/buttons_enum.h
 .\build\Main_Board\.obj\__\Core\OS_Tasks\gripper_task.o: ../Core/App/Include/bus_device.h
+.\build\Main_Board\.obj\__\Core\OS_Tasks\gripper_task.o: ../Core/Lib/Include/pca9685.h

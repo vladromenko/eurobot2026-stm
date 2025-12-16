@@ -73,6 +73,8 @@ virtualFolder:
         - name: App
           files:
             - path: ../Core/App/bus_device.c
+            - path: ../Core/App/debug_terminal_cmd_handlers.c
+            - path: ../Core/App/debug_terminal.c
             - path: ../Core/App/kinematics.c
             - path: ../Core/App/main.c
             - path: ../Core/App/odometry.c
@@ -94,6 +96,7 @@ virtualFolder:
             - path: ../Core/BSP/usartx_timeout.c
             - path: ../Core/BSP/stepper.c
             - path: ../Core/BSP/ws2812b.c
+            - path: ../Core/BSP/i2c2.c
           folders: []
         - name: Lib
           files:
@@ -108,18 +111,20 @@ virtualFolder:
             - path: ../Core/Lib/rc_servo.c
             - path: ../Core/Lib/serial.c
             - path: ../Core/Lib/hl_rtu.c
+            - path: ../Core/Lib/pca9685.c
           folders: []
         - name: OS_Tasks
           files:
             - path: ../Core/OS_Tasks/buttons_callback_task.c
             - path: ../Core/OS_Tasks/buttons_poll_task.c
+            - path: ../Core/OS_Tasks/debug_task.c
             - path: ../Core/OS_Tasks/demo_task.c
             - path: ../Core/OS_Tasks/freertos_routine_plug.c
             - path: ../Core/OS_Tasks/game_task.c
+            - path: ../Core/OS_Tasks/gripper_task.c
             - path: ../Core/OS_Tasks/odometry_task.c
             - path: ../Core/OS_Tasks/terminal_task.c
             - path: ../Core/OS_Tasks/stepper_task.c
-            - path: ../Core/OS_Tasks/gripper_task.c
           folders: []
     - name: ::CMSIS
       files: []

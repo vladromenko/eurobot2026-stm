@@ -27,6 +27,8 @@
 .\build\Main_Board\.obj\__\Core\OS_Tasks\terminal_task.o: ../Core/App/Include/terminal_cmd_handlers.h
 .\build\Main_Board\.obj\__\Core\OS_Tasks\terminal_task.o: ../Core/App/Include/terminal_cmd_table.h
 .\build\Main_Board\.obj\__\Core\OS_Tasks\terminal_task.o: ../Core/App/Include/terminal.h
+.\build\Main_Board\.obj\__\Core\OS_Tasks\terminal_task.o: ../Core/App/Include/debug_terminal.h
 .\build\Main_Board\.obj\__\Core\OS_Tasks\terminal_task.o: ../Core/App/Include/robot_behavior_routine.h
 .\build\Main_Board\.obj\__\Core\OS_Tasks\terminal_task.o: ../Core/Lib/Include/button.h
 .\build\Main_Board\.obj\__\Core\OS_Tasks\terminal_task.o: ../Core/Lib/Include/buttons_enum.h
+.\build\Main_Board\.obj\__\Core\OS_Tasks\terminal_task.o: ../Core/Lib/Include/pca9685.h

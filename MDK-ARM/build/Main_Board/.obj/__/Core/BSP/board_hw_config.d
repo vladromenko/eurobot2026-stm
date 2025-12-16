@@ -19,5 +19,6 @@
 .\build\Main_Board\.obj\__\Core\BSP\board_hw_config.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_tim.h
 .\build\Main_Board\.obj\__\Core\BSP\board_hw_config.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_bus.h
 .\build\Main_Board\.obj\__\Core\BSP\board_hw_config.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_spi.h
+.\build\Main_Board\.obj\__\Core\BSP\board_hw_config.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_i2c.h
 .\build\Main_Board\.obj\__\Core\BSP\board_hw_config.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_iwdg.h
 .\build\Main_Board\.obj\__\Core\BSP\board_hw_config.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_system.h

@@ -26,7 +26,9 @@
 #include "board_gpio_defines.h"
 #include "terminal_cmd_handlers.h" 
 #include "terminal.h"
+#include "debug_terminal.h"
 #include "robot_behavior_routine.h"
+#include "pca9685.h"
 
 
 

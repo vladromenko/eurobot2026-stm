@@ -43,6 +43,7 @@
 #include "rc_servo.h" 
 #include "stm32f4xx_ll_tim.h"
 #include "terminal.h"
+#include "debug_terminal.h"
 #include "h_bridge.h"
 #include "serial.h"
 
@@ -54,6 +55,7 @@
 #include "robot_behavior_routine.h"
 
 #include "bus_device.h"
+#include "pca9685.h"
 
 
 uint8_t gripper_state;
@@ -67,12 +69,12 @@ static StaticTask_t task_buffer;
 
 //#define MAXON
 //#define VALVES_4
-//#define SERVO
+//define SERVO
 //#define GRIPPER_V2
 //#define DYNAMIXEL
 //#define DEMO_GRIPPER
 //#define DEMO_MOVE
-#define DEMO_VALVE
+//#define DEMO_VALVE
 
 
 /**
@@ -408,7 +410,14 @@ static void Task(void *arg)
 		#endif
 		
 		#ifdef SERVO
-			/*
+		    PCA9685.SetServoAngleWithAddr(0x40, 1, 0);
+    		PCA9685.SetServoAngleWithAddr(0x40, 2, 0);
+			vTaskDelay(1000);
+			PCA9685.SetServoAngleWithAddr(0x40, 1, 180);
+    		PCA9685.SetServoAngleWithAddr(0x40, 2, 180);
+			vTaskDelay(1000);
+		
+		/*
 			RC_Servo.Enable(RC_SERVO_7);
 			RC_Servo.SetServoAngle(RC_SERVO_7, 450, 2600, 200, 0);
 			vTaskDelay(2000);
@@ -417,12 +426,13 @@ static void Task(void *arg)
 			RC_Servo.Disable(RC_SERVO_7);
 			vTaskDelay(2000);
 			*/
-	
+
+			/*
 			RC_Servo.SetServoAngle(RC_SERVO_7, 450, 2500, 200, 0);
 			vTaskDelay(2000);
 			RC_Servo.SetServoAngle(RC_SERVO_7, 450, 2500, 200, 200);
 			vTaskDelay(2000);
-			
+			*/
 
 			/*
 			// this PWM range is working (wide enough)

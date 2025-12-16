@@ -48,3 +48,4 @@
 .\build\Main_Board\.obj\__\Core\OS_Tasks\demo_task.o: ../Core/App/Include/robot_behavior_routine.h
 .\build\Main_Board\.obj\__\Core\OS_Tasks\demo_task.o: ../Core/Lib/Include/button.h
 .\build\Main_Board\.obj\__\Core\OS_Tasks\demo_task.o: ../Core/Lib/Include/buttons_enum.h
+.\build\Main_Board\.obj\__\Core\OS_Tasks\demo_task.o: ../Core/Lib/Include/pca9685.h

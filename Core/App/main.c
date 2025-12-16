@@ -124,11 +124,11 @@ int main(void)
   ButtonsCallbackTask.CreateTask(2);
 	OdometryTask.CreateTask(1);
 	TerminalTask.CreateTask(1);
-  //GameTask.CreateTask(1);
+  GameTask.CreateTask(1);
 
   //DemoTask.CreateTask(4);
 	StepperTask.CreateTask(1);
-	GripperTask.CreateTask(1);
+	//GripperTask.CreateTask(1);
   //DebugTerminalTask.CreateTask(1);
 	
   /*  Run scheduler  */
