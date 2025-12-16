@@ -41,7 +41,7 @@
 #include "spi_gpo.h" 
 #include "spi_gpo_defines.h" 
 #include "rc_servo.h" 
-#include "stepper.h" 
+#include "stepper.h"
 
 extern int16_t stepper1_goal_position;
 extern int16_t stepper2_goal_position;
@@ -51,7 +51,68 @@ extern uint8_t stepper1_calibrate;
 extern uint8_t stepper2_calibrate;
 extern uint8_t stepper3_calibrate;
 
+// from gripper_task
+/*
+extern 	uint8_t dynamixel_id_1;
+extern	uint8_t dynamixel_id_2;
+extern	uint16_t dynamixel_speed;
+extern	uint8_t start_angle;
+extern	uint8_t end_angle;
+
+extern	uint8_t servo5_start_angle;
+extern	uint8_t servo5_end_angle;
+extern	uint8_t servo6_start_angle;
+extern	uint8_t servo6_end_angle;
+*/
+
+uint8_t dynamixel_id_1 = 98;
+uint8_t dynamixel_id_2 = 112;
+uint16_t dynamixel_speed = 150; //0-1024
+uint8_t start_angle = 62; //0-300 60
+uint8_t end_angle = 135; //0-300 150 125
+
+uint8_t servo5_start_angle = 90; // left shift servo
+uint8_t servo5_end_angle = 170;
+uint8_t servo6_start_angle = 110; // right shift servo
+uint8_t servo6_end_angle = 20;
+
+
 uint8_t COMM_ENABLE = 1;
+
+/**
+ * @brief Rotate two Dynamixels by a given angle synchronously.
+ * @param usart USART bus of the Dynamixels
+ * @param id_1 Dynamixel ID 1
+ * @param angle Dynamixel ID 2
+ * @param angle Goal angle in deg (0-300)
+ */
+static void RotateGripper(USART_TypeDef* usart, uint8_t id_1, uint8_t id_2, uint16_t angle)
+{
+    // Dynamixels ID
+    uint8_t device_ids[] = {id_1, id_2};
+    uint8_t num_devices = sizeof(device_ids) / sizeof(device_ids[0]); // universal counter of devices
+
+    // Transform angle from deg to Goal Position Register (0-1023)
+    if (angle > 300) angle = 300; // max angle limit
+    uint16_t goal_position_value = (uint16_t)(((float)angle * 1023.0f) / 300.0f);
+
+    // Prepare data for SyncWrite
+    // 2 bytes for each servo (Low byte (LB), then High byte (HB))
+    uint8_t data_to_write[4];
+
+    // Data for 1st Dynamixel
+    data_to_write[0] = (uint8_t)(goal_position_value & 0xFF); // LB
+    data_to_write[1] = (uint8_t)(goal_position_value >> 8);  // HB
+
+    // Data for 2nd Dynamixel
+    data_to_write[2] = (uint8_t)(goal_position_value & 0xFF); // LB
+    data_to_write[3] = (uint8_t)(goal_position_value >> 8);  // HB
+
+    // Call the SyncWrite command
+    DynamixelMaster.SyncWrite(usart, device_ids, num_devices, AX_GoalPosition, data_to_write, 2, NULL);
+}
+
+
 
 static void Ping(uint8_t* data, uint8_t data_length)
 {
@@ -511,6 +572,160 @@ static void BoardClearReset(uint8_t* data, uint8_t data_length)
   Terminal.SendResponse(&terminal_response);
 }
 
+
+static void grab_on(uint8_t* data, uint8_t data_length)
+{
+  uint8_t gripper_state = data[0];
+
+  Dynamixel_AX.SetMovingSpeed(USART3, dynamixel_id_1, dynamixel_speed);
+	Dynamixel_AX.SetMovingSpeed(USART3, dynamixel_id_2, dynamixel_speed);
+
+  struct speed_s speed;
+
+  if(gripper_state == 1) {
+
+    Dynamixel_AX.TorqueEnable(USART3, dynamixel_id_1);
+    Dynamixel_AX.TorqueEnable(USART3, dynamixel_id_2);
+
+    speed.dphi = 0;
+    speed.dx = 0;
+    speed.dy = 0;
+    Odometry.SetSpeed(&speed);
+    vTaskDelay(100);
+
+    SPI_GPO_SetOutputPin(SPI_POWER_OUTPUT_3 | SPI_POWER_OUTPUT_4); // turn on valves
+    SPI_GPO_SetOutputPin(SPI_POWER_OUTPUT_1 | SPI_POWER_OUTPUT_2); // turn on pumps
+    vTaskDelay(1000);
+
+    RC_Servo.SetServoAngle(RC_SERVO_1, 500, 2500, 180, 0);
+    RC_Servo.SetServoAngle(RC_SERVO_2, 500, 2500, 180, 0);
+    RC_Servo.SetServoAngle(RC_SERVO_3, 500, 2500, 180, 0);
+    RC_Servo.SetServoAngle(RC_SERVO_4, 500, 2500, 180, 0);
+    vTaskDelay(500);
+    RC_Servo.SetServoAngle(RC_SERVO_5, 500, 2500, 180, servo5_start_angle);
+    RC_Servo.SetServoAngle(RC_SERVO_6, 500, 2500, 180, servo6_start_angle);
+    vTaskDelay(500);
+
+    RotateGripper(USART3, dynamixel_id_1, dynamixel_id_2, start_angle);
+    vTaskDelay(1000);
+
+    speed.dphi = 0;
+    speed.dx = -0.05f;
+    speed.dy = 0;
+    Odometry.SetSpeed(&speed);
+    vTaskDelay(1000);
+
+    speed.dphi = 0;
+    speed.dx = 0;
+    speed.dy = 0;
+    Odometry.SetSpeed(&speed);
+    vTaskDelay(1000);
+
+    RotateGripper(USART3, dynamixel_id_1, dynamixel_id_2, end_angle);
+    vTaskDelay(1000);
+  }
+}
+
+static void grab_off(uint8_t* data, uint8_t data_length)
+{
+  uint8_t gripper_state = data[0];
+
+  Dynamixel_AX.SetMovingSpeed(USART3, dynamixel_id_1, dynamixel_speed);
+	Dynamixel_AX.SetMovingSpeed(USART3, dynamixel_id_2, dynamixel_speed);
+
+  struct speed_s speed;
+
+  if(gripper_state == 1) {
+
+    Dynamixel_AX.TorqueEnable(USART3, dynamixel_id_1);
+    Dynamixel_AX.TorqueEnable(USART3, dynamixel_id_2);
+
+    RotateGripper(USART3, dynamixel_id_1, dynamixel_id_2, start_angle);
+    vTaskDelay(1000);
+
+    SPI_GPO_ResetOutputPin(SPI_POWER_OUTPUT_3 | SPI_POWER_OUTPUT_4); // turn off valves
+    SPI_GPO_ResetOutputPin(SPI_POWER_OUTPUT_1 | SPI_POWER_OUTPUT_2); // turn off pumps
+    vTaskDelay(1000);
+
+    RotateGripper(USART3, dynamixel_id_1, dynamixel_id_2, end_angle);
+    vTaskDelay(1000);
+
+    speed.dphi = 0;
+    speed.dx = 0.05f;
+    speed.dy = 0;
+    Odometry.SetSpeed(&speed);
+    vTaskDelay(500);
+  }
+}
+
+static void grab_rotate(uint8_t* data, uint8_t data_length)
+{
+  uint8_t gripper_state = data[0];
+  uint8_t blocks_rotation = data[1];
+
+  Dynamixel_AX.SetMovingSpeed(USART3, dynamixel_id_1, dynamixel_speed);
+	Dynamixel_AX.SetMovingSpeed(USART3, dynamixel_id_2, dynamixel_speed);
+  
+  if(gripper_state == 1) {
+    RC_Servo.Enable(RC_SERVO_1);
+    RC_Servo.Enable(RC_SERVO_2);
+    RC_Servo.Enable(RC_SERVO_3);
+    RC_Servo.Enable(RC_SERVO_4);
+    RC_Servo.Enable(RC_SERVO_5);
+    RC_Servo.Enable(RC_SERVO_6);
+
+    switch (blocks_rotation)
+    {
+      case 0:
+        RC_Servo.SetServoAngle(RC_SERVO_5, 500, 2500, 180, servo5_start_angle);
+        vTaskDelay(500);
+        RC_Servo.SetServoAngle(RC_SERVO_6, 500, 2500, 180, servo6_start_angle);
+        vTaskDelay(500);
+        break;
+      case 1:
+        RC_Servo.SetServoAngle(RC_SERVO_5, 500, 2500, 180, servo5_end_angle); // move the block #1 apart
+        vTaskDelay(500);
+        RC_Servo.SetServoAngle(RC_SERVO_6, 500, 2500, 180, servo6_end_angle); // move the block #3 apart
+        vTaskDelay(500);
+        RC_Servo.SetServoAngle(RC_SERVO_1, 500, 2500, 180, 180); // flip the block #1
+        vTaskDelay(500);
+				break;
+			case 2:
+        RC_Servo.SetServoAngle(RC_SERVO_5, 500, 2500, 180, servo5_end_angle);
+        vTaskDelay(500);
+        RC_Servo.SetServoAngle(RC_SERVO_6, 500, 2500, 180, servo6_end_angle);
+        vTaskDelay(500);
+        RC_Servo.SetServoAngle(RC_SERVO_2, 500, 2500, 180, 180); // flip the block #2
+        vTaskDelay(500);
+        break;
+      case 3:
+        RC_Servo.SetServoAngle(RC_SERVO_5, 500, 2500, 180, servo5_end_angle);
+        vTaskDelay(500);
+        RC_Servo.SetServoAngle(RC_SERVO_6, 500, 2500, 180, servo6_end_angle);
+        vTaskDelay(500);
+        RC_Servo.SetServoAngle(RC_SERVO_3, 500, 2500, 180, 180); // flip the block #3
+        vTaskDelay(500);
+        break;
+      case 4:
+        RC_Servo.SetServoAngle(RC_SERVO_5, 500, 2500, 180, servo5_end_angle);
+        vTaskDelay(500);
+        RC_Servo.SetServoAngle(RC_SERVO_6, 500, 2500, 180, servo6_end_angle);
+        vTaskDelay(500);
+        RC_Servo.SetServoAngle(RC_SERVO_4, 500, 2500, 180, 180); // flip the block #4
+        vTaskDelay(500);
+        break;
+			default:
+				break;
+    }
+
+    RC_Servo.SetServoAngle(RC_SERVO_5, 500, 2500, 180, servo5_start_angle);
+    vTaskDelay(500);
+    RC_Servo.SetServoAngle(RC_SERVO_6, 500, 2500, 180, servo6_start_angle);
+    vTaskDelay(500);
+  }
+}
+
+
 void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t data_length) = {[BOARD_Ping] = Ping,
                                                                                               [BOARD_SetSpeed] = SetRobotSpeed,
                                                                                               [BOARD_GetSpeed] = GetRobotSpeed,
@@ -533,7 +748,10 @@ void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t da
 																																															[BOARD_SET_COMM_STATE] = SetCommState,
 																																															[BOARD_RESET] = BoardReset,
 																																															[BOARD_GET_RESET] = BoardGetReset,
-																																															[BOARD_CLEAR_RESET] = BoardClearReset
+																																															[BOARD_CLEAR_RESET] = BoardClearReset,
+                                                                                              [BOARD_GRAB_ON] = grab_on,
+                                                                                              [BOARD_GRAB_OFF] = grab_off,
+                                                                                              [BOARD_GRAB_ROTATE] = grab_rotate
 };
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

@@ -53,10 +53,14 @@
 #define BOARD_GET_RESET											0X18		/* Command Description  */
 #define BOARD_CLEAR_RESET										0X19		/* Command Description  */
 
+#define BOARD_GRAB_ON										    0X1A		/* Command Description  */
+#define BOARD_GRAB_OFF										  0X1B		/* Command Description  */
+#define BOARD_GRAB_ROTATE									  0X1C		/* Command Description  */
+
 
 
 /*  Do not forget to update the table size with the last one command! */
-#define TERMINAL_CMD_TABLE_SIZE             (BOARD_CLEAR_RESET + 1)
+#define TERMINAL_CMD_TABLE_SIZE             (BOARD_GRAB_ROTATE + 1)
 
 
 #ifdef __cplusplus
