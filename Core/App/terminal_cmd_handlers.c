@@ -73,12 +73,17 @@ uint16_t dynamixel_speed = 150; //0-1024
 uint8_t start_angle = 62; //0-300 60
 uint8_t end_angle = 135; //0-300 150 125
 
-uint8_t servo5_start_angle = 90; // left shift servo
-uint8_t servo5_end_angle = 170;
-uint8_t servo6_start_angle = 110; // right shift servo
-uint8_t servo6_end_angle = 20;
+uint8_t servo5_start_angle = 10; // left shift servo 90 170
+uint8_t servo5_end_angle = 110;
+uint8_t servo6_start_angle = 120; // right shift servo
+uint8_t servo6_end_angle = 30;
 
 uint8_t i2c_addr_1 = 0x40;
+
+uint8_t dynamixel_cursor_id = 15;
+uint16_t cursor_speed = 150; //0-1024
+uint8_t cursor_hor_angle = 0; //0-300 60
+uint8_t cursor_vert_angle = 90; //0-300 150 125
 
 uint8_t COMM_ENABLE = 1;
 
@@ -602,12 +607,16 @@ static void grab_on(uint8_t* data, uint8_t data_length)
 
 
     PCA9685.SetServoAngleWithAddr(i2c_addr_1, PCA9685_CH1, 0);
+    vTaskDelay(50);
     PCA9685.SetServoAngleWithAddr(i2c_addr_1, PCA9685_CH2, 0);
+    vTaskDelay(50);
     PCA9685.SetServoAngleWithAddr(i2c_addr_1, PCA9685_CH3, 0);
+    vTaskDelay(50);
     PCA9685.SetServoAngleWithAddr(i2c_addr_1, PCA9685_CH4, 0);
     vTaskDelay(500);
 
     PCA9685.SetServoAngleWithAddr(i2c_addr_1, PCA9685_CH5, servo5_start_angle);
+    vTaskDelay(500);
     PCA9685.SetServoAngleWithAddr(i2c_addr_1, PCA9685_CH6, servo6_start_angle);
     vTaskDelay(500);
     
@@ -627,7 +636,7 @@ static void grab_on(uint8_t* data, uint8_t data_length)
     vTaskDelay(500);
 
     speed.dphi = 0;
-    speed.dx = -0.05f;
+    speed.dx = 0.05f;
     speed.dy = 0;
     Odometry.SetSpeed(&speed);
     vTaskDelay(1000);
@@ -642,7 +651,7 @@ static void grab_on(uint8_t* data, uint8_t data_length)
     vTaskDelay(1000);
 
     speed.dphi = 0;
-    speed.dx = 0.05f;
+    speed.dx = -0.05f;
     speed.dy = 0;
     Odometry.SetSpeed(&speed);
     vTaskDelay(1000);
@@ -689,7 +698,7 @@ static void grab_off(uint8_t* data, uint8_t data_length)
     vTaskDelay(500);
 
     speed.dphi = 0;
-    speed.dx = 0.05f;
+    speed.dx = -0.05f;
     speed.dy = 0;
     Odometry.SetSpeed(&speed);
     vTaskDelay(1000);
@@ -704,8 +713,11 @@ static void grab_off(uint8_t* data, uint8_t data_length)
     vTaskDelay(1000);
 
     PCA9685.SetServoAngleWithAddr(i2c_addr_1, PCA9685_CH1, 0);
+    vTaskDelay(50);
     PCA9685.SetServoAngleWithAddr(i2c_addr_1, PCA9685_CH2, 0);
+    vTaskDelay(50);
     PCA9685.SetServoAngleWithAddr(i2c_addr_1, PCA9685_CH3, 0);
+    vTaskDelay(50);
     PCA9685.SetServoAngleWithAddr(i2c_addr_1, PCA9685_CH4, 0);
     vTaskDelay(500);
   }
@@ -821,6 +833,29 @@ static void grab_rotate(uint8_t* data, uint8_t data_length)
   }
 }
 
+static void ToggleCursor(uint8_t* data, uint8_t data_length)
+{
+  uint8_t cursor_state = data[0];
+
+  Dynamixel_AX.SetMovingSpeed(USART3, dynamixel_cursor_id, cursor_speed);
+  Dynamixel_AX.TorqueEnable(USART3, dynamixel_cursor_id);
+  
+  if(cursor_state == 1) {
+    struct speed_s speed;
+
+    speed.dphi = 0;
+    speed.dx = 0;
+    speed.dy = 0;
+    Odometry.SetSpeed(&speed);
+    vTaskDelay(500);
+
+    Dynamixel_AX.SetAngle(USART3, dynamixel_cursor_id, cursor_hor_angle);
+  }
+  else {
+    Dynamixel_AX.SetAngle(USART3, dynamixel_cursor_id, cursor_vert_angle);
+  }
+}
+
 
 void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t data_length) = {[BOARD_Ping] = Ping,
                                                                                               [BOARD_SetSpeed] = SetRobotSpeed,
@@ -847,7 +882,8 @@ void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t da
 																																															[BOARD_CLEAR_RESET] = BoardClearReset,
                                                                                               [BOARD_GRAB_ON] = grab_on,
                                                                                               [BOARD_GRAB_OFF] = grab_off,
-                                                                                              [BOARD_GRAB_ROTATE] = grab_rotate
+                                                                                              [BOARD_GRAB_ROTATE] = grab_rotate,
+                                                                                              [BOARD_TOGGLE_CURSOR] = ToggleCursor
 };
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

@@ -69,7 +69,7 @@ static StaticTask_t task_buffer;
 
 //#define MAXON
 //#define VALVES_4
-//define SERVO
+#define SERVO
 //#define GRIPPER_V2
 //#define DYNAMIXEL
 //#define DEMO_GRIPPER
@@ -241,7 +241,7 @@ static void Task(void *arg)
 
 	#endif
 
-		#ifdef DEMO_VALVE
+	#ifdef DEMO_VALVE
 		// dynamixels init
 		Dynamixel_AX.TorqueEnable(USART3, dynamixel_id_1);
 		Dynamixel_AX.TorqueEnable(USART3, dynamixel_id_2);
@@ -410,11 +410,9 @@ static void Task(void *arg)
 		#endif
 		
 		#ifdef SERVO
-		    PCA9685.SetServoAngleWithAddr(0x40, 1, 0);
-    		PCA9685.SetServoAngleWithAddr(0x40, 2, 0);
+		    PCA9685.SetServoAngleWithAddr(0x40, PCA9685_CH5, 10);
 			vTaskDelay(1000);
-			PCA9685.SetServoAngleWithAddr(0x40, 1, 180);
-    		PCA9685.SetServoAngleWithAddr(0x40, 2, 180);
+    		PCA9685.SetServoAngleWithAddr(0x40, PCA9685_CH5, 110);
 			vTaskDelay(1000);
 		
 		/*

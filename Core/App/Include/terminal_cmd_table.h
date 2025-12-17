@@ -59,10 +59,11 @@
 /* PCA9685 (I2C2, 0x40) debug commands */
 #define BOARD_PCA9685_SET_SERVO_ANGLE       0x1D    /* Set servo angle: i2c_addr, ch, angle_deg */
 
+#define BOARD_TOGGLE_CURSOR                 0x1E    /* Change the state of the cursor dynamixel*/
 
 
 /*  Do not forget to update the table size with the last one command! */
-#define TERMINAL_CMD_TABLE_SIZE             (BOARD_PCA9685_SET_SERVO_ANGLE + 1)
+#define TERMINAL_CMD_TABLE_SIZE             (BOARD_TOGGLE_CURSOR + 1)
 
 
 #ifdef __cplusplus

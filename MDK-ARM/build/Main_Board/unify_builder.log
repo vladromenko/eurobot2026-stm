@@ -1,190 +1,179 @@
-[2025-12-16 22:35:51]	[done]
+[2025-12-17 02:32:10]	[done]
 	build successfully !
 
-[2025-12-16 22:37:09]	[done]
+[2025-12-17 02:32:25]	[done]
 	build successfully !
 
-[2025-12-17 00:32:16]	[info] incremental build: 1 source files changed
+[2025-12-17 02:32:37]	[done]
+	build successfully !
+
+[2025-12-17 03:22:23]	[done]
+	build successfully !
+
+[2025-12-17 03:35:22]	[info] incremental build: 2 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\bus_device.c': source file has been changed.
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\kinematics.c': source file has been changed.
+
+[2025-12-17 03:35:25]	[done]
+	build successfully !
+
+[2025-12-17 03:41:17]	[info] incremental build: 2 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\bus_device.c': source file has been changed.
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\kinematics.c': source file has been changed.
+
+[2025-12-17 03:41:19]	[done]
+	build successfully !
+
+[2025-12-17 03:50:10]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\kinematics.c': source file has been changed.
+
+[2025-12-17 03:50:12]	[done]
+	build successfully !
+
+[2025-12-17 04:13:22]	[done]
+	build successfully !
+
+[2025-12-17 18:00:05]	[done]
+	build successfully !
+
+[2025-12-17 18:03:30]	[info] incremental build: 1 source files changed
 These source files will be recompiled
 ---
 'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\terminal_cmd_handlers.c': source file has been changed.
 
-[2025-12-17 00:32:17]	compilation failed at : "c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\terminal_cmd_handlers.c", exit code: 1
+[2025-12-17 18:03:32]	[done]
+	build successfully !
+
+[2025-12-17 18:07:00]	[info] incremental build: 2 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\main.c': source file has been changed.
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2025-12-17 18:07:01]	compilation failed at : "c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c", exit code: 1
+command: 
+  "D:\Keil_v5\ARM\ARMCC\bin\armcc.exe" -c --apcs=interwork -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/DSP/Include -I../Middlewares/FreeRTOS-Kernel -I../Middlewares/FreeRTOS-Kernel/include -I../Middlewares/FreeRTOS-Kernel/portable/RVDS/ARM_CM4F -I../Core/App/Include -I../Core/BSP/Include -I../Core/Lib/Include -I../Core/OS_Tasks/Include -I.cmsis/include -IRTE/_Main_Board -D"USE_FULL_LL_DRIVER" -D"ARM_MATH_CM4" -D"__FPU_PRESENT=1U" --cpu Cortex-M4.fp --li --c99 -D__MICROLIB -O0 --split_sections --diag_suppress=1 --diag_suppress=1295 -g -o .\build\Main_Board\.obj\__\Core\OS_Tasks\gripper_task.o --no_depend_system_headers --depend .\build\Main_Board\.obj\__\Core\OS_Tasks\gripper_task.d .\..\Core\OS_Tasks\gripper_task.c
+   at unify_builder.Program.Main(String[] args_)
+---
+".\..\Core\OS_Tasks\gripper_task.c", line 72: Error:  #20: identifier "define" is undefined
+  define SERVO
+  ^
+".\..\Core\OS_Tasks\gripper_task.c", line 87: Error:  #65: expected a ";"
+  static void RotateGripper(USART_TypeDef* usart, uint8_t id_1, uint8_t id_2, uint16_t angle)
+  ^
+".\..\Core\OS_Tasks\gripper_task.c", line 110: Warning:  #12-D: parsing restarts here after previous syntax error
+      DynamixelMaster.SyncWrite(usart, device_ids, num_devices, AX_GoalPosition, data_to_write, 2, NULL);
+                                                                                                        ^
+".\..\Core\OS_Tasks\gripper_task.c", line 111: Error:  #169: expected a declaration
+  }
+  ^
+".\..\Core\OS_Tasks\gripper_task.c", line 960: Warning:  #12-D: parsing restarts here after previous syntax error
+                                            .GetTaskHandle = GetTaskHandle};
+                                                                           ^
+".\..\Core\OS_Tasks\gripper_task.c", line 66: Warning:  #177-D: variable "task_handle"  was declared but never referenced
+  static TaskHandle_t task_handle;
+                      ^
+".\..\Core\OS_Tasks\gripper_task.c", line 67: Warning:  #177-D: variable "stack_buffer"  was declared but never referenced
+  static StackType_t stack_buffer[TASK_STACK_SIZE];
+                     ^
+".\..\Core\OS_Tasks\gripper_task.c", line 68: Warning:  #177-D: variable "task_buffer"  was declared but never referenced
+  static StaticTask_t task_buffer;
+                      ^
+.\..\Core\OS_Tasks\gripper_task.c: 5 warnings, 3 errors
+
+[2025-12-17 18:07:43]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2025-12-17 18:07:44]	[done]
+	build successfully !
+
+[2025-12-17 18:08:42]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2025-12-17 18:08:43]	[done]
+	build successfully !
+
+[2025-12-17 18:09:36]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2025-12-17 18:09:37]	[done]
+	build successfully !
+
+[2025-12-17 18:10:25]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2025-12-17 18:10:26]	[done]
+	build successfully !
+
+[2025-12-17 18:11:12]	[done]
+	build successfully !
+
+[2025-12-17 18:11:35]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\terminal_cmd_handlers.c': source file has been changed.
+
+[2025-12-17 18:11:36]	[done]
+	build successfully !
+
+[2025-12-17 18:12:28]	[done]
+	build successfully !
+
+[2025-12-17 19:47:07]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\terminal_cmd_handlers.c': source file has been changed.
+
+[2025-12-17 19:47:07]	compilation failed at : "c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\terminal_cmd_handlers.c", exit code: 1
 command: 
   "D:\Keil_v5\ARM\ARMCC\bin\armcc.exe" -c --apcs=interwork -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/DSP/Include -I../Middlewares/FreeRTOS-Kernel -I../Middlewares/FreeRTOS-Kernel/include -I../Middlewares/FreeRTOS-Kernel/portable/RVDS/ARM_CM4F -I../Core/App/Include -I../Core/BSP/Include -I../Core/Lib/Include -I../Core/OS_Tasks/Include -I.cmsis/include -IRTE/_Main_Board -D"USE_FULL_LL_DRIVER" -D"ARM_MATH_CM4" -D"__FPU_PRESENT=1U" --cpu Cortex-M4.fp --li --c99 -D__MICROLIB -O0 --split_sections --diag_suppress=1 --diag_suppress=1295 -g -o .\build\Main_Board\.obj\__\Core\App\terminal_cmd_handlers.o --no_depend_system_headers --depend .\build\Main_Board\.obj\__\Core\App\terminal_cmd_handlers.d .\..\Core\App\terminal_cmd_handlers.c
    at unify_builder.Program.Main(String[] args_)
 ---
-".\..\Core\App\terminal_cmd_handlers.c", line 604: Warning:  #188-D: enumerated type mixed with another type
-      PCA9685.SetServoAngleWithAddr(i2c_addr_1, 1, 0);
-                                                ^
-".\..\Core\App\terminal_cmd_handlers.c", line 605: Warning:  #188-D: enumerated type mixed with another type
-      PCA9685.SetServoAngleWithAddr(i2c_addr_1, 2, 0);
-                                                ^
-".\..\Core\App\terminal_cmd_handlers.c", line 606: Warning:  #188-D: enumerated type mixed with another type
-      PCA9685.SetServoAngleWithAddr(i2c_addr_1, 3, 0);
-                                                ^
-".\..\Core\App\terminal_cmd_handlers.c", line 607: Warning:  #188-D: enumerated type mixed with another type
-      PCA9685.SetServoAngleWithAddr(i2c_addr_1, 4, 0);
-                                                ^
-".\..\Core\App\terminal_cmd_handlers.c", line 610: Warning:  #188-D: enumerated type mixed with another type
-      PCA9685.SetServoAngleWithAddr(i2c_addr_1, 5, servo5_start_angle);
-                                                ^
-".\..\Core\App\terminal_cmd_handlers.c", line 611: Warning:  #188-D: enumerated type mixed with another type
-      PCA9685.SetServoAngleWithAddr(i2c_addr_1, 6, servo6_start_angle);
-                                                ^
-".\..\Core\App\terminal_cmd_handlers.c", line 691: Warning:  #188-D: enumerated type mixed with another type
-      PCA9685.SetServoAngleWithAddr(i2c_addr_1, 1, 0);
-                                                ^
-".\..\Core\App\terminal_cmd_handlers.c", line 692: Warning:  #188-D: enumerated type mixed with another type
-      PCA9685.SetServoAngleWithAddr(i2c_addr_1, 2, 0);
-                                                ^
-".\..\Core\App\terminal_cmd_handlers.c", line 693: Warning:  #188-D: enumerated type mixed with another type
-      PCA9685.SetServoAngleWithAddr(i2c_addr_1, 3, 0);
-                                                ^
-".\..\Core\App\terminal_cmd_handlers.c", line 694: Warning:  #188-D: enumerated type mixed with another type
-      PCA9685.SetServoAngleWithAddr(i2c_addr_1, 4, 0);
-                                                ^
-".\..\Core\App\terminal_cmd_handlers.c", line 777: Warning:  #188-D: enumerated type mixed with another type
-      PCA9685.SetServoAngleWithAddr(i2c_addr_1, 5, servo5_end_angle);
-                                                ^
-".\..\Core\App\terminal_cmd_handlers.c", line 779: Warning:  #188-D: enumerated type mixed with another type
-      PCA9685.SetServoAngleWithAddr(i2c_addr_1, 6, servo6_end_angle);
-                                                ^
-".\..\Core\App\terminal_cmd_handlers.c", line 782: Error:  #18: expected a ")"
-      if (blocks_mask & 0b0001) { // flip the block #1
-                         ^
-".\..\Core\App\terminal_cmd_handlers.c", line 783: Warning:  #188-D: enumerated type mixed with another type
-        PCA9685.SetServoAngleWithAddr(i2c_addr_1, 1, 180); 
-                                                  ^
-".\..\Core\App\terminal_cmd_handlers.c", line 786: Error:  #18: expected a ")"
-      if (blocks_mask & 0b0010) { // flip the block #2
-                         ^
-".\..\Core\App\terminal_cmd_handlers.c", line 787: Warning:  #188-D: enumerated type mixed with another type
-        PCA9685.SetServoAngleWithAddr(i2c_addr_1, 2, 180); 
-                                                  ^
-".\..\Core\App\terminal_cmd_handlers.c", line 790: Error:  #18: expected a ")"
-      if (blocks_mask & 0b0100) { // flip the block #3
-                         ^
-".\..\Core\App\terminal_cmd_handlers.c", line 791: Warning:  #188-D: enumerated type mixed with another type
-        PCA9685.SetServoAngleWithAddr(i2c_addr_1, 3, 180); 
-                                                  ^
-".\..\Core\App\terminal_cmd_handlers.c", line 794: Error:  #18: expected a ")"
-      if (blocks_mask & 0b1000) { // flip the block #4
-                         ^
-".\..\Core\App\terminal_cmd_handlers.c", line 795: Warning:  #188-D: enumerated type mixed with another type
-        PCA9685.SetServoAngleWithAddr(i2c_addr_1, 4, 180); 
-                                                  ^
-".\..\Core\App\terminal_cmd_handlers.c", line 800: Warning:  #188-D: enumerated type mixed with another type
-      PCA9685.SetServoAngleWithAddr(i2c_addr_1, 5, servo5_start_angle);
-                                                ^
-".\..\Core\App\terminal_cmd_handlers.c", line 802: Warning:  #188-D: enumerated type mixed with another type
-      PCA9685.SetServoAngleWithAddr(i2c_addr_1, 6, servo6_start_angle);
-                                                ^
-.\..\Core\App\terminal_cmd_handlers.c: 18 warnings, 4 errors
+".\..\Core\App\terminal_cmd_handlers.c", line 85: Error:  #148: variable "start_angle"  has already been initialized
+  uint8_t start_angle = 0; //0-300 60
+          ^
+".\..\Core\App\terminal_cmd_handlers.c", line 86: Error:  #148: variable "end_angle"  has already been initialized
+  uint8_t end_angle = 90; //0-300 150 125
+          ^
+.\..\Core\App\terminal_cmd_handlers.c: 0 warnings, 2 errors
 
-[2025-12-17 00:33:09]	[info] incremental build: 1 source files changed
+[2025-12-17 19:47:34]	[info] incremental build: 1 source files changed
 These source files will be recompiled
 ---
 'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\terminal_cmd_handlers.c': source file has been changed.
 
-[2025-12-17 00:33:09]	compilation failed at : "c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\terminal_cmd_handlers.c", exit code: 1
-command: 
-  "D:\Keil_v5\ARM\ARMCC\bin\armcc.exe" -c --apcs=interwork -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/DSP/Include -I../Middlewares/FreeRTOS-Kernel -I../Middlewares/FreeRTOS-Kernel/include -I../Middlewares/FreeRTOS-Kernel/portable/RVDS/ARM_CM4F -I../Core/App/Include -I../Core/BSP/Include -I../Core/Lib/Include -I../Core/OS_Tasks/Include -I.cmsis/include -IRTE/_Main_Board -D"USE_FULL_LL_DRIVER" -D"ARM_MATH_CM4" -D"__FPU_PRESENT=1U" --cpu Cortex-M4.fp --li --c99 -D__MICROLIB -O0 --split_sections --diag_suppress=1 --diag_suppress=1295 -g -o .\build\Main_Board\.obj\__\Core\App\terminal_cmd_handlers.o --no_depend_system_headers --depend .\build\Main_Board\.obj\__\Core\App\terminal_cmd_handlers.d .\..\Core\App\terminal_cmd_handlers.c
-   at unify_builder.Program.Main(String[] args_)
----
-".\..\Core\App\terminal_cmd_handlers.c", line 604: Warning:  #188-D: enumerated type mixed with another type
-      PCA9685.SetServoAngleWithAddr(i2c_addr_1, 1, 0);
-                                                ^
-".\..\Core\App\terminal_cmd_handlers.c", line 605: Warning:  #188-D: enumerated type mixed with another type
-      PCA9685.SetServoAngleWithAddr(i2c_addr_1, 2, 0);
-                                                ^
-".\..\Core\App\terminal_cmd_handlers.c", line 606: Warning:  #188-D: enumerated type mixed with another type
-      PCA9685.SetServoAngleWithAddr(i2c_addr_1, 3, 0);
-                                                ^
-".\..\Core\App\terminal_cmd_handlers.c", line 607: Warning:  #188-D: enumerated type mixed with another type
-      PCA9685.SetServoAngleWithAddr(i2c_addr_1, 4, 0);
-                                                ^
-".\..\Core\App\terminal_cmd_handlers.c", line 610: Warning:  #188-D: enumerated type mixed with another type
-      PCA9685.SetServoAngleWithAddr(i2c_addr_1, 5, servo5_start_angle);
-                                                ^
-".\..\Core\App\terminal_cmd_handlers.c", line 611: Warning:  #188-D: enumerated type mixed with another type
-      PCA9685.SetServoAngleWithAddr(i2c_addr_1, 6, servo6_start_angle);
-                                                ^
-".\..\Core\App\terminal_cmd_handlers.c", line 691: Warning:  #188-D: enumerated type mixed with another type
-      PCA9685.SetServoAngleWithAddr(i2c_addr_1, 1, 0);
-                                                ^
-".\..\Core\App\terminal_cmd_handlers.c", line 692: Warning:  #188-D: enumerated type mixed with another type
-      PCA9685.SetServoAngleWithAddr(i2c_addr_1, 2, 0);
-                                                ^
-".\..\Core\App\terminal_cmd_handlers.c", line 693: Warning:  #188-D: enumerated type mixed with another type
-      PCA9685.SetServoAngleWithAddr(i2c_addr_1, 3, 0);
-                                                ^
-".\..\Core\App\terminal_cmd_handlers.c", line 694: Warning:  #188-D: enumerated type mixed with another type
-      PCA9685.SetServoAngleWithAddr(i2c_addr_1, 4, 0);
-                                                ^
-".\..\Core\App\terminal_cmd_handlers.c", line 777: Warning:  #188-D: enumerated type mixed with another type
-      PCA9685.SetServoAngleWithAddr(i2c_addr_1, 5, servo5_end_angle);
-                                                ^
-".\..\Core\App\terminal_cmd_handlers.c", line 779: Warning:  #188-D: enumerated type mixed with another type
-      PCA9685.SetServoAngleWithAddr(i2c_addr_1, 6, servo6_end_angle);
-                                                ^
-".\..\Core\App\terminal_cmd_handlers.c", line 782: Error:  #18: expected a ")"
-      if (blocks_mask & 0b0001) 
-                         ^
-".\..\Core\App\terminal_cmd_handlers.c", line 784: Warning:  #188-D: enumerated type mixed with another type
-        PCA9685.SetServoAngleWithAddr(i2c_addr_1, 1, 180); 
-                                                  ^
-".\..\Core\App\terminal_cmd_handlers.c", line 787: Error:  #18: expected a ")"
-      if (blocks_mask & 0b0010) 
-                         ^
-".\..\Core\App\terminal_cmd_handlers.c", line 789: Warning:  #188-D: enumerated type mixed with another type
-        PCA9685.SetServoAngleWithAddr(i2c_addr_1, 2, 180); 
-                                                  ^
-".\..\Core\App\terminal_cmd_handlers.c", line 792: Error:  #18: expected a ")"
-      if (blocks_mask & 0b0100) 
-                         ^
-".\..\Core\App\terminal_cmd_handlers.c", line 794: Warning:  #188-D: enumerated type mixed with another type
-        PCA9685.SetServoAngleWithAddr(i2c_addr_1, 3, 180); 
-                                                  ^
-".\..\Core\App\terminal_cmd_handlers.c", line 797: Error:  #18: expected a ")"
-      if (blocks_mask & 0b1000) 
-                         ^
-".\..\Core\App\terminal_cmd_handlers.c", line 799: Warning:  #188-D: enumerated type mixed with another type
-        PCA9685.SetServoAngleWithAddr(i2c_addr_1, 4, 180); 
-                                                  ^
-".\..\Core\App\terminal_cmd_handlers.c", line 804: Warning:  #188-D: enumerated type mixed with another type
-      PCA9685.SetServoAngleWithAddr(i2c_addr_1, 5, servo5_start_angle);
-                                                ^
-".\..\Core\App\terminal_cmd_handlers.c", line 806: Warning:  #188-D: enumerated type mixed with another type
-      PCA9685.SetServoAngleWithAddr(i2c_addr_1, 6, servo6_start_angle);
-                                                ^
-.\..\Core\App\terminal_cmd_handlers.c: 18 warnings, 4 errors
-
-[2025-12-17 00:37:27]	[info] incremental build: 1 source files changed
-These source files will be recompiled
----
-'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\terminal_cmd_handlers.c': source file has been changed.
-
-[2025-12-17 00:37:30]	[done]
+[2025-12-17 19:47:39]	[done]
 	build successfully !
 
-[2025-12-17 00:53:16]	[done]
+[2025-12-17 20:56:11]	[done]
 	build successfully !
 
-[2025-12-17 00:56:31]	[done]
+[2025-12-17 20:57:36]	[done]
 	build successfully !
 
-[2025-12-17 01:34:28]	[info] incremental build: 1 source files changed
-These source files will be recompiled
----
-'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\terminal_cmd_handlers.c': source file has been changed.
-
-[2025-12-17 01:34:29]	[done]
+[2025-12-17 20:58:49]	[done]
 	build successfully !
 
-[2025-12-17 01:35:18]	[done]
+[2025-12-17 20:59:24]	[done]
 	build successfully !
 
-[2025-12-17 01:35:56]	[done]
+[2025-12-17 21:01:32]	[done]
+	build successfully !
+
+[2025-12-17 23:04:53]	[done]
 	build successfully !
 

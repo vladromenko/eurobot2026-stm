@@ -44,6 +44,8 @@
 
 #define cos30 	0.8660254f
 #define cos60 	0.5f
+
+/* // from prev year team
 // result = linear_wheel_speed(m/s, m/s, m/s)  = inverse_matrix * body_speed(m/s, ms/s, rad/s)
 float inverse_matrix[9] = {cos30, -cos60,   -DIST_CENTER_TO_WHEEL_m,
 														0, 			1, 			-DIST_CENTER_TO_WHEEL_m,
@@ -54,7 +56,34 @@ float direct_matrix[9] = {	1/(2*cos30), 				0,							-1 / (2*cos30),
 							-1/3.0f, 						2/3.0f,							-1/3.0f,
 							-1/3.0f/DIST_CENTER_TO_WHEEL_m,	-1/3.0f/DIST_CENTER_TO_WHEEL_m,	-1/3.0f/DIST_CENTER_TO_WHEEL_m};
 
-														
+*/
+
+///*//corrected
+// result = linear_wheel_speed(m/s, m/s, m/s)  = inverse_matrix * body_speed(m/s, ms/s, rad/s)
+float inverse_matrix[9] = {
+    cos30,   cos60,   DIST_CENTER_TO_WHEEL_m,
+    0,       -1,      DIST_CENTER_TO_WHEEL_m, 
+    -cos30,  cos60,   DIST_CENTER_TO_WHEEL_m
+};
+
+// Direct kinematics: body_speed = direct_matrix * wheel_speed
+float direct_matrix[9] = {
+    1/(2*cos30),   0,               -1/(2*cos30), 
+    (2*cos60)/3.0f,       -2/3.0f,          (2*cos60)/3.0f,       
+    1/(3*DIST_CENTER_TO_WHEEL_m), 1/(3*DIST_CENTER_TO_WHEEL_m), 1/(3*DIST_CENTER_TO_WHEEL_m)
+};
+//*/
+
+/*
+// from API
+float direct_matrix[9] = { 	cos30, cos60, DIST_CENTER_TO_WHEEL_m,
+							-cos30, cos60, DIST_CENTER_TO_WHEEL_m,
+							0,		-1,		DIST_CENTER_TO_WHEEL_m	};
+
+float inverse_matrix[9] = {	1/(2.0f*cos30), -1/(2.0f*cos30), 0,
+							0.3333333f, 0.3333333f,	-0.6666666f,
+							0.3333333f/DIST_CENTER_TO_WHEEL_m,	0.3333333f/DIST_CENTER_TO_WHEEL_m,	 0.3333333f/DIST_CENTER_TO_WHEEL_m	};
+*/
 
 arm_matrix_instance_f32 arm_direct_matrix;
 arm_matrix_instance_f32 arm_inverse_matrix;

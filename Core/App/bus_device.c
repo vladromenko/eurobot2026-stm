@@ -24,9 +24,9 @@
 #include "bus_device.h"
 
 
-const struct bus_device_s bus_devices[BUS_DEVICES_NUMBER] = {[MAXON_MOTOR_1] = {USART6, 0x22},
-                                                              [MAXON_MOTOR_2] = {USART6, 0x21},
-                                                              [MAXON_MOTOR_3] = {USART6, 0x23},
+const struct bus_device_s bus_devices[BUS_DEVICES_NUMBER] = {[MAXON_MOTOR_1] = {USART6, 0x23}, //0x22 (X back, Y right) | 0x23 (X forw, Y right)
+                                                              [MAXON_MOTOR_2] = {USART6, 0x21}, //0x21 | 0x21
+                                                              [MAXON_MOTOR_3] = {USART6, 0x22}, //0x23 | 0x22
                                                               [BMS_BOARD] = {UART4, 0x11},
                                                               [SERVO_GRAB] = {USART3, 92},
                                                               [SERVO_LIFT11] = {USART3, 6},
