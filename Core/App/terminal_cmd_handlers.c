@@ -82,8 +82,8 @@ uint8_t i2c_addr_1 = 0x40;
 
 uint8_t dynamixel_cursor_id = 15;
 uint16_t cursor_speed = 150; //0-1024
-uint8_t cursor_hor_angle = 0; //0-300 60
-uint8_t cursor_vert_angle = 90; //0-300 150 125
+uint8_t cursor_hor_angle = 40; //0-300 60
+uint8_t cursor_vert_angle = 130; //0-300 150 125
 
 uint8_t COMM_ENABLE = 1;
 

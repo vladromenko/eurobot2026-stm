@@ -177,3 +177,384 @@ These source files will be recompiled
 [2025-12-17 23:04:53]	[done]
 	build successfully !
 
+[2025-12-21 22:00:16]	compilation failed at : "c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\robot_behavior_routine.c", exit code: 1
+command: 
+  "D:\Keil_v5\ARM\ARMCC\bin\armcc.exe" -c --apcs=interwork -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/DSP/Include -I../Middlewares/FreeRTOS-Kernel -I../Middlewares/FreeRTOS-Kernel/include -I../Middlewares/FreeRTOS-Kernel/portable/RVDS/ARM_CM4F -I../Core/App/Include -I../Core/BSP/Include -I../Core/Lib/Include -I../Core/OS_Tasks/Include -I.cmsis/include -IRTE/_Main_Board -D"USE_FULL_LL_DRIVER" -D"ARM_MATH_CM4" -D"__FPU_PRESENT=1U" --cpu Cortex-M4.fp --li --c99 -D__MICROLIB -O0 --split_sections --diag_suppress=1 --diag_suppress=1295 -g -o .\build\Main_Board\.obj\__\Core\App\robot_behavior_routine.o --no_depend_system_headers --depend .\build\Main_Board\.obj\__\Core\App\robot_behavior_routine.d .\..\Core\App\robot_behavior_routine.c
+   at unify_builder.Program.compileByMulThread(Int32 thrNum, CmdInfo[] cmds_, List`1 errLogs)
+   at unify_builder.Program.Main(String[] args_)
+---
+Error: C9555E: Failed to check out a license.LICENSE ERROR (R201(2): INVALID LICENSE ID CODE (LIC))
+
+Check that your license details are correct in the License Management dialog of MDK. Additional information is available at:
+ http://www.keil.com/support/man/docs/license/license_management.htm
+ If you need further help, provide this complete error report to your supplier or license.support@arm.com.
+ - ARMLMD_LICENSE_FILE: unset
+ - LM_LICENSE_FILE: unset
+ - ARM_TOOL_VARIANT: unset
+ - ARM_PRODUCT_PATH: unset
+ - Product location: D:\Keil_v5\ARM\sw\mappings
+ - Toolchain location: D:\Keil_v5\ARM\ARMCC\bin
+ - Selected tool variant: mdk_std
+ - Checkout feature: LIC0=KA...-.....-.....
+ - Feature version: 5.0202006
+ - Keil error code: 1
+Product: MDK Plus 5.36
+Component: ARM Compiler 5.06 update 7 (build 960)
+Tool: armcc [4d365d]
+Error: C9555E: Failed to check out a license.LICENSE ERROR (R201(2): INVALID LICENSE ID CODE (LIC))
+
+Check that your license details are correct in the License Management dialog of MDK. Additional information is available at:
+ http://www.keil.com/support/man/docs/license/license_management.htm
+ If you need further help, provide this complete error report to your supplier or license.support@arm.com.
+ - ARMLMD_LICENSE_FILE: unset
+ - LM_LICENSE_FILE: unset
+ - ARM_TOOL_VARIANT: unset
+ - ARM_PRODUCT_PATH: unset
+ - Product location: D:\Keil_v5\ARM\sw\mappings
+ - Toolchain location: D:\Keil_v5\ARM\ARMCC\bin
+ - Selected tool variant: mdk_std
+ - Checkout feature: LIC0=KA...-.....-.....
+ - Feature version: 5.0202006
+ - Keil error code: 1
+Product: MDK Plus 5.36
+Component: ARM Compiler 5.06 update 7 (build 960)
+Tool: armcc [4d365d]
+Error: C9555E: Failed to check out a license.LICENSE ERROR (R201(2): INVALID LICENSE ID CODE (LIC))
+
+Check that your license details are correct in the License Management dialog of MDK. Additional information is available at:
+ http://www.keil.com/support/man/docs/license/license_management.htm
+ If you need further help, provide this complete error report to your supplier or license.support@arm.com.
+ - ARMLMD_LICENSE_FILE: unset
+ - LM_LICENSE_FILE: unset
+ - ARM_TOOL_VARIANT: unset
+ - ARM_PRODUCT_PATH: unset
+ - Product location: D:\Keil_v5\ARM\sw\mappings
+ - Toolchain location: D:\Keil_v5\ARM\ARMCC\bin
+ - Selected tool variant: mdk_std
+ - Checkout feature: LIC0=KA...-.....-.....
+ - Feature version: 5.0202006
+ - Keil error code: 1
+Product: MDK Plus 5.36
+Component: ARM Compiler 5.06 update 7 (build 960)
+Tool: armcc [4d365d]
+Error: C9555E: Failed to check out a license.LICENSE ERROR (R201(2): INVALID LICENSE ID CODE (LIC))
+
+Check that your license details are correct in the License Management dialog of MDK. Additional information is available at:
+ http://www.keil.com/support/man/docs/license/license_management.htm
+ If you need further help, provide this complete error report to your supplier or license.support@arm.com.
+ - ARMLMD_LICENSE_FILE: unset
+ - LM_LICENSE_FILE: unset
+ - ARM_TOOL_VARIANT: unset
+ - ARM_PRODUCT_PATH: unset
+ - Product location: D:\Keil_v5\ARM\sw\mappings
+ - Toolchain location: D:\Keil_v5\ARM\ARMCC\bin
+ - Selected tool variant: mdk_std
+ - Checkout feature: LIC0=KA...-.....-.....
+ - Feature version: 5.0202006
+ - Keil error code: 1
+Product: MDK Plus 5.36
+Component: ARM Compiler 5.06 update 7 (build 960)
+Tool: armcc [4d365d]
+Error: C9555E: Failed to check out a license.LICENSE ERROR (R201(2): INVALID LICENSE ID CODE (LIC))
+
+Check that your license details are correct in the License Management dialog of MDK. Additional information is available at:
+ http://www.keil.com/support/man/docs/license/license_management.htm
+ If you need further help, provide this complete error report to your supplier or license.support@arm.com.
+ - ARMLMD_LICENSE_FILE: unset
+ - LM_LICENSE_FILE: unset
+ - ARM_TOOL_VARIANT: unset
+ - ARM_PRODUCT_PATH: unset
+ - Product location: D:\Keil_v5\ARM\sw\mappings
+ - Toolchain location: D:\Keil_v5\ARM\ARMCC\bin
+ - Selected tool variant: mdk_std
+ - Checkout feature: LIC0=KA...-.....-.....
+ - Feature version: 5.0202006
+ - Keil error code: 1
+Product: MDK Plus 5.36
+Component: ARM Compiler 5.06 update 7 (build 960)
+Tool: armcc [4d365d]
+Error: C9555E: Failed to check out a license.LICENSE ERROR (R201(2): INVALID LICENSE ID CODE (LIC))
+
+Check that your license details are correct in the License Management dialog of MDK. Additional information is available at:
+ http://www.keil.com/support/man/docs/license/license_management.htm
+ If you need further help, provide this complete error report to your supplier or license.support@arm.com.
+ - ARMLMD_LICENSE_FILE: unset
+ - LM_LICENSE_FILE: unset
+ - ARM_TOOL_VARIANT: unset
+ - ARM_PRODUCT_PATH: unset
+ - Product location: D:\Keil_v5\ARM\sw\mappings
+ - Toolchain location: D:\Keil_v5\ARM\ARMCC\bin
+ - Selected tool variant: mdk_std
+ - Checkout feature: LIC0=KA...-.....-.....
+ - Feature version: 5.0202006
+ - Keil error code: 1
+Product: MDK Plus 5.36
+Component: ARM Compiler 5.06 update 7 (build 960)
+Tool: armcc [4d365d]
+Error: C9555E: Failed to check out a license.LICENSE ERROR (R201(2): INVALID LICENSE ID CODE (LIC))
+
+Check that your license details are correct in the License Management dialog of MDK. Additional information is available at:
+ http://www.keil.com/support/man/docs/license/license_management.htm
+ If you need further help, provide this complete error report to your supplier or license.support@arm.com.
+ - ARMLMD_LICENSE_FILE: unset
+ - LM_LICENSE_FILE: unset
+ - ARM_TOOL_VARIANT: unset
+ - ARM_PRODUCT_PATH: unset
+ - Product location: D:\Keil_v5\ARM\sw\mappings
+ - Toolchain location: D:\Keil_v5\ARM\ARMCC\bin
+ - Selected tool variant: mdk_std
+ - Checkout feature: LIC0=KA...-.....-.....
+ - Feature version: 5.0202006
+ - Keil error code: 1
+Product: MDK Plus 5.36
+Component: ARM Compiler 5.06 update 7 (build 960)
+Tool: armcc [4d365d]
+Error: C9555E: Failed to check out a license.LICENSE ERROR (R201(2): INVALID LICENSE ID CODE (LIC))
+
+Check that your license details are correct in the License Management dialog of MDK. Additional information is available at:
+ http://www.keil.com/support/man/docs/license/license_management.htm
+ If you need further help, provide this complete error report to your supplier or license.support@arm.com.
+ - ARMLMD_LICENSE_FILE: unset
+ - LM_LICENSE_FILE: unset
+ - ARM_TOOL_VARIANT: unset
+ - ARM_PRODUCT_PATH: unset
+ - Product location: D:\Keil_v5\ARM\sw\mappings
+ - Toolchain location: D:\Keil_v5\ARM\ARMCC\bin
+ - Selected tool variant: mdk_std
+ - Checkout feature: LIC0=KA...-.....-.....
+ - Feature version: 5.0202006
+ - Keil error code: 1
+Product: MDK Plus 5.36
+Component: ARM Compiler 5.06 update 7 (build 960)
+Tool: armcc [4d365d]
+Error: C9555E: Failed to check out a license.LICENSE ERROR (R201(2): INVALID LICENSE ID CODE (LIC))
+
+Check that your license details are correct in the License Management dialog of MDK. Additional information is available at:
+ http://www.keil.com/support/man/docs/license/license_management.htm
+ If you need further help, provide this complete error report to your supplier or license.support@arm.com.
+ - ARMLMD_LICENSE_FILE: unset
+ - LM_LICENSE_FILE: unset
+ - ARM_TOOL_VARIANT: unset
+ - ARM_PRODUCT_PATH: unset
+ - Product location: D:\Keil_v5\ARM\sw\mappings
+ - Toolchain location: D:\Keil_v5\ARM\ARMCC\bin
+ - Selected tool variant: mdk_std
+ - Checkout feature: LIC0=KA...-.....-.....
+ - Feature version: 5.0202006
+ - Keil error code: 1
+Product: MDK Plus 5.36
+Component: ARM Compiler 5.06 update 7 (build 960)
+Tool: armcc [4d365d]
+Error: C9555E: Failed to check out a license.LICENSE ERROR (R201(2): INVALID LICENSE ID CODE (LIC))
+
+Check that your license details are correct in the License Management dialog of MDK. Additional information is available at:
+ http://www.keil.com/support/man/docs/license/license_management.htm
+ If you need further help, provide this complete error report to your supplier or license.support@arm.com.
+ - ARMLMD_LICENSE_FILE: unset
+ - LM_LICENSE_FILE: unset
+ - ARM_TOOL_VARIANT: unset
+ - ARM_PRODUCT_PATH: unset
+ - Product location: D:\Keil_v5\ARM\sw\mappings
+ - Toolchain location: D:\Keil_v5\ARM\ARMCC\bin
+ - Selected tool variant: mdk_std
+ - Checkout feature: LIC0=KA...-.....-.....
+ - Feature version: 5.0202006
+ - Keil error code: 1
+Product: MDK Plus 5.36
+Component: ARM Compiler 5.06 update 7 (build 960)
+Tool: armcc [4d365d]
+Error: C9555E: Failed to check out a license.LICENSE ERROR (R201(2): INVALID LICENSE ID CODE (LIC))
+
+Check that your license details are correct in the License Management dialog of MDK. Additional information is available at:
+ http://www.keil.com/support/man/docs/license/license_management.htm
+ If you need further help, provide this complete error report to your supplier or license.support@arm.com.
+ - ARMLMD_LICENSE_FILE: unset
+ - LM_LICENSE_FILE: unset
+ - ARM_TOOL_VARIANT: unset
+ - ARM_PRODUCT_PATH: unset
+ - Product location: D:\Keil_v5\ARM\sw\mappings
+ - Toolchain location: D:\Keil_v5\ARM\ARMCC\bin
+ - Selected tool variant: mdk_std
+ - Checkout feature: LIC0=KA...-.....-.....
+ - Feature version: 5.0202006
+ - Keil error code: 1
+Product: MDK Plus 5.36
+Component: ARM Compiler 5.06 update 7 (build 960)
+Tool: armcc [4d365d]
+Error: C9555E: Failed to check out a license.LICENSE ERROR (R201(2): INVALID LICENSE ID CODE (LIC))
+
+Check that your license details are correct in the License Management dialog of MDK. Additional information is available at:
+ http://www.keil.com/support/man/docs/license/license_management.htm
+ If you need further help, provide this complete error report to your supplier or license.support@arm.com.
+ - ARMLMD_LICENSE_FILE: unset
+ - LM_LICENSE_FILE: unset
+ - ARM_TOOL_VARIANT: unset
+ - ARM_PRODUCT_PATH: unset
+ - Product location: D:\Keil_v5\ARM\sw\mappings
+ - Toolchain location: D:\Keil_v5\ARM\ARMCC\bin
+ - Selected tool variant: mdk_std
+ - Checkout feature: LIC0=KA...-.....-.....
+ - Feature version: 5.0202006
+ - Keil error code: 1
+Product: MDK Plus 5.36
+Component: ARM Compiler 5.06 update 7 (build 960)
+Tool: armcc [4d365d]
+Error: C9555E: Failed to check out a license.LICENSE ERROR (R201(2): INVALID LICENSE ID CODE (LIC))
+
+Check that your license details are correct in the License Management dialog of MDK. Additional information is available at:
+ http://www.keil.com/support/man/docs/license/license_management.htm
+ If you need further help, provide this complete error report to your supplier or license.support@arm.com.
+ - ARMLMD_LICENSE_FILE: unset
+ - LM_LICENSE_FILE: unset
+ - ARM_TOOL_VARIANT: unset
+ - ARM_PRODUCT_PATH: unset
+ - Product location: D:\Keil_v5\ARM\sw\mappings
+ - Toolchain location: D:\Keil_v5\ARM\ARMCC\bin
+ - Selected tool variant: mdk_std
+ - Checkout feature: LIC0=KA...-.....-.....
+ - Feature version: 5.0202006
+ - Keil error code: 1
+Product: MDK Plus 5.36
+Component: ARM Compiler 5.06 update 7 (build 960)
+Tool: armcc [4d365d]
+Error: C9555E: Failed to check out a license.LICENSE ERROR (R201(2): INVALID LICENSE ID CODE (LIC))
+
+Check that your license details are correct in the License Management dialog of MDK. Additional information is available at:
+ http://www.keil.com/support/man/docs/license/license_management.htm
+ If you need further help, provide this complete error report to your supplier or license.support@arm.com.
+ - ARMLMD_LICENSE_FILE: unset
+ - LM_LICENSE_FILE: unset
+ - ARM_TOOL_VARIANT: unset
+ - ARM_PRODUCT_PATH: unset
+ - Product location: D:\Keil_v5\ARM\sw\mappings
+ - Toolchain location: D:\Keil_v5\ARM\ARMCC\bin
+ - Selected tool variant: mdk_std
+ - Checkout feature: LIC0=KA...-.....-.....
+ - Feature version: 5.0202006
+ - Keil error code: 1
+Product: MDK Plus 5.36
+Component: ARM Compiler 5.06 update 7 (build 960)
+Tool: armcc [4d365d]
+Error: C9555E: Failed to check out a license.LICENSE ERROR (R201(2): INVALID LICENSE ID CODE (LIC))
+
+Check that your license details are correct in the License Management dialog of MDK. Additional information is available at:
+ http://www.keil.com/support/man/docs/license/license_management.htm
+ If you need further help, provide this complete error report to your supplier or license.support@arm.com.
+ - ARMLMD_LICENSE_FILE: unset
+ - LM_LICENSE_FILE: unset
+ - ARM_TOOL_VARIANT: unset
+ - ARM_PRODUCT_PATH: unset
+ - Product location: D:\Keil_v5\ARM\sw\mappings
+ - Toolchain location: D:\Keil_v5\ARM\ARMCC\bin
+ - Selected tool variant: mdk_std
+ - Checkout feature: LIC0=KA...-.....-.....
+ - Feature version: 5.0202006
+ - Keil error code: 1
+Product: MDK Plus 5.36
+Component: ARM Compiler 5.06 update 7 (build 960)
+Tool: armcc [4d365d]
+Error: C9555E: Failed to check out a license.LICENSE ERROR (R201(2): INVALID LICENSE ID CODE (LIC))
+
+Check that your license details are correct in the License Management dialog of MDK. Additional information is available at:
+ http://www.keil.com/support/man/docs/license/license_management.htm
+ If you need further help, provide this complete error report to your supplier or license.support@arm.com.
+ - ARMLMD_LICENSE_FILE: unset
+ - LM_LICENSE_FILE: unset
+ - ARM_TOOL_VARIANT: unset
+ - ARM_PRODUCT_PATH: unset
+ - Product location: D:\Keil_v5\ARM\sw\mappings
+ - Toolchain location: D:\Keil_v5\ARM\ARMCC\bin
+ - Selected tool variant: mdk_std
+ - Checkout feature: LIC0=KA...-.....-.....
+ - Feature version: 5.0202006
+ - Keil error code: 1
+Product: MDK Plus 5.36
+Component: ARM Compiler 5.06 update 7 (build 960)
+Tool: armcc [4d365d]
+
+[2025-12-21 22:02:07]	[info] incremental build: 5 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\debug_terminal.c': object (.o) file not exist
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\debug_terminal_cmd_handlers.c': object (.o) file not exist
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\BSP\i2c2.c': object (.o) file not exist
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\Lib\pca9685.c': object (.o) file not exist
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\debug_task.c': object (.o) file not exist
+
+[2025-12-21 22:02:07]	compilation failed at : "c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\debug_terminal.c", exit code: 1
+command: 
+  "D:\Keil_v5\ARM\ARMCC\bin\armcc.exe" -c --apcs=interwork -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/DSP/Include -I../Middlewares/FreeRTOS-Kernel -I../Middlewares/FreeRTOS-Kernel/include -I../Middlewares/FreeRTOS-Kernel/portable/RVDS/ARM_CM4F -I../Core/App/Include -I../Core/BSP/Include -I../Core/Lib/Include -I../Core/OS_Tasks/Include -I.cmsis/include -IRTE/_Main_Board -D"USE_FULL_LL_DRIVER" -D"ARM_MATH_CM4" -D"__FPU_PRESENT=1U" --cpu Cortex-M4.fp --li --c99 -D__MICROLIB -O0 --split_sections --diag_suppress=1 --diag_suppress=1295 -g -o .\build\Main_Board\.obj\__\Core\App\debug_terminal.o --no_depend_system_headers --depend .\build\Main_Board\.obj\__\Core\App\debug_terminal.d .\..\Core\App\debug_terminal.c
+   at unify_builder.Program.Main(String[] args_)
+---
+Error: C9555E: Failed to check out a license.LICENSE ERROR (R201(2): INVALID LICENSE ID CODE (LIC))
+
+Check that your license details are correct in the License Management dialog of MDK. Additional information is available at:
+ http://www.keil.com/support/man/docs/license/license_management.htm
+ If you need further help, provide this complete error report to your supplier or license.support@arm.com.
+ - ARMLMD_LICENSE_FILE: unset
+ - LM_LICENSE_FILE: unset
+ - ARM_TOOL_VARIANT: unset
+ - ARM_PRODUCT_PATH: unset
+ - Product location: D:\Keil_v5\ARM\sw\mappings
+ - Toolchain location: D:\Keil_v5\ARM\ARMCC\bin
+ - Selected tool variant: mdk_std
+ - Checkout feature: LIC0=KA...-.....-.....
+ - Feature version: 5.0202006
+ - Keil error code: 1
+Product: MDK Plus 5.36
+Component: ARM Compiler 5.06 update 7 (build 960)
+Tool: armcc [4d365d]
+
+[2025-12-21 22:02:09]	[info] incremental build: 5 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\debug_terminal.c': object (.o) file not exist
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\debug_terminal_cmd_handlers.c': object (.o) file not exist
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\BSP\i2c2.c': object (.o) file not exist
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\Lib\pca9685.c': object (.o) file not exist
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\debug_task.c': object (.o) file not exist
+
+[2025-12-21 22:02:10]	compilation failed at : "c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\debug_terminal.c", exit code: 1
+command: 
+  "D:\Keil_v5\ARM\ARMCC\bin\armcc.exe" -c --apcs=interwork -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/DSP/Include -I../Middlewares/FreeRTOS-Kernel -I../Middlewares/FreeRTOS-Kernel/include -I../Middlewares/FreeRTOS-Kernel/portable/RVDS/ARM_CM4F -I../Core/App/Include -I../Core/BSP/Include -I../Core/Lib/Include -I../Core/OS_Tasks/Include -I.cmsis/include -IRTE/_Main_Board -D"USE_FULL_LL_DRIVER" -D"ARM_MATH_CM4" -D"__FPU_PRESENT=1U" --cpu Cortex-M4.fp --li --c99 -D__MICROLIB -O0 --split_sections --diag_suppress=1 --diag_suppress=1295 -g -o .\build\Main_Board\.obj\__\Core\App\debug_terminal.o --no_depend_system_headers --depend .\build\Main_Board\.obj\__\Core\App\debug_terminal.d .\..\Core\App\debug_terminal.c
+   at unify_builder.Program.Main(String[] args_)
+---
+Error: C9555E: Failed to check out a license.LICENSE ERROR (R201(2): INVALID LICENSE ID CODE (LIC))
+
+Check that your license details are correct in the License Management dialog of MDK. Additional information is available at:
+ http://www.keil.com/support/man/docs/license/license_management.htm
+ If you need further help, provide this complete error report to your supplier or license.support@arm.com.
+ - ARMLMD_LICENSE_FILE: unset
+ - LM_LICENSE_FILE: unset
+ - ARM_TOOL_VARIANT: unset
+ - ARM_PRODUCT_PATH: unset
+ - Product location: D:\Keil_v5\ARM\sw\mappings
+ - Toolchain location: D:\Keil_v5\ARM\ARMCC\bin
+ - Selected tool variant: mdk_std
+ - Checkout feature: LIC0=KA...-.....-.....
+ - Feature version: 5.0202006
+ - Keil error code: 1
+Product: MDK Plus 5.36
+Component: ARM Compiler 5.06 update 7 (build 960)
+Tool: armcc [4d365d]
+
+[2025-12-22 02:17:28]	[done]
+	build successfully !
+
+[2025-12-22 02:21:13]	[done]
+	build successfully !
+
+[2025-12-22 12:41:56]	[done]
+	build successfully !
+
+[2026-01-09 22:43:27]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\kinematics.c': source file has been changed.
+
+[2026-01-09 22:43:29]	[done]
+	build successfully !
+
+[2026-01-10 17:46:29]	[done]
+	build successfully !
+

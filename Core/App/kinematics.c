@@ -45,7 +45,7 @@
 #define cos30 	0.8660254f
 #define cos60 	0.5f
 
-/* // from prev year team
+///* // from prev year team
 // result = linear_wheel_speed(m/s, m/s, m/s)  = inverse_matrix * body_speed(m/s, ms/s, rad/s)
 float inverse_matrix[9] = {cos30, -cos60,   -DIST_CENTER_TO_WHEEL_m,
 														0, 			1, 			-DIST_CENTER_TO_WHEEL_m,
@@ -56,9 +56,9 @@ float direct_matrix[9] = {	1/(2*cos30), 				0,							-1 / (2*cos30),
 							-1/3.0f, 						2/3.0f,							-1/3.0f,
 							-1/3.0f/DIST_CENTER_TO_WHEEL_m,	-1/3.0f/DIST_CENTER_TO_WHEEL_m,	-1/3.0f/DIST_CENTER_TO_WHEEL_m};
 
-*/
+//*/
 
-///*//corrected
+/*//corrected
 // result = linear_wheel_speed(m/s, m/s, m/s)  = inverse_matrix * body_speed(m/s, ms/s, rad/s)
 float inverse_matrix[9] = {
     cos30,   cos60,   DIST_CENTER_TO_WHEEL_m,
@@ -72,7 +72,7 @@ float direct_matrix[9] = {
     (2*cos60)/3.0f,       -2/3.0f,          (2*cos60)/3.0f,       
     1/(3*DIST_CENTER_TO_WHEEL_m), 1/(3*DIST_CENTER_TO_WHEEL_m), 1/(3*DIST_CENTER_TO_WHEEL_m)
 };
-//*/
+*/
 
 /*
 // from API

@@ -14,10 +14,10 @@
       <uAC6>0</uAC6>
       <TargetOption>
         <TargetCommonOption>
-          <Device>STM32F407VGTx</Device>
-          <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F4xx_DFP.3.1.1</PackID>
-          <PackURL>https://www.keil.com/pack/</PackURL>
+          <Device>ARMCM4</Device>
+          <Vendor>ARM</Vendor>
+          <PackID>ARM.CMSIS.5.8.0</PackID>
+          <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IRAM(0x20000000-0x2001FFFF) IRAM2(0x10000000-0x1000FFFF) IROM(0x8000000-0x80FFFFF)  CLOCK(25000000) FPU2 CPUTYPE("Cortex-M4") TZ</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
           <StartupFile></StartupFile>
@@ -48,14 +48,14 @@
             <NotGenerated>0</NotGenerated>
             <InvalidFlash>1</InvalidFlash>
           </TargetStatus>
-          <OutputDirectory>.\Main_Board_Output\</OutputDirectory>
+          <OutputDirectory>.\build\Keil\</OutputDirectory>
           <OutputName>Main_Board</OutputName>
           <CreateExecutable>1</CreateExecutable>
           <CreateLib>0</CreateLib>
           <CreateHexFile>1</CreateHexFile>
           <DebugInformation>1</DebugInformation>
           <BrowseInformation>1</BrowseInformation>
-          <ListingPath></ListingPath>
+          <ListingPath>.\build\Keil\</ListingPath>
           <HexFormatSelection>1</HexFormatSelection>
           <Merge32K>0</Merge32K>
           <CreateBatchFile>0</CreateBatchFile>
@@ -137,7 +137,7 @@
             <DriverSelection>4101</DriverSelection>
           </Flash1>
           <bUseTDR>1</bUseTDR>
-          <Flash2>BIN\UL2V8M.DLL</Flash2>
+          <Flash2>BIN\UL2CM3.DLL</Flash2>
           <Flash3>"" ()</Flash3>
           <Flash4></Flash4>
           <pFcarmOut></pFcarmOut>
@@ -339,7 +339,7 @@
               <MiscControls></MiscControls>
               <Define>USE_FULL_LL_DRIVER,ARM_MATH_CM4,__FPU_PRESENT=1U</Define>
               <Undefine></Undefine>
-              <IncludePath>../Drivers/STM32F4xx_HAL_Driver/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F4xx/Include;../Drivers/CMSIS/Include;..\Drivers\CMSIS\DSP\Include;..\Middlewares\FreeRTOS-Kernel;..\Middlewares\FreeRTOS-Kernel\include;..\Middlewares\FreeRTOS-Kernel\portable\RVDS\ARM_CM4F;..\Core\App\Include;..\Core\BSP\Include;..\Core\Lib\Include;..\Core\OS_Tasks\Include</IncludePath>
+              <IncludePath>..\Drivers\STM32F4xx_HAL_Driver\Inc;..\Drivers\STM32F4xx_HAL_Driver\Inc\Legacy;..\Drivers\CMSIS\Device\ST\STM32F4xx\Include;..\Drivers\CMSIS\Include;..\Drivers\CMSIS\DSP\Include;..\Middlewares\FreeRTOS-Kernel;..\Middlewares\FreeRTOS-Kernel\include;..\Middlewares\FreeRTOS-Kernel\portable\RVDS\ARM_CM4F;..\Core\App\Include;..\Core\BSP\Include;..\Core\Lib\Include;..\Core\OS_Tasks\Include;.cmsis\include;RTE\_Main_Board</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -355,7 +355,7 @@
             <ClangAsOpt>4</ClangAsOpt>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define></Define>
+              <Define>USE_FULL_LL_DRIVER,ARM_MATH_CM4,__FPU_PRESENT=1U</Define>
               <Undefine></Undefine>
               <IncludePath></IncludePath>
             </VariousControls>
@@ -370,7 +370,7 @@
             <TextAddressRange></TextAddressRange>
             <DataAddressRange></DataAddressRange>
             <pXoBase></pXoBase>
-            <ScatterFile>.\STM32F407.sct</ScatterFile>
+            <ScatterFile>STM32F407.sct</ScatterFile>
             <IncludeLibs></IncludeLibs>
             <IncludeLibsPath></IncludeLibsPath>
             <Misc></Misc>
@@ -381,332 +381,57 @@
       </TargetOption>
       <Groups>
         <Group>
-          <GroupName>MDK-ARM</GroupName>
+          <GroupName>Core/OS_Tasks</GroupName>
           <Files>
             <File>
-              <FileName>startup_stm32f407xx.s</FileName>
-              <FileType>2</FileType>
-              <FilePath>startup_stm32f407xx.s</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>Drivers/STM32F4xx_HAL_Driver*LL</GroupName>
-          <Files>
-            <File>
-              <FileName>stm32f4xx_ll_adc.c</FileName>
+              <FileName>buttons_callback_task.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_adc.c</FilePath>
+              <FilePath>../Core/OS_Tasks/buttons_callback_task.c</FilePath>
             </File>
             <File>
-              <FileName>stm32f4xx_ll_crc.c</FileName>
+              <FileName>buttons_poll_task.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_crc.c</FilePath>
+              <FilePath>../Core/OS_Tasks/buttons_poll_task.c</FilePath>
             </File>
             <File>
-              <FileName>stm32f4xx_ll_dac.c</FileName>
+              <FileName>debug_task.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_dac.c</FilePath>
+              <FilePath>../Core/OS_Tasks/debug_task.c</FilePath>
             </File>
             <File>
-              <FileName>stm32f4xx_ll_dma.c</FileName>
+              <FileName>demo_task.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_dma.c</FilePath>
+              <FilePath>../Core/OS_Tasks/demo_task.c</FilePath>
             </File>
             <File>
-              <FileName>stm32f4xx_ll_dma2d.c</FileName>
+              <FileName>freertos_routine_plug.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_dma2d.c</FilePath>
+              <FilePath>../Core/OS_Tasks/freertos_routine_plug.c</FilePath>
             </File>
             <File>
-              <FileName>stm32f4xx_ll_exti.c</FileName>
+              <FileName>game_task.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_exti.c</FilePath>
+              <FilePath>../Core/OS_Tasks/game_task.c</FilePath>
             </File>
             <File>
-              <FileName>stm32f4xx_ll_fmpi2c.c</FileName>
+              <FileName>gripper_task.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_fmpi2c.c</FilePath>
+              <FilePath>../Core/OS_Tasks/gripper_task.c</FilePath>
             </File>
             <File>
-              <FileName>stm32f4xx_ll_gpio.c</FileName>
+              <FileName>odometry_task.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_gpio.c</FilePath>
+              <FilePath>../Core/OS_Tasks/odometry_task.c</FilePath>
             </File>
             <File>
-              <FileName>stm32f4xx_ll_i2c.c</FileName>
+              <FileName>terminal_task.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_i2c.c</FilePath>
+              <FilePath>../Core/OS_Tasks/terminal_task.c</FilePath>
             </File>
             <File>
-              <FileName>stm32f4xx_ll_lptim.c</FileName>
+              <FileName>stepper_task.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_lptim.c</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f4xx_ll_pwr.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_pwr.c</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f4xx_ll_rcc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_rcc.c</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f4xx_ll_rng.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_rng.c</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f4xx_ll_rtc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_rtc.c</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f4xx_ll_spi.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_spi.c</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f4xx_ll_tim.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_tim.c</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f4xx_ll_usart.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_usart.c</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f4xx_ll_utils.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_utils.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>Middlewares/FreeRTOS-Kernel</GroupName>
-          <Files>
-            <File>
-              <FileName>croutine.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Middlewares\FreeRTOS-Kernel\croutine.c</FilePath>
-            </File>
-            <File>
-              <FileName>event_groups.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Middlewares\FreeRTOS-Kernel\event_groups.c</FilePath>
-            </File>
-            <File>
-              <FileName>list.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Middlewares\FreeRTOS-Kernel\list.c</FilePath>
-            </File>
-            <File>
-              <FileName>queue.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Middlewares\FreeRTOS-Kernel\queue.c</FilePath>
-            </File>
-            <File>
-              <FileName>stream_buffer.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Middlewares\FreeRTOS-Kernel\stream_buffer.c</FilePath>
-            </File>
-            <File>
-              <FileName>tasks.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Middlewares\FreeRTOS-Kernel\tasks.c</FilePath>
-            </File>
-            <File>
-              <FileName>timers.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Middlewares\FreeRTOS-Kernel\timers.c</FilePath>
-            </File>
-            <File>
-              <FileName>port.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Middlewares\FreeRTOS-Kernel\portable\RVDS\ARM_CM4F\port.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>Drivers/CMSIS/DSP</GroupName>
-          <Files>
-            <File>
-              <FileName>arm_mat_add_f32.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Drivers\CMSIS\DSP\Source\MatrixFunctions\arm_mat_add_f32.c</FilePath>
-            </File>
-            <File>
-              <FileName>arm_mat_cmplx_mult_f32.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Drivers\CMSIS\DSP\Source\MatrixFunctions\arm_mat_cmplx_mult_f32.c</FilePath>
-            </File>
-            <File>
-              <FileName>arm_mat_init_f32.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Drivers\CMSIS\DSP\Source\MatrixFunctions\arm_mat_init_f32.c</FilePath>
-            </File>
-            <File>
-              <FileName>arm_mat_inverse_f32.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Drivers\CMSIS\DSP\Source\MatrixFunctions\arm_mat_inverse_f32.c</FilePath>
-            </File>
-            <File>
-              <FileName>arm_mat_mult_f32.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Drivers\CMSIS\DSP\Source\MatrixFunctions\arm_mat_mult_f32.c</FilePath>
-            </File>
-            <File>
-              <FileName>arm_mat_scale_f32.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Drivers\CMSIS\DSP\Source\MatrixFunctions\arm_mat_scale_f32.c</FilePath>
-            </File>
-            <File>
-              <FileName>arm_mat_sub_f32.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Drivers\CMSIS\DSP\Source\MatrixFunctions\arm_mat_sub_f32.c</FilePath>
-            </File>
-            <File>
-              <FileName>arm_mat_trans_f32.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Drivers\CMSIS\DSP\Source\MatrixFunctions\arm_mat_trans_f32.c</FilePath>
-            </File>
-            <File>
-              <FileName>arm_cos_f32.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Drivers\CMSIS\DSP\Source\FastMathFunctions\arm_cos_f32.c</FilePath>
-            </File>
-            <File>
-              <FileName>arm_sin_f32.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Drivers\CMSIS\DSP\Source\FastMathFunctions\arm_sin_f32.c</FilePath>
-            </File>
-            <File>
-              <FileName>arm_common_tables.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Drivers\CMSIS\DSP\Source\CommonTables\arm_common_tables.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>Core/App</GroupName>
-          <Files>
-            <File>
-              <FileName>bus_device.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\App\bus_device.c</FilePath>
-            </File>
-            <File>
-              <FileName>kinematics.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\App\kinematics.c</FilePath>
-            </File>
-            <File>
-              <FileName>main.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\App\main.c</FilePath>
-            </File>
-            <File>
-              <FileName>odometry.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\App\odometry.c</FilePath>
-            </File>
-            <File>
-              <FileName>robot_behavior_routine.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\App\robot_behavior_routine.c</FilePath>
-            </File>
-            <File>
-              <FileName>robot_gpio_config.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\App\robot_gpio_config.c</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f4xx_it.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\App\stm32f4xx_it.c</FilePath>
-            </File>
-            <File>
-              <FileName>system_stm32f4xx.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\App\system_stm32f4xx.c</FilePath>
-            </File>
-            <File>
-              <FileName>terminal.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\App\terminal.c</FilePath>
-            </File>
-            <File>
-              <FileName>terminal_cmd_handlers.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\App\terminal_cmd_handlers.c</FilePath>
-            </File>
-            <File>
-              <FileName>debug_terminal.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\App\debug_terminal.c</FilePath>
-            </File>
-            <File>
-              <FileName>debug_terminal_cmd_handlers.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\App\debug_terminal_cmd_handlers.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>Core/BSP</GroupName>
-          <Files>
-            <File>
-              <FileName>board_gpio_config.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\BSP\board_gpio_config.c</FilePath>
-            </File>
-            <File>
-              <FileName>board_hw_config.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\BSP\board_hw_config.c</FilePath>
-            </File>
-            <File>
-              <FileName>l6474_drvr.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\BSP\l6474_drvr.c</FilePath>
-            </File>
-            <File>
-              <FileName>pwm.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\BSP\pwm.c</FilePath>
-            </File>
-            <File>
-              <FileName>spi_gpo.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\BSP\spi_gpo.c</FilePath>
-            </File>
-            <File>
-              <FileName>usartx_communication.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\BSP\usartx_communication.c</FilePath>
-            </File>
-            <File>
-              <FileName>usartx_timeout.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\BSP\usartx_timeout.c</FilePath>
-            </File>
-            <File>
-              <FileName>stepper.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\BSP\stepper.c</FilePath>
-            </File>
-            <File>
-              <FileName>ws2812b.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\BSP\ws2812b.c</FilePath>
-            </File>
-            <File>
-              <FileName>i2c2.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\BSP\i2c2.c</FilePath>
+              <FilePath>../Core/OS_Tasks/stepper_task.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -716,169 +441,392 @@
             <File>
               <FileName>bms_board.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Core\Lib\bms_board.c</FilePath>
+              <FilePath>../Core/Lib/bms_board.c</FilePath>
             </File>
             <File>
               <FileName>button.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Core\Lib\button.c</FilePath>
+              <FilePath>../Core/Lib/button.c</FilePath>
             </File>
             <File>
               <FileName>dynamixel_ax.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Core\Lib\dynamixel_ax.c</FilePath>
+              <FilePath>../Core/Lib/dynamixel_ax.c</FilePath>
             </File>
             <File>
               <FileName>dynamixel_master.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Core\Lib\dynamixel_master.c</FilePath>
+              <FilePath>../Core/Lib/dynamixel_master.c</FilePath>
             </File>
             <File>
               <FileName>dynamixel_mx.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Core\Lib\dynamixel_mx.c</FilePath>
+              <FilePath>../Core/Lib/dynamixel_mx.c</FilePath>
             </File>
             <File>
               <FileName>fifo_routine.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Core\Lib\fifo_routine.c</FilePath>
+              <FilePath>../Core/Lib/fifo_routine.c</FilePath>
             </File>
             <File>
               <FileName>h_bridge.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Core\Lib\h_bridge.c</FilePath>
+              <FilePath>../Core/Lib/h_bridge.c</FilePath>
             </File>
             <File>
               <FileName>maxon.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Core\Lib\maxon.c</FilePath>
+              <FilePath>../Core/Lib/maxon.c</FilePath>
             </File>
             <File>
               <FileName>rc_servo.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Core\Lib\rc_servo.c</FilePath>
+              <FilePath>../Core/Lib/rc_servo.c</FilePath>
             </File>
             <File>
               <FileName>serial.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Core\Lib\serial.c</FilePath>
+              <FilePath>../Core/Lib/serial.c</FilePath>
             </File>
             <File>
               <FileName>hl_rtu.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Core\Lib\hl_rtu.c</FilePath>
+              <FilePath>../Core/Lib/hl_rtu.c</FilePath>
             </File>
             <File>
               <FileName>pca9685.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Core\Lib\pca9685.c</FilePath>
+              <FilePath>../Core/Lib/pca9685.c</FilePath>
             </File>
           </Files>
         </Group>
         <Group>
-          <GroupName>Core/OS_Tasks</GroupName>
+          <GroupName>Core/BSP</GroupName>
           <Files>
             <File>
-              <FileName>buttons_callback_task.c</FileName>
+              <FileName>board_gpio_config.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Core\OS_Tasks\buttons_callback_task.c</FilePath>
+              <FilePath>../Core/BSP/board_gpio_config.c</FilePath>
             </File>
             <File>
-              <FileName>buttons_poll_task.c</FileName>
+              <FileName>board_hw_config.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Core\OS_Tasks\buttons_poll_task.c</FilePath>
+              <FilePath>../Core/BSP/board_hw_config.c</FilePath>
             </File>
             <File>
-              <FileName>demo_task.c</FileName>
+              <FileName>l6474_drvr.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Core\OS_Tasks\demo_task.c</FilePath>
+              <FilePath>../Core/BSP/l6474_drvr.c</FilePath>
             </File>
             <File>
-              <FileName>freertos_routine_plug.c</FileName>
+              <FileName>pwm.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Core\OS_Tasks\freertos_routine_plug.c</FilePath>
+              <FilePath>../Core/BSP/pwm.c</FilePath>
             </File>
             <File>
-              <FileName>game_task.c</FileName>
+              <FileName>spi_gpo.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Core\OS_Tasks\game_task.c</FilePath>
+              <FilePath>../Core/BSP/spi_gpo.c</FilePath>
             </File>
             <File>
-              <FileName>odometry_task.c</FileName>
+              <FileName>usartx_communication.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Core\OS_Tasks\odometry_task.c</FilePath>
+              <FilePath>../Core/BSP/usartx_communication.c</FilePath>
             </File>
             <File>
-              <FileName>terminal_task.c</FileName>
+              <FileName>usartx_timeout.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Core\OS_Tasks\terminal_task.c</FilePath>
+              <FilePath>../Core/BSP/usartx_timeout.c</FilePath>
             </File>
             <File>
-              <FileName>stepper_task.c</FileName>
+              <FileName>stepper.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Core\OS_Tasks\stepper_task.c</FilePath>
+              <FilePath>../Core/BSP/stepper.c</FilePath>
             </File>
             <File>
-<<<<<<< HEAD
-              <FileName>gripper_task.c</FileName>
+              <FileName>ws2812b.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\eurobot2026-stm\Core\OS_Tasks\gripper_task.c</FilePath>
-=======
-              <FileName>debug_task.c</FileName>
+              <FilePath>../Core/BSP/ws2812b.c</FilePath>
+            </File>
+            <File>
+              <FileName>i2c2.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Core\OS_Tasks\debug_task.c</FilePath>
-              <FileOption>
-                <CommonProperty>
-                  <UseCPPCompiler>2</UseCPPCompiler>
-                  <RVCTCodeConst>0</RVCTCodeConst>
-                  <RVCTZI>0</RVCTZI>
-                  <RVCTOtherData>0</RVCTOtherData>
-                  <ModuleSelection>0</ModuleSelection>
-                  <IncludeInBuild>2</IncludeInBuild>
-                  <AlwaysBuild>2</AlwaysBuild>
-                  <GenerateAssemblyFile>2</GenerateAssemblyFile>
-                  <AssembleAssemblyFile>2</AssembleAssemblyFile>
-                  <PublicsOnly>2</PublicsOnly>
-                  <StopOnExitCode>11</StopOnExitCode>
-                  <CustomArgument></CustomArgument>
-                  <IncludeLibraryModules></IncludeLibraryModules>
-                  <ComprImg>1</ComprImg>
-                </CommonProperty>
-                <FileArmAds>
-                  <Cads>
-                    <interw>2</interw>
-                    <Optim>0</Optim>
-                    <oTime>2</oTime>
-                    <SplitLS>2</SplitLS>
-                    <OneElfS>2</OneElfS>
-                    <Strict>2</Strict>
-                    <EnumInt>2</EnumInt>
-                    <PlainCh>2</PlainCh>
-                    <Ropi>2</Ropi>
-                    <Rwpi>2</Rwpi>
-                    <wLevel>0</wLevel>
-                    <uThumb>2</uThumb>
-                    <uSurpInc>2</uSurpInc>
-                    <uC99>2</uC99>
-                    <uGnu>2</uGnu>
-                    <useXO>2</useXO>
-                    <v6Lang>0</v6Lang>
-                    <v6LangP>0</v6LangP>
-                    <vShortEn>2</vShortEn>
-                    <vShortWch>2</vShortWch>
-                    <v6Lto>2</v6Lto>
-                    <v6WtE>2</v6WtE>
-                    <v6Rtti>2</v6Rtti>
-                    <VariousControls>
-                      <MiscControls></MiscControls>
-                      <Define></Define>
-                      <Undefine></Undefine>
-                      <IncludePath>..\Core\OS_Tasks\Include</IncludePath>
-                    </VariousControls>
-                  </Cads>
-                </FileArmAds>
-              </FileOption>
->>>>>>> remotes/origin/debug_uart
+              <FilePath>../Core/BSP/i2c2.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Core/App</GroupName>
+          <Files>
+            <File>
+              <FileName>bus_device.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Core/App/bus_device.c</FilePath>
+            </File>
+            <File>
+              <FileName>debug_terminal_cmd_handlers.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Core/App/debug_terminal_cmd_handlers.c</FilePath>
+            </File>
+            <File>
+              <FileName>debug_terminal.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Core/App/debug_terminal.c</FilePath>
+            </File>
+            <File>
+              <FileName>kinematics.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Core/App/kinematics.c</FilePath>
+            </File>
+            <File>
+              <FileName>main.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Core/App/main.c</FilePath>
+            </File>
+            <File>
+              <FileName>odometry.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Core/App/odometry.c</FilePath>
+            </File>
+            <File>
+              <FileName>robot_behavior_routine.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Core/App/robot_behavior_routine.c</FilePath>
+            </File>
+            <File>
+              <FileName>robot_gpio_config.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Core/App/robot_gpio_config.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_it.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Core/App/stm32f4xx_it.c</FilePath>
+            </File>
+            <File>
+              <FileName>system_stm32f4xx.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Core/App/system_stm32f4xx.c</FilePath>
+            </File>
+            <File>
+              <FileName>terminal.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Core/App/terminal.c</FilePath>
+            </File>
+            <File>
+              <FileName>terminal_cmd_handlers.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Core/App/terminal_cmd_handlers.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Middlewares/FreeRTOS-Kernel</GroupName>
+          <Files>
+            <File>
+              <FileName>croutine.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Middlewares/FreeRTOS-Kernel/croutine.c</FilePath>
+            </File>
+            <File>
+              <FileName>event_groups.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Middlewares/FreeRTOS-Kernel/event_groups.c</FilePath>
+            </File>
+            <File>
+              <FileName>list.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Middlewares/FreeRTOS-Kernel/list.c</FilePath>
+            </File>
+            <File>
+              <FileName>queue.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Middlewares/FreeRTOS-Kernel/queue.c</FilePath>
+            </File>
+            <File>
+              <FileName>stream_buffer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Middlewares/FreeRTOS-Kernel/stream_buffer.c</FilePath>
+            </File>
+            <File>
+              <FileName>tasks.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Middlewares/FreeRTOS-Kernel/tasks.c</FilePath>
+            </File>
+            <File>
+              <FileName>timers.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Middlewares/FreeRTOS-Kernel/timers.c</FilePath>
+            </File>
+            <File>
+              <FileName>port.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Middlewares/FreeRTOS-Kernel/portable/RVDS/ARM_CM4F/port.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Drivers/CMSIS/DSP</GroupName>
+          <Files>
+            <File>
+              <FileName>arm_mat_add_f32.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Drivers/CMSIS/DSP/Source/MatrixFunctions/arm_mat_add_f32.c</FilePath>
+            </File>
+            <File>
+              <FileName>arm_mat_cmplx_mult_f32.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Drivers/CMSIS/DSP/Source/MatrixFunctions/arm_mat_cmplx_mult_f32.c</FilePath>
+            </File>
+            <File>
+              <FileName>arm_mat_init_f32.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Drivers/CMSIS/DSP/Source/MatrixFunctions/arm_mat_init_f32.c</FilePath>
+            </File>
+            <File>
+              <FileName>arm_mat_inverse_f32.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Drivers/CMSIS/DSP/Source/MatrixFunctions/arm_mat_inverse_f32.c</FilePath>
+            </File>
+            <File>
+              <FileName>arm_mat_mult_f32.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Drivers/CMSIS/DSP/Source/MatrixFunctions/arm_mat_mult_f32.c</FilePath>
+            </File>
+            <File>
+              <FileName>arm_mat_scale_f32.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Drivers/CMSIS/DSP/Source/MatrixFunctions/arm_mat_scale_f32.c</FilePath>
+            </File>
+            <File>
+              <FileName>arm_mat_sub_f32.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Drivers/CMSIS/DSP/Source/MatrixFunctions/arm_mat_sub_f32.c</FilePath>
+            </File>
+            <File>
+              <FileName>arm_mat_trans_f32.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Drivers/CMSIS/DSP/Source/MatrixFunctions/arm_mat_trans_f32.c</FilePath>
+            </File>
+            <File>
+              <FileName>arm_cos_f32.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Drivers/CMSIS/DSP/Source/FastMathFunctions/arm_cos_f32.c</FilePath>
+            </File>
+            <File>
+              <FileName>arm_sin_f32.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Drivers/CMSIS/DSP/Source/FastMathFunctions/arm_sin_f32.c</FilePath>
+            </File>
+            <File>
+              <FileName>arm_common_tables.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Drivers/CMSIS/DSP/Source/CommonTables/arm_common_tables.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Drivers/STM32F4xx_HAL_Driver*LL</GroupName>
+          <Files>
+            <File>
+              <FileName>stm32f4xx_ll_adc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_adc.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_ll_crc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_crc.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_ll_dac.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dac.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_ll_dma.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dma.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_ll_dma2d.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dma2d.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_ll_exti.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_exti.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_ll_fmpi2c.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fmpi2c.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_ll_gpio.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_gpio.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_ll_i2c.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_i2c.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_ll_lptim.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_lptim.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_ll_pwr.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_pwr.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_ll_rcc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rcc.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_ll_rng.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rng.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_ll_rtc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rtc.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_ll_spi.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_spi.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_ll_tim.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_tim.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_ll_usart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usart.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_ll_utils.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_utils.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>MDK-ARM</GroupName>
+          <Files>
+            <File>
+              <FileName>startup_stm32f407xx.s</FileName>
+              <FileType>2</FileType>
+              <FilePath>startup_stm32f407xx.s</FilePath>
             </File>
           </Files>
         </Group>

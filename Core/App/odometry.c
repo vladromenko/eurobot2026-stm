@@ -41,9 +41,9 @@ static void Init(void)
   Maxon.SetTotalTicks(bus_devices[MAXON_MOTOR_2].usart, bus_devices[MAXON_MOTOR_2].id, 0);
   Maxon.SetTotalTicks(bus_devices[MAXON_MOTOR_3].usart, bus_devices[MAXON_MOTOR_3].id, 0);
 
-  path.x = 0;
-  path.y = 0;
-  path.phi = 0;
+  path.x = 0; //0.25
+  path.y = 0; //2.65
+  path.phi = 0; //-2.0944
 }
 
 static void SetCoord(struct coord_s* coord)
