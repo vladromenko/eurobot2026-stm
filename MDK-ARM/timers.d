@@ -1,0 +1,15 @@
+.\timers.o: ..\Middlewares\FreeRTOS-Kernel\timers.c
+.\timers.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+.\timers.o: ..\Middlewares\FreeRTOS-Kernel\include\FreeRTOS.h
+.\timers.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+.\timers.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\timers.o: ..\Middlewares\FreeRTOS-Kernel\include\FreeRTOSConfig.h
+.\timers.o: ..\Middlewares\FreeRTOS-Kernel\include\projdefs.h
+.\timers.o: ..\Middlewares\FreeRTOS-Kernel\include\portable.h
+.\timers.o: ..\Middlewares\FreeRTOS-Kernel\include\deprecated_definitions.h
+.\timers.o: ..\Middlewares\FreeRTOS-Kernel\portable\RVDS\ARM_CM4F\portmacro.h
+.\timers.o: ..\Middlewares\FreeRTOS-Kernel\include\mpu_wrappers.h
+.\timers.o: ..\Middlewares\FreeRTOS-Kernel\include\task.h
+.\timers.o: ..\Middlewares\FreeRTOS-Kernel\include\list.h
+.\timers.o: ..\Middlewares\FreeRTOS-Kernel\include\queue.h
+.\timers.o: ..\Middlewares\FreeRTOS-Kernel\include\timers.h

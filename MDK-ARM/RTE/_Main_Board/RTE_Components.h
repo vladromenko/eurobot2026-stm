@@ -14,7 +14,7 @@
 /*
  * Define the Device Header File: 
  */
-#define CMSIS_device_header "ARMCM4.h"
+#define CMSIS_device_header "stm32f4xx.h"
 
 
 

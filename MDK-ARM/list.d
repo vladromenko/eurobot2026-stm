@@ -1,0 +1,12 @@
+.\list.o: ..\Middlewares\FreeRTOS-Kernel\list.c
+.\list.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+.\list.o: ..\Middlewares\FreeRTOS-Kernel\include\FreeRTOS.h
+.\list.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+.\list.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\list.o: ..\Middlewares\FreeRTOS-Kernel\include\FreeRTOSConfig.h
+.\list.o: ..\Middlewares\FreeRTOS-Kernel\include\projdefs.h
+.\list.o: ..\Middlewares\FreeRTOS-Kernel\include\portable.h
+.\list.o: ..\Middlewares\FreeRTOS-Kernel\include\deprecated_definitions.h
+.\list.o: ..\Middlewares\FreeRTOS-Kernel\portable\RVDS\ARM_CM4F\portmacro.h
+.\list.o: ..\Middlewares\FreeRTOS-Kernel\include\mpu_wrappers.h
+.\list.o: ..\Middlewares\FreeRTOS-Kernel\include\list.h

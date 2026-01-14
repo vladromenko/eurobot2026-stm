@@ -1,0 +1,15 @@
+.\button.o: ..\Core\Lib\button.c
+.\button.o: ..\Core\Lib\Include\button.h
+.\button.o: ..\Core\App\Include\std_def.h
+.\button.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h
+.\button.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h
+.\button.o: ../Drivers/CMSIS/Include/core_cm4.h
+.\button.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\button.o: ../Drivers/CMSIS/Include/cmsis_version.h
+.\button.o: ../Drivers/CMSIS/Include/cmsis_compiler.h
+.\button.o: ../Drivers/CMSIS/Include/cmsis_armcc.h
+.\button.o: ../Drivers/CMSIS/Include/mpu_armv7.h
+.\button.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/system_stm32f4xx.h
+.\button.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+.\button.o: ..\Core\Lib\Include\buttons_enum.h
+.\button.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_gpio.h

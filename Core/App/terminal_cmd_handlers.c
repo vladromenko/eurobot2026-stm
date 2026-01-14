@@ -662,6 +662,16 @@ static void grab_on(uint8_t* data, uint8_t data_length)
     Odometry.SetSpeed(&speed);
     vTaskDelay(500);
   }
+
+  /*// Check this segment of terminal response
+  struct terminal_response_s terminal_response;
+
+  terminal_response.cmd = BOARD_GRAB_ON;
+  terminal_response.data[0] = 1;
+  terminal_response.data_length = 1;
+
+  Terminal.SendResponse(&terminal_response);
+  */
 }
 
 static void grab_off(uint8_t* data, uint8_t data_length)
@@ -721,6 +731,16 @@ static void grab_off(uint8_t* data, uint8_t data_length)
     PCA9685.SetServoAngleWithAddr(i2c_addr_1, PCA9685_CH4, 0);
     vTaskDelay(500);
   }
+
+  /*// Check this segment of terminal response
+  struct terminal_response_s terminal_response;
+
+  terminal_response.cmd = BOARD_GRAB_OFF;
+  terminal_response.data[0] = 1;
+  terminal_response.data_length = 1;
+
+  Terminal.SendResponse(&terminal_response);
+  */
 }
 
 
@@ -831,6 +851,16 @@ static void grab_rotate(uint8_t* data, uint8_t data_length)
     vTaskDelay(500);
 
   }
+  
+  /*// Check this segment of terminal response
+  struct terminal_response_s terminal_response;
+
+  terminal_response.cmd = BOARD_GRAB_ROTATE;
+  terminal_response.data[0] = 1;
+  terminal_response.data_length = 1;
+
+  Terminal.SendResponse(&terminal_response);
+  */
 }
 
 static void ToggleCursor(uint8_t* data, uint8_t data_length)
@@ -854,6 +884,16 @@ static void ToggleCursor(uint8_t* data, uint8_t data_length)
   else {
     Dynamixel_AX.SetAngle(USART3, dynamixel_cursor_id, cursor_vert_angle);
   }
+  
+  /*// Check this segment of terminal response
+  struct terminal_response_s terminal_response;
+
+  terminal_response.cmd = BOARD_TOGGLE_CURSOR;
+  terminal_response.data[0] = 1;
+  terminal_response.data_length = 1;
+
+  Terminal.SendResponse(&terminal_response);
+  */
 }
 
 

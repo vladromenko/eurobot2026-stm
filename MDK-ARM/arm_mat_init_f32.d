@@ -1,0 +1,9 @@
+.\arm_mat_init_f32.o: ..\Drivers\CMSIS\DSP\Source\MatrixFunctions\arm_mat_init_f32.c
+.\arm_mat_init_f32.o: ..\Drivers\CMSIS\DSP\Include\arm_math.h
+.\arm_mat_init_f32.o: ../Drivers/CMSIS/Include/core_cm4.h
+.\arm_mat_init_f32.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\arm_mat_init_f32.o: ../Drivers/CMSIS/Include/cmsis_version.h
+.\arm_mat_init_f32.o: ../Drivers/CMSIS/Include/cmsis_compiler.h
+.\arm_mat_init_f32.o: ../Drivers/CMSIS/Include/cmsis_armcc.h
+.\arm_mat_init_f32.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+.\arm_mat_init_f32.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h

@@ -27,19 +27,21 @@
 #include "board_gpio_defines.h"
 
 
-/*
-#define DIST_CENTER_TO_WHEEL_m 			0.1216f // [m]
-#define WHEEL_RADIUS_m					0.0245f   // [m]
+/*// previous year's robot params
+#define DIST_CENTER_TO_WHEEL_m			0.1216f // [m]
+#define WHEEL_RADIUS_m					0.0245f // [m]
 #define	GEAR_RATIO						21.0f
 #define ENCODER_TICKS_PER_TURN			4096	// [ticks]
+#define CALIBRATION_COEF				0.87f 	// used to equate the real path and path from odometry
 */
 
-#define DIST_CENTER_TO_WHEEL_m 			0.155f // [m]
-#define WHEEL_RADIUS_m					0.0245f   // [m]
-#define	GEAR_RATIO						21.0f
+// new robot params
+#define DIST_CENTER_TO_WHEEL_m 			0.14f  // [m] 0.155
+#define WHEEL_RADIUS_m					0.0245f	// [m]
+#define	GEAR_RATIO						28.0f
 #define ENCODER_TICKS_PER_TURN			4096	// [ticks]
-
-
+#define CALIBRATION_COEF				1.16f   // used to equate the real path and path from odometry
+//#define ANGULAR_CALIBRATION_COEF		1.06f	// used to equate the real angle and angle from odometry
 
 
 #define cos30 	0.8660254f
@@ -102,7 +104,8 @@ static void MatrixInit(void)
 	ms_to_tpm = (60.0f*GEAR_RATIO*ENCODER_TICKS_PER_TURN)/(2*PI*WHEEL_RADIUS_m);
 
 	// linear_path = wheel_ticks_per_minute * ticks_to_m 
-	ticks_to_m =  2*PI*WHEEL_RADIUS_m / (GEAR_RATIO*ENCODER_TICKS_PER_TURN);
+	//ticks_to_m =  2*PI*WHEEL_RADIUS_m / (GEAR_RATIO*ENCODER_TICKS_PER_TURN);
+	ticks_to_m =  CALIBRATION_COEF * 2*PI*WHEEL_RADIUS_m / (GEAR_RATIO*ENCODER_TICKS_PER_TURN);
 
 	// wheel_linear_speed(m/s) = wheel_ticks_per_minute * ticks_to_m
 	tpm_to_ms = 2*PI*WHEEL_RADIUS_m / (60.0f*GEAR_RATIO*ENCODER_TICKS_PER_TURN);
@@ -159,13 +162,15 @@ static void UpdatePath(int32_t* d_ticks, struct coord_s* path)
 	arm_mat_init_f32(&d_ms_matrix, 3, 1, d_m);
 	arm_mat_init_f32(&d_coord_matrix, 3, 1, (float*)&d_coord);
 											
-	arm_mat_mult_f32(&arm_inverse_matrix, &d_ms_matrix, &d_coord_matrix);
+	//arm_mat_mult_f32(&arm_inverse_matrix, &d_ms_matrix, &d_coord_matrix);
+	arm_mat_mult_f32(&arm_direct_matrix, &d_ms_matrix, &d_coord_matrix);
 
+	//path->phi += d_coord.phi * ANGULAR_CALIBRATION_COEF;
 	path->phi += d_coord.phi;
 
-	while(path->phi>PI)
+	while(path->phi>2*PI)
 		path->phi -= 2*PI;
-	while(path->phi<-PI)
+	while(path->phi<-2*PI)
 		path->phi += 2*PI;
 
 	path->x += d_coord.x*arm_cos_f32(path->phi) - d_coord.y*arm_sin_f32(path->phi);

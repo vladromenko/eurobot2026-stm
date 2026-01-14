@@ -558,3 +558,61 @@ These source files will be recompiled
 [2026-01-10 17:46:29]	[done]
 	build successfully !
 
+[2026-01-11 19:20:31]	[done]
+	build successfully !
+
+[2026-01-11 19:22:51]	[done]
+	build successfully !
+
+[2026-01-11 19:41:48]	[done]
+	build successfully !
+
+[2026-01-11 19:43:29]	[done]
+	build successfully !
+
+[2026-01-11 20:14:07]	[done]
+	build successfully !
+
+[2026-01-11 20:14:38]	[done]
+	build successfully !
+
+[2026-01-11 20:31:59]	[done]
+	build successfully !
+
+[2026-01-11 20:32:31]	[done]
+	build successfully !
+
+[2026-01-11 20:47:25]	[done]
+	build successfully !
+
+[2026-01-11 20:55:27]	[done]
+	build successfully !
+
+[2026-01-11 20:55:58]	[done]
+	build successfully !
+
+[2026-01-12 01:12:30]	compilation failed at : "c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\Lib\dynamixel_mx.c", exit code: 1
+command: 
+  "D:\Keil_v5\ARM\ARMCC\bin\armcc.exe" -c --apcs=interwork -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/DSP/Include -I../Middlewares/FreeRTOS-Kernel -I../Middlewares/FreeRTOS-Kernel/include -I../Middlewares/FreeRTOS-Kernel/portable/RVDS/ARM_CM4F -I../Core/App/Include -I../Core/BSP/Include -I../Core/Lib/Include -I../Core/OS_Tasks/Include -I.cmsis/include -IRTE/_Main_Board -D"USE_FULL_LL_DRIVER" -D"ARM_MATH_CM4" -D"__FPU_PRESENT=1U" --cpu Cortex-M4.fp --li --c99 -D__MICROLIB -O0 --split_sections --diag_suppress=1 --diag_suppress=1295 -g -o .\build\Main_Board\.obj\__\Core\Lib\dynamixel_mx.o --no_depend_system_headers --depend .\build\Main_Board\.obj\__\Core\Lib\dynamixel_mx.d .\..\Core\Lib\dynamixel_mx.c
+   at unify_builder.Program.compileByMulThread(Int32 thrNum, CmdInfo[] cmds_, List`1 errLogs)
+   at unify_builder.Program.Main(String[] args_)
+---
+Error: C4051E: couldn't write file '.\build\Main_Board\.obj\__\Core\Lib\dynamixel_mx.o': Invalid argument
+
+[2026-01-12 01:13:46]	[done]
+	build successfully !
+
+[2026-01-12 19:57:52]	compilation failed at : "c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\Lib\rc_servo.c", exit code: 1
+command: 
+  "D:\Keil_v5\ARM\ARMCC\bin\armcc.exe" -c --apcs=interwork -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/DSP/Include -I../Middlewares/FreeRTOS-Kernel -I../Middlewares/FreeRTOS-Kernel/include -I../Middlewares/FreeRTOS-Kernel/portable/RVDS/ARM_CM4F -I../Core/App/Include -I../Core/BSP/Include -I../Core/Lib/Include -I../Core/OS_Tasks/Include -I.cmsis/include -IRTE/_Main_Board -D"USE_FULL_LL_DRIVER" -D"ARM_MATH_CM4" -D"__FPU_PRESENT=1U" --cpu Cortex-M4.fp --li --c99 -D__MICROLIB -O0 --split_sections --diag_suppress=1 --diag_suppress=1295 -g -o .\build\Main_Board\.obj\__\Core\Lib\rc_servo.o --no_depend_system_headers --depend .\build\Main_Board\.obj\__\Core\Lib\rc_servo.d .\..\Core\Lib\rc_servo.c
+   at unify_builder.Program.compileByMulThread(Int32 thrNum, CmdInfo[] cmds_, List`1 errLogs)
+   at unify_builder.Program.Main(String[] args_)
+---
+Error: C4051E: couldn't write file '.\build\Main_Board\.obj\__\Core\Lib\rc_servo.o': Invalid argument
+
+[2026-01-12 19:58:30]	[done]
+	build successfully !
+
+[2026-01-12 20:32:06]	[done]
+	build successfully !
+

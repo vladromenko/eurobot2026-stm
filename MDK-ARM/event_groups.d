@@ -1,0 +1,15 @@
+.\event_groups.o: ..\Middlewares\FreeRTOS-Kernel\event_groups.c
+.\event_groups.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+.\event_groups.o: ..\Middlewares\FreeRTOS-Kernel\include\FreeRTOS.h
+.\event_groups.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+.\event_groups.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\event_groups.o: ..\Middlewares\FreeRTOS-Kernel\include\FreeRTOSConfig.h
+.\event_groups.o: ..\Middlewares\FreeRTOS-Kernel\include\projdefs.h
+.\event_groups.o: ..\Middlewares\FreeRTOS-Kernel\include\portable.h
+.\event_groups.o: ..\Middlewares\FreeRTOS-Kernel\include\deprecated_definitions.h
+.\event_groups.o: ..\Middlewares\FreeRTOS-Kernel\portable\RVDS\ARM_CM4F\portmacro.h
+.\event_groups.o: ..\Middlewares\FreeRTOS-Kernel\include\mpu_wrappers.h
+.\event_groups.o: ..\Middlewares\FreeRTOS-Kernel\include\task.h
+.\event_groups.o: ..\Middlewares\FreeRTOS-Kernel\include\list.h
+.\event_groups.o: ..\Middlewares\FreeRTOS-Kernel\include\timers.h
+.\event_groups.o: ..\Middlewares\FreeRTOS-Kernel\include\event_groups.h

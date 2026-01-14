@@ -1,0 +1,13 @@
+.\fifo_routine.o: ..\Core\Lib\fifo_routine.c
+.\fifo_routine.o: ..\Core\Lib\Include\fifo_routine.h
+.\fifo_routine.o: ..\Core\App\Include\std_def.h
+.\fifo_routine.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h
+.\fifo_routine.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h
+.\fifo_routine.o: ../Drivers/CMSIS/Include/core_cm4.h
+.\fifo_routine.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\fifo_routine.o: ../Drivers/CMSIS/Include/cmsis_version.h
+.\fifo_routine.o: ../Drivers/CMSIS/Include/cmsis_compiler.h
+.\fifo_routine.o: ../Drivers/CMSIS/Include/cmsis_armcc.h
+.\fifo_routine.o: ../Drivers/CMSIS/Include/mpu_armv7.h
+.\fifo_routine.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/system_stm32f4xx.h
+.\fifo_routine.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
