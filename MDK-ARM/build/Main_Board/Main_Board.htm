@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\build\Main_Board\Main_Board.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\build\Main_Board\Main_Board.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Mon Jan 12 20:32:05 2026
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Wed Jan 14 15:41:34 2026
 <BR><P>
 <H3>Maximum Stack Usage =        160 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -1855,8 +1855,8 @@ Local Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> terminal_cmd_handlers.o(.data)
 </UL>
-<P><STRONG><a name="[1a]"></a>ToggleCursor</STRONG> (Thumb, 118 bytes, Stack size 32 bytes, terminal_cmd_handlers.o(i.ToggleCursor))
-<BR><BR>[Stack]<UL><LI>Max Depth = 88<LI>Call Chain = ToggleCursor &rArr; vTaskDelay &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
+<P><STRONG><a name="[1a]"></a>ToggleCursor</STRONG> (Thumb, 146 bytes, Stack size 64 bytes, terminal_cmd_handlers.o(i.ToggleCursor))
+<BR><BR>[Stack]<UL><LI>Max Depth = 120<LI>Call Chain = ToggleCursor &rArr; vTaskDelay &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
 </UL>
 <BR>[Calls]<UL><LI><a href="#[142]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskDelay
 </UL>
@@ -1880,8 +1880,8 @@ Local Symbols
 <LI><a href="#[4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GetRobotCoord
 </UL>
 
-<P><STRONG><a name="[18]"></a>grab_off</STRONG> (Thumb, 404 bytes, Stack size 32 bytes, terminal_cmd_handlers.o(i.grab_off))
-<BR><BR>[Stack]<UL><LI>Max Depth = 88<LI>Call Chain = grab_off &rArr; SPI_GPO_ResetOutputPin &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
+<P><STRONG><a name="[18]"></a>grab_off</STRONG> (Thumb, 432 bytes, Stack size 64 bytes, terminal_cmd_handlers.o(i.grab_off))
+<BR><BR>[Stack]<UL><LI>Max Depth = 120<LI>Call Chain = grab_off &rArr; SPI_GPO_ResetOutputPin &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
 </UL>
 <BR>[Calls]<UL><LI><a href="#[141]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI_GPO_ResetOutputPin
 <LI><a href="#[142]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskDelay
@@ -1889,8 +1889,8 @@ Local Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> terminal_cmd_handlers.o(.data)
 </UL>
-<P><STRONG><a name="[17]"></a>grab_on</STRONG> (Thumb, 484 bytes, Stack size 32 bytes, terminal_cmd_handlers.o(i.grab_on))
-<BR><BR>[Stack]<UL><LI>Max Depth = 88<LI>Call Chain = grab_on &rArr; SPI_GPO_SetOutputPin &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
+<P><STRONG><a name="[17]"></a>grab_on</STRONG> (Thumb, 512 bytes, Stack size 64 bytes, terminal_cmd_handlers.o(i.grab_on))
+<BR><BR>[Stack]<UL><LI>Max Depth = 120<LI>Call Chain = grab_on &rArr; SPI_GPO_SetOutputPin &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
 </UL>
 <BR>[Calls]<UL><LI><a href="#[143]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI_GPO_SetOutputPin
 <LI><a href="#[142]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskDelay
@@ -1898,8 +1898,8 @@ Local Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> terminal_cmd_handlers.o(.data)
 </UL>
-<P><STRONG><a name="[19]"></a>grab_rotate</STRONG> (Thumb, 264 bytes, Stack size 24 bytes, terminal_cmd_handlers.o(i.grab_rotate))
-<BR><BR>[Stack]<UL><LI>Max Depth = 80<LI>Call Chain = grab_rotate &rArr; vTaskDelay &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
+<P><STRONG><a name="[19]"></a>grab_rotate</STRONG> (Thumb, 288 bytes, Stack size 56 bytes, terminal_cmd_handlers.o(i.grab_rotate))
+<BR><BR>[Stack]<UL><LI>Max Depth = 112<LI>Call Chain = grab_rotate &rArr; vTaskDelay &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
 </UL>
 <BR>[Calls]<UL><LI><a href="#[142]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskDelay
 </UL>

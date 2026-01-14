@@ -663,7 +663,7 @@ static void grab_on(uint8_t* data, uint8_t data_length)
     vTaskDelay(500);
   }
 
-  /*// Check this segment of terminal response
+  // Check this segment of terminal response
   struct terminal_response_s terminal_response;
 
   terminal_response.cmd = BOARD_GRAB_ON;
@@ -671,7 +671,7 @@ static void grab_on(uint8_t* data, uint8_t data_length)
   terminal_response.data_length = 1;
 
   Terminal.SendResponse(&terminal_response);
-  */
+  
 }
 
 static void grab_off(uint8_t* data, uint8_t data_length)
@@ -732,7 +732,7 @@ static void grab_off(uint8_t* data, uint8_t data_length)
     vTaskDelay(500);
   }
 
-  /*// Check this segment of terminal response
+  // Check this segment of terminal response
   struct terminal_response_s terminal_response;
 
   terminal_response.cmd = BOARD_GRAB_OFF;
@@ -740,7 +740,7 @@ static void grab_off(uint8_t* data, uint8_t data_length)
   terminal_response.data_length = 1;
 
   Terminal.SendResponse(&terminal_response);
-  */
+  
 }
 
 
@@ -852,7 +852,7 @@ static void grab_rotate(uint8_t* data, uint8_t data_length)
 
   }
   
-  /*// Check this segment of terminal response
+  // Check this segment of terminal response
   struct terminal_response_s terminal_response;
 
   terminal_response.cmd = BOARD_GRAB_ROTATE;
@@ -860,7 +860,7 @@ static void grab_rotate(uint8_t* data, uint8_t data_length)
   terminal_response.data_length = 1;
 
   Terminal.SendResponse(&terminal_response);
-  */
+  
 }
 
 static void ToggleCursor(uint8_t* data, uint8_t data_length)
@@ -885,7 +885,7 @@ static void ToggleCursor(uint8_t* data, uint8_t data_length)
     Dynamixel_AX.SetAngle(USART3, dynamixel_cursor_id, cursor_vert_angle);
   }
   
-  /*// Check this segment of terminal response
+  // Check this segment of terminal response
   struct terminal_response_s terminal_response;
 
   terminal_response.cmd = BOARD_TOGGLE_CURSOR;
@@ -893,7 +893,7 @@ static void ToggleCursor(uint8_t* data, uint8_t data_length)
   terminal_response.data_length = 1;
 
   Terminal.SendResponse(&terminal_response);
-  */
+  
 }
 
 
