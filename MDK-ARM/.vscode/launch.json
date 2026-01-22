@@ -8,60 +8,58 @@
             "servertype": "openocd", 
             "cwd": "${workspaceRoot}",
 
-            // Путь к вашему файлу прошивки (проверенный)
+            // Путь к файлу прошивки из Keil
             "executable": "${workspaceRoot}/build/Main_Board/Main_Board.axf",
 
             "device": "STM32F407VG",
 
-            // Путь к GDB (из вашего лога, он верный)
             "armToolchainPath": "D:/Tools/arm-gnu-toolchain/bin",
 
-            // Конфигурация для STM32 F4
             "configFiles": [
                 "interface/stlink.cfg",
                 "target/stm32f4x.cfg" 
             ],
 
-            // ВАЖНО: Это лечит проблему с "Unable to reset target"
-            // Отключает поиск физического пина Reset
+            // === ИСПРАВЛЕНИЕ ===
+            // Мы ВКЛЮЧАЕМ использование физического пина Reset (NRST).
+            // Это необходимо, когда запущена FreeRTOS и ядро спит.
             "openOCDLaunchCommands": [
                 "transport select hla_swd",
-                "reset_config none separate"
+                "reset_config none" 
             ],
-            
-            // Заставляет OpenOCD игнорировать ошибки структуры файла Keil
-            "gdbPath": "D:/Tools/arm-gnu-toolchain/bin/arm-none-eabi-gdb.exe",
+            // ===================
             
             "runToEntryPoint": "main",
-            "showDevDebugOutput": "none"
+            "showDevDebugOutput": "raw", // Включил 'raw', чтобы видеть детали, если снова упадет
+            
+            // Опционально: Путь к SVD файлу для просмотра регистров (раскомментируйте, если есть файл)
+            // "svdFile": "${workspaceRoot}/STM32F407.svd",
+
+            "gdbPath": "D:/Tools/arm-gnu-toolchain/bin/arm-none-eabi-gdb.exe"
         },
         
         {
-            "name": "Cortex Debug (ST-Link)",
+            "name": "Debug (ST-Link Server)",
             "cwd": "${workspaceRoot}",
-            "executable": "C:/Users/artem/Documents/Skoltech/Eurobot/Electronics/STM32/eurobot2026-stm/MDK-ARM/build/Main_Board/Main_Board.axf",
+            "executable": "${workspaceRoot}/build/Main_Board/Main_Board.axf",
             "request": "launch",
             "type": "cortex-debug",
             "servertype": "stlink",
             "device": "STM32F407VG",
             "interface": "swd",
-
-            // ПУТЬ К GDB (Компилятору/Отладчику)
-            // Убедитесь, что в этой папке лежит файл arm-none-eabi-gdb.exe
             "armToolchainPath": "D:/Tools/arm-gnu-toolchain/bin",
 
-            // ПУТЬ К СЕРВЕРУ ST-LINK (Исправлены слеши)
+            // Путь к серверу (Оставьте как есть, если файл существует по этому пути)
             "serverpath": "D:/ST/STM32CubeIDE_1.19.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.stlink-gdb-server.win32_2.2.200.202505060755/tools/bin/ST-LINK_gdbserver.exe",
 
-            // Настройка сброса: Connect to running target (без аппаратного Reset)
+            // === ИСПРАВЛЕНИЕ ===
+            // Параметр -m 2 (Software Reset) может не работать с FreeRTOS. 
+            // -m 0 (Connect Under Reset) надежнее.
             "serverArgs": [
-                "-m", "2"
+                "-m", "0"
             ],
 
-            // Путь к CubeProgrammer (иногда нужен GDB серверу для работы)
-            // EIDE обычно ставит его сюда. Если не заработает - попробуйте закомментировать эту строку.
             "stm32cubeprogrammer": "C:/Users/artem/.eide/tools/st_cube_programer/bin",
-
             "runToEntryPoint": "main",
             "showDevDebugOutput": "none"
         }

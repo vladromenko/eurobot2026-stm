@@ -46,11 +46,12 @@ static StaticTask_t TaskBuffer;
 
 static void Task(void *arg)
 {
-//  TickType_t xGameStartTime;
+  TickType_t xGameStartTime;
 
-  //robot_ctrl.starting_cord = STARTING_CORD_ATTACHED;
-  //robot_ctrl.robot_mode = DEBUG_MODE;
+  robot_ctrl.starting_cord = STARTING_CORD_ATTACHED;
+  robot_ctrl.robot_mode = GAME_MODE; // [GAME_MODE, DEBUG_MODE]
 	robot_ctrl.reset_state = RESETED;
+
   vTaskDelay(50);
   // PrepareRobot();
 	MaxonsStop();
@@ -62,23 +63,28 @@ static void Task(void *arg)
 		LL_IWDG_ReloadCounter(IWDG);
     /*  PREPARE ROBOT FOR THE GAME, SET IT TO THE INITIAL CONDITION  */
     
+    /*  WAITING FOR THE STARTING CORD EXTRACTION  */
+    while(robot_ctrl.starting_cord == STARTING_CORD_ATTACHED)
+    {
+      taskYIELD();
+    }
+    /*  INITIALISE GAMING 100 SECONDS TIMEOUT  */
+    xGameStartTime = xTaskGetTickCount();
 
-//    /*  WAITING FOR THE STARTING CORD EXTRACTION  */
-//    while(robot_ctrl.starting_cord == STARTING_CORD_ATTACHED){
-//      taskYIELD();
-//		}
-//    /*  INITIALISE GAMING 100 SECONDS TIMEOUT  */
-////    xGameStartTime = xTaskGetTickCount();
+    /*  START THE GAME AND WAIT UNTIL 100 SECONDS ARE RUNNNING OUT OR THE STARTING CORD IS ATTACHED AGAIN  */
+    while(robot_ctrl.starting_cord == STARTING_CORD_RELEASED)
+    {
+      if(((xTaskGetTickCount() - xGameStartTime) >= 100000) && (robot_ctrl.robot_mode == GAME_MODE)){
+        /*  STOP THE GAME AND TURN OF ALL ACTUATORS ACCORDING TO THE EUROBOT RULES */
+        StopAllActuators();
+        break;
+      }
+        taskYIELD();
+    }
 
-//    /*  START THE GAME AND WAIT UNTIL 100 SECONDS ARE RUNNNING OUT OR THE STARTING CORD IS ATTACHED AGAIN  */
-//    while(robot_ctrl.starting_cord == STARTING_CORD_RELEASED)
-//    {
-//      
-//			taskYIELD();
-//    }
-
-//    /*  DO NOTHING UNTIL THE STARTING CORD WILL BE ATTACHED AGAIN */
-//    
+    /*  DO NOTHING UNTIL THE STARTING CORD WILL BE ATTACHED AGAIN */
+    while(robot_ctrl.starting_cord == STARTING_CORD_RELEASED)
+      taskYIELD();
 	}
 }
 

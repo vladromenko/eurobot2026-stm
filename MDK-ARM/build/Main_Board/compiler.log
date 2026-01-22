@@ -1,37 +1,7 @@
 >>> cc
 
-".\..\Core\OS_Tasks\gripper_task.c", line 117: Warning:  #177-D: variable "dynamixel_id_1"  was declared but never referenced
-  	uint8_t dynamixel_id_1 = 98;
-  	        ^
-".\..\Core\OS_Tasks\gripper_task.c", line 118: Warning:  #177-D: variable "dynamixel_id_2"  was declared but never referenced
-  	uint8_t dynamixel_id_2 = 112;
-  	        ^
-".\..\Core\OS_Tasks\gripper_task.c", line 119: Warning:  #177-D: variable "dynamixel_speed"  was declared but never referenced
-  	uint16_t dynamixel_speed = 150; //0-1024
-  	         ^
-".\..\Core\OS_Tasks\gripper_task.c", line 120: Warning:  #177-D: variable "start_angle"  was declared but never referenced
-  	uint8_t start_angle = 62; //0-300 60
-  	        ^
-".\..\Core\OS_Tasks\gripper_task.c", line 121: Warning:  #177-D: variable "end_angle"  was declared but never referenced
-  	uint8_t end_angle = 135; //0-300 150 125
-  	        ^
-".\..\Core\OS_Tasks\gripper_task.c", line 123: Warning:  #177-D: variable "servo5_start_angle"  was declared but never referenced
-  	uint8_t servo5_start_angle = 90; // left shift servo
-  	        ^
-".\..\Core\OS_Tasks\gripper_task.c", line 124: Warning:  #177-D: variable "servo5_end_angle"  was declared but never referenced
-  	uint8_t servo5_end_angle = 170;
-  	        ^
-".\..\Core\OS_Tasks\gripper_task.c", line 125: Warning:  #177-D: variable "servo6_start_angle"  was declared but never referenced
-  	uint8_t servo6_start_angle = 110; // right shift servo
-  	        ^
-".\..\Core\OS_Tasks\gripper_task.c", line 126: Warning:  #177-D: variable "servo6_end_angle"  was declared but never referenced
-  	uint8_t servo6_end_angle = 20;
-  	        ^
-".\..\Core\OS_Tasks\gripper_task.c", line 87: Warning:  #177-D: function "RotateGripper"  was declared but never referenced
-  static void RotateGripper(USART_TypeDef* usart, uint8_t id_1, uint8_t id_2, uint16_t angle)
-              ^
-.\..\Core\OS_Tasks\gripper_task.c: 10 warnings, 0 errors
+
 
 >>> ld
 
-Program Size: Code=34900 RO-data=218024 RW-data=3060 ZI-data=17844  
+Program Size: Code=36840 RO-data=218068 RW-data=3080 ZI-data=17844  

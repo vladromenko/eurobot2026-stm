@@ -1,81 +1,427 @@
-[2025-12-17 02:32:10]	[done]
+[2026-01-20 01:19:38]	[done]
 	build successfully !
 
-[2025-12-17 02:32:25]	[done]
+[2026-01-20 01:26:58]	[done]
 	build successfully !
 
-[2025-12-17 02:32:37]	[done]
+[2026-01-20 01:35:40]	[done]
 	build successfully !
 
-[2025-12-17 03:22:23]	[done]
+[2026-01-20 16:55:24]	[done]
 	build successfully !
 
-[2025-12-17 03:35:22]	[info] incremental build: 2 source files changed
+[2026-01-20 17:28:55]	[done]
+	build successfully !
+
+[2026-01-20 17:30:12]	[done]
+	build successfully !
+
+[2026-01-20 23:09:25]	[done]
+	build successfully !
+
+[2026-01-20 23:10:37]	[done]
+	build successfully !
+
+[2026-01-20 23:13:46]	[done]
+	build successfully !
+
+[2026-01-20 23:24:57]	[done]
+	build successfully !
+
+[2026-01-20 23:25:47]	[done]
+	build successfully !
+
+[2026-01-20 23:27:35]	[done]
+	build successfully !
+
+[2026-01-20 23:31:29]	[done]
+	build successfully !
+
+[2026-01-20 23:33:26]	[done]
+	build successfully !
+
+[2026-01-20 23:34:41]	[done]
+	build successfully !
+
+[2026-01-20 23:36:40]	[done]
+	build successfully !
+
+[2026-01-20 23:40:38]	[done]
+	build successfully !
+
+[2026-01-20 23:41:43]	[done]
+	build successfully !
+
+[2026-01-20 23:45:07]	[done]
+	build successfully !
+
+[2026-01-20 23:47:03]	[done]
+	build successfully !
+
+[2026-01-20 23:47:48]	[done]
+	build successfully !
+
+[2026-01-20 23:54:20]	[info] incremental build: 1 source files changed
 These source files will be recompiled
 ---
-'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\bus_device.c': source file has been changed.
-'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\kinematics.c': source file has been changed.
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
 
-[2025-12-17 03:35:25]	[done]
+[2026-01-20 23:54:21]	[done]
 	build successfully !
 
-[2025-12-17 03:41:17]	[info] incremental build: 2 source files changed
+[2026-01-20 23:59:53]	[info] incremental build: 1 source files changed
 These source files will be recompiled
 ---
-'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\bus_device.c': source file has been changed.
-'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\kinematics.c': source file has been changed.
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
 
-[2025-12-17 03:41:19]	[done]
+[2026-01-20 23:59:54]	[done]
 	build successfully !
 
-[2025-12-17 03:50:10]	[info] incremental build: 1 source files changed
+[2026-01-21 00:00:26]	[info] incremental build: 1 source files changed
 These source files will be recompiled
 ---
-'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\kinematics.c': source file has been changed.
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
 
-[2025-12-17 03:50:12]	[done]
+[2026-01-21 00:00:27]	[done]
 	build successfully !
 
-[2025-12-17 04:13:22]	[done]
+[2026-01-21 00:01:02]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-01-21 00:01:03]	[done]
 	build successfully !
 
-[2025-12-17 18:00:05]	[done]
+[2026-01-21 00:03:50]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-01-21 00:03:51]	[done]
 	build successfully !
 
-[2025-12-17 18:03:30]	[info] incremental build: 1 source files changed
+[2026-01-21 00:05:21]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-01-21 00:05:22]	[done]
+	build successfully !
+
+[2026-01-21 00:11:45]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-01-21 00:11:46]	[done]
+	build successfully !
+
+[2026-01-21 00:13:37]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-01-21 00:13:38]	[done]
+	build successfully !
+
+[2026-01-21 00:18:27]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-01-21 00:18:29]	[done]
+	build successfully !
+
+[2026-01-21 00:23:24]	[info] incremental build: 2 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\terminal_cmd_handlers.c': source file has been changed.
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-01-21 00:23:25]	[done]
+	build successfully !
+
+[2026-01-21 00:24:44]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-01-21 00:24:46]	[done]
+	build successfully !
+
+[2026-01-21 00:25:25]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-01-21 00:25:26]	[done]
+	build successfully !
+
+[2026-01-21 00:26:04]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-01-21 00:26:05]	[done]
+	build successfully !
+
+[2026-01-21 00:27:14]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-01-21 00:27:15]	[done]
+	build successfully !
+
+[2026-01-21 00:27:48]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-01-21 00:27:49]	[done]
+	build successfully !
+
+[2026-01-21 00:29:10]	[info] incremental build: 2 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\main.c': source file has been changed.
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\terminal_cmd_handlers.c': source file has been changed.
+
+[2026-01-21 00:29:12]	[done]
+	build successfully !
+
+[2026-01-21 00:29:17]	[done]
+	build successfully !
+
+[2026-01-21 22:18:25]	[done]
+	build successfully !
+
+[2026-01-21 22:20:18]	[done]
+	build successfully !
+
+[2026-01-22 01:51:50]	[info] incremental build: 1 source files changed
 These source files will be recompiled
 ---
 'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\terminal_cmd_handlers.c': source file has been changed.
 
-[2025-12-17 18:03:32]	[done]
+[2026-01-22 01:51:51]	[done]
 	build successfully !
 
-[2025-12-17 18:07:00]	[info] incremental build: 2 source files changed
+[2026-01-22 01:58:58]	[info] incremental build: 1 source files changed
 These source files will be recompiled
 ---
-'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\main.c': source file has been changed.
-'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\terminal_cmd_handlers.c': source file has been changed.
 
-[2025-12-17 18:07:01]	compilation failed at : "c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c", exit code: 1
+[2026-01-22 01:58:59]	[done]
+	build successfully !
+
+[2026-01-22 02:02:04]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\terminal_cmd_handlers.c': source file has been changed.
+
+[2026-01-22 02:02:05]	[done]
+	build successfully !
+
+[2026-01-22 02:20:35]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\terminal_cmd_handlers.c': source file has been changed.
+
+[2026-01-22 02:20:36]	[done]
+	build successfully !
+
+[2026-01-22 02:35:38]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\terminal_cmd_handlers.c': source file has been changed.
+
+[2026-01-22 02:35:39]	[done]
+	build successfully !
+
+[2026-01-22 02:36:23]	[done]
+	build successfully !
+
+[2026-01-22 02:38:46]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\terminal_cmd_handlers.c': source file has been changed.
+
+[2026-01-22 02:38:47]	[done]
+	build successfully !
+
+[2026-01-22 02:42:29]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\terminal_cmd_handlers.c': source file has been changed.
+
+[2026-01-22 02:42:30]	[done]
+	build successfully !
+
+[2026-01-22 02:46:50]	[done]
+	build successfully !
+
+[2026-01-22 14:55:42]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\terminal_cmd_handlers.c': source file has been changed.
+
+[2026-01-22 14:55:42]	compilation failed at : "c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\terminal_cmd_handlers.c", exit code: 1
 command: 
-  "D:\Keil_v5\ARM\ARMCC\bin\armcc.exe" -c --apcs=interwork -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/DSP/Include -I../Middlewares/FreeRTOS-Kernel -I../Middlewares/FreeRTOS-Kernel/include -I../Middlewares/FreeRTOS-Kernel/portable/RVDS/ARM_CM4F -I../Core/App/Include -I../Core/BSP/Include -I../Core/Lib/Include -I../Core/OS_Tasks/Include -I.cmsis/include -IRTE/_Main_Board -D"USE_FULL_LL_DRIVER" -D"ARM_MATH_CM4" -D"__FPU_PRESENT=1U" --cpu Cortex-M4.fp --li --c99 -D__MICROLIB -O0 --split_sections --diag_suppress=1 --diag_suppress=1295 -g -o .\build\Main_Board\.obj\__\Core\OS_Tasks\gripper_task.o --no_depend_system_headers --depend .\build\Main_Board\.obj\__\Core\OS_Tasks\gripper_task.d .\..\Core\OS_Tasks\gripper_task.c
+  "D:\Keil_v5\ARM\ARMCC\bin\armcc.exe" -c --apcs=interwork -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/DSP/Include -I../Middlewares/FreeRTOS-Kernel -I../Middlewares/FreeRTOS-Kernel/include -I../Middlewares/FreeRTOS-Kernel/portable/RVDS/ARM_CM4F -I../Core/App/Include -I../Core/BSP/Include -I../Core/Lib/Include -I../Core/OS_Tasks/Include -I.cmsis/include -IRTE/_Main_Board -D"USE_FULL_LL_DRIVER" -D"ARM_MATH_CM4" -D"__FPU_PRESENT=1U" --cpu Cortex-M4.fp --li --c99 -D__MICROLIB -O0 --split_sections --diag_suppress=1 --diag_suppress=1295 -g -o .\build\Main_Board\.obj\__\Core\App\terminal_cmd_handlers.o --no_depend_system_headers --depend .\build\Main_Board\.obj\__\Core\App\terminal_cmd_handlers.d .\..\Core\App\terminal_cmd_handlers.c
    at unify_builder.Program.Main(String[] args_)
 ---
-".\..\Core\OS_Tasks\gripper_task.c", line 72: Error:  #20: identifier "define" is undefined
-  define SERVO
-  ^
-".\..\Core\OS_Tasks\gripper_task.c", line 87: Error:  #65: expected a ";"
-  static void RotateGripper(USART_TypeDef* usart, uint8_t id_1, uint8_t id_2, uint16_t angle)
-  ^
-".\..\Core\OS_Tasks\gripper_task.c", line 110: Warning:  #12-D: parsing restarts here after previous syntax error
-      DynamixelMaster.SyncWrite(usart, device_ids, num_devices, AX_GoalPosition, data_to_write, 2, NULL);
-                                                                                                        ^
-".\..\Core\OS_Tasks\gripper_task.c", line 111: Error:  #169: expected a declaration
-  }
-  ^
-".\..\Core\OS_Tasks\gripper_task.c", line 960: Warning:  #12-D: parsing restarts here after previous syntax error
-                                            .GetTaskHandle = GetTaskHandle};
-                                                                           ^
+".\..\Core\App\terminal_cmd_handlers.c", line 761: Error:  #167: argument of type "uint8_t *" is incompatible with parameter of type "uint16_t *"
+    Dynamixel_AX.GetAngle(USART3, side_dynamixel_id_1, &angle_buffer);
+                                                       ^
+".\..\Core\App\terminal_cmd_handlers.c", line 762: Error:  #42: operand types are incompatible ("uint8_t *" and "uint8_t")
+    if (&angle_buffer == side_on_angle_1) terminal_response.data[0] = 0x01;
+                      ^
+".\..\Core\App\terminal_cmd_handlers.c", line 841: Error:  #167: argument of type "uint8_t *" is incompatible with parameter of type "uint16_t *"
+    Dynamixel_AX.GetAngle(USART3, side_dynamixel_id_1, &angle_buffer);
+                                                       ^
+".\..\Core\App\terminal_cmd_handlers.c", line 842: Error:  #42: operand types are incompatible ("uint8_t *" and "uint8_t")
+    if (&angle_buffer == side_off_angle_1) terminal_response.data[0] = 0x01;
+                      ^
+".\..\Core\App\terminal_cmd_handlers.c", line 996: Error:  #167: argument of type "uint8_t *" is incompatible with parameter of type "uint16_t *"
+    Dynamixel_AX.GetAngle(USART3, dynamixel_cursor_id, &angle_buffer);
+                                                       ^
+".\..\Core\App\terminal_cmd_handlers.c", line 997: Error:  #42: operand types are incompatible ("uint8_t *" and "uint8_t")
+    if (&angle_buffer == cursor_hor_angle)OR(&angle_buffer == cursor_vert_angle) {
+                      ^
+".\..\Core\App\terminal_cmd_handlers.c", line 997: Warning:  #223-D: function "OR" declared implicitly
+    if (&angle_buffer == cursor_hor_angle)OR(&angle_buffer == cursor_vert_angle) {
+                                          ^
+".\..\Core\App\terminal_cmd_handlers.c", line 997: Error:  #42: operand types are incompatible ("uint8_t *" and "uint8_t")
+    if (&angle_buffer == cursor_hor_angle)OR(&angle_buffer == cursor_vert_angle) {
+                                                           ^
+".\..\Core\App\terminal_cmd_handlers.c", line 997: Error:  #65: expected a ";"
+    if (&angle_buffer == cursor_hor_angle)OR(&angle_buffer == cursor_vert_angle) {
+                                                                                 ^
+".\..\Core\App\terminal_cmd_handlers.c", line 1000: Warning:  #12-D: parsing restarts here after previous syntax error
+    terminal_response.data_length = 1;
+                                     ^
+.\..\Core\App\terminal_cmd_handlers.c: 2 warnings, 8 errors
+
+[2026-01-22 14:57:59]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\terminal_cmd_handlers.c': source file has been changed.
+
+[2026-01-22 14:57:59]	compilation failed at : "c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\terminal_cmd_handlers.c", exit code: 1
+command: 
+  "D:\Keil_v5\ARM\ARMCC\bin\armcc.exe" -c --apcs=interwork -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/DSP/Include -I../Middlewares/FreeRTOS-Kernel -I../Middlewares/FreeRTOS-Kernel/include -I../Middlewares/FreeRTOS-Kernel/portable/RVDS/ARM_CM4F -I../Core/App/Include -I../Core/BSP/Include -I../Core/Lib/Include -I../Core/OS_Tasks/Include -I.cmsis/include -IRTE/_Main_Board -D"USE_FULL_LL_DRIVER" -D"ARM_MATH_CM4" -D"__FPU_PRESENT=1U" --cpu Cortex-M4.fp --li --c99 -D__MICROLIB -O0 --split_sections --diag_suppress=1 --diag_suppress=1295 -g -o .\build\Main_Board\.obj\__\Core\App\terminal_cmd_handlers.o --no_depend_system_headers --depend .\build\Main_Board\.obj\__\Core\App\terminal_cmd_handlers.d .\..\Core\App\terminal_cmd_handlers.c
+   at unify_builder.Program.Main(String[] args_)
+---
+".\..\Core\App\terminal_cmd_handlers.c", line 761: Error:  #167: argument of type "uint8_t *" is incompatible with parameter of type "uint16_t *"
+    Dynamixel_AX.GetAngle(USART3, side_dynamixel_id_1, &angle_buffer);
+                                                       ^
+".\..\Core\App\terminal_cmd_handlers.c", line 841: Error:  #167: argument of type "uint8_t *" is incompatible with parameter of type "uint16_t *"
+    Dynamixel_AX.GetAngle(USART3, side_dynamixel_id_1, &angle_buffer);
+                                                       ^
+".\..\Core\App\terminal_cmd_handlers.c", line 996: Error:  #167: argument of type "uint8_t *" is incompatible with parameter of type "uint16_t *"
+    Dynamixel_AX.GetAngle(USART3, dynamixel_cursor_id, &angle_buffer);
+                                                       ^
+".\..\Core\App\terminal_cmd_handlers.c", line 997: Error:  #29: expected an expression
+    if (angle_buffer == cursor_hor_angle)||(&angle_buffer == cursor_vert_angle) {
+                                         ^
+".\..\Core\App\terminal_cmd_handlers.c", line 1000: Warning:  #12-D: parsing restarts here after previous syntax error
+    terminal_response.data_length = 1;
+                                     ^
+.\..\Core\App\terminal_cmd_handlers.c: 1 warning, 4 errors
+
+[2026-01-22 14:58:46]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\terminal_cmd_handlers.c': source file has been changed.
+
+[2026-01-22 14:58:49]	[done]
+	build successfully !
+
+[2026-01-22 22:55:41]	[done]
+	build successfully !
+
+[2026-01-22 23:03:29]	[done]
+	build successfully !
+
+[2026-01-22 23:04:27]	[done]
+	build successfully !
+
+[2026-01-22 23:07:32]	[done]
+	build successfully !
+
+[2026-01-22 23:11:03]	[done]
+	build successfully !
+
+[2026-01-22 23:20:56]	[done]
+	build successfully !
+
+[2026-01-22 23:28:30]	[done]
+	build successfully !
+
+[2026-01-23 00:05:28]	[done]
+	build successfully !
+
+[2026-01-23 00:08:23]	[done]
+	build successfully !
+
+[2026-01-23 00:12:04]	[done]
+	build successfully !
+
+[2026-01-23 15:43:10]	[done]
+	build successfully !
+
+[2026-01-23 15:59:58]	compilation failed at : "c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c", exit code: 1
+command: 
+  "D:\Keil_v5\ARM\ARMCC\bin\armcc.exe" -c --apcs=interwork -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/DSP/Include -I../Middlewares/FreeRTOS-Kernel -I../Middlewares/FreeRTOS-Kernel/include -I../Middlewares/FreeRTOS-Kernel/portable/RVDS/ARM_CM4F -I../Core/App/Include -I../Core/BSP/Include -I../Core/Lib/Include -I../Core/OS_Tasks/Include -I.cmsis/include -IRTE/_Main_Board -D"USE_FULL_LL_DRIVER" -D"ARM_MATH_CM4" -D"__FPU_PRESENT=1U" --cpu Cortex-M4.fp --li --c99 -D__MICROLIB -O0 --split_sections --diag_suppress=1 --diag_suppress=1295 -g -o .\build\Main_Board\.obj\__\Core\OS_Tasks\gripper_task.o --no_depend_system_headers --depend .\build\Main_Board\.obj\__\Core\OS_Tasks\gripper_task.d .\..\Core\OS_Tasks\gripper_task.c
+   at unify_builder.Program.compileByMulThread(Int32 thrNum, CmdInfo[] cmds_, List`1 errLogs)
+   at unify_builder.Program.Main(String[] args_)
+---
+".\..\Core\OS_Tasks\gripper_task.c", line 353: Error:  #20: identifier "i2c_addr_1" is undefined
+  		PCA9685.SetServoAngleWithAddr(i2c_addr_1, PCA9685_CH1, 0);
+  		                              ^
+".\..\Core\OS_Tasks\gripper_task.c", line 163: Warning:  #177-D: variable "servo5_end_angle"  was declared but never referenced
+  	uint8_t servo5_end_angle = 170;
+  	        ^
+".\..\Core\OS_Tasks\gripper_task.c", line 165: Warning:  #177-D: variable "servo6_end_angle"  was declared but never referenced
+  	uint8_t servo6_end_angle = 20;
+  	        ^
+.\..\Core\OS_Tasks\gripper_task.c: 2 warnings, 1 error
+
+[2026-01-23 16:00:48]	[done]
+	build successfully !
+
+[2026-01-23 16:03:38]	[done]
+	build successfully !
+
+[2026-01-23 16:06:05]	[done]
+	build successfully !
+
+[2026-01-30 17:14:57]	[done]
+	build successfully !
+
+[2026-02-02 10:42:29]	compilation failed at : "c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\Lib\rc_servo.c", exit code: 1
+command: 
+  "D:\Keil_v5\ARM\ARMCC\bin\armcc.exe" -c --apcs=interwork -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/DSP/Include -I../Middlewares/FreeRTOS-Kernel -I../Middlewares/FreeRTOS-Kernel/include -I../Middlewares/FreeRTOS-Kernel/portable/RVDS/ARM_CM4F -I../Core/App/Include -I../Core/BSP/Include -I../Core/Lib/Include -I../Core/OS_Tasks/Include -I.cmsis/include -IRTE/_Main_Board -D"USE_FULL_LL_DRIVER" -D"ARM_MATH_CM4" -D"__FPU_PRESENT=1U" --cpu Cortex-M4.fp --li --c99 -D__MICROLIB -O0 --split_sections --diag_suppress=1 --diag_suppress=1295 -g -o .\build\Main_Board\.obj\__\Core\Lib\rc_servo.o --no_depend_system_headers --depend .\build\Main_Board\.obj\__\Core\Lib\rc_servo.d .\..\Core\Lib\rc_servo.c
+   at unify_builder.Program.compileByMulThread(Int32 thrNum, CmdInfo[] cmds_, List`1 errLogs)
+   at unify_builder.Program.Main(String[] args_)
+---
+Error: L6449E: While processing .\build\Main_Board\.obj\__\Core\Lib\rc_servo.o: I/O error writing file '.\build\Main_Board\.obj\__\Core\Lib\rc_servo.o': Invalid argument
+Finished: 0 information, 0 warning and 1 error messages.
+
+[2026-02-02 10:42:55]	[done]
+	build successfully !
+
+[2026-02-02 11:00:02]	compilation failed at : "c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c", exit code: 1
+command: 
+  "D:\Keil_v5\ARM\ARMCC\bin\armcc.exe" -c --apcs=interwork -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/DSP/Include -I../Middlewares/FreeRTOS-Kernel -I../Middlewares/FreeRTOS-Kernel/include -I../Middlewares/FreeRTOS-Kernel/portable/RVDS/ARM_CM4F -I../Core/App/Include -I../Core/BSP/Include -I../Core/Lib/Include -I../Core/OS_Tasks/Include -I.cmsis/include -IRTE/_Main_Board -D"USE_FULL_LL_DRIVER" -D"ARM_MATH_CM4" -D"__FPU_PRESENT=1U" --cpu Cortex-M4.fp --li --c99 -D__MICROLIB -O0 --split_sections --diag_suppress=1 --diag_suppress=1295 -g -o .\build\Main_Board\.obj\__\Core\OS_Tasks\gripper_task.o --no_depend_system_headers --depend .\build\Main_Board\.obj\__\Core\OS_Tasks\gripper_task.d .\..\Core\OS_Tasks\gripper_task.c
+   at unify_builder.Program.compileByMulThread(Int32 thrNum, CmdInfo[] cmds_, List`1 errLogs)
+   at unify_builder.Program.Main(String[] args_)
+---
+".\..\Core\OS_Tasks\gripper_task.c", line 79: Error:  #37: the #endif for this directive is missing
+  #ifdef GRIPPER_INIT
+   ^
 ".\..\Core\OS_Tasks\gripper_task.c", line 66: Warning:  #177-D: variable "task_handle"  was declared but never referenced
   static TaskHandle_t task_handle;
                       ^
@@ -85,537 +431,81 @@ command:
 ".\..\Core\OS_Tasks\gripper_task.c", line 68: Warning:  #177-D: variable "task_buffer"  was declared but never referenced
   static StaticTask_t task_buffer;
                       ^
-.\..\Core\OS_Tasks\gripper_task.c: 5 warnings, 3 errors
+.\..\Core\OS_Tasks\gripper_task.c: 3 warnings, 1 error
 
-[2025-12-17 18:07:43]	[info] incremental build: 1 source files changed
-These source files will be recompiled
----
-'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
-
-[2025-12-17 18:07:44]	[done]
-	build successfully !
-
-[2025-12-17 18:08:42]	[info] incremental build: 1 source files changed
-These source files will be recompiled
----
-'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
-
-[2025-12-17 18:08:43]	[done]
-	build successfully !
-
-[2025-12-17 18:09:36]	[info] incremental build: 1 source files changed
-These source files will be recompiled
----
-'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
-
-[2025-12-17 18:09:37]	[done]
-	build successfully !
-
-[2025-12-17 18:10:25]	[info] incremental build: 1 source files changed
-These source files will be recompiled
----
-'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
-
-[2025-12-17 18:10:26]	[done]
-	build successfully !
-
-[2025-12-17 18:11:12]	[done]
-	build successfully !
-
-[2025-12-17 18:11:35]	[info] incremental build: 1 source files changed
-These source files will be recompiled
----
-'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\terminal_cmd_handlers.c': source file has been changed.
-
-[2025-12-17 18:11:36]	[done]
-	build successfully !
-
-[2025-12-17 18:12:28]	[done]
-	build successfully !
-
-[2025-12-17 19:47:07]	[info] incremental build: 1 source files changed
-These source files will be recompiled
----
-'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\terminal_cmd_handlers.c': source file has been changed.
-
-[2025-12-17 19:47:07]	compilation failed at : "c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\terminal_cmd_handlers.c", exit code: 1
+[2026-02-02 11:01:09]	compilation failed at : "c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c", exit code: 1
 command: 
-  "D:\Keil_v5\ARM\ARMCC\bin\armcc.exe" -c --apcs=interwork -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/DSP/Include -I../Middlewares/FreeRTOS-Kernel -I../Middlewares/FreeRTOS-Kernel/include -I../Middlewares/FreeRTOS-Kernel/portable/RVDS/ARM_CM4F -I../Core/App/Include -I../Core/BSP/Include -I../Core/Lib/Include -I../Core/OS_Tasks/Include -I.cmsis/include -IRTE/_Main_Board -D"USE_FULL_LL_DRIVER" -D"ARM_MATH_CM4" -D"__FPU_PRESENT=1U" --cpu Cortex-M4.fp --li --c99 -D__MICROLIB -O0 --split_sections --diag_suppress=1 --diag_suppress=1295 -g -o .\build\Main_Board\.obj\__\Core\App\terminal_cmd_handlers.o --no_depend_system_headers --depend .\build\Main_Board\.obj\__\Core\App\terminal_cmd_handlers.d .\..\Core\App\terminal_cmd_handlers.c
-   at unify_builder.Program.Main(String[] args_)
----
-".\..\Core\App\terminal_cmd_handlers.c", line 85: Error:  #148: variable "start_angle"  has already been initialized
-  uint8_t start_angle = 0; //0-300 60
-          ^
-".\..\Core\App\terminal_cmd_handlers.c", line 86: Error:  #148: variable "end_angle"  has already been initialized
-  uint8_t end_angle = 90; //0-300 150 125
-          ^
-.\..\Core\App\terminal_cmd_handlers.c: 0 warnings, 2 errors
-
-[2025-12-17 19:47:34]	[info] incremental build: 1 source files changed
-These source files will be recompiled
----
-'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\terminal_cmd_handlers.c': source file has been changed.
-
-[2025-12-17 19:47:39]	[done]
-	build successfully !
-
-[2025-12-17 20:56:11]	[done]
-	build successfully !
-
-[2025-12-17 20:57:36]	[done]
-	build successfully !
-
-[2025-12-17 20:58:49]	[done]
-	build successfully !
-
-[2025-12-17 20:59:24]	[done]
-	build successfully !
-
-[2025-12-17 21:01:32]	[done]
-	build successfully !
-
-[2025-12-17 23:04:53]	[done]
-	build successfully !
-
-[2025-12-21 22:00:16]	compilation failed at : "c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\robot_behavior_routine.c", exit code: 1
-command: 
-  "D:\Keil_v5\ARM\ARMCC\bin\armcc.exe" -c --apcs=interwork -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/DSP/Include -I../Middlewares/FreeRTOS-Kernel -I../Middlewares/FreeRTOS-Kernel/include -I../Middlewares/FreeRTOS-Kernel/portable/RVDS/ARM_CM4F -I../Core/App/Include -I../Core/BSP/Include -I../Core/Lib/Include -I../Core/OS_Tasks/Include -I.cmsis/include -IRTE/_Main_Board -D"USE_FULL_LL_DRIVER" -D"ARM_MATH_CM4" -D"__FPU_PRESENT=1U" --cpu Cortex-M4.fp --li --c99 -D__MICROLIB -O0 --split_sections --diag_suppress=1 --diag_suppress=1295 -g -o .\build\Main_Board\.obj\__\Core\App\robot_behavior_routine.o --no_depend_system_headers --depend .\build\Main_Board\.obj\__\Core\App\robot_behavior_routine.d .\..\Core\App\robot_behavior_routine.c
+  "D:\Keil_v5\ARM\ARMCC\bin\armcc.exe" -c --apcs=interwork -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/DSP/Include -I../Middlewares/FreeRTOS-Kernel -I../Middlewares/FreeRTOS-Kernel/include -I../Middlewares/FreeRTOS-Kernel/portable/RVDS/ARM_CM4F -I../Core/App/Include -I../Core/BSP/Include -I../Core/Lib/Include -I../Core/OS_Tasks/Include -I.cmsis/include -IRTE/_Main_Board -D"USE_FULL_LL_DRIVER" -D"ARM_MATH_CM4" -D"__FPU_PRESENT=1U" --cpu Cortex-M4.fp --li --c99 -D__MICROLIB -O0 --split_sections --diag_suppress=1 --diag_suppress=1295 -g -o .\build\Main_Board\.obj\__\Core\OS_Tasks\gripper_task.o --no_depend_system_headers --depend .\build\Main_Board\.obj\__\Core\OS_Tasks\gripper_task.d .\..\Core\OS_Tasks\gripper_task.c
    at unify_builder.Program.compileByMulThread(Int32 thrNum, CmdInfo[] cmds_, List`1 errLogs)
    at unify_builder.Program.Main(String[] args_)
 ---
-Error: C9555E: Failed to check out a license.LICENSE ERROR (R201(2): INVALID LICENSE ID CODE (LIC))
+".\..\Core\OS_Tasks\gripper_task.c", line 459: Error:  #20: identifier "speed" is undefined
+  		speed.dphi = 0;
+  		^
+".\..\Core\OS_Tasks\gripper_task.c", line 466: Error:  #20: identifier "dynamixel_cursor_id" is undefined
+  		Dynamixel_AX.SetMovingSpeed(USART3, dynamixel_cursor_id, cursor_speed);
+  		                                    ^
+".\..\Core\OS_Tasks\gripper_task.c", line 466: Error:  #20: identifier "cursor_speed" is undefined
+  		Dynamixel_AX.SetMovingSpeed(USART3, dynamixel_cursor_id, cursor_speed);
+  		                                                         ^
+".\..\Core\OS_Tasks\gripper_task.c", line 468: Error:  #20: identifier "cursor_vert_angle" is undefined
+  		Dynamixel_AX.SetAngle(USART3, dynamixel_cursor_id, cursor_vert_angle);
+  		                                                   ^
+".\..\Core\OS_Tasks\gripper_task.c", line 160: Warning:  #177-D: variable "start_angle"  was declared but never referenced
+  	uint8_t start_angle = 62; //0-300 60
+  	        ^
+".\..\Core\OS_Tasks\gripper_task.c", line 164: Warning:  #177-D: variable "servo5_end_angle"  was declared but never referenced
+  	uint8_t servo5_end_angle = 170;
+  	        ^
+".\..\Core\OS_Tasks\gripper_task.c", line 166: Warning:  #177-D: variable "servo6_end_angle"  was declared but never referenced
+  	uint8_t servo6_end_angle = 20;
+  	        ^
+".\..\Core\OS_Tasks\gripper_task.c", line 172: Warning:  #177-D: variable "side_off_angle_1"  was declared but never referenced
+  	uint8_t side_off_angle_1 = 44; //0-300 45
+  	        ^
+".\..\Core\OS_Tasks\gripper_task.c", line 174: Warning:  #177-D: variable "side_off_angle_2"  was declared but never referenced
+  	uint8_t side_off_angle_2 = 152; //0-300 120
+  	        ^
+.\..\Core\OS_Tasks\gripper_task.c: 5 warnings, 4 errors
 
-Check that your license details are correct in the License Management dialog of MDK. Additional information is available at:
- http://www.keil.com/support/man/docs/license/license_management.htm
- If you need further help, provide this complete error report to your supplier or license.support@arm.com.
- - ARMLMD_LICENSE_FILE: unset
- - LM_LICENSE_FILE: unset
- - ARM_TOOL_VARIANT: unset
- - ARM_PRODUCT_PATH: unset
- - Product location: D:\Keil_v5\ARM\sw\mappings
- - Toolchain location: D:\Keil_v5\ARM\ARMCC\bin
- - Selected tool variant: mdk_std
- - Checkout feature: LIC0=KA...-.....-.....
- - Feature version: 5.0202006
- - Keil error code: 1
-Product: MDK Plus 5.36
-Component: ARM Compiler 5.06 update 7 (build 960)
-Tool: armcc [4d365d]
-Error: C9555E: Failed to check out a license.LICENSE ERROR (R201(2): INVALID LICENSE ID CODE (LIC))
-
-Check that your license details are correct in the License Management dialog of MDK. Additional information is available at:
- http://www.keil.com/support/man/docs/license/license_management.htm
- If you need further help, provide this complete error report to your supplier or license.support@arm.com.
- - ARMLMD_LICENSE_FILE: unset
- - LM_LICENSE_FILE: unset
- - ARM_TOOL_VARIANT: unset
- - ARM_PRODUCT_PATH: unset
- - Product location: D:\Keil_v5\ARM\sw\mappings
- - Toolchain location: D:\Keil_v5\ARM\ARMCC\bin
- - Selected tool variant: mdk_std
- - Checkout feature: LIC0=KA...-.....-.....
- - Feature version: 5.0202006
- - Keil error code: 1
-Product: MDK Plus 5.36
-Component: ARM Compiler 5.06 update 7 (build 960)
-Tool: armcc [4d365d]
-Error: C9555E: Failed to check out a license.LICENSE ERROR (R201(2): INVALID LICENSE ID CODE (LIC))
-
-Check that your license details are correct in the License Management dialog of MDK. Additional information is available at:
- http://www.keil.com/support/man/docs/license/license_management.htm
- If you need further help, provide this complete error report to your supplier or license.support@arm.com.
- - ARMLMD_LICENSE_FILE: unset
- - LM_LICENSE_FILE: unset
- - ARM_TOOL_VARIANT: unset
- - ARM_PRODUCT_PATH: unset
- - Product location: D:\Keil_v5\ARM\sw\mappings
- - Toolchain location: D:\Keil_v5\ARM\ARMCC\bin
- - Selected tool variant: mdk_std
- - Checkout feature: LIC0=KA...-.....-.....
- - Feature version: 5.0202006
- - Keil error code: 1
-Product: MDK Plus 5.36
-Component: ARM Compiler 5.06 update 7 (build 960)
-Tool: armcc [4d365d]
-Error: C9555E: Failed to check out a license.LICENSE ERROR (R201(2): INVALID LICENSE ID CODE (LIC))
-
-Check that your license details are correct in the License Management dialog of MDK. Additional information is available at:
- http://www.keil.com/support/man/docs/license/license_management.htm
- If you need further help, provide this complete error report to your supplier or license.support@arm.com.
- - ARMLMD_LICENSE_FILE: unset
- - LM_LICENSE_FILE: unset
- - ARM_TOOL_VARIANT: unset
- - ARM_PRODUCT_PATH: unset
- - Product location: D:\Keil_v5\ARM\sw\mappings
- - Toolchain location: D:\Keil_v5\ARM\ARMCC\bin
- - Selected tool variant: mdk_std
- - Checkout feature: LIC0=KA...-.....-.....
- - Feature version: 5.0202006
- - Keil error code: 1
-Product: MDK Plus 5.36
-Component: ARM Compiler 5.06 update 7 (build 960)
-Tool: armcc [4d365d]
-Error: C9555E: Failed to check out a license.LICENSE ERROR (R201(2): INVALID LICENSE ID CODE (LIC))
-
-Check that your license details are correct in the License Management dialog of MDK. Additional information is available at:
- http://www.keil.com/support/man/docs/license/license_management.htm
- If you need further help, provide this complete error report to your supplier or license.support@arm.com.
- - ARMLMD_LICENSE_FILE: unset
- - LM_LICENSE_FILE: unset
- - ARM_TOOL_VARIANT: unset
- - ARM_PRODUCT_PATH: unset
- - Product location: D:\Keil_v5\ARM\sw\mappings
- - Toolchain location: D:\Keil_v5\ARM\ARMCC\bin
- - Selected tool variant: mdk_std
- - Checkout feature: LIC0=KA...-.....-.....
- - Feature version: 5.0202006
- - Keil error code: 1
-Product: MDK Plus 5.36
-Component: ARM Compiler 5.06 update 7 (build 960)
-Tool: armcc [4d365d]
-Error: C9555E: Failed to check out a license.LICENSE ERROR (R201(2): INVALID LICENSE ID CODE (LIC))
-
-Check that your license details are correct in the License Management dialog of MDK. Additional information is available at:
- http://www.keil.com/support/man/docs/license/license_management.htm
- If you need further help, provide this complete error report to your supplier or license.support@arm.com.
- - ARMLMD_LICENSE_FILE: unset
- - LM_LICENSE_FILE: unset
- - ARM_TOOL_VARIANT: unset
- - ARM_PRODUCT_PATH: unset
- - Product location: D:\Keil_v5\ARM\sw\mappings
- - Toolchain location: D:\Keil_v5\ARM\ARMCC\bin
- - Selected tool variant: mdk_std
- - Checkout feature: LIC0=KA...-.....-.....
- - Feature version: 5.0202006
- - Keil error code: 1
-Product: MDK Plus 5.36
-Component: ARM Compiler 5.06 update 7 (build 960)
-Tool: armcc [4d365d]
-Error: C9555E: Failed to check out a license.LICENSE ERROR (R201(2): INVALID LICENSE ID CODE (LIC))
-
-Check that your license details are correct in the License Management dialog of MDK. Additional information is available at:
- http://www.keil.com/support/man/docs/license/license_management.htm
- If you need further help, provide this complete error report to your supplier or license.support@arm.com.
- - ARMLMD_LICENSE_FILE: unset
- - LM_LICENSE_FILE: unset
- - ARM_TOOL_VARIANT: unset
- - ARM_PRODUCT_PATH: unset
- - Product location: D:\Keil_v5\ARM\sw\mappings
- - Toolchain location: D:\Keil_v5\ARM\ARMCC\bin
- - Selected tool variant: mdk_std
- - Checkout feature: LIC0=KA...-.....-.....
- - Feature version: 5.0202006
- - Keil error code: 1
-Product: MDK Plus 5.36
-Component: ARM Compiler 5.06 update 7 (build 960)
-Tool: armcc [4d365d]
-Error: C9555E: Failed to check out a license.LICENSE ERROR (R201(2): INVALID LICENSE ID CODE (LIC))
-
-Check that your license details are correct in the License Management dialog of MDK. Additional information is available at:
- http://www.keil.com/support/man/docs/license/license_management.htm
- If you need further help, provide this complete error report to your supplier or license.support@arm.com.
- - ARMLMD_LICENSE_FILE: unset
- - LM_LICENSE_FILE: unset
- - ARM_TOOL_VARIANT: unset
- - ARM_PRODUCT_PATH: unset
- - Product location: D:\Keil_v5\ARM\sw\mappings
- - Toolchain location: D:\Keil_v5\ARM\ARMCC\bin
- - Selected tool variant: mdk_std
- - Checkout feature: LIC0=KA...-.....-.....
- - Feature version: 5.0202006
- - Keil error code: 1
-Product: MDK Plus 5.36
-Component: ARM Compiler 5.06 update 7 (build 960)
-Tool: armcc [4d365d]
-Error: C9555E: Failed to check out a license.LICENSE ERROR (R201(2): INVALID LICENSE ID CODE (LIC))
-
-Check that your license details are correct in the License Management dialog of MDK. Additional information is available at:
- http://www.keil.com/support/man/docs/license/license_management.htm
- If you need further help, provide this complete error report to your supplier or license.support@arm.com.
- - ARMLMD_LICENSE_FILE: unset
- - LM_LICENSE_FILE: unset
- - ARM_TOOL_VARIANT: unset
- - ARM_PRODUCT_PATH: unset
- - Product location: D:\Keil_v5\ARM\sw\mappings
- - Toolchain location: D:\Keil_v5\ARM\ARMCC\bin
- - Selected tool variant: mdk_std
- - Checkout feature: LIC0=KA...-.....-.....
- - Feature version: 5.0202006
- - Keil error code: 1
-Product: MDK Plus 5.36
-Component: ARM Compiler 5.06 update 7 (build 960)
-Tool: armcc [4d365d]
-Error: C9555E: Failed to check out a license.LICENSE ERROR (R201(2): INVALID LICENSE ID CODE (LIC))
-
-Check that your license details are correct in the License Management dialog of MDK. Additional information is available at:
- http://www.keil.com/support/man/docs/license/license_management.htm
- If you need further help, provide this complete error report to your supplier or license.support@arm.com.
- - ARMLMD_LICENSE_FILE: unset
- - LM_LICENSE_FILE: unset
- - ARM_TOOL_VARIANT: unset
- - ARM_PRODUCT_PATH: unset
- - Product location: D:\Keil_v5\ARM\sw\mappings
- - Toolchain location: D:\Keil_v5\ARM\ARMCC\bin
- - Selected tool variant: mdk_std
- - Checkout feature: LIC0=KA...-.....-.....
- - Feature version: 5.0202006
- - Keil error code: 1
-Product: MDK Plus 5.36
-Component: ARM Compiler 5.06 update 7 (build 960)
-Tool: armcc [4d365d]
-Error: C9555E: Failed to check out a license.LICENSE ERROR (R201(2): INVALID LICENSE ID CODE (LIC))
-
-Check that your license details are correct in the License Management dialog of MDK. Additional information is available at:
- http://www.keil.com/support/man/docs/license/license_management.htm
- If you need further help, provide this complete error report to your supplier or license.support@arm.com.
- - ARMLMD_LICENSE_FILE: unset
- - LM_LICENSE_FILE: unset
- - ARM_TOOL_VARIANT: unset
- - ARM_PRODUCT_PATH: unset
- - Product location: D:\Keil_v5\ARM\sw\mappings
- - Toolchain location: D:\Keil_v5\ARM\ARMCC\bin
- - Selected tool variant: mdk_std
- - Checkout feature: LIC0=KA...-.....-.....
- - Feature version: 5.0202006
- - Keil error code: 1
-Product: MDK Plus 5.36
-Component: ARM Compiler 5.06 update 7 (build 960)
-Tool: armcc [4d365d]
-Error: C9555E: Failed to check out a license.LICENSE ERROR (R201(2): INVALID LICENSE ID CODE (LIC))
-
-Check that your license details are correct in the License Management dialog of MDK. Additional information is available at:
- http://www.keil.com/support/man/docs/license/license_management.htm
- If you need further help, provide this complete error report to your supplier or license.support@arm.com.
- - ARMLMD_LICENSE_FILE: unset
- - LM_LICENSE_FILE: unset
- - ARM_TOOL_VARIANT: unset
- - ARM_PRODUCT_PATH: unset
- - Product location: D:\Keil_v5\ARM\sw\mappings
- - Toolchain location: D:\Keil_v5\ARM\ARMCC\bin
- - Selected tool variant: mdk_std
- - Checkout feature: LIC0=KA...-.....-.....
- - Feature version: 5.0202006
- - Keil error code: 1
-Product: MDK Plus 5.36
-Component: ARM Compiler 5.06 update 7 (build 960)
-Tool: armcc [4d365d]
-Error: C9555E: Failed to check out a license.LICENSE ERROR (R201(2): INVALID LICENSE ID CODE (LIC))
-
-Check that your license details are correct in the License Management dialog of MDK. Additional information is available at:
- http://www.keil.com/support/man/docs/license/license_management.htm
- If you need further help, provide this complete error report to your supplier or license.support@arm.com.
- - ARMLMD_LICENSE_FILE: unset
- - LM_LICENSE_FILE: unset
- - ARM_TOOL_VARIANT: unset
- - ARM_PRODUCT_PATH: unset
- - Product location: D:\Keil_v5\ARM\sw\mappings
- - Toolchain location: D:\Keil_v5\ARM\ARMCC\bin
- - Selected tool variant: mdk_std
- - Checkout feature: LIC0=KA...-.....-.....
- - Feature version: 5.0202006
- - Keil error code: 1
-Product: MDK Plus 5.36
-Component: ARM Compiler 5.06 update 7 (build 960)
-Tool: armcc [4d365d]
-Error: C9555E: Failed to check out a license.LICENSE ERROR (R201(2): INVALID LICENSE ID CODE (LIC))
-
-Check that your license details are correct in the License Management dialog of MDK. Additional information is available at:
- http://www.keil.com/support/man/docs/license/license_management.htm
- If you need further help, provide this complete error report to your supplier or license.support@arm.com.
- - ARMLMD_LICENSE_FILE: unset
- - LM_LICENSE_FILE: unset
- - ARM_TOOL_VARIANT: unset
- - ARM_PRODUCT_PATH: unset
- - Product location: D:\Keil_v5\ARM\sw\mappings
- - Toolchain location: D:\Keil_v5\ARM\ARMCC\bin
- - Selected tool variant: mdk_std
- - Checkout feature: LIC0=KA...-.....-.....
- - Feature version: 5.0202006
- - Keil error code: 1
-Product: MDK Plus 5.36
-Component: ARM Compiler 5.06 update 7 (build 960)
-Tool: armcc [4d365d]
-Error: C9555E: Failed to check out a license.LICENSE ERROR (R201(2): INVALID LICENSE ID CODE (LIC))
-
-Check that your license details are correct in the License Management dialog of MDK. Additional information is available at:
- http://www.keil.com/support/man/docs/license/license_management.htm
- If you need further help, provide this complete error report to your supplier or license.support@arm.com.
- - ARMLMD_LICENSE_FILE: unset
- - LM_LICENSE_FILE: unset
- - ARM_TOOL_VARIANT: unset
- - ARM_PRODUCT_PATH: unset
- - Product location: D:\Keil_v5\ARM\sw\mappings
- - Toolchain location: D:\Keil_v5\ARM\ARMCC\bin
- - Selected tool variant: mdk_std
- - Checkout feature: LIC0=KA...-.....-.....
- - Feature version: 5.0202006
- - Keil error code: 1
-Product: MDK Plus 5.36
-Component: ARM Compiler 5.06 update 7 (build 960)
-Tool: armcc [4d365d]
-Error: C9555E: Failed to check out a license.LICENSE ERROR (R201(2): INVALID LICENSE ID CODE (LIC))
-
-Check that your license details are correct in the License Management dialog of MDK. Additional information is available at:
- http://www.keil.com/support/man/docs/license/license_management.htm
- If you need further help, provide this complete error report to your supplier or license.support@arm.com.
- - ARMLMD_LICENSE_FILE: unset
- - LM_LICENSE_FILE: unset
- - ARM_TOOL_VARIANT: unset
- - ARM_PRODUCT_PATH: unset
- - Product location: D:\Keil_v5\ARM\sw\mappings
- - Toolchain location: D:\Keil_v5\ARM\ARMCC\bin
- - Selected tool variant: mdk_std
- - Checkout feature: LIC0=KA...-.....-.....
- - Feature version: 5.0202006
- - Keil error code: 1
-Product: MDK Plus 5.36
-Component: ARM Compiler 5.06 update 7 (build 960)
-Tool: armcc [4d365d]
-
-[2025-12-21 22:02:07]	[info] incremental build: 5 source files changed
-These source files will be recompiled
----
-'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\debug_terminal.c': object (.o) file not exist
-'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\debug_terminal_cmd_handlers.c': object (.o) file not exist
-'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\BSP\i2c2.c': object (.o) file not exist
-'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\Lib\pca9685.c': object (.o) file not exist
-'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\debug_task.c': object (.o) file not exist
-
-[2025-12-21 22:02:07]	compilation failed at : "c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\debug_terminal.c", exit code: 1
+[2026-02-02 11:07:54]	compilation failed at : "c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c", exit code: 1
 command: 
-  "D:\Keil_v5\ARM\ARMCC\bin\armcc.exe" -c --apcs=interwork -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/DSP/Include -I../Middlewares/FreeRTOS-Kernel -I../Middlewares/FreeRTOS-Kernel/include -I../Middlewares/FreeRTOS-Kernel/portable/RVDS/ARM_CM4F -I../Core/App/Include -I../Core/BSP/Include -I../Core/Lib/Include -I../Core/OS_Tasks/Include -I.cmsis/include -IRTE/_Main_Board -D"USE_FULL_LL_DRIVER" -D"ARM_MATH_CM4" -D"__FPU_PRESENT=1U" --cpu Cortex-M4.fp --li --c99 -D__MICROLIB -O0 --split_sections --diag_suppress=1 --diag_suppress=1295 -g -o .\build\Main_Board\.obj\__\Core\App\debug_terminal.o --no_depend_system_headers --depend .\build\Main_Board\.obj\__\Core\App\debug_terminal.d .\..\Core\App\debug_terminal.c
-   at unify_builder.Program.Main(String[] args_)
----
-Error: C9555E: Failed to check out a license.LICENSE ERROR (R201(2): INVALID LICENSE ID CODE (LIC))
-
-Check that your license details are correct in the License Management dialog of MDK. Additional information is available at:
- http://www.keil.com/support/man/docs/license/license_management.htm
- If you need further help, provide this complete error report to your supplier or license.support@arm.com.
- - ARMLMD_LICENSE_FILE: unset
- - LM_LICENSE_FILE: unset
- - ARM_TOOL_VARIANT: unset
- - ARM_PRODUCT_PATH: unset
- - Product location: D:\Keil_v5\ARM\sw\mappings
- - Toolchain location: D:\Keil_v5\ARM\ARMCC\bin
- - Selected tool variant: mdk_std
- - Checkout feature: LIC0=KA...-.....-.....
- - Feature version: 5.0202006
- - Keil error code: 1
-Product: MDK Plus 5.36
-Component: ARM Compiler 5.06 update 7 (build 960)
-Tool: armcc [4d365d]
-
-[2025-12-21 22:02:09]	[info] incremental build: 5 source files changed
-These source files will be recompiled
----
-'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\debug_terminal.c': object (.o) file not exist
-'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\debug_terminal_cmd_handlers.c': object (.o) file not exist
-'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\BSP\i2c2.c': object (.o) file not exist
-'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\Lib\pca9685.c': object (.o) file not exist
-'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\debug_task.c': object (.o) file not exist
-
-[2025-12-21 22:02:10]	compilation failed at : "c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\debug_terminal.c", exit code: 1
-command: 
-  "D:\Keil_v5\ARM\ARMCC\bin\armcc.exe" -c --apcs=interwork -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/DSP/Include -I../Middlewares/FreeRTOS-Kernel -I../Middlewares/FreeRTOS-Kernel/include -I../Middlewares/FreeRTOS-Kernel/portable/RVDS/ARM_CM4F -I../Core/App/Include -I../Core/BSP/Include -I../Core/Lib/Include -I../Core/OS_Tasks/Include -I.cmsis/include -IRTE/_Main_Board -D"USE_FULL_LL_DRIVER" -D"ARM_MATH_CM4" -D"__FPU_PRESENT=1U" --cpu Cortex-M4.fp --li --c99 -D__MICROLIB -O0 --split_sections --diag_suppress=1 --diag_suppress=1295 -g -o .\build\Main_Board\.obj\__\Core\App\debug_terminal.o --no_depend_system_headers --depend .\build\Main_Board\.obj\__\Core\App\debug_terminal.d .\..\Core\App\debug_terminal.c
-   at unify_builder.Program.Main(String[] args_)
----
-Error: C9555E: Failed to check out a license.LICENSE ERROR (R201(2): INVALID LICENSE ID CODE (LIC))
-
-Check that your license details are correct in the License Management dialog of MDK. Additional information is available at:
- http://www.keil.com/support/man/docs/license/license_management.htm
- If you need further help, provide this complete error report to your supplier or license.support@arm.com.
- - ARMLMD_LICENSE_FILE: unset
- - LM_LICENSE_FILE: unset
- - ARM_TOOL_VARIANT: unset
- - ARM_PRODUCT_PATH: unset
- - Product location: D:\Keil_v5\ARM\sw\mappings
- - Toolchain location: D:\Keil_v5\ARM\ARMCC\bin
- - Selected tool variant: mdk_std
- - Checkout feature: LIC0=KA...-.....-.....
- - Feature version: 5.0202006
- - Keil error code: 1
-Product: MDK Plus 5.36
-Component: ARM Compiler 5.06 update 7 (build 960)
-Tool: armcc [4d365d]
-
-[2025-12-22 02:17:28]	[done]
-	build successfully !
-
-[2025-12-22 02:21:13]	[done]
-	build successfully !
-
-[2025-12-22 12:41:56]	[done]
-	build successfully !
-
-[2026-01-09 22:43:27]	[info] incremental build: 1 source files changed
-These source files will be recompiled
----
-'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\kinematics.c': source file has been changed.
-
-[2026-01-09 22:43:29]	[done]
-	build successfully !
-
-[2026-01-10 17:46:29]	[done]
-	build successfully !
-
-[2026-01-11 19:20:31]	[done]
-	build successfully !
-
-[2026-01-11 19:22:51]	[done]
-	build successfully !
-
-[2026-01-11 19:41:48]	[done]
-	build successfully !
-
-[2026-01-11 19:43:29]	[done]
-	build successfully !
-
-[2026-01-11 20:14:07]	[done]
-	build successfully !
-
-[2026-01-11 20:14:38]	[done]
-	build successfully !
-
-[2026-01-11 20:31:59]	[done]
-	build successfully !
-
-[2026-01-11 20:32:31]	[done]
-	build successfully !
-
-[2026-01-11 20:47:25]	[done]
-	build successfully !
-
-[2026-01-11 20:55:27]	[done]
-	build successfully !
-
-[2026-01-11 20:55:58]	[done]
-	build successfully !
-
-[2026-01-12 01:12:30]	compilation failed at : "c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\Lib\dynamixel_mx.c", exit code: 1
-command: 
-  "D:\Keil_v5\ARM\ARMCC\bin\armcc.exe" -c --apcs=interwork -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/DSP/Include -I../Middlewares/FreeRTOS-Kernel -I../Middlewares/FreeRTOS-Kernel/include -I../Middlewares/FreeRTOS-Kernel/portable/RVDS/ARM_CM4F -I../Core/App/Include -I../Core/BSP/Include -I../Core/Lib/Include -I../Core/OS_Tasks/Include -I.cmsis/include -IRTE/_Main_Board -D"USE_FULL_LL_DRIVER" -D"ARM_MATH_CM4" -D"__FPU_PRESENT=1U" --cpu Cortex-M4.fp --li --c99 -D__MICROLIB -O0 --split_sections --diag_suppress=1 --diag_suppress=1295 -g -o .\build\Main_Board\.obj\__\Core\Lib\dynamixel_mx.o --no_depend_system_headers --depend .\build\Main_Board\.obj\__\Core\Lib\dynamixel_mx.d .\..\Core\Lib\dynamixel_mx.c
+  "D:\Keil_v5\ARM\ARMCC\bin\armcc.exe" -c --apcs=interwork -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/DSP/Include -I../Middlewares/FreeRTOS-Kernel -I../Middlewares/FreeRTOS-Kernel/include -I../Middlewares/FreeRTOS-Kernel/portable/RVDS/ARM_CM4F -I../Core/App/Include -I../Core/BSP/Include -I../Core/Lib/Include -I../Core/OS_Tasks/Include -I.cmsis/include -IRTE/_Main_Board -D"USE_FULL_LL_DRIVER" -D"ARM_MATH_CM4" -D"__FPU_PRESENT=1U" --cpu Cortex-M4.fp --li --c99 -D__MICROLIB -O0 --split_sections --diag_suppress=1 --diag_suppress=1295 -g -o .\build\Main_Board\.obj\__\Core\OS_Tasks\gripper_task.o --no_depend_system_headers --depend .\build\Main_Board\.obj\__\Core\OS_Tasks\gripper_task.d .\..\Core\OS_Tasks\gripper_task.c
    at unify_builder.Program.compileByMulThread(Int32 thrNum, CmdInfo[] cmds_, List`1 errLogs)
    at unify_builder.Program.Main(String[] args_)
 ---
-Error: C4051E: couldn't write file '.\build\Main_Board\.obj\__\Core\Lib\dynamixel_mx.o': Invalid argument
+".\..\Core\OS_Tasks\gripper_task.c", line 486: Error:  #20: identifier "speed" is undefined
+  		speed.dphi = 0;
+  		^
+".\..\Core\OS_Tasks\gripper_task.c", line 187: Warning:  #177-D: variable "start_angle"  was declared but never referenced
+  	uint8_t start_angle = 62; //0-300 60
+  	        ^
+".\..\Core\OS_Tasks\gripper_task.c", line 191: Warning:  #177-D: variable "servo5_end_angle"  was declared but never referenced
+  	uint8_t servo5_end_angle = 170;
+  	        ^
+".\..\Core\OS_Tasks\gripper_task.c", line 193: Warning:  #177-D: variable "servo6_end_angle"  was declared but never referenced
+  	uint8_t servo6_end_angle = 20;
+  	        ^
+".\..\Core\OS_Tasks\gripper_task.c", line 199: Warning:  #177-D: variable "side_off_angle_1"  was declared but never referenced
+  	uint8_t side_off_angle_1 = 44; //0-300 45
+  	        ^
+".\..\Core\OS_Tasks\gripper_task.c", line 201: Warning:  #177-D: variable "side_off_angle_2"  was declared but never referenced
+  	uint8_t side_off_angle_2 = 152; //0-300 120
+  	        ^
+.\..\Core\OS_Tasks\gripper_task.c: 5 warnings, 1 error
 
-[2026-01-12 01:13:46]	[done]
+[2026-02-02 11:08:41]	[done]
 	build successfully !
 
-[2026-01-12 19:57:52]	compilation failed at : "c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\Lib\rc_servo.c", exit code: 1
-command: 
-  "D:\Keil_v5\ARM\ARMCC\bin\armcc.exe" -c --apcs=interwork -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/DSP/Include -I../Middlewares/FreeRTOS-Kernel -I../Middlewares/FreeRTOS-Kernel/include -I../Middlewares/FreeRTOS-Kernel/portable/RVDS/ARM_CM4F -I../Core/App/Include -I../Core/BSP/Include -I../Core/Lib/Include -I../Core/OS_Tasks/Include -I.cmsis/include -IRTE/_Main_Board -D"USE_FULL_LL_DRIVER" -D"ARM_MATH_CM4" -D"__FPU_PRESENT=1U" --cpu Cortex-M4.fp --li --c99 -D__MICROLIB -O0 --split_sections --diag_suppress=1 --diag_suppress=1295 -g -o .\build\Main_Board\.obj\__\Core\Lib\rc_servo.o --no_depend_system_headers --depend .\build\Main_Board\.obj\__\Core\Lib\rc_servo.d .\..\Core\Lib\rc_servo.c
-   at unify_builder.Program.compileByMulThread(Int32 thrNum, CmdInfo[] cmds_, List`1 errLogs)
-   at unify_builder.Program.Main(String[] args_)
----
-Error: C4051E: couldn't write file '.\build\Main_Board\.obj\__\Core\Lib\rc_servo.o': Invalid argument
-
-[2026-01-12 19:58:30]	[done]
+[2026-02-02 11:09:48]	[done]
 	build successfully !
 
-[2026-01-12 20:32:06]	[done]
+[2026-02-02 11:11:01]	[done]
 	build successfully !
 
-[2026-01-14 15:41:34]	[done]
+[2026-02-02 11:39:41]	[done]
+	build successfully !
+
+[2026-02-02 12:04:59]	[done]
 	build successfully !
 

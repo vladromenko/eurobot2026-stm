@@ -71,19 +71,30 @@ uint8_t dynamixel_id_1 = 98;
 uint8_t dynamixel_id_2 = 112;
 uint16_t dynamixel_speed = 150; //0-1024
 uint8_t start_angle = 62; //0-300 60
-uint8_t end_angle = 135; //0-300 150 125
+uint8_t end_angle = 110; //0-300 150 125
 
 uint8_t servo5_start_angle = 10; // left shift servo 90 170
 uint8_t servo5_end_angle = 110;
 uint8_t servo6_start_angle = 120; // right shift servo
 uint8_t servo6_end_angle = 30;
 
-uint8_t i2c_addr_1 = 0x40;
+uint8_t i2c_addr_1 = 0x40; // I2C address of the PWM driver
 
 uint8_t dynamixel_cursor_id = 15;
 uint16_t cursor_speed = 150; //0-1024
 uint8_t cursor_hor_angle = 40; //0-300 60
 uint8_t cursor_vert_angle = 130; //0-300 150 125
+
+// Side dynamixels of the gripper
+uint8_t side_dynamixel_id_1 = 13;
+uint8_t side_dynamixel_id_2 = 14;
+uint16_t side_dynamixel_speed = 300; //0-1024
+uint8_t side_off_angle_1 = 69; //0-300 44 99
+uint8_t side_on_angle_1 = 140; //0-300 132 140
+uint8_t side_off_angle_2 = 127; //0-300 152 97
+uint8_t side_on_angle_2 = 51; //0-300 59 51
+
+uint16_t angle_buffer = 0;
 
 uint8_t COMM_ENABLE = 1;
 
@@ -91,7 +102,7 @@ uint8_t COMM_ENABLE = 1;
  * @brief Rotate two Dynamixels by a given angle synchronously.
  * @param usart USART bus of the Dynamixels
  * @param id_1 Dynamixel ID 1
- * @param angle Dynamixel ID 2
+ * @param id_2 Dynamixel ID 2
  * @param angle Goal angle in deg (0-300)
  */
 static void RotateGripper(USART_TypeDef* usart, uint8_t id_1, uint8_t id_2, uint16_t angle)
@@ -115,6 +126,43 @@ static void RotateGripper(USART_TypeDef* usart, uint8_t id_1, uint8_t id_2, uint
     // Data for 2nd Dynamixel
     data_to_write[2] = (uint8_t)(goal_position_value & 0xFF); // LB
     data_to_write[3] = (uint8_t)(goal_position_value >> 8);  // HB
+
+    // Call the SyncWrite command
+    DynamixelMaster.SyncWrite(usart, device_ids, num_devices, AX_GoalPosition, data_to_write, 2, NULL);
+}
+
+/**
+ * @brief Rotate two Dynamixels by a given angle synchronously.
+ * @param usart USART bus of the Dynamixels
+ * @param id_1 Dynamixel ID 1
+ * @param id_2 Dynamixel ID 2
+ * @param angle_1 Goal angle in deg (0-300) for Dynamixel_1
+ * @param angle_2 Goal angle in deg (0-300) for Dynamixel_2
+ */
+static void RotateTwoDynamixels(USART_TypeDef* usart, uint8_t id_1, uint8_t id_2, uint16_t angle_1, uint16_t angle_2)
+{
+    // Dynamixels ID
+    uint8_t device_ids[] = {id_1, id_2};
+    uint8_t num_devices = 2;
+    //uint8_t num_devices = sizeof(device_ids) / sizeof(device_ids[0]); // universal counter of devices
+
+    // Transform angle from deg to Goal Position Register (0-1023)
+    if (angle_1 > 300) angle_1 = 300; // max angle limit
+    if (angle_2 > 300) angle_2 = 300;
+    uint16_t goal_position_value_1 = (uint16_t)(((float)angle_1 * 1023.0f) / 300.0f);
+    uint16_t goal_position_value_2 = (uint16_t)(((float)angle_2 * 1023.0f) / 300.0f);
+
+    // Prepare data for SyncWrite
+    // 2 bytes for each servo (Low byte (LB), then High byte (HB))
+    uint8_t data_to_write[4];
+
+    // Data for 1st Dynamixel
+    data_to_write[0] = (uint8_t)(goal_position_value_1 & 0xFF); // LB
+    data_to_write[1] = (uint8_t)(goal_position_value_1 >> 8);  // HB
+
+    // Data for 2nd Dynamixel
+    data_to_write[2] = (uint8_t)(goal_position_value_2 & 0xFF); // LB
+    data_to_write[3] = (uint8_t)(goal_position_value_2 >> 8);  // HB
 
     // Call the SyncWrite command
     DynamixelMaster.SyncWrite(usart, device_ids, num_devices, AX_GoalPosition, data_to_write, 2, NULL);
@@ -587,6 +635,8 @@ static void grab_on(uint8_t* data, uint8_t data_length)
 
   Dynamixel_AX.SetMovingSpeed(USART3, dynamixel_id_1, dynamixel_speed);
 	Dynamixel_AX.SetMovingSpeed(USART3, dynamixel_id_2, dynamixel_speed);
+  Dynamixel_AX.SetMovingSpeed(USART3, side_dynamixel_id_1, side_dynamixel_speed);
+  Dynamixel_AX.SetMovingSpeed(USART3, side_dynamixel_id_2, side_dynamixel_speed);
 
   struct speed_s speed;
 
@@ -594,12 +644,17 @@ static void grab_on(uint8_t* data, uint8_t data_length)
 
     Dynamixel_AX.TorqueEnable(USART3, dynamixel_id_1);
     Dynamixel_AX.TorqueEnable(USART3, dynamixel_id_2);
+    Dynamixel_AX.TorqueEnable(USART3, side_dynamixel_id_1);
+    Dynamixel_AX.TorqueEnable(USART3, side_dynamixel_id_2);
 
     speed.dphi = 0;
     speed.dx = 0;
     speed.dy = 0;
     Odometry.SetSpeed(&speed);
     vTaskDelay(500);
+
+    RotateTwoDynamixels(USART3, side_dynamixel_id_1, side_dynamixel_id_2, side_off_angle_1, side_off_angle_2);
+    vTaskDelay(1000);
 
     SPI_GPO_SetOutputPin(SPI_POWER_OUTPUT_3 | SPI_POWER_OUTPUT_4); // turn on valves
     SPI_GPO_SetOutputPin(SPI_POWER_OUTPUT_1 | SPI_POWER_OUTPUT_2); // turn on pumps
@@ -634,18 +689,56 @@ static void grab_on(uint8_t* data, uint8_t data_length)
 
     RotateGripper(USART3, dynamixel_id_1, dynamixel_id_2, start_angle);
     vTaskDelay(500);
+    
+    RotateTwoDynamixels(USART3, side_dynamixel_id_1, side_dynamixel_id_2, side_on_angle_1, side_on_angle_2);
+    vTaskDelay(2000);
+    RotateTwoDynamixels(USART3, side_dynamixel_id_1, side_dynamixel_id_2, side_off_angle_1, side_off_angle_2);
+    vTaskDelay(1000);
 
+    speed.dphi = 0;
+    speed.dx = 0.1f;
+    speed.dy = 0;
+    Odometry.SetSpeed(&speed);
+    vTaskDelay(2000);
+/*
+    speed.dphi = 0;
+    speed.dx = 0;
+    speed.dy = 0;
+    Odometry.SetSpeed(&speed);
+    vTaskDelay(500);
+
+    RotateTwoDynamixels(USART3, side_dynamixel_id_1, side_dynamixel_id_2, side_on_angle_1, side_on_angle_2);
+    vTaskDelay(2000);
+    RotateTwoDynamixels(USART3, side_dynamixel_id_1, side_dynamixel_id_2, side_off_angle_1, side_off_angle_2);
+    vTaskDelay(1000);
+
+    speed.dphi = 0;
+    speed.dx = 0.025f;
+    speed.dy = 0;
+    Odometry.SetSpeed(&speed);
+    vTaskDelay(3000);
+*/
+    speed.dphi = 0;
+    speed.dx = 0;
+    speed.dy = 0;
+    Odometry.SetSpeed(&speed);
+    vTaskDelay(500);
+    /*
     speed.dphi = 0;
     speed.dx = 0.05f;
     speed.dy = 0;
     Odometry.SetSpeed(&speed);
     vTaskDelay(1000);
+    */
 
     speed.dphi = 0;
     speed.dx = 0;
     speed.dy = 0;
     Odometry.SetSpeed(&speed);
     vTaskDelay(500);
+
+    RotateTwoDynamixels(USART3, side_dynamixel_id_1, side_dynamixel_id_2, side_on_angle_1, side_on_angle_2);
+    vTaskDelay(1000);
 
     RotateGripper(USART3, dynamixel_id_1, dynamixel_id_2, end_angle);
     vTaskDelay(1000);
@@ -663,11 +756,19 @@ static void grab_on(uint8_t* data, uint8_t data_length)
     vTaskDelay(500);
   }
 
-  // Check this segment of terminal response
+  // terminal response (acknowledge flag)
   struct terminal_response_s terminal_response;
 
   terminal_response.cmd = BOARD_GRAB_ON;
   terminal_response.data[0] = 1;
+
+  Dynamixel_AX.GetAngle(USART3, dynamixel_id_1, &angle_buffer);
+  while (angle_buffer < end_angle)
+  {
+    vTaskDelay(50);
+    Dynamixel_AX.GetAngle(USART3, side_dynamixel_id_1, &angle_buffer);
+  }
+  terminal_response.data[0] = 0x01;
   terminal_response.data_length = 1;
 
   Terminal.SendResponse(&terminal_response);
@@ -680,6 +781,8 @@ static void grab_off(uint8_t* data, uint8_t data_length)
 
   Dynamixel_AX.SetMovingSpeed(USART3, dynamixel_id_1, dynamixel_speed);
 	Dynamixel_AX.SetMovingSpeed(USART3, dynamixel_id_2, dynamixel_speed);
+  Dynamixel_AX.SetMovingSpeed(USART3, side_dynamixel_id_1, side_dynamixel_speed);
+  Dynamixel_AX.SetMovingSpeed(USART3, side_dynamixel_id_2, side_dynamixel_speed);
 
   struct speed_s speed;
 
@@ -687,6 +790,8 @@ static void grab_off(uint8_t* data, uint8_t data_length)
 
     Dynamixel_AX.TorqueEnable(USART3, dynamixel_id_1);
     Dynamixel_AX.TorqueEnable(USART3, dynamixel_id_2);
+    Dynamixel_AX.TorqueEnable(USART3, side_dynamixel_id_1);
+    Dynamixel_AX.TorqueEnable(USART3, side_dynamixel_id_2);
     
     speed.dphi = 0;
     speed.dx = 0;
@@ -701,6 +806,11 @@ static void grab_off(uint8_t* data, uint8_t data_length)
     vTaskDelay(500);
 
     RotateGripper(USART3, dynamixel_id_1, dynamixel_id_2, start_angle);
+    vTaskDelay(500);
+    
+    RotateTwoDynamixels(USART3, side_dynamixel_id_1, side_dynamixel_id_2, side_on_angle_1, side_on_angle_2);
+    vTaskDelay(1000);
+    RotateTwoDynamixels(USART3, side_dynamixel_id_1, side_dynamixel_id_2, side_off_angle_1, side_off_angle_2);
     vTaskDelay(1000);
 
     SPI_GPO_ResetOutputPin(SPI_POWER_OUTPUT_3 | SPI_POWER_OUTPUT_4); // turn off valves
@@ -731,16 +841,29 @@ static void grab_off(uint8_t* data, uint8_t data_length)
     PCA9685.SetServoAngleWithAddr(i2c_addr_1, PCA9685_CH4, 0);
     vTaskDelay(500);
   }
-
-  // Check this segment of terminal response
+  
+  // terminal response (acknowledge flag)
   struct terminal_response_s terminal_response;
 
   terminal_response.cmd = BOARD_GRAB_OFF;
   terminal_response.data[0] = 1;
+
+  /*
+  vTaskDekay(1000);
+  Dynamixel_AX.GetAngle(USART3, side_dynamixel_id_1, &angle_buffer);
+  if (angle_buffer == side_off_angle_1 + 10) terminal_response.data[0] = 0x01;
+  */
+
+  Dynamixel_AX.GetAngle(USART3, dynamixel_id_1, &angle_buffer);
+  while (angle_buffer < end_angle)
+  {
+    vTaskDelay(50);
+    Dynamixel_AX.GetAngle(USART3, side_dynamixel_id_1, &angle_buffer);
+  }
+  terminal_response.data[0] = 0x01;
   terminal_response.data_length = 1;
 
   Terminal.SendResponse(&terminal_response);
-  
 }
 
 
@@ -818,6 +941,9 @@ static void grab_rotate(uint8_t* data, uint8_t data_length)
   
   if(gripper_state == 1) {
     // separate all blocks
+    RotateTwoDynamixels(USART3, side_dynamixel_id_1, side_dynamixel_id_2, side_off_angle_1, side_off_angle_2);
+    vTaskDelay(1000);
+
     PCA9685.SetServoAngleWithAddr(i2c_addr_1, PCA9685_CH5, servo5_end_angle);
     vTaskDelay(500);
     PCA9685.SetServoAngleWithAddr(i2c_addr_1, PCA9685_CH6, servo6_end_angle);
@@ -850,13 +976,16 @@ static void grab_rotate(uint8_t* data, uint8_t data_length)
     PCA9685.SetServoAngleWithAddr(i2c_addr_1, PCA9685_CH6, servo6_start_angle);
     vTaskDelay(500);
 
+    RotateTwoDynamixels(USART3, side_dynamixel_id_1, side_dynamixel_id_2, side_on_angle_1, side_on_angle_2);
+    vTaskDelay(1000);
+
   }
   
   // Check this segment of terminal response
   struct terminal_response_s terminal_response;
 
   terminal_response.cmd = BOARD_GRAB_ROTATE;
-  terminal_response.data[0] = 1;
+  terminal_response.data[0] = 0x01;
   terminal_response.data_length = 1;
 
   Terminal.SendResponse(&terminal_response);
@@ -885,15 +1014,71 @@ static void ToggleCursor(uint8_t* data, uint8_t data_length)
     Dynamixel_AX.SetAngle(USART3, dynamixel_cursor_id, cursor_vert_angle);
   }
   
-  // Check this segment of terminal response
+  // terminal response
   struct terminal_response_s terminal_response;
-
   terminal_response.cmd = BOARD_TOGGLE_CURSOR;
-  terminal_response.data[0] = 1;
-  terminal_response.data_length = 1;
 
+  Dynamixel_AX.GetAngle(USART3, dynamixel_cursor_id, &angle_buffer);
+
+  if(cursor_state == 1) {
+    while (angle_buffer > cursor_hor_angle)
+    {
+      vTaskDelay(50);
+      Dynamixel_AX.GetAngle(USART3, dynamixel_cursor_id, &angle_buffer);
+    }
+    terminal_response.data[0] = 0x01;
+  }
+  else {
+    while (angle_buffer < cursor_vert_angle)
+    {
+      vTaskDelay(50);
+      Dynamixel_AX.GetAngle(USART3, dynamixel_cursor_id, &angle_buffer);
+    }
+    terminal_response.data[0] = 0x01;
+  }
+  //Dynamixel_AX.GetAngle(USART3, dynamixel_cursor_id, &angle_buffer);
+  //if (angle_buffer == cursor_hor_angle || angle_buffer == cursor_vert_angle) {
+  //   terminal_response.data[0] = 0x01;
+  //}
+  terminal_response.data_length = 1;
   Terminal.SendResponse(&terminal_response);
   
+}
+
+static void RobotInit(uint8_t* data, uint8_t data_length)
+{
+	if(COMM_ENABLE){
+	uint8_t state = data[0];
+	// pca init
+  
+  // grippers init 
+	if(state){
+    // maxons init
+		MaxonsDisable();
+    Kinematics.MatrixInit();
+    MaxonsEnable();
+		vTaskDelay(50);
+
+    // cursor init
+    Dynamixel_AX.SetMovingSpeed(USART3, dynamixel_cursor_id, cursor_speed);
+    Dynamixel_AX.TorqueEnable(USART3, dynamixel_cursor_id);
+    Dynamixel_AX.SetAngle(USART3, dynamixel_cursor_id, cursor_vert_angle);
+
+    // gripper init
+    //Dynamixel_AX.SetMovingSpeed(USART3, dynamixel_id_1, dynamixel_speed);
+    //Dynamixel_AX.SetMovingSpeed(USART3, dynamixel_id_2, dynamixel_speed);
+     
+     
+	} else {
+		MaxonsDisable();
+	}
+  
+  struct terminal_response_s terminal_response;
+  terminal_response.cmd = BOARD_ROBOT_INIT;
+  terminal_response.data[0] = 0x01;
+  terminal_response.data_length = 1;
+  Terminal.SendResponse(&terminal_response);
+  }
 }
 
 
@@ -923,7 +1108,9 @@ void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t da
                                                                                               [BOARD_GRAB_ON] = grab_on,
                                                                                               [BOARD_GRAB_OFF] = grab_off,
                                                                                               [BOARD_GRAB_ROTATE] = grab_rotate,
-                                                                                              [BOARD_TOGGLE_CURSOR] = ToggleCursor
+                                                                                              [BOARD_TOGGLE_CURSOR] = ToggleCursor,
+                                                                                              [BOARD_ROBOT_INIT] = RobotInit
+
 };
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
