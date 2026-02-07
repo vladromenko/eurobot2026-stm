@@ -78,32 +78,45 @@ static StaticTask_t task_buffer;
 //#define GRIPPER_V3
 #define GRIPPER_INIT
 
-extern uint8_t dynamixel_id_1;
-extern uint8_t dynamixel_id_2;
-extern uint16_t dynamixel_speed;
-extern uint8_t start_angle;
-extern uint8_t end_angle;
 
-extern uint8_t servo5_start_angle;
-extern uint8_t servo5_end_angle;
-extern uint8_t servo6_start_angle;
-extern uint8_t servo6_end_angle;
+uint8_t dynamixel_id_1 = 98;
+uint8_t dynamixel_id_2 = 112;
+uint16_t dynamixel_speed = 150; //0-1024
+uint8_t start_angle = 62; //0-300 60
+uint8_t end_angle = 110; //0-300 150 125
 
-extern uint8_t i2c_addr_1;
+uint8_t servo5_start_angle = 10; // left shift servo 90 170
+uint8_t servo5_end_angle = 110;
+uint8_t servo6_start_angle = 120; // right shift servo
+uint8_t servo6_end_angle = 30;
 
-extern uint8_t dynamixel_cursor_id;
-extern uint16_t cursor_speed;
-extern uint8_t cursor_hor_angle;
-extern uint8_t cursor_vert_angle;
+uint8_t i2c_addr_1 = 0x40; // I2C address of the PWM driver
+
+uint8_t dynamixel_cursor_id = 15;
+uint16_t cursor_speed = 150; //0-1024
+uint8_t cursor_hor_angle = 40; //0-300 60
+uint8_t cursor_vert_angle = 130; //0-300 150 125
+uint8_t cursor_cmd;
 
 // Side dynamixels of the gripper
-extern uint8_t side_dynamixel_id_1;
-extern uint8_t side_dynamixel_id_2;
-extern uint16_t side_dynamixel_speed;
-extern uint8_t side_off_angle_1;
-extern uint8_t side_on_angle_1;
-extern uint8_t side_off_angle_2;
-extern uint8_t side_on_angle_2;
+uint8_t side_dynamixel_id_1 = 13;
+uint8_t side_dynamixel_id_2 = 14;
+uint16_t side_dynamixel_speed = 300; //0-1024
+uint8_t side_off_angle_1 = 69; //0-300 44 99
+uint8_t side_on_angle_1 = 140; //0-300 132 140
+uint8_t side_off_angle_2 = 127; //0-300 152 97
+uint8_t side_on_angle_2 = 51; //0-300 59 51
+uint8_t grips_cmd;
+
+uint16_t angle_buffer = 0;
+int16_t diff = 0;
+uint16_t tol_window = 2;
+uint8_t pump_mask;
+uint8_t valve_mask;
+
+uint8_t gripper_cmd;
+uint8_t lift_cmd;
+uint8_t cmd_isFinished;
 
 
 /**
@@ -1178,7 +1191,174 @@ static void Task(void *arg)
 		#endif
 
 		#ifdef GRIPPER_INIT
-			taskYIELD();
+			vTaskDelay(50);
+
+			switch(gripper_cmd){
+			case 0: // toggle cursor
+				cmd_isFinished = 0;
+				
+			  	Dynamixel_AX.SetMovingSpeed(USART3, dynamixel_cursor_id, cursor_speed);
+  				Dynamixel_AX.TorqueEnable(USART3, dynamixel_cursor_id);
+
+				uint8_t cursor_target_angle = (cursor_cmd == 1)?cursor_hor_angle:cursor_vert_angle;
+
+				Dynamixel_AX.SetAngle(USART3, dynamixel_cursor_id, cursor_target_angle);
+				vTaskDelay(100);
+				
+				// add the diff and checking chievement of the angle
+				Dynamixel_AX.GetAngle(USART3, dynamixel_cursor_id, &angle_buffer);
+				diff = (int16_t)angle_buffer - (int16_t)cursor_target_angle;
+				if (diff < 0) diff = -diff;
+				
+				while(diff >= tol_window){
+					vTaskDelay(20);
+					Dynamixel_AX.GetAngle(USART3, dynamixel_cursor_id, &angle_buffer);
+					diff = (int16_t)angle_buffer - (int16_t)cursor_target_angle;
+					if (diff < 0) diff = -diff;
+				}
+
+				cmd_isFinished = 1;
+				vTaskDelay(20);
+				break;
+
+			case 1: // SideGrips
+				cmd_isFinished = 0;
+
+				uint8_t target_angle_1;
+				uint8_t target_angle_2;
+				
+			  	Dynamixel_AX.SetMovingSpeed(USART3, side_dynamixel_id_1, side_dynamixel_speed);
+				Dynamixel_AX.SetMovingSpeed(USART3, side_dynamixel_id_2, side_dynamixel_speed);
+  				Dynamixel_AX.TorqueEnable(USART3, side_dynamixel_id_1);
+				Dynamixel_AX.TorqueEnable(USART3, side_dynamixel_id_2);
+
+				if(grips_cmd == 1){
+					target_angle_1 = side_on_angle_1;
+					target_angle_2 = side_on_angle_2; 
+				}
+				else {
+					target_angle_1 = side_off_angle_1;
+					target_angle_2 = side_off_angle_2;
+				}
+
+				RotateTwoDynamixels(USART3, side_dynamixel_id_1, side_dynamixel_id_2, target_angle_1, target_angle_2);
+				vTaskDelay(1000);
+
+				// add the diff and checking chievement of the angle
+				Dynamixel_AX.GetAngle(USART3, side_dynamixel_id_1, &angle_buffer);
+				diff = (int16_t)angle_buffer - (int16_t)target_angle_1;
+				if (diff < 0) diff = -diff;
+				
+				while(diff >= tol_window){
+					vTaskDelay(20);
+					Dynamixel_AX.GetAngle(USART3, side_dynamixel_id_1, &angle_buffer);
+					diff = (int16_t)angle_buffer - (int16_t)target_angle_1;
+					if (diff < 0) diff = -diff;
+				}
+
+				cmd_isFinished = 1;
+				vTaskDelay(20);
+				break;
+			
+			case 2: // gripper_lift
+				cmd_isFinished = 0;
+				
+  				Dynamixel_AX.SetMovingSpeed(USART3, dynamixel_id_1, dynamixel_speed);
+				Dynamixel_AX.SetMovingSpeed(USART3, dynamixel_id_2, dynamixel_speed);
+				Dynamixel_AX.TorqueEnable(USART3, dynamixel_id_1);
+    			Dynamixel_AX.TorqueEnable(USART3, dynamixel_id_2);
+
+				uint8_t gripper_target_angle = (lift_cmd == 1)?start_angle:end_angle;
+
+				RotateTwoDynamixels(USART3, dynamixel_id_1, dynamixel_id_2, gripper_target_angle, gripper_target_angle);
+				vTaskDelay(200);
+
+				// add the diff and checking chievement of the angle
+				Dynamixel_AX.GetAngle(USART3, dynamixel_id_1, &angle_buffer);
+				diff = (int16_t)angle_buffer - (int16_t)gripper_target_angle;
+				if (diff < 0) diff = -diff;
+				
+				while(diff >= tol_window){
+					vTaskDelay(20);
+					Dynamixel_AX.GetAngle(USART3, dynamixel_id_1, &angle_buffer);
+					diff = (int16_t)angle_buffer - (int16_t)gripper_target_angle;
+					if (diff < 0) diff = -diff;
+				}
+
+				cmd_isFinished = 1;
+				vTaskDelay(20);
+				break;
+
+			case 3: // toggle_pumps
+				cmd_isFinished = 0;
+				
+				// turn on all the pumps
+				SPI_GPO_SetOutputPin(SPI_POWER_OUTPUT_1 | SPI_POWER_OUTPUT_3 |SPI_POWER_OUTPUT_5 | SPI_POWER_OUTPUT_7);
+				
+				if ((pump_mask & (1<<0)) == 0) // turn off pump #1
+				{ 
+					SPI_GPO_ResetOutputPin(SPI_POWER_OUTPUT_1);
+					vTaskDelay(10);
+				}
+				if ((pump_mask & (1<<1)) == 0) // turn off pump #2
+				{ 
+					SPI_GPO_ResetOutputPin(SPI_POWER_OUTPUT_3);
+					vTaskDelay(10);
+				}
+				if ((pump_mask & (1<<2)) == 0) // turn off pump #3
+				{ 
+					SPI_GPO_ResetOutputPin(SPI_POWER_OUTPUT_5);
+					vTaskDelay(10);
+				}
+				if ((pump_mask & (1<<3)) == 0) // turn off pump #4
+				{ 
+					SPI_GPO_ResetOutputPin(SPI_POWER_OUTPUT_7);
+					vTaskDelay(10);
+				}
+
+				vTaskDelay(50);
+				// add the diff and checking chievement of the angle
+
+				cmd_isFinished = 1;
+				vTaskDelay(20);
+				break;
+
+			case 4: // toggle_valves
+				cmd_isFinished = 0;
+				
+				// turn on all the valves
+				SPI_GPO_SetOutputPin(SPI_POWER_OUTPUT_2 | SPI_POWER_OUTPUT_4 |SPI_POWER_OUTPUT_6 | SPI_POWER_OUTPUT_8);
+				
+				if ((valve_mask & (1<<0)) == 0) // turn off valve #1
+				{ 
+					SPI_GPO_ResetOutputPin(SPI_POWER_OUTPUT_2);
+					vTaskDelay(10);
+				}
+				if ((valve_mask & (1<<1)) == 0) // turn off valve #2
+				{ 
+					SPI_GPO_ResetOutputPin(SPI_POWER_OUTPUT_4);
+					vTaskDelay(10);
+				}
+				if ((valve_mask & (1<<2)) == 0) // turn off valve #3
+				{ 
+					SPI_GPO_ResetOutputPin(SPI_POWER_OUTPUT_6);
+					vTaskDelay(10);
+				}
+				if ((valve_mask & (1<<3)) == 0) // turn off valve #4
+				{ 
+					SPI_GPO_ResetOutputPin(SPI_POWER_OUTPUT_8);
+					vTaskDelay(10);
+				}
+
+				vTaskDelay(50);
+				// add the diff and checking chievement of the angle
+
+				cmd_isFinished = 1;
+				vTaskDelay(20);
+				break;
+				
+			
+			}
 		#endif
 
 	}

@@ -60,10 +60,15 @@
 #define BOARD_PCA9685_SET_SERVO_ANGLE       0x1D    /* Set servo angle: i2c_addr, ch, angle_deg */
 #define BOARD_TOGGLE_CURSOR                 0x1E    /* Change the state of the cursor dynamixel*/
 
-#define BOARD_ROBOT_INIT                    0x1F    /* Initialization of the whole robot (grippers, motors, cursor etc) */
+/* Microcommands for BT */
+#define BOARD_SIDE_GRIPS                    0x1F    /* Control the angle of the side grips */
+#define BOARD_GRIPPER_LIFT                  0x20    /* Control the angle of the gripper's dynamixels */
+#define BOARD_TOGGLE_PUMPS									0X21 		/* Turn on/off pumpes  */
+#define BOARD_TOGGLE_VALVES                 0x22		/* Turn on/off valves */
+#define BOARD_MOVE                          0x23		/* Move the robot to grab blocks */
 
 /*  Do not forget to update the table size with the last one command! */
-#define TERMINAL_CMD_TABLE_SIZE             (BOARD_ROBOT_INIT + 1)
+#define TERMINAL_CMD_TABLE_SIZE             (BOARD_MOVE + 1)
 
 
 #ifdef __cplusplus

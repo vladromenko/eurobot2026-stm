@@ -509,3 +509,154 @@ command:
 [2026-02-02 12:04:59]	[done]
 	build successfully !
 
+[2026-02-06 19:23:32]	[done]
+	build successfully !
+
+[2026-02-06 21:17:04]	compilation failed at : "c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\terminal_cmd_handlers.c", exit code: 1
+command: 
+  "D:\Keil_v5\ARM\ARMCC\bin\armcc.exe" -c --apcs=interwork -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/DSP/Include -I../Middlewares/FreeRTOS-Kernel -I../Middlewares/FreeRTOS-Kernel/include -I../Middlewares/FreeRTOS-Kernel/portable/RVDS/ARM_CM4F -I../Core/App/Include -I../Core/BSP/Include -I../Core/Lib/Include -I../Core/OS_Tasks/Include -I.cmsis/include -IRTE/_Main_Board -D"USE_FULL_LL_DRIVER" -D"ARM_MATH_CM4" -D"__FPU_PRESENT=1U" --cpu Cortex-M4.fp --li --c99 -D__MICROLIB -O0 --split_sections --diag_suppress=1 --diag_suppress=1295 -g -o .\build\Main_Board\.obj\__\Core\App\terminal_cmd_handlers.o --no_depend_system_headers --depend .\build\Main_Board\.obj\__\Core\App\terminal_cmd_handlers.d .\..\Core\App\terminal_cmd_handlers.c
+   at unify_builder.Program.compileByMulThread(Int32 thrNum, CmdInfo[] cmds_, List`1 errLogs)
+   at unify_builder.Program.Main(String[] args_)
+---
+".\..\Core\App\terminal_cmd_handlers.c", line 804: Error:  #167: argument of type "uint8_t *" is incompatible with parameter of type "uint16_t *"
+    Dynamixel_AX.GetAngle(USART3, dynamixel_id_1, &angle_buffer);
+                                                  ^
+".\..\Core\App\terminal_cmd_handlers.c", line 808: Error:  #167: argument of type "uint8_t *" is incompatible with parameter of type "uint16_t *"
+      Dynamixel_AX.GetAngle(USART3, side_dynamixel_id_1, &angle_buffer);
+                                                         ^
+".\..\Core\App\terminal_cmd_handlers.c", line 896: Error:  #167: argument of type "uint8_t *" is incompatible with parameter of type "uint16_t *"
+    Dynamixel_AX.GetAngle(USART3, dynamixel_id_1, &angle_buffer);
+                                                  ^
+".\..\Core\App\terminal_cmd_handlers.c", line 900: Error:  #167: argument of type "uint8_t *" is incompatible with parameter of type "uint16_t *"
+      Dynamixel_AX.GetAngle(USART3, side_dynamixel_id_1, &angle_buffer);
+                                                         ^
+.\..\Core\App\terminal_cmd_handlers.c: 0 warnings, 4 errors
+
+[2026-02-06 21:17:42]	[done]
+	build successfully !
+
+[2026-02-06 22:15:16]	[done]
+	build successfully !
+
+[2026-02-07 17:15:26]	[done]
+	build successfully !
+
+[2026-02-07 17:19:52]	compilation failed at : "c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\demo_task.c", exit code: 1
+command: 
+  "D:\Keil_v5\ARM\ARMCC\bin\armcc.exe" -c --apcs=interwork -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/DSP/Include -I../Middlewares/FreeRTOS-Kernel -I../Middlewares/FreeRTOS-Kernel/include -I../Middlewares/FreeRTOS-Kernel/portable/RVDS/ARM_CM4F -I../Core/App/Include -I../Core/BSP/Include -I../Core/Lib/Include -I../Core/OS_Tasks/Include -I.cmsis/include -IRTE/_Main_Board -D"USE_FULL_LL_DRIVER" -D"ARM_MATH_CM4" -D"__FPU_PRESENT=1U" --cpu Cortex-M4.fp --li --c99 -D__MICROLIB -O0 --split_sections --diag_suppress=1 --diag_suppress=1295 -g -o .\build\Main_Board\.obj\__\Core\OS_Tasks\demo_task.o --no_depend_system_headers --depend .\build\Main_Board\.obj\__\Core\OS_Tasks\demo_task.d .\..\Core\OS_Tasks\demo_task.c
+   at unify_builder.Program.compileByMulThread(Int32 thrNum, CmdInfo[] cmds_, List`1 errLogs)
+   at unify_builder.Program.Main(String[] args_)
+---
+Error: L6449E: While processing .\build\Main_Board\.obj\__\Core\OS_Tasks\demo_task.o: I/O error writing file '.\build\Main_Board\.obj\__\Core\OS_Tasks\demo_task.o': Invalid argument
+Finished: 0 information, 0 warning and 1 error messages.
+
+[2026-02-07 17:20:01]	[done]
+	build successfully !
+
+[2026-02-07 18:25:22]	[done]
+	build successfully !
+
+[2026-02-07 18:55:24]	compilation failed at : "c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c", exit code: 1
+command: 
+  "D:\Keil_v5\ARM\ARMCC\bin\armcc.exe" -c --apcs=interwork -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/DSP/Include -I../Middlewares/FreeRTOS-Kernel -I../Middlewares/FreeRTOS-Kernel/include -I../Middlewares/FreeRTOS-Kernel/portable/RVDS/ARM_CM4F -I../Core/App/Include -I../Core/BSP/Include -I../Core/Lib/Include -I../Core/OS_Tasks/Include -I.cmsis/include -IRTE/_Main_Board -D"USE_FULL_LL_DRIVER" -D"ARM_MATH_CM4" -D"__FPU_PRESENT=1U" --cpu Cortex-M4.fp --li --c99 -D__MICROLIB -O0 --split_sections --diag_suppress=1 --diag_suppress=1295 -g -o .\build\Main_Board\.obj\__\Core\OS_Tasks\gripper_task.o --no_depend_system_headers --depend .\build\Main_Board\.obj\__\Core\OS_Tasks\gripper_task.d .\..\Core\OS_Tasks\gripper_task.c
+   at unify_builder.Program.compileByMulThread(Int32 thrNum, CmdInfo[] cmds_, List`1 errLogs)
+   at unify_builder.Program.Main(String[] args_)
+---
+".\..\Core\OS_Tasks\gripper_task.c", line 1215: Warning:  #1441-D: nonstandard cast on lvalue
+  					(int8_t)diff = (int8_t)angle_buffer - (int8_t)cursor_target_angle;
+  					^
+".\..\Core\OS_Tasks\gripper_task.c", line 1248: Error:  #101: "diff" has already been declared in the current scope
+  				int16_t diff = (int16_t)angle_buffer - (int16_t)target_angle_1;
+  				        ^
+".\..\Core\OS_Tasks\gripper_task.c", line 1254: Warning:  #1441-D: nonstandard cast on lvalue
+  					(int8_t)diff = (int8_t)angle_buffer - (int8_t)target_angle_1;
+  					^
+".\..\Core\OS_Tasks\gripper_task.c", line 1277: Error:  #101: "diff" has already been declared in the current scope
+  				int16_t diff = (int16_t)angle_buffer - (int16_t)gripper_target_angle;
+  				        ^
+".\..\Core\OS_Tasks\gripper_task.c", line 1283: Warning:  #1441-D: nonstandard cast on lvalue
+  					(int8_t)diff = (int8_t)angle_buffer - (int8_t)gripper_target_angle;
+  					^
+".\..\Core\OS_Tasks\gripper_task.c", line 1195: Warning:  #546-D: transfer of control bypasses initialization of:
+            variable "cursor_target_angle"  (declared at line 1202)
+            variable "diff"  (declared at line 1209)
+            variable "diff"  (declared at line 1248)
+            variable "gripper_target_angle"  (declared at line 1270)
+            variable "diff"  (declared at line 1277)
+  			switch(gripper_cmd){
+  			^
+.\..\Core\OS_Tasks\gripper_task.c: 4 warnings, 2 errors
+
+[2026-02-07 18:56:50]	compilation failed at : "c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c", exit code: 1
+command: 
+  "D:\Keil_v5\ARM\ARMCC\bin\armcc.exe" -c --apcs=interwork -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/DSP/Include -I../Middlewares/FreeRTOS-Kernel -I../Middlewares/FreeRTOS-Kernel/include -I../Middlewares/FreeRTOS-Kernel/portable/RVDS/ARM_CM4F -I../Core/App/Include -I../Core/BSP/Include -I../Core/Lib/Include -I../Core/OS_Tasks/Include -I.cmsis/include -IRTE/_Main_Board -D"USE_FULL_LL_DRIVER" -D"ARM_MATH_CM4" -D"__FPU_PRESENT=1U" --cpu Cortex-M4.fp --li --c99 -D__MICROLIB -O0 --split_sections --diag_suppress=1 --diag_suppress=1295 -g -o .\build\Main_Board\.obj\__\Core\OS_Tasks\gripper_task.o --no_depend_system_headers --depend .\build\Main_Board\.obj\__\Core\OS_Tasks\gripper_task.d .\..\Core\OS_Tasks\gripper_task.c
+   at unify_builder.Program.compileByMulThread(Int32 thrNum, CmdInfo[] cmds_, List`1 errLogs)
+   at unify_builder.Program.Main(String[] args_)
+---
+".\..\Core\OS_Tasks\gripper_task.c", line 1215: Warning:  #1441-D: nonstandard cast on lvalue
+  					(int8_t)diff = (int8_t)angle_buffer - (int8_t)cursor_target_angle;
+  					^
+".\..\Core\OS_Tasks\gripper_task.c", line 1248: Error:  #101: "diff" has already been declared in the current scope
+  				int16_t diff = (int16_t)angle_buffer - (int16_t)target_angle_1;
+  				        ^
+".\..\Core\OS_Tasks\gripper_task.c", line 1254: Warning:  #1441-D: nonstandard cast on lvalue
+  					(int8_t)diff = (int8_t)angle_buffer - (int8_t)target_angle_1;
+  					^
+".\..\Core\OS_Tasks\gripper_task.c", line 1277: Error:  #101: "diff" has already been declared in the current scope
+  				int16_t diff = (int16_t)angle_buffer - (int16_t)gripper_target_angle;
+  				        ^
+".\..\Core\OS_Tasks\gripper_task.c", line 1283: Warning:  #1441-D: nonstandard cast on lvalue
+  					(int8_t)diff = (int8_t)angle_buffer - (int8_t)gripper_target_angle;
+  					^
+".\..\Core\OS_Tasks\gripper_task.c", line 1195: Warning:  #546-D: transfer of control bypasses initialization of:
+            variable "cursor_target_angle"  (declared at line 1202)
+            variable "diff"  (declared at line 1209)
+            variable "diff"  (declared at line 1248)
+            variable "gripper_target_angle"  (declared at line 1270)
+            variable "diff"  (declared at line 1277)
+  			switch(gripper_cmd){
+  			^
+.\..\Core\OS_Tasks\gripper_task.c: 4 warnings, 2 errors
+
+[2026-02-07 18:59:41]	link failed !, exit code: 1
+   at unify_builder.Program.Main(String[] args_)
+---
+Error: L6200E: Symbol angle_buffer multiply defined (by gripper_task.o and terminal_cmd_handlers.o).
+Not enough information to list image symbols.
+Not enough information to list the image map.
+Finished: 2 information, 0 warning and 1 error messages.
+
+
+[2026-02-07 19:00:38]	link failed !, exit code: 1
+   at unify_builder.Program.Main(String[] args_)
+---
+Error: L6200E: Symbol angle_buffer multiply defined (by gripper_task.o and terminal_cmd_handlers.o).
+Not enough information to list image symbols.
+Not enough information to list the image map.
+Finished: 2 information, 0 warning and 1 error messages.
+
+
+[2026-02-07 19:01:41]	[done]
+	build successfully !
+
+[2026-02-07 19:02:29]	[done]
+	build successfully !
+
+[2026-02-07 19:03:25]	[done]
+	build successfully !
+
+[2026-02-07 19:04:25]	[done]
+	build successfully !
+
+[2026-02-07 19:09:27]	[done]
+	build successfully !
+
+[2026-02-07 19:12:55]	[done]
+	build successfully !
+
+[2026-02-07 19:17:21]	[done]
+	build successfully !
+
+[2026-02-07 19:54:38]	[done]
+	build successfully !
+

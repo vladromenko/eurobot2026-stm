@@ -67,6 +67,47 @@ extern	uint8_t servo6_start_angle;
 extern	uint8_t servo6_end_angle;
 */
 
+extern uint8_t dynamixel_id_1;
+extern uint8_t dynamixel_id_2;
+extern uint16_t dynamixel_speed;
+extern uint8_t start_angle;
+extern uint8_t end_angle;
+
+extern uint8_t servo5_start_angle;
+extern uint8_t servo5_end_angle;
+extern uint8_t servo6_start_angle;
+extern uint8_t servo6_end_angle;
+
+extern uint8_t i2c_addr_1;
+
+// cursor params
+extern uint8_t dynamixel_cursor_id;
+extern uint16_t cursor_speed;
+extern uint8_t cursor_hor_angle;
+extern uint8_t cursor_vert_angle;
+extern uint8_t cursor_target_angle;
+extern uint8_t cursor_cmd;
+
+// Side dynamixels of the gripper
+extern uint8_t side_dynamixel_id_1;
+extern uint8_t side_dynamixel_id_2;
+extern uint16_t side_dynamixel_speed;
+extern uint8_t side_off_angle_1;
+extern uint8_t side_on_angle_1;
+extern uint8_t side_off_angle_2;
+extern uint8_t side_on_angle_2;
+extern uint8_t grips_cmd;
+
+extern uint8_t cmd_isFinished;
+extern uint8_t gripper_cmd;
+extern uint8_t lift_cmd;
+
+extern uint8_t pump_mask;
+extern uint8_t valve_mask;
+
+extern uint16_t angle_buffer;
+
+/*
 uint8_t dynamixel_id_1 = 98;
 uint8_t dynamixel_id_2 = 112;
 uint16_t dynamixel_speed = 150; //0-1024
@@ -95,6 +136,7 @@ uint8_t side_off_angle_2 = 127; //0-300 152 97
 uint8_t side_on_angle_2 = 51; //0-300 59 51
 
 uint16_t angle_buffer = 0;
+*/
 
 uint8_t COMM_ENABLE = 1;
 
@@ -994,92 +1036,112 @@ static void grab_rotate(uint8_t* data, uint8_t data_length)
 
 static void ToggleCursor(uint8_t* data, uint8_t data_length)
 {
-  uint8_t cursor_state = data[0];
+  cursor_cmd = data[0];
+  gripper_cmd = 0;
+  vTaskDelay(50);
 
-  Dynamixel_AX.SetMovingSpeed(USART3, dynamixel_cursor_id, cursor_speed);
-  Dynamixel_AX.TorqueEnable(USART3, dynamixel_cursor_id);
-  
-  if(cursor_state == 1) {
-    struct speed_s speed;
-
-    speed.dphi = 0;
-    speed.dx = 0;
-    speed.dy = 0;
-    Odometry.SetSpeed(&speed);
-    vTaskDelay(500);
-
-    Dynamixel_AX.SetAngle(USART3, dynamixel_cursor_id, cursor_hor_angle);
+  while(!cmd_isFinished){
+    vTaskDelay(20);
   }
-  else {
-    Dynamixel_AX.SetAngle(USART3, dynamixel_cursor_id, cursor_vert_angle);
-  }
-  
+
   // terminal response
   struct terminal_response_s terminal_response;
   terminal_response.cmd = BOARD_TOGGLE_CURSOR;
-
-  Dynamixel_AX.GetAngle(USART3, dynamixel_cursor_id, &angle_buffer);
-
-  if(cursor_state == 1) {
-    while (angle_buffer > cursor_hor_angle)
-    {
-      vTaskDelay(50);
-      Dynamixel_AX.GetAngle(USART3, dynamixel_cursor_id, &angle_buffer);
-    }
-    terminal_response.data[0] = 0x01;
-  }
-  else {
-    while (angle_buffer < cursor_vert_angle)
-    {
-      vTaskDelay(50);
-      Dynamixel_AX.GetAngle(USART3, dynamixel_cursor_id, &angle_buffer);
-    }
-    terminal_response.data[0] = 0x01;
-  }
-  //Dynamixel_AX.GetAngle(USART3, dynamixel_cursor_id, &angle_buffer);
-  //if (angle_buffer == cursor_hor_angle || angle_buffer == cursor_vert_angle) {
-  //   terminal_response.data[0] = 0x01;
-  //}
-  terminal_response.data_length = 1;
-  Terminal.SendResponse(&terminal_response);
-  
-}
-
-static void RobotInit(uint8_t* data, uint8_t data_length)
-{
-	if(COMM_ENABLE){
-	uint8_t state = data[0];
-	// pca init
-  
-  // grippers init 
-	if(state){
-    // maxons init
-		MaxonsDisable();
-    Kinematics.MatrixInit();
-    MaxonsEnable();
-		vTaskDelay(50);
-
-    // cursor init
-    Dynamixel_AX.SetMovingSpeed(USART3, dynamixel_cursor_id, cursor_speed);
-    Dynamixel_AX.TorqueEnable(USART3, dynamixel_cursor_id);
-    Dynamixel_AX.SetAngle(USART3, dynamixel_cursor_id, cursor_vert_angle);
-
-    // gripper init
-    //Dynamixel_AX.SetMovingSpeed(USART3, dynamixel_id_1, dynamixel_speed);
-    //Dynamixel_AX.SetMovingSpeed(USART3, dynamixel_id_2, dynamixel_speed);
-     
-     
-	} else {
-		MaxonsDisable();
-	}
-  
-  struct terminal_response_s terminal_response;
-  terminal_response.cmd = BOARD_ROBOT_INIT;
   terminal_response.data[0] = 0x01;
   terminal_response.data_length = 1;
   Terminal.SendResponse(&terminal_response);
-  }
+  
 }
+
+static void SideGrips(uint8_t* data, uint8_t data_length)
+{
+  grips_cmd = data[0];
+  gripper_cmd = 1;
+  vTaskDelay(50);
+
+  while(!cmd_isFinished){
+    vTaskDelay(20);
+  }
+
+  // terminal response
+  struct terminal_response_s terminal_response;
+  terminal_response.cmd = BOARD_SIDE_GRIPS;
+  terminal_response.data[0] = 0x01;
+  terminal_response.data_length = 1;
+  Terminal.SendResponse(&terminal_response);
+}
+
+static void GripperLift(uint8_t* data, uint8_t data_length)
+{
+  lift_cmd = data[0];
+  gripper_cmd = 2;
+  vTaskDelay(50);
+
+  while(!cmd_isFinished){
+    vTaskDelay(20);
+  }
+
+  // terminal response
+  struct terminal_response_s terminal_response;
+  terminal_response.cmd = BOARD_GRIPPER_LIFT;
+  terminal_response.data[0] = 0x01;
+  terminal_response.data_length = 1;
+  Terminal.SendResponse(&terminal_response);
+}
+
+static void TogglePumps(uint8_t* data, uint8_t data_length)
+{
+  pump_mask = data[0];
+  gripper_cmd = 3;
+  vTaskDelay(50);
+
+  while(!cmd_isFinished){
+    vTaskDelay(20);
+  }
+
+  // terminal response
+  struct terminal_response_s terminal_response;
+  terminal_response.cmd = BOARD_TOGGLE_PUMPS;
+  terminal_response.data[0] = 0x01;
+  terminal_response.data_length = 1;
+  Terminal.SendResponse(&terminal_response);
+}
+
+static void ToggleValves(uint8_t* data, uint8_t data_length)
+{
+  valve_mask = data[0];
+  gripper_cmd = 4;
+  vTaskDelay(50);
+
+  while(!cmd_isFinished){
+    vTaskDelay(20);
+  }
+
+  // terminal response
+  struct terminal_response_s terminal_response;
+  terminal_response.cmd = BOARD_TOGGLE_VALVES;
+  terminal_response.data[0] = 0x01;
+  terminal_response.data_length = 1;
+  Terminal.SendResponse(&terminal_response);
+}
+
+static void RobotMove(uint8_t* data, uint8_t data_length)
+{
+  //valve_mask = data[0];
+  gripper_cmd = 5;
+
+  while(!cmd_isFinished){
+    vTaskDelay(20);
+  }
+
+  // terminal response
+  struct terminal_response_s terminal_response;
+  terminal_response.cmd = BOARD_MOVE;
+  terminal_response.data[0] = 0x01;
+  terminal_response.data_length = 1;
+  Terminal.SendResponse(&terminal_response);
+}
+
 
 
 void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t data_length) = {[BOARD_Ping] = Ping,
@@ -1109,7 +1171,13 @@ void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t da
                                                                                               [BOARD_GRAB_OFF] = grab_off,
                                                                                               [BOARD_GRAB_ROTATE] = grab_rotate,
                                                                                               [BOARD_TOGGLE_CURSOR] = ToggleCursor,
-                                                                                              [BOARD_ROBOT_INIT] = RobotInit
+                                                                                              [BOARD_SIDE_GRIPS] = SideGrips,
+                                                                                              [BOARD_GRIPPER_LIFT] = GripperLift,
+                                                                                              [BOARD_TOGGLE_PUMPS] = TogglePumps,
+                                                                                              [BOARD_TOGGLE_VALVES] = ToggleValves,
+                                                                                              [BOARD_MOVE] = RobotMove
+                                                                                              
+                                                                                             
 
 };
 
