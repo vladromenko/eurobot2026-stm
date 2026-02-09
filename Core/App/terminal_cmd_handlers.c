@@ -45,6 +45,12 @@
 #include "stepper.h"
 #include "pca9685.h"
 
+#include "FreeRTOS.h"
+#include "task.h"
+
+// Глобальная переменная, чтобы gripper_task мог отправить сюда сигнал
+volatile TaskHandle_t xTerminalTaskHandle = NULL; 
+
 extern int16_t stepper1_goal_position;
 extern int16_t stepper2_goal_position;
 extern int16_t stepper3_goal_position;
@@ -104,8 +110,10 @@ extern uint8_t lift_cmd;
 
 extern uint8_t pump_mask;
 extern uint8_t valve_mask;
+extern uint8_t block_mask;
 
-extern uint16_t angle_buffer;
+extern uint16_t current_angle;
+extern uint8_t dir;
 
 /*
 uint8_t dynamixel_id_1 = 98;
@@ -135,7 +143,7 @@ uint8_t side_on_angle_1 = 140; //0-300 132 140
 uint8_t side_off_angle_2 = 127; //0-300 152 97
 uint8_t side_on_angle_2 = 51; //0-300 59 51
 
-uint16_t angle_buffer = 0;
+uint16_t current_angle = 0;
 */
 
 uint8_t COMM_ENABLE = 1;
@@ -210,6 +218,18 @@ static void RotateTwoDynamixels(USART_TypeDef* usart, uint8_t id_1, uint8_t id_2
     DynamixelMaster.SyncWrite(usart, device_ids, num_devices, AX_GoalPosition, data_to_write, 2, NULL);
 }
 
+static void WaitForGripperCompletion(void)
+{
+  // 1. Сохраняем handle текущей задачи (TerminalTask), чтобы Gripper знал, кому отвечать
+  xTerminalTaskHandle = xTaskGetCurrentTaskHandle();
+
+  // 3. Ждем сигнала от gripper_task.
+  // Задача переходит в состояние BLOCKED и не тратит CPU.
+  // portMAX_DELAY - ждать вечно. Можно поставить таймаут (напр. 5000), если боишься зависания.
+  ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+  
+  // Как только мы здесь — значит задача гриппера выполнила работу.
+}
 
 
 static void Ping(uint8_t* data, uint8_t data_length)
@@ -804,11 +824,11 @@ static void grab_on(uint8_t* data, uint8_t data_length)
   terminal_response.cmd = BOARD_GRAB_ON;
   terminal_response.data[0] = 1;
 
-  Dynamixel_AX.GetAngle(USART3, dynamixel_id_1, &angle_buffer);
-  while (angle_buffer < end_angle)
+  Dynamixel_AX.GetAngle(USART3, dynamixel_id_1, &current_angle);
+  while (current_angle < end_angle)
   {
     vTaskDelay(50);
-    Dynamixel_AX.GetAngle(USART3, side_dynamixel_id_1, &angle_buffer);
+    Dynamixel_AX.GetAngle(USART3, side_dynamixel_id_1, &current_angle);
   }
   terminal_response.data[0] = 0x01;
   terminal_response.data_length = 1;
@@ -892,15 +912,15 @@ static void grab_off(uint8_t* data, uint8_t data_length)
 
   /*
   vTaskDekay(1000);
-  Dynamixel_AX.GetAngle(USART3, side_dynamixel_id_1, &angle_buffer);
-  if (angle_buffer == side_off_angle_1 + 10) terminal_response.data[0] = 0x01;
+  Dynamixel_AX.GetAngle(USART3, side_dynamixel_id_1, &current_angle);
+  if (current_angle == side_off_angle_1 + 10) terminal_response.data[0] = 0x01;
   */
 
-  Dynamixel_AX.GetAngle(USART3, dynamixel_id_1, &angle_buffer);
-  while (angle_buffer < end_angle)
+  Dynamixel_AX.GetAngle(USART3, dynamixel_id_1, &current_angle);
+  while (current_angle < end_angle)
   {
     vTaskDelay(50);
-    Dynamixel_AX.GetAngle(USART3, side_dynamixel_id_1, &angle_buffer);
+    Dynamixel_AX.GetAngle(USART3, side_dynamixel_id_1, &current_angle);
   }
   terminal_response.data[0] = 0x01;
   terminal_response.data_length = 1;
@@ -974,75 +994,38 @@ static void grab_rotate(uint8_t* data, uint8_t data_length)
 */
 
 static void grab_rotate(uint8_t* data, uint8_t data_length)
-{
-  uint8_t gripper_state = data[0];
-  uint8_t blocks_mask = data[1];
-
-  Dynamixel_AX.SetMovingSpeed(USART3, dynamixel_id_1, dynamixel_speed);
-	Dynamixel_AX.SetMovingSpeed(USART3, dynamixel_id_2, dynamixel_speed);
+{  
+  // 1. СНАЧАЛА очищаем старые флаги, чтобы не сработать ложно
+  ulTaskNotifyTake(pdTRUE, 0); 
+  // 2. Указываем себя получателем
+  xTerminalTaskHandle = xTaskGetCurrentTaskHandle();
   
-  if(gripper_state == 1) {
-    // separate all blocks
-    RotateTwoDynamixels(USART3, side_dynamixel_id_1, side_dynamixel_id_2, side_off_angle_1, side_off_angle_2);
-    vTaskDelay(1000);
+  block_mask = data[0];
+  gripper_cmd = 5;
 
-    PCA9685.SetServoAngleWithAddr(i2c_addr_1, PCA9685_CH5, servo5_end_angle);
-    vTaskDelay(500);
-    PCA9685.SetServoAngleWithAddr(i2c_addr_1, PCA9685_CH6, servo6_end_angle);
-    vTaskDelay(500);
-
-    if (blocks_mask & (1<<0)) // flip the block #1
-    { 
-      PCA9685.SetServoAngleWithAddr(i2c_addr_1, PCA9685_CH1, 180); 
-      vTaskDelay(500);
-    }
-    if (blocks_mask & (1<<1)) // flip the block #2
-    { 
-      PCA9685.SetServoAngleWithAddr(i2c_addr_1, PCA9685_CH2, 180); 
-      vTaskDelay(500);
-    }
-    if (blocks_mask & (1<<2)) // flip the block #3
-    { 
-      PCA9685.SetServoAngleWithAddr(i2c_addr_1, PCA9685_CH3, 180); 
-      vTaskDelay(500);
-    }
-    if (blocks_mask & (1<<3)) // flip the block #4
-    { 
-      PCA9685.SetServoAngleWithAddr(i2c_addr_1, PCA9685_CH4, 180); 
-      vTaskDelay(500);
-    }
-
-    // join all blocks
-    PCA9685.SetServoAngleWithAddr(i2c_addr_1, PCA9685_CH5, servo5_start_angle);
-    vTaskDelay(500);
-    PCA9685.SetServoAngleWithAddr(i2c_addr_1, PCA9685_CH6, servo6_start_angle);
-    vTaskDelay(500);
-
-    RotateTwoDynamixels(USART3, side_dynamixel_id_1, side_dynamixel_id_2, side_on_angle_1, side_on_angle_2);
-    vTaskDelay(1000);
-
-  }
+  // ВМЕСТО ЦИКЛА WHILE:
+  WaitForGripperCompletion();
   
   // Check this segment of terminal response
   struct terminal_response_s terminal_response;
-
   terminal_response.cmd = BOARD_GRAB_ROTATE;
   terminal_response.data[0] = 0x01;
   terminal_response.data_length = 1;
-
   Terminal.SendResponse(&terminal_response);
   
 }
 
 static void ToggleCursor(uint8_t* data, uint8_t data_length)
 {
+  // Clear old notify flags to prevent false execution
+  ulTaskNotifyTake(pdTRUE, 0); 
+  // Point this FreeRTOS task as a reciever
+  xTerminalTaskHandle = xTaskGetCurrentTaskHandle();
+  
   cursor_cmd = data[0];
   gripper_cmd = 0;
-  vTaskDelay(50);
 
-  while(!cmd_isFinished){
-    vTaskDelay(20);
-  }
+  WaitForGripperCompletion();
 
   // terminal response
   struct terminal_response_s terminal_response;
@@ -1055,13 +1038,15 @@ static void ToggleCursor(uint8_t* data, uint8_t data_length)
 
 static void SideGrips(uint8_t* data, uint8_t data_length)
 {
+  // Clear old notify flags to prevent false execution
+  ulTaskNotifyTake(pdTRUE, 0); 
+  // Point this FreeRTOS task as a reciever
+  xTerminalTaskHandle = xTaskGetCurrentTaskHandle();
+  
   grips_cmd = data[0];
   gripper_cmd = 1;
-  vTaskDelay(50);
 
-  while(!cmd_isFinished){
-    vTaskDelay(20);
-  }
+  WaitForGripperCompletion();
 
   // terminal response
   struct terminal_response_s terminal_response;
@@ -1073,13 +1058,15 @@ static void SideGrips(uint8_t* data, uint8_t data_length)
 
 static void GripperLift(uint8_t* data, uint8_t data_length)
 {
+  // Clear old notify flags to prevent false execution
+  ulTaskNotifyTake(pdTRUE, 0); 
+  // Point this FreeRTOS task as a reciever
+  xTerminalTaskHandle = xTaskGetCurrentTaskHandle();
+
   lift_cmd = data[0];
   gripper_cmd = 2;
-  vTaskDelay(50);
 
-  while(!cmd_isFinished){
-    vTaskDelay(20);
-  }
+  WaitForGripperCompletion();
 
   // terminal response
   struct terminal_response_s terminal_response;
@@ -1091,13 +1078,15 @@ static void GripperLift(uint8_t* data, uint8_t data_length)
 
 static void TogglePumps(uint8_t* data, uint8_t data_length)
 {
+  // Clear old notify flags to prevent false execution
+  ulTaskNotifyTake(pdTRUE, 0); 
+  // Point this FreeRTOS task as a reciever
+  xTerminalTaskHandle = xTaskGetCurrentTaskHandle();
+  
   pump_mask = data[0];
   gripper_cmd = 3;
-  vTaskDelay(50);
 
-  while(!cmd_isFinished){
-    vTaskDelay(20);
-  }
+  WaitForGripperCompletion();
 
   // terminal response
   struct terminal_response_s terminal_response;
@@ -1109,13 +1098,15 @@ static void TogglePumps(uint8_t* data, uint8_t data_length)
 
 static void ToggleValves(uint8_t* data, uint8_t data_length)
 {
+  // Clear old notify flags to prevent false execution
+  ulTaskNotifyTake(pdTRUE, 0); 
+  // Point this FreeRTOS task as a reciever
+  xTerminalTaskHandle = xTaskGetCurrentTaskHandle();
+  
   valve_mask = data[0];
   gripper_cmd = 4;
-  vTaskDelay(50);
 
-  while(!cmd_isFinished){
-    vTaskDelay(20);
-  }
+  WaitForGripperCompletion();
 
   // terminal response
   struct terminal_response_s terminal_response;
@@ -1125,14 +1116,17 @@ static void ToggleValves(uint8_t* data, uint8_t data_length)
   Terminal.SendResponse(&terminal_response);
 }
 
-static void RobotMove(uint8_t* data, uint8_t data_length)
+static void SimpleMove(uint8_t* data, uint8_t data_length)
 {
-  //valve_mask = data[0];
-  gripper_cmd = 5;
+  // Clear old notify flags to prevent false execution
+  ulTaskNotifyTake(pdTRUE, 0); 
+  // Point this FreeRTOS task as a reciever
+  xTerminalTaskHandle = xTaskGetCurrentTaskHandle();
 
-  while(!cmd_isFinished){
-    vTaskDelay(20);
-  }
+  dir = data[0];
+  gripper_cmd = 6;
+
+  WaitForGripperCompletion();
 
   // terminal response
   struct terminal_response_s terminal_response;
@@ -1175,7 +1169,7 @@ void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t da
                                                                                               [BOARD_GRIPPER_LIFT] = GripperLift,
                                                                                               [BOARD_TOGGLE_PUMPS] = TogglePumps,
                                                                                               [BOARD_TOGGLE_VALVES] = ToggleValves,
-                                                                                              [BOARD_MOVE] = RobotMove
+                                                                                              [BOARD_MOVE] = SimpleMove
                                                                                               
                                                                                              
 

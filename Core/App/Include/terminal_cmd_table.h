@@ -58,7 +58,7 @@
 #define BOARD_GRAB_ROTATE									  0X1C		/* Command Description  */
 /* PCA9685 (I2C2, 0x40) debug commands */
 #define BOARD_PCA9685_SET_SERVO_ANGLE       0x1D    /* Set servo angle: i2c_addr, ch, angle_deg */
-#define BOARD_TOGGLE_CURSOR                 0x1E    /* Change the state of the cursor dynamixel*/
+#define BOARD_TOGGLE_CURSOR                 0x1E    /* Change the state of the cursor dynamixel */
 
 /* Microcommands for BT */
 #define BOARD_SIDE_GRIPS                    0x1F    /* Control the angle of the side grips */

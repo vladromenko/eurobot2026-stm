@@ -1,12 +1,7 @@
 >>> cc
 
-".\..\Core\OS_Tasks\gripper_task.c", line 1196: Warning:  #546-D: transfer of control bypasses initialization of:
-            variable "cursor_target_angle"  (declared at line 1203)
-            variable "gripper_target_angle"  (declared at line 1271)
-  			switch(gripper_cmd){
-  			^
-.\..\Core\OS_Tasks\gripper_task.c: 1 warning, 0 errors
+
 
 >>> ld
 
-Program Size: Code=37932 RO-data=218068 RW-data=3112 ZI-data=17844  
+Program Size: Code=38856 RO-data=218068 RW-data=3116 ZI-data=17844  

@@ -660,3 +660,47 @@ Finished: 2 information, 0 warning and 1 error messages.
 [2026-02-07 19:54:38]	[done]
 	build successfully !
 
+[2026-02-08 16:00:50]	[done]
+	build successfully !
+
+[2026-02-08 16:34:53]	[done]
+	build successfully !
+
+[2026-02-08 16:38:17]	[done]
+	build successfully !
+
+[2026-02-08 17:03:55]	link failed !, exit code: 1
+   at unify_builder.Program.Main(String[] args_)
+---
+Error: L6218E: Undefined symbol PI_GPO_ResetOutputPin (referred from gripper_task.o).
+Not enough information to list image symbols.
+Finished: 1 information, 0 warning and 1 error messages.
+
+
+[2026-02-08 17:13:45]	[done]
+	build successfully !
+
+[2026-02-09 19:56:44]	[done]
+	build successfully !
+
+[2026-02-09 21:11:53]	[done]
+	build successfully !
+
+[2026-02-09 21:17:58]	[done]
+	build successfully !
+
+[2026-02-09 21:50:18]	[done]
+	build successfully !
+
+[2026-02-09 22:17:47]	[done]
+	build successfully !
+
+[2026-02-09 22:23:29]	[done]
+	build successfully !
+
+[2026-02-09 22:23:55]	[done]
+	build successfully !
+
+[2026-02-09 23:49:25]	[done]
+	build successfully !
+
