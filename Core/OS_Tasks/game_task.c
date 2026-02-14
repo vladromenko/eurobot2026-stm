@@ -74,7 +74,7 @@ static void Task(void *arg)
     /*  START THE GAME AND WAIT UNTIL 100 SECONDS ARE RUNNNING OUT OR THE STARTING CORD IS ATTACHED AGAIN  */
     while(robot_ctrl.starting_cord == STARTING_CORD_RELEASED)
     {
-      if(((xTaskGetTickCount() - xGameStartTime) >= 100000) && (robot_ctrl.robot_mode == GAME_MODE)){
+      if(((xTaskGetTickCount() - xGameStartTime) >= 80000) && (robot_ctrl.robot_mode == GAME_MODE)){
         /*  STOP THE GAME AND TURN OF ALL ACTUATORS ACCORDING TO THE EUROBOT RULES */
         StopAllActuators();
         break;

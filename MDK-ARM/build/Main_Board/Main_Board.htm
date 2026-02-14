@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\build\Main_Board\Main_Board.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\build\Main_Board\Main_Board.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Mon Feb 09 23:49:25 2026
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Sat Feb 14 02:26:37 2026
 <BR><P>
 <H3>Maximum Stack Usage =        160 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -579,7 +579,9 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[138]"></a>__aeabi_memclr4</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, memseta.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[e6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GetAngle
+<BR><BR>[Called By]<UL><LI><a href="#[19]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;grab_rotate
+<LI><a href="#[1f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SimpleMove
+<LI><a href="#[e6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GetAngle
 </UL>
 
 <P><STRONG><a name="[1fe]"></a>__aeabi_memclr8</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, memseta.o(.text), UNUSED)
@@ -807,8 +809,7 @@ Global Symbols
 <P><STRONG><a name="[156]"></a>PCA9685_I2C_Read</STRONG> (Thumb, 284 bytes, Stack size 24 bytes, i2c2.o(i.PCA9685_I2C_Read))
 <BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = PCA9685_I2C_Read
 </UL>
-<BR>[Calls]<UL><LI><a href="#[15c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_I2C_IsActiveFlag_TXE
-<LI><a href="#[159]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_I2C_IsActiveFlag_SB
+<BR>[Calls]<UL><LI><a href="#[159]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_I2C_IsActiveFlag_SB
 <LI><a href="#[160]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_I2C_IsActiveFlag_RXNE
 <LI><a href="#[157]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_I2C_IsActiveFlag_BUSY
 <LI><a href="#[15d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_I2C_IsActiveFlag_BTF
@@ -817,6 +818,7 @@ Global Symbols
 <LI><a href="#[158]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_I2C_GenerateStartCondition
 <LI><a href="#[15e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_I2C_AcknowledgeNextData
 <LI><a href="#[15a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_I2C_TransmitData8
+<LI><a href="#[15c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_I2C_IsActiveFlag_TXE
 </UL>
 <BR>[Called By]<UL><LI><a href="#[162]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ReadReg
 </UL>
@@ -824,14 +826,14 @@ Global Symbols
 <P><STRONG><a name="[161]"></a>PCA9685_I2C_Write</STRONG> (Thumb, 160 bytes, Stack size 24 bytes, i2c2.o(i.PCA9685_I2C_Write))
 <BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = PCA9685_I2C_Write
 </UL>
-<BR>[Calls]<UL><LI><a href="#[15c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_I2C_IsActiveFlag_TXE
-<LI><a href="#[159]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_I2C_IsActiveFlag_SB
+<BR>[Calls]<UL><LI><a href="#[159]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_I2C_IsActiveFlag_SB
 <LI><a href="#[157]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_I2C_IsActiveFlag_BUSY
 <LI><a href="#[15d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_I2C_IsActiveFlag_BTF
 <LI><a href="#[15b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_I2C_IsActiveFlag_ADDR
 <LI><a href="#[15f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_I2C_GenerateStopCondition
 <LI><a href="#[158]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_I2C_GenerateStartCondition
 <LI><a href="#[15a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_I2C_TransmitData8
+<LI><a href="#[15c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LL_I2C_IsActiveFlag_TXE
 </UL>
 <BR>[Called By]<UL><LI><a href="#[165]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WriteRegMulti
 <LI><a href="#[163]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WriteReg
@@ -1620,12 +1622,10 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[143]"></a>xTaskGetCurrentTaskHandle</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, tasks.o(i.xTaskGetCurrentTaskHandle))
-<BR><BR>[Called By]<UL><LI><a href="#[19]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;grab_rotate
-<LI><a href="#[144]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WaitForGripperCompletion
+<BR><BR>[Called By]<UL><LI><a href="#[144]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WaitForGripperCompletion
 <LI><a href="#[1e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ToggleValves
 <LI><a href="#[1d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TogglePumps
 <LI><a href="#[1a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ToggleCursor
-<LI><a href="#[1f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SimpleMove
 <LI><a href="#[1b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SideGrips
 <LI><a href="#[1c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GripperLift
 </UL>
@@ -1954,12 +1954,11 @@ Local Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> terminal_cmd_handlers.o(.data)
 </UL>
-<P><STRONG><a name="[1f]"></a>SimpleMove</STRONG> (Thumb, 70 bytes, Stack size 48 bytes, terminal_cmd_handlers.o(i.SimpleMove))
-<BR><BR>[Stack]<UL><LI>Max Depth = 112<LI>Call Chain = SimpleMove &rArr; WaitForGripperCompletion &rArr; ulTaskGenericNotifyTake &rArr; prvAddCurrentTaskToDelayedList &rArr; vListInsert
+<P><STRONG><a name="[1f]"></a>SimpleMove</STRONG> (Thumb, 72 bytes, Stack size 48 bytes, terminal_cmd_handlers.o(i.SimpleMove))
+<BR><BR>[Stack]<UL><LI>Max Depth = 104<LI>Call Chain = SimpleMove &rArr; ulTaskGenericNotifyTake &rArr; prvAddCurrentTaskToDelayedList &rArr; vListInsert
 </UL>
-<BR>[Calls]<UL><LI><a href="#[143]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGetCurrentTaskHandle
-<LI><a href="#[142]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ulTaskGenericNotifyTake
-<LI><a href="#[144]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WaitForGripperCompletion
+<BR>[Calls]<UL><LI><a href="#[142]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ulTaskGenericNotifyTake
+<LI><a href="#[138]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr4
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> terminal_cmd_handlers.o(.data)
 </UL>
@@ -2004,11 +2003,9 @@ Local Symbols
 <BR>[Calls]<UL><LI><a href="#[143]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGetCurrentTaskHandle
 <LI><a href="#[142]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ulTaskGenericNotifyTake
 </UL>
-<BR>[Called By]<UL><LI><a href="#[19]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;grab_rotate
-<LI><a href="#[1e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ToggleValves
+<BR>[Called By]<UL><LI><a href="#[1e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ToggleValves
 <LI><a href="#[1d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TogglePumps
 <LI><a href="#[1a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ToggleCursor
-<LI><a href="#[1f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SimpleMove
 <LI><a href="#[1b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SideGrips
 <LI><a href="#[1c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GripperLift
 </UL>
@@ -2043,12 +2040,11 @@ Local Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> terminal_cmd_handlers.o(.data)
 </UL>
-<P><STRONG><a name="[19]"></a>grab_rotate</STRONG> (Thumb, 70 bytes, Stack size 48 bytes, terminal_cmd_handlers.o(i.grab_rotate))
-<BR><BR>[Stack]<UL><LI>Max Depth = 112<LI>Call Chain = grab_rotate &rArr; WaitForGripperCompletion &rArr; ulTaskGenericNotifyTake &rArr; prvAddCurrentTaskToDelayedList &rArr; vListInsert
+<P><STRONG><a name="[19]"></a>grab_rotate</STRONG> (Thumb, 72 bytes, Stack size 48 bytes, terminal_cmd_handlers.o(i.grab_rotate))
+<BR><BR>[Stack]<UL><LI>Max Depth = 104<LI>Call Chain = grab_rotate &rArr; ulTaskGenericNotifyTake &rArr; prvAddCurrentTaskToDelayedList &rArr; vListInsert
 </UL>
-<BR>[Calls]<UL><LI><a href="#[143]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGetCurrentTaskHandle
-<LI><a href="#[142]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ulTaskGenericNotifyTake
-<LI><a href="#[144]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WaitForGripperCompletion
+<BR>[Calls]<UL><LI><a href="#[142]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ulTaskGenericNotifyTake
+<LI><a href="#[138]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr4
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> terminal_cmd_handlers.o(.data)
 </UL>
@@ -3622,8 +3618,8 @@ Local Symbols
 <BR>[Called By]<UL><LI><a href="#[a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Task
 </UL>
 
-<P><STRONG><a name="[a4]"></a>Task</STRONG> (Thumb, 2106 bytes, Stack size 32 bytes, gripper_task.o(i.Task))
-<BR><BR>[Stack]<UL><LI>Max Depth = 88<LI>Call Chain = Task &rArr; SPI_GPO_SetOutputPin &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
+<P><STRONG><a name="[a4]"></a>Task</STRONG> (Thumb, 1996 bytes, Stack size 24 bytes, gripper_task.o(i.Task))
+<BR><BR>[Stack]<UL><LI>Max Depth = 80<LI>Call Chain = Task &rArr; SPI_GPO_SetOutputPin &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
 </UL>
 <BR>[Calls]<UL><LI><a href="#[14b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI_GPO_SetOutputPin
 <LI><a href="#[149]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI_GPO_ResetOutputPin

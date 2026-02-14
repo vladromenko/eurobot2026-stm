@@ -55,17 +55,17 @@
 
 #define BOARD_GRAB_ON										    0X1A		/* Command Description  */
 #define BOARD_GRAB_OFF										  0X1B		/* Command Description  */
-#define BOARD_GRAB_ROTATE									  0X1C		/* Command Description  */
+#define BOARD_GRAB_ROTATE									  0X1C		/* [28] Command Description  */
 /* PCA9685 (I2C2, 0x40) debug commands */
 #define BOARD_PCA9685_SET_SERVO_ANGLE       0x1D    /* Set servo angle: i2c_addr, ch, angle_deg */
-#define BOARD_TOGGLE_CURSOR                 0x1E    /* Change the state of the cursor dynamixel */
+#define BOARD_TOGGLE_CURSOR                 0x1E    /* [30] Change the state of the cursor dynamixel */
 
 /* Microcommands for BT */
-#define BOARD_SIDE_GRIPS                    0x1F    /* Control the angle of the side grips */
-#define BOARD_GRIPPER_LIFT                  0x20    /* Control the angle of the gripper's dynamixels */
-#define BOARD_TOGGLE_PUMPS									0X21 		/* Turn on/off pumpes  */
-#define BOARD_TOGGLE_VALVES                 0x22		/* Turn on/off valves */
-#define BOARD_MOVE                          0x23		/* Move the robot to grab blocks */
+#define BOARD_SIDE_GRIPS                    0x1F    /* [31] Control the angle of the side grips */
+#define BOARD_GRIPPER_LIFT                  0x20    /* [32] Control the angle of the gripper's dynamixels */
+#define BOARD_TOGGLE_PUMPS									0X21 		/* [33] Turn on/off pumpes  */
+#define BOARD_TOGGLE_VALVES                 0x22		/* [34] Turn on/off valves */
+#define BOARD_MOVE                          0x25		/* [35] Move the robot to grab blocks */
 
 /*  Do not forget to update the table size with the last one command! */
 #define TERMINAL_CMD_TABLE_SIZE             (BOARD_MOVE + 1)

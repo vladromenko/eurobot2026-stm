@@ -226,7 +226,7 @@ static void WaitForGripperCompletion(void)
   // 3. Ждем сигнала от gripper_task.
   // Задача переходит в состояние BLOCKED и не тратит CPU.
   // portMAX_DELAY - ждать вечно. Можно поставить таймаут (напр. 5000), если боишься зависания.
-  ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+  ulTaskNotifyTake(pdTRUE, 5000);
   
   // Как только мы здесь — значит задача гриппера выполнила работу.
 }
@@ -993,6 +993,7 @@ static void grab_rotate(uint8_t* data, uint8_t data_length)
 }
 */
 
+/*
 static void grab_rotate(uint8_t* data, uint8_t data_length)
 {  
   // 1. СНАЧАЛА очищаем старые флаги, чтобы не сработать ложно
@@ -1013,6 +1014,22 @@ static void grab_rotate(uint8_t* data, uint8_t data_length)
   terminal_response.data_length = 1;
   Terminal.SendResponse(&terminal_response);
   
+}
+*/
+
+static void grab_rotate(uint8_t* data, uint8_t data_length)
+{
+  ulTaskNotifyTake(pdTRUE, 0); 
+  
+  block_mask = data[0];
+  cmd_isFinished = 0; 
+  gripper_cmd = 5;
+
+  struct terminal_response_s terminal_response = {0};
+  terminal_response.cmd = BOARD_GRAB_ROTATE;
+  terminal_response.data[0] = 0x01;
+  terminal_response.data_length = 1;
+  Terminal.SendResponse(&terminal_response);
 }
 
 static void ToggleCursor(uint8_t* data, uint8_t data_length)
@@ -1116,6 +1133,7 @@ static void ToggleValves(uint8_t* data, uint8_t data_length)
   Terminal.SendResponse(&terminal_response);
 }
 
+/* doesn't work response (need to check odometry or use FreeRTOS timer)
 static void SimpleMove(uint8_t* data, uint8_t data_length)
 {
   // Clear old notify flags to prevent false execution
@@ -1130,6 +1148,22 @@ static void SimpleMove(uint8_t* data, uint8_t data_length)
 
   // terminal response
   struct terminal_response_s terminal_response;
+  terminal_response.cmd = BOARD_MOVE;
+  terminal_response.data[0] = (uint8_t)0x01;
+  terminal_response.data_length = 1;
+  Terminal.SendResponse(&terminal_response);
+}
+*/
+
+static void SimpleMove(uint8_t* data, uint8_t data_length)
+{
+  ulTaskNotifyTake(pdTRUE, 0); 
+  
+  dir = data[0];
+  cmd_isFinished = 0; 
+  gripper_cmd = 6;
+
+  struct terminal_response_s terminal_response = {0};
   terminal_response.cmd = BOARD_MOVE;
   terminal_response.data[0] = 0x01;
   terminal_response.data_length = 1;

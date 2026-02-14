@@ -704,3 +704,116 @@ Finished: 1 information, 0 warning and 1 error messages.
 [2026-02-09 23:49:25]	[done]
 	build successfully !
 
+[2026-02-13 11:55:09]	[done]
+	build successfully !
+
+[2026-02-13 11:56:12]	[done]
+	build successfully !
+
+[2026-02-13 11:58:34]	[done]
+	build successfully !
+
+[2026-02-13 12:52:45]	[done]
+	build successfully !
+
+[2026-02-13 13:00:58]	[done]
+	build successfully !
+
+[2026-02-13 17:45:14]	[done]
+	build successfully !
+
+[2026-02-13 17:52:36]	[done]
+	build successfully !
+
+[2026-02-13 18:10:49]	[done]
+	build successfully !
+
+[2026-02-13 18:26:47]	[done]
+	build successfully !
+
+[2026-02-13 18:45:40]	[done]
+	build successfully !
+
+[2026-02-13 21:06:41]	[done]
+	build successfully !
+
+[2026-02-13 23:16:32]	compilation failed at : "c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c", exit code: 1
+command: 
+  "D:\Keil_v5\ARM\ARMCC\bin\armcc.exe" -c --apcs=interwork -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/DSP/Include -I../Middlewares/FreeRTOS-Kernel -I../Middlewares/FreeRTOS-Kernel/include -I../Middlewares/FreeRTOS-Kernel/portable/RVDS/ARM_CM4F -I../Core/App/Include -I../Core/BSP/Include -I../Core/Lib/Include -I../Core/OS_Tasks/Include -I.cmsis/include -IRTE/_Main_Board -D"USE_FULL_LL_DRIVER" -D"ARM_MATH_CM4" -D"__FPU_PRESENT=1U" --cpu Cortex-M4.fp --li --c99 -D__MICROLIB -O0 --split_sections --diag_suppress=1 --diag_suppress=1295 -g -o .\build\Main_Board\.obj\__\Core\OS_Tasks\gripper_task.o --no_depend_system_headers --depend .\build\Main_Board\.obj\__\Core\OS_Tasks\gripper_task.d .\..\Core\OS_Tasks\gripper_task.c
+   at unify_builder.Program.compileByMulThread(Int32 thrNum, CmdInfo[] cmds_, List`1 errLogs)
+   at unify_builder.Program.Main(String[] args_)
+---
+".\..\Core\OS_Tasks\gripper_task.c", line 1500: Error:  #29: expected an expression
+  				*/
+  				 ^
+".\..\Core\OS_Tasks\gripper_task.c", line 1533: Warning:  #12-D: parsing restarts here after previous syntax error
+  				PCA9685.SetServoAngleWithAddr(i2c_addr_1, PCA9685_CH5, servo5_start_angle);
+  				                                                                          ^
+.\..\Core\OS_Tasks\gripper_task.c: 1 warning, 1 error
+
+[2026-02-13 23:16:51]	[done]
+	build successfully !
+
+[2026-02-13 23:31:55]	[done]
+	build successfully !
+
+[2026-02-13 23:45:59]	[done]
+	build successfully !
+
+[2026-02-13 23:47:37]	[done]
+	build successfully !
+
+[2026-02-13 23:48:48]	[done]
+	build successfully !
+
+[2026-02-13 23:51:23]	[done]
+	build successfully !
+
+[2026-02-13 23:52:39]	[done]
+	build successfully !
+
+[2026-02-13 23:54:43]	[done]
+	build successfully !
+
+[2026-02-14 00:02:32]	[done]
+	build successfully !
+
+[2026-02-14 00:04:02]	[done]
+	build successfully !
+
+[2026-02-14 00:05:42]	[done]
+	build successfully !
+
+[2026-02-14 01:12:56]	[done]
+	build successfully !
+
+[2026-02-14 01:19:04]	[done]
+	build successfully !
+
+[2026-02-14 01:27:52]	[done]
+	build successfully !
+
+[2026-02-14 01:35:19]	[done]
+	build successfully !
+
+[2026-02-14 01:37:50]	[done]
+	build successfully !
+
+[2026-02-14 01:46:37]	[done]
+	build successfully !
+
+[2026-02-14 01:52:20]	[done]
+	build successfully !
+
+[2026-02-14 02:01:32]	[done]
+	build successfully !
+
+[2026-02-14 02:07:45]	[done]
+	build successfully !
+
+[2026-02-14 02:24:45]	[done]
+	build successfully !
+
+[2026-02-14 02:26:38]	[done]
+	build successfully !
+
