@@ -36,11 +36,11 @@
 */
 
 // new robot params
-#define DIST_CENTER_TO_WHEEL_m 			0.14f  // [m] 0.155
+#define DIST_CENTER_TO_WHEEL_m 			0.1315f  // [m] 0.155
 #define WHEEL_RADIUS_m					0.0245f	// [m]
 #define	GEAR_RATIO						28.0f
 #define ENCODER_TICKS_PER_TURN			4096	// [ticks]
-#define CALIBRATION_COEF				1.16f   // used to equate the real path and path from odometry
+#define CALIBRATION_COEF				1.154f   // used to equate the real path and path from odometry 1.16f
 //#define ANGULAR_CALIBRATION_COEF		1.06f	// used to equate the real angle and angle from odometry
 
 
@@ -49,14 +49,27 @@
 
 ///* // from prev year team
 // result = linear_wheel_speed(m/s, m/s, m/s)  = inverse_matrix * body_speed(m/s, ms/s, rad/s)
-float inverse_matrix[9] = {cos30, -cos60,   -DIST_CENTER_TO_WHEEL_m,
-														0, 			1, 			-DIST_CENTER_TO_WHEEL_m,
-													-cos30,	-cos60,		-DIST_CENTER_TO_WHEEL_m};
+// result = linear_wheel_speed(m/s, m/s, m/s) = inverse_matrix * body_speed(Vx, Vy, W)
+float inverse_matrix[9] = {
+    -cos30,  cos60, -DIST_CENTER_TO_WHEEL_m,  // Колесо 1
+     0,     -1.0f,  -DIST_CENTER_TO_WHEEL_m,  // Колесо 2
+     cos30,  cos60, -DIST_CENTER_TO_WHEEL_m   // Колесо 3
+};
 
 // result = body_speed(m/s, ms/s, rad/s) = direct_matrix * wheel_speed (m/s, m/s, m/s)
-float direct_matrix[9] = {	1/(2*cos30), 				0,							-1 / (2*cos30),
-							-1/3.0f, 						2/3.0f,							-1/3.0f,
-							-1/3.0f/DIST_CENTER_TO_WHEEL_m,	-1/3.0f/DIST_CENTER_TO_WHEEL_m,	-1/3.0f/DIST_CENTER_TO_WHEEL_m};
+// result = body_speed(Vx, Vy, W) = direct_matrix * wheel_speed (v1, v2, v3)
+float direct_matrix[9] = {
+    // Строка для Vx (теперь вперед)
+    -1.0f / (2.0f * cos30),  0.0f,                   1.0f / (2.0f * cos30),
+    
+    // Строка для Vy (теперь налево)
+     1.0f / 3.0f,           -2.0f / 3.0f,            1.0f / 3.0f,
+     
+    // Строка для W (угловая скорость - без изменений)
+    -1.0f / 3.0f / DIST_CENTER_TO_WHEEL_m, 
+    -1.0f / 3.0f / DIST_CENTER_TO_WHEEL_m, 
+    -1.0f / 3.0f / DIST_CENTER_TO_WHEEL_m
+};
 
 //*/
 

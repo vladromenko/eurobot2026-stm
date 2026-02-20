@@ -80,12 +80,15 @@ static StaticTask_t task_buffer;
 
 extern volatile TaskHandle_t xTerminalTaskHandle;
 
+#define cos30 	0.8660254f
+#define cos60 	0.5f
+
 /* Gripper params */
 uint8_t dynamixel_id_1 = 98;
 uint8_t dynamixel_id_2 = 112;
 uint16_t dynamixel_speed = 150; //0-1024
-uint8_t start_angle = 64; //0-300 62
-uint8_t end_angle = 117; //0-300 150 125
+uint8_t start_angle = 149; //0-300 63
+uint8_t end_angle = 61; //0-300 150 153
 
 /* Gripper's servos params */
 uint8_t servo5_start_angle = 10; // left shift servo 90 170
@@ -130,6 +133,7 @@ uint8_t cmd_isFinished;
 
 uint8_t gripper_cmd = 0xFF; // idle task
 uint8_t dir = 0; // diretion of movement in SimleMove command [0-forward, 1-backward]
+uint16_t move_delay = 800;
 
 
 /**
@@ -528,7 +532,10 @@ static void Task(void *arg)
 
 		RotateTwoDynamixels(USART3, side_dynamixel_id_1, side_dynamixel_id_2, side_on_angle_1, side_on_angle_2);
     	vTaskDelay(500);
-
+		/*
+		RotateTwoDynamixels(USART3, side_dynamixel_id_1, side_dynamixel_id_2, side_off_angle_1, side_off_angle_2);
+    	vTaskDelay(5000);
+		*/
 		// servos init
 		PCA9685.SetServoAngleWithAddr(i2c_addr_1, PCA9685_CH1, 0);
 		vTaskDelay(200);
@@ -1557,19 +1564,21 @@ static void Task(void *arg)
 
 				if(dir == 0){
 					speed.dphi = 0;
-					speed.dx = 0.1f;
-					speed.dy = 0;
+					speed.dx = 0.1f * cos60;
+					speed.dy = -0.1f * cos30;
+					move_delay = 800;
 				}
 				if(dir == 1){
 					speed.dphi = 0;
-					speed.dx = -0.1f;
-					speed.dy = 0;
+					speed.dx = -0.1f * cos60;
+					speed.dy = 0.1f * cos30;
+					move_delay = 1200;
 				}
 
 				dir = 2;
 
 				Odometry.SetSpeed(&speed);
-				vTaskDelay(1500);
+				vTaskDelay(move_delay);
 				
 				/*
 				// send the "wake up!" notification to TerminalTask

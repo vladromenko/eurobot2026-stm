@@ -817,3 +817,160 @@ command:
 [2026-02-14 02:26:38]	[done]
 	build successfully !
 
+[2026-02-14 04:42:55]	[done]
+	build successfully !
+
+[2026-02-14 11:57:37]	[done]
+	build successfully !
+
+[2026-02-19 00:33:44]	[done]
+	build successfully !
+
+[2026-02-19 00:46:59]	[done]
+	build successfully !
+
+[2026-02-19 00:48:07]	[done]
+	build successfully !
+
+[2026-02-19 00:50:10]	[done]
+	build successfully !
+
+[2026-02-19 00:50:57]	[done]
+	build successfully !
+
+[2026-02-19 01:04:05]	[done]
+	build successfully !
+
+[2026-02-19 01:08:10]	[done]
+	build successfully !
+
+[2026-02-19 01:19:11]	[done]
+	build successfully !
+
+[2026-02-19 01:22:26]	[done]
+	build successfully !
+
+[2026-02-19 03:12:09]	[done]
+	build successfully !
+
+[2026-02-19 03:23:51]	[done]
+	build successfully !
+
+[2026-02-19 03:53:29]	[done]
+	build successfully !
+
+[2026-02-19 03:55:30]	[done]
+	build successfully !
+
+[2026-02-19 04:21:03]	[done]
+	build successfully !
+
+[2026-02-19 04:28:00]	[done]
+	build successfully !
+
+[2026-02-19 13:09:10]	[done]
+	build successfully !
+
+[2026-02-19 14:51:58]	[done]
+	build successfully !
+
+[2026-02-19 14:59:02]	[done]
+	build successfully !
+
+[2026-02-19 15:02:09]	[done]
+	build successfully !
+
+[2026-02-19 15:05:40]	[done]
+	build successfully !
+
+[2026-02-19 15:10:39]	[done]
+	build successfully !
+
+[2026-02-19 15:23:18]	[done]
+	build successfully !
+
+[2026-02-19 15:33:00]	[done]
+	build successfully !
+
+[2026-02-19 19:16:02]	[done]
+	build successfully !
+
+[2026-02-19 19:18:46]	[done]
+	build successfully !
+
+[2026-02-19 19:43:27]	compilation failed at : "c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\BSP\spi_gpo.c", exit code: 1
+command: 
+  "D:\Keil_v5\ARM\ARMCC\bin\armcc.exe" -c --apcs=interwork -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/DSP/Include -I../Middlewares/FreeRTOS-Kernel -I../Middlewares/FreeRTOS-Kernel/include -I../Middlewares/FreeRTOS-Kernel/portable/RVDS/ARM_CM4F -I../Core/App/Include -I../Core/BSP/Include -I../Core/Lib/Include -I../Core/OS_Tasks/Include -I.cmsis/include -IRTE/_Main_Board -D"USE_FULL_LL_DRIVER" -D"ARM_MATH_CM4" -D"__FPU_PRESENT=1U" --cpu Cortex-M4.fp --li --c99 -D__MICROLIB -O0 --split_sections --diag_suppress=1 --diag_suppress=1295 -g -o .\build\Main_Board\.obj\__\Core\BSP\spi_gpo.o --no_depend_system_headers --depend .\build\Main_Board\.obj\__\Core\BSP\spi_gpo.d .\..\Core\BSP\spi_gpo.c
+   at unify_builder.Program.compileByMulThread(Int32 thrNum, CmdInfo[] cmds_, List`1 errLogs)
+   at unify_builder.Program.Main(String[] args_)
+---
+Error: L6449E: While processing .\build\Main_Board\.obj\__\Core\BSP\board_hw_config.o: I/O error writing file '.\build\Main_Board\.obj\__\Core\BSP\board_hw_config.o': Invalid argument
+Finished: 0 information, 0 warning and 1 error messages.
+Error: L6449E: While processing .\build\Main_Board\.obj\__\Core\App\terminal_cmd_handlers.o: I/O error writing file '.\build\Main_Board\.obj\__\Core\App\terminal_cmd_handlers.o': Invalid argument
+Finished: 0 information, 0 warning and 1 error messages.
+Error: C4051E: couldn't write file '.\build\Main_Board\.obj\__\Core\BSP\pwm.o': Invalid argument
+Error: C4051E: couldn't write file '.\build\Main_Board\.obj\__\Core\BSP\usartx_timeout.o': Invalid argument
+Error: C4051E: couldn't write file '.\build\Main_Board\.obj\__\Core\BSP\spi_gpo.o': Invalid argument
+
+[2026-02-19 19:43:53]	[done]
+	build successfully !
+
+[2026-02-19 20:12:42]	[done]
+	build successfully !
+
+[2026-02-19 20:24:25]	[info] incremental build: 2 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\bus_device.c': source file has been changed.
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\kinematics.c': source file has been changed.
+
+[2026-02-19 20:24:26]	[done]
+	build successfully !
+
+[2026-02-19 20:24:41]	[done]
+	build successfully !
+
+[2026-02-19 20:29:34]	[done]
+	build successfully !
+
+[2026-02-19 20:32:40]	[done]
+	build successfully !
+
+[2026-02-19 20:33:35]	[done]
+	build successfully !
+
+[2026-02-19 20:35:58]	[done]
+	build successfully !
+
+[2026-02-19 20:37:28]	[done]
+	build successfully !
+
+[2026-02-19 20:44:07]	[done]
+	build successfully !
+
+[2026-02-20 03:35:54]	[done]
+	build successfully !
+
+[2026-02-20 03:46:33]	[done]
+	build successfully !
+
+[2026-02-20 04:06:20]	[done]
+	build successfully !
+
+[2026-02-20 04:10:14]	[done]
+	build successfully !
+
+[2026-02-20 04:11:28]	[done]
+	build successfully !
+
+[2026-02-20 04:13:12]	[done]
+	build successfully !
+
+[2026-02-20 04:37:44]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-02-20 04:37:45]	[done]
+	build successfully !
+
