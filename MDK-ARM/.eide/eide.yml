@@ -157,6 +157,8 @@ targets:
         - RTE/_Main_Board
       libList: []
     excludeList: []
+    settings:
+      debugger: cortex-debug
     toolchain: AC5
     toolchainConfigMap:
       AC5:

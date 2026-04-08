@@ -118,7 +118,7 @@ int main(void)
   USARTx.BindProtocol(UART5, Serial.GetProtocol());
   USARTx.BindProtocol(USART1, HL_RTU.GetProtocol());
 	
-	IWDG_Init();
+	//IWDG_Init();
 	
   
   /*  Creating tasks  */

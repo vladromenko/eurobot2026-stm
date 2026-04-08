@@ -87,13 +87,15 @@ extern volatile TaskHandle_t xTerminalTaskHandle;
 uint8_t dynamixel_id_1 = 98;
 uint8_t dynamixel_id_2 = 112;
 uint16_t dynamixel_speed = 150; //0-1024
-uint8_t start_angle = 149; //0-300 63
-uint8_t end_angle = 61; //0-300 150 153
+uint8_t start_angle = 149; //0-300 [deg] // 63
+uint8_t end_angle = 61; //0-300 [deg] // 150 153
+uint8_t cursor_angle = 99; // 0-300 [deg] // gripper's angle to move cursor
+uint8_t gripper_target_angle;
 
 /* Gripper's servos params */
-uint8_t servo5_start_angle = 10; // left shift servo 90 170
+uint8_t servo5_start_angle = 16; // left shift servo 90 170 10 20
 uint8_t servo5_end_angle = 110;
-uint8_t servo6_start_angle = 120; // right shift servo
+uint8_t servo6_start_angle = 112; // right shift servo 120 108
 uint8_t servo6_end_angle = 30;
 
 // I2C address of the PWM driver
@@ -221,18 +223,20 @@ static void Task(void *arg)
 	
 	// Set custom id to single dynamixel (DISCONNECT ANY OTHER DYNAMIXELS!)
 	/*
-	uint8_t dynamixel_id = 0xFE;
+	uint8_t dynamixel_id = 0xFF;
 	while(dynamixel_id > 0)
 	{
 		dynamixel_id --;
 		if(Dynamixel_AX.Ping(USART3, dynamixel_id) == 0)
 		{
-			Dynamixel_AX.Set_ID(USART3, dynamixel_id, 14);
+			Dynamixel_AX.Set_ID(USART3, dynamixel_id, 13);
 			break;
 		}
 	}
-	Dynamixel_AX.TorqueEnable(USART3, 14);
-	Dynamixel_AX.SetAngle(USART3, 14, 0);
+	Dynamixel_AX.TorqueEnable(USART3, 13);
+	Dynamixel_AX.SetAngle(USART3, 13, 0);
+	vTaskDelay(500);
+	Dynamixel_AX.SetAngle(USART3, 13, 180);
 	*/
 	
 
@@ -1358,15 +1362,23 @@ static void Task(void *arg)
 				break;
 			
 			case 2: // gripper_lift
-			{
-				//cmd_isFinished = 0;
-				
+			{	
   				Dynamixel_AX.SetMovingSpeed(USART3, dynamixel_id_1, dynamixel_speed);
 				Dynamixel_AX.SetMovingSpeed(USART3, dynamixel_id_2, dynamixel_speed);
 				Dynamixel_AX.TorqueEnable(USART3, dynamixel_id_1);
     			Dynamixel_AX.TorqueEnable(USART3, dynamixel_id_2);
 
-				uint8_t gripper_target_angle = (lift_cmd == 1)?start_angle:end_angle;
+				//uint8_t gripper_target_angle = (lift_cmd == 1)?start_angle:end_angle;
+
+				if (lift_cmd == 0) {
+					gripper_target_angle = end_angle;
+				}
+				if (lift_cmd == 1) {
+					gripper_target_angle = start_angle;
+				}
+				if (lift_cmd == 2) {
+					gripper_target_angle = cursor_angle;
+				}
 
 				RotateTwoDynamixels(USART3, dynamixel_id_1, dynamixel_id_2, gripper_target_angle, gripper_target_angle);
 				vTaskDelay(200);
@@ -1531,9 +1543,9 @@ static void Task(void *arg)
 				
 				for (int i = 0; i<4; i++) // for all 4 blocks
 				{
-					servo_target_angle = ((block_mask & (1<<i))==0) ? 0 : 180; // flip the block #i
+					servo_target_angle = ((block_mask & (1<<(3-i)))==0) ? 0 : 180; // flip the block #i
 					PCA9685.SetServoAngleWithAddr(i2c_addr_1, (enum pca9685_channel_e)(PCA9685_CH1 + i), servo_target_angle); 
-					vTaskDelay(500);
+					vTaskDelay(350);
 				}
 				
 
@@ -1566,7 +1578,7 @@ static void Task(void *arg)
 					speed.dphi = 0;
 					speed.dx = 0.1f * cos60;
 					speed.dy = -0.1f * cos30;
-					move_delay = 800;
+					move_delay = 1000;
 				}
 				if(dir == 1){
 					speed.dphi = 0;
