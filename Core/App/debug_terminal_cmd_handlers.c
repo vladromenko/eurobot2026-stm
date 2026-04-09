@@ -212,100 +212,6 @@ static void DebugSetAxAngle(uint8_t* data, uint8_t data_length)
   Debug_Terminal.DebugSendResponse(&debug_terminal_response);
 }
 
-static void DebugSetStepperZero(uint8_t* data, uint8_t data_length)
-{
-	
-	uint8_t id = data[0];
-  if(DEBUG_COMM_ENABLE){
-	switch(id){
-		case 0:
-			stepper1_calibrate = 1;
-			break;
-		case 1:
-			stepper2_calibrate = 1;
-			break;
-		case 2:
-			stepper3_calibrate = 1;
-			break;
-		default:
-			break;
-	}
-}
-  struct debug_terminal_response_s debug_terminal_response = {0};
-  debug_terminal_response.cmd = BOARD_SET_STEPPER_ZERO;
-	
-  debug_terminal_response.data_length = 0;
-
-  Debug_Terminal.DebugSendResponse(&debug_terminal_response);
-}
-
-static void DebugGetStepperPosition(uint8_t* data, uint8_t data_length)
-{
-  int16_t position;
-  struct debug_terminal_response_s debug_terminal_response = {0};
-
-  debug_terminal_response.cmd = BOARD_GET_STEPPER_POSITION;
-	
-	switch(data[0]){
-		case 0:
-			position = Stepper.GetPresentPosisition(STEPPER_MOTOR_1);
-			break;
-		case 1:
-			position = Stepper.GetPresentPosisition(STEPPER_MOTOR_2);
-			break;
-		case 2:
-			position = Stepper.GetPresentPosisition(STEPPER_MOTOR_3);
-			break;
-		default:
-			break;
-	}
-	
-  Word16_ToByte(&position, &debug_terminal_response.data[0]);
-  debug_terminal_response.data_length = 2;
-
-  Debug_Terminal.DebugSendResponse(&debug_terminal_response);
-}
-
-static void DebugSetStepperPosition(uint8_t* data, uint8_t data_length)
-{
-	if(DEBUG_COMM_ENABLE){
-  uint8_t id = data[0];
-  int16_t position;
-  
-  ByteTo_Word16(data+1,&position);
-	if(position >=0){
-		switch(id){
-			case 0:
-				if(!stepper1_calibrate){
-					stepper1_goal_position = position;
-					Stepper.StepToPosisition(STEPPER_MOTOR_1, position, 32, 16, 800);
-				}
-				break;
-			case 1:
-				if(!stepper2_calibrate){
-					stepper2_goal_position = position;
-					Stepper.StepToPosisition(STEPPER_MOTOR_2, position, 32, 16, 800);
-				}
-				break;
-			case 2:
-				if(!stepper3_calibrate){
-					stepper3_goal_position = position;
-					Stepper.StepToPosisition(STEPPER_MOTOR_3, position, 32, 16, 800);
-				}
-				break;
-			default:
-				break;
-		}
-	}
-}
-  struct debug_terminal_response_s debug_terminal_response = {0};
-
-  debug_terminal_response.cmd = BOARD_SET_STEPPER_POSITION;
-  debug_terminal_response.data_length = 0;
-
-  Debug_Terminal.DebugSendResponse(&debug_terminal_response);
-}
-
 static void DebugTogglePump(uint8_t* data, uint8_t data_length)
 {
   uint8_t pump_state;
@@ -332,45 +238,6 @@ static void DebugTogglePump(uint8_t* data, uint8_t data_length)
 	}
   struct debug_terminal_response_s debug_terminal_response = {0};
   debug_terminal_response.cmd = BOARD_TOGGLE_PUMP;
-  debug_terminal_response.data_length = 0;
-  
-  Debug_Terminal.DebugSendResponse(&debug_terminal_response);
-}
-
-static void DebugSetMagnetAngle(uint8_t* data, uint8_t data_length)
-{
-	if(DEBUG_COMM_ENABLE){
-  uint8_t magnet_id = data[0];
-	int16_t position;
-  ByteTo_Word16(data+1,&position);
-	
-  
- 
-  switch (magnet_id)
-    {
-      case 0:
-				RC_Servo.Enable(RC_SERVO_1);
-				RC_Servo.SetServoAngle(RC_SERVO_1, 525, 2500, 180, position);
-        break;
-      case 1:
-				RC_Servo.Enable(RC_SERVO_2);
-				RC_Servo.SetServoAngle(RC_SERVO_2, 525, 2500, 180, position);
-				break;
-			case 2:
-				RC_Servo.Enable(RC_SERVO_3);
-				RC_Servo.SetServoAngle(RC_SERVO_3, 525, 2500, 180, position);
-        break;
-      case 3:
-				RC_Servo.Enable(RC_SERVO_4);
-				RC_Servo.SetServoAngle(RC_SERVO_4, 525, 2500, 180, position);
-        break;
-			default:
-				break;
-    }
-	}
-	
-  struct debug_terminal_response_s debug_terminal_response = {0};
-  debug_terminal_response.cmd = BOARD_SET_MAGNET_ANGLE;
   debug_terminal_response.data_length = 0;
   
   Debug_Terminal.DebugSendResponse(&debug_terminal_response);
@@ -557,11 +424,7 @@ void (*debug_terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint
                                                                                               [BOARD_Set_BMS_CalibrationValue] = DebugSet_BMS_CalibrationValue,
 																																															[BOARD_GET_AX_ANGLE] = DebugGetAxAngle,
                                                                                               [BOARD_SET_AX_ANGLE] = DebugSetAxAngle,
-																																															[BOARD_SET_STEPPER_ZERO] = DebugSetStepperZero,
-																																															[BOARD_SET_STEPPER_POSITION] = DebugSetStepperPosition,
-																																															[BOARD_GET_STEPPER_POSITION] = DebugGetStepperPosition,
 																																															[BOARD_TOGGLE_PUMP] = DebugTogglePump,
-																																															[BOARD_SET_MAGNET_ANGLE] = DebugSetMagnetAngle,
 																																															[BOARD_GET_KEY] = DebugGetKey,
 																																															[BOARD_GET_TOGGLE] = DebugGetToggle,
                                                                                               [BOARD_GET_DEBUG_MESSAGE] = DebugGetDebugMessage,

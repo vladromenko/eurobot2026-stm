@@ -1287,3 +1287,184 @@ Finished: 1 information, 0 warning and 2 error messages.
 [2026-04-09 02:11:48]	[done]
 	build successfully !
 
+[2026-04-09 16:20:56]	compilation failed at : "c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\debug_terminal_cmd_handlers.c", exit code: 1
+command: 
+  "D:\Keil_v5\ARM\ARMCC\bin\armcc.exe" -c --apcs=interwork -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/DSP/Include -I../Middlewares/FreeRTOS-Kernel -I../Middlewares/FreeRTOS-Kernel/include -I../Middlewares/FreeRTOS-Kernel/portable/RVDS/ARM_CM4F -I../Core/App/Include -I../Core/BSP/Include -I../Core/Lib/Include -I../Core/OS_Tasks/Include -I.cmsis/include -IRTE/_Main_Board -D"USE_FULL_LL_DRIVER" -D"ARM_MATH_CM4" -D"__FPU_PRESENT=1U" --cpu Cortex-M4.fp --li --c99 -D__MICROLIB -O0 --split_sections --diag_suppress=1 --diag_suppress=1295 -g -o .\build\Main_Board\.obj\__\Core\App\debug_terminal_cmd_handlers.o --no_depend_system_headers --depend .\build\Main_Board\.obj\__\Core\App\debug_terminal_cmd_handlers.d .\..\Core\App\debug_terminal_cmd_handlers.c
+   at unify_builder.Program.compileByMulThread(Int32 thrNum, CmdInfo[] cmds_, List`1 errLogs)
+   at unify_builder.Program.Main(String[] args_)
+---
+".\..\Core\App\debug_terminal_cmd_handlers.c", line 235: Error:  #20: identifier "BOARD_SET_STEPPER_ZERO" is undefined
+    debug_terminal_response.cmd = BOARD_SET_STEPPER_ZERO;
+                                  ^
+".\..\Core\App\debug_terminal_cmd_handlers.c", line 247: Error:  #20: identifier "BOARD_GET_STEPPER_POSITION" is undefined
+    debug_terminal_response.cmd = BOARD_GET_STEPPER_POSITION;
+                                  ^
+".\..\Core\App\debug_terminal_cmd_handlers.c", line 303: Error:  #20: identifier "BOARD_SET_STEPPER_POSITION" is undefined
+    debug_terminal_response.cmd = BOARD_SET_STEPPER_POSITION;
+                                  ^
+".\..\Core\App\debug_terminal_cmd_handlers.c", line 373: Error:  #20: identifier "BOARD_SET_MAGNET_ANGLE" is undefined
+    debug_terminal_response.cmd = BOARD_SET_MAGNET_ANGLE;
+                                  ^
+".\..\Core\App\debug_terminal_cmd_handlers.c", line 560: Error:  #20: identifier "BOARD_SET_STEPPER_ZERO" is undefined
+  																																															[BOARD_SET_STEPPER_ZERO] = DebugSetStepperZero,
+  																																															 ^
+".\..\Core\App\debug_terminal_cmd_handlers.c", line 561: Error:  #20: identifier "BOARD_SET_STEPPER_POSITION" is undefined
+  																																															[BOARD_SET_STEPPER_POSITION] = DebugSetStepperPosition,
+  																																															 ^
+".\..\Core\App\debug_terminal_cmd_handlers.c", line 562: Error:  #20: identifier "BOARD_GET_STEPPER_POSITION" is undefined
+  																																															[BOARD_GET_STEPPER_POSITION] = DebugGetStepperPosition,
+  																																															 ^
+".\..\Core\App\debug_terminal_cmd_handlers.c", line 564: Error:  #20: identifier "BOARD_SET_MAGNET_ANGLE" is undefined
+  																																															[BOARD_SET_MAGNET_ANGLE] = DebugSetMagnetAngle,
+  																																															 ^
+.\..\Core\App\debug_terminal_cmd_handlers.c: 0 warnings, 8 errors
+
+[2026-04-09 16:23:45]	[done]
+	build successfully !
+
+[2026-04-09 17:54:57]	[done]
+	build successfully !
+
+[2026-04-09 18:07:01]	link failed !, exit code: 1
+   at unify_builder.Program.Main(String[] args_)
+---
+Error: L6218E: Undefined symbol end_angle (referred from terminal_cmd_handlers.o).
+Error: L6218E: Undefined symbol servo5_start_angle (referred from terminal_cmd_handlers.o).
+Error: L6218E: Undefined symbol servo6_start_angle (referred from terminal_cmd_handlers.o).
+Error: L6218E: Undefined symbol start_angle (referred from terminal_cmd_handlers.o).
+Not enough information to list image symbols.
+Finished: 1 information, 0 warning and 4 error messages.
+
+
+[2026-04-09 18:09:24]	[done]
+	build successfully !
+
+[2026-04-09 18:10:17]	[done]
+	build successfully !
+
+[2026-04-09 18:11:35]	[done]
+	build successfully !
+
+[2026-04-09 18:14:59]	[done]
+	build successfully !
+
+[2026-04-09 19:49:39]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-04-09 19:49:39]	compilation failed at : "c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c", exit code: 1
+command: 
+  "D:\Keil_v5\ARM\ARMCC\bin\armcc.exe" -c --apcs=interwork -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/DSP/Include -I../Middlewares/FreeRTOS-Kernel -I../Middlewares/FreeRTOS-Kernel/include -I../Middlewares/FreeRTOS-Kernel/portable/RVDS/ARM_CM4F -I../Core/App/Include -I../Core/BSP/Include -I../Core/Lib/Include -I../Core/OS_Tasks/Include -I.cmsis/include -IRTE/_Main_Board -D"USE_FULL_LL_DRIVER" -D"ARM_MATH_CM4" -D"__FPU_PRESENT=1U" --cpu Cortex-M4.fp --li --c99 -D__MICROLIB -O0 --split_sections --diag_suppress=1 --diag_suppress=1295 -g -o .\build\Main_Board\.obj\__\Core\OS_Tasks\gripper_task.o --no_depend_system_headers --depend .\build\Main_Board\.obj\__\Core\OS_Tasks\gripper_task.d .\..\Core\OS_Tasks\gripper_task.c
+   at unify_builder.Program.Main(String[] args_)
+---
+".\..\Core\OS_Tasks\gripper_task.c", line 123: Error:  #136: struct "<unnamed>"  has no field "side_on_angle"
+  		.side_on_angle = 140, .side_off_angle = 69,
+  		 ^
+.\..\Core\OS_Tasks\gripper_task.c: 0 warnings, 1 error
+
+[2026-04-09 19:50:18]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-04-09 19:50:20]	[done]
+	build successfully !
+
+[2026-04-09 19:50:36]	[done]
+	build successfully !
+
+[2026-04-09 19:56:48]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-04-09 19:56:50]	[done]
+	build successfully !
+
+[2026-04-09 19:59:05]	[done]
+	build successfully !
+
+[2026-04-09 20:00:19]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-04-09 20:00:21]	[done]
+	build successfully !
+
+[2026-04-09 20:01:17]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-04-09 20:01:19]	[done]
+	build successfully !
+
+[2026-04-09 20:02:28]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-04-09 20:02:29]	[done]
+	build successfully !
+
+[2026-04-09 20:03:36]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-04-09 20:03:37]	[done]
+	build successfully !
+
+[2026-04-09 20:04:57]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-04-09 20:05:00]	[done]
+	build successfully !
+
+[2026-04-09 20:07:40]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-04-09 20:07:41]	[done]
+	build successfully !
+
+[2026-04-09 20:11:01]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-04-09 20:11:02]	[done]
+	build successfully !
+
+[2026-04-09 20:14:58]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-04-09 20:14:59]	[done]
+	build successfully !
+
+[2026-04-09 20:26:44]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-04-09 20:26:45]	[done]
+	build successfully !
+
+[2026-04-09 20:28:28]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-04-09 20:28:29]	[done]
+	build successfully !
+
+[2026-04-09 23:35:09]	[done]
+	build successfully !
+

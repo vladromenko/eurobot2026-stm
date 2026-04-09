@@ -38,11 +38,7 @@
 
 #define BOARD_GET_AX_ANGLE                	0X0A    /* Command Description  */
 #define BOARD_SET_AX_ANGLE                	0X0B    /* Command Description  */
-#define BOARD_SET_STEPPER_ZERO              0X0C    /* Command Description  */
-#define BOARD_SET_STEPPER_POSITION          0X0D    /* Command Description  */
-#define BOARD_GET_STEPPER_POSITION 					0X0E 		/* Command Description  */
 #define BOARD_TOGGLE_PUMP										0X0F 		/* Command Description  */
-#define BOARD_SET_MAGNET_ANGLE							0X10		/* Command Description  */
 #define BOARD_GET_KEY                       0X11		/* Command Description  */
 #define BOARD_GET_TOGGLE                    0X12		/* Command Description  */
 #define BOARD_GET_DEBUG_MESSAGE             0X13		/* Command Description  */
@@ -53,8 +49,6 @@
 #define BOARD_GET_RESET											0X18		/* Command Description  */
 #define BOARD_CLEAR_RESET										0X19		/* Command Description  */
 
-#define BOARD_GRAB_ON										    0X1A		/* Command Description  */
-#define BOARD_GRAB_OFF										  0X1B		/* Command Description  */
 #define BOARD_GRAB_ROTATE									  0X1C		/* [28] Command Description  */
 /* PCA9685 (I2C2, 0x40) debug commands */
 #define BOARD_PCA9685_SET_SERVO_ANGLE       0x1D    /* Set servo angle: i2c_addr, ch, angle_deg */
