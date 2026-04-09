@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\build\Main_Board\Main_Board.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\build\Main_Board\Main_Board.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Thu Apr 02 22:10:55 2026
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Thu Apr 09 02:11:48 2026
 <BR><P>
 <H3>Maximum Stack Usage =        160 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -692,11 +692,11 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[136]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;FIFO_MovePtr
 <LI><a href="#[135]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memcpy
 </UL>
-<BR>[Called By]<UL><LI><a href="#[1b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TransmitNextQueueElement
-<LI><a href="#[106]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ReadBytes
+<BR>[Called By]<UL><LI><a href="#[106]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ReadBytes
 <LI><a href="#[1b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TransmitNext
 <LI><a href="#[f9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GetRequest
 <LI><a href="#[126]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TransmitNext
+<LI><a href="#[1b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TransmitNextQueueElement
 </UL>
 
 <P><STRONG><a name="[151]"></a>FIFO_StructInit</STRONG> (Thumb, 26 bytes, Stack size 8 bytes, fifo_routine.o(i.FIFO_StructInit))
@@ -1852,7 +1852,7 @@ Local Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> terminal_cmd_handlers.o(.data)
 </UL>
-<P><STRONG><a name="[1c]"></a>GripperLift</STRONG> (Thumb, 70 bytes, Stack size 48 bytes, terminal_cmd_handlers.o(i.GripperLift))
+<P><STRONG><a name="[1c]"></a>GripperLift</STRONG> (Thumb, 76 bytes, Stack size 48 bytes, terminal_cmd_handlers.o(i.GripperLift))
 <BR><BR>[Stack]<UL><LI>Max Depth = 112<LI>Call Chain = GripperLift &rArr; WaitForGripperCompletion &rArr; ulTaskGenericNotifyTake &rArr; prvAddCurrentTaskToDelayedList &rArr; vListInsert
 </UL>
 <BR>[Calls]<UL><LI><a href="#[143]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGetCurrentTaskHandle
@@ -1940,7 +1940,7 @@ Local Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> terminal_cmd_handlers.o(.data)
 </UL>
-<P><STRONG><a name="[1b]"></a>SideGrips</STRONG> (Thumb, 70 bytes, Stack size 48 bytes, terminal_cmd_handlers.o(i.SideGrips))
+<P><STRONG><a name="[1b]"></a>SideGrips</STRONG> (Thumb, 76 bytes, Stack size 48 bytes, terminal_cmd_handlers.o(i.SideGrips))
 <BR><BR>[Stack]<UL><LI>Max Depth = 112<LI>Call Chain = SideGrips &rArr; WaitForGripperCompletion &rArr; ulTaskGenericNotifyTake &rArr; prvAddCurrentTaskToDelayedList &rArr; vListInsert
 </UL>
 <BR>[Calls]<UL><LI><a href="#[143]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGetCurrentTaskHandle
@@ -1974,7 +1974,7 @@ Local Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> terminal_cmd_handlers.o(.data)
 </UL>
-<P><STRONG><a name="[1d]"></a>TogglePumps</STRONG> (Thumb, 70 bytes, Stack size 48 bytes, terminal_cmd_handlers.o(i.TogglePumps))
+<P><STRONG><a name="[1d]"></a>TogglePumps</STRONG> (Thumb, 76 bytes, Stack size 48 bytes, terminal_cmd_handlers.o(i.TogglePumps))
 <BR><BR>[Stack]<UL><LI>Max Depth = 112<LI>Call Chain = TogglePumps &rArr; WaitForGripperCompletion &rArr; ulTaskGenericNotifyTake &rArr; prvAddCurrentTaskToDelayedList &rArr; vListInsert
 </UL>
 <BR>[Calls]<UL><LI><a href="#[143]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGetCurrentTaskHandle
@@ -1983,7 +1983,7 @@ Local Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> terminal_cmd_handlers.o(.data)
 </UL>
-<P><STRONG><a name="[1e]"></a>ToggleValves</STRONG> (Thumb, 70 bytes, Stack size 48 bytes, terminal_cmd_handlers.o(i.ToggleValves))
+<P><STRONG><a name="[1e]"></a>ToggleValves</STRONG> (Thumb, 76 bytes, Stack size 48 bytes, terminal_cmd_handlers.o(i.ToggleValves))
 <BR><BR>[Stack]<UL><LI>Max Depth = 112<LI>Call Chain = ToggleValves &rArr; WaitForGripperCompletion &rArr; ulTaskGenericNotifyTake &rArr; prvAddCurrentTaskToDelayedList &rArr; vListInsert
 </UL>
 <BR>[Calls]<UL><LI><a href="#[143]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGetCurrentTaskHandle
@@ -2035,7 +2035,7 @@ Local Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> terminal_cmd_handlers.o(.data)
 </UL>
-<P><STRONG><a name="[19]"></a>grab_rotate</STRONG> (Thumb, 72 bytes, Stack size 48 bytes, terminal_cmd_handlers.o(i.grab_rotate))
+<P><STRONG><a name="[19]"></a>grab_rotate</STRONG> (Thumb, 78 bytes, Stack size 48 bytes, terminal_cmd_handlers.o(i.grab_rotate))
 <BR><BR>[Stack]<UL><LI>Max Depth = 104<LI>Call Chain = grab_rotate &rArr; ulTaskGenericNotifyTake &rArr; prvAddCurrentTaskToDelayedList &rArr; vListInsert
 </UL>
 <BR>[Calls]<UL><LI><a href="#[142]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ulTaskGenericNotifyTake
@@ -3494,9 +3494,9 @@ Local Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[130]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskResumeAll
 <LI><a href="#[12a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskSuspendAll
-<LI><a href="#[1b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TransmitNextQueueElement
 <LI><a href="#[16e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;FIFO_IsNotFull
 <LI><a href="#[134]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;FIFO_Add
+<LI><a href="#[1b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TransmitNextQueueElement
 </UL>
 <BR>[Called By]<UL><LI><a href="#[105]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WriteBytes
 </UL>
@@ -3513,8 +3513,8 @@ Local Symbols
 <P><STRONG><a name="[ac]"></a>TxCompleteCallback</STRONG> (Thumb, 38 bytes, Stack size 8 bytes, serial.o(i.TxCompleteCallback))
 <BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = TxCompleteCallback &rArr; TransmitNextQueueElement &rArr; FIFO_Remove &rArr; FIFO_MovePtr
 </UL>
-<BR>[Calls]<UL><LI><a href="#[1b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TransmitNextQueueElement
-<LI><a href="#[125]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;FIFO_IsNotEmpty
+<BR>[Calls]<UL><LI><a href="#[125]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;FIFO_IsNotEmpty
+<LI><a href="#[1b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TransmitNextQueueElement
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> serial.o(i.InitLine)
 </UL>
@@ -3613,7 +3613,7 @@ Local Symbols
 <BR>[Called By]<UL><LI><a href="#[a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Task
 </UL>
 
-<P><STRONG><a name="[a4]"></a>Task</STRONG> (Thumb, 2056 bytes, Stack size 24 bytes, gripper_task.o(i.Task))
+<P><STRONG><a name="[a4]"></a>Task</STRONG> (Thumb, 2904 bytes, Stack size 24 bytes, gripper_task.o(i.Task))
 <BR><BR>[Stack]<UL><LI>Max Depth = 80<LI>Call Chain = Task &rArr; SPI_GPO_SetOutputPin &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
 </UL>
 <BR>[Calls]<UL><LI><a href="#[14b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI_GPO_SetOutputPin

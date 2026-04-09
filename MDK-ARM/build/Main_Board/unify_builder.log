@@ -1128,3 +1128,162 @@ These source files will be recompiled
 [2026-04-02 22:10:56]	[done]
 	build successfully !
 
+[2026-04-08 22:54:30]	[info] incremental build: 2 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\debug_terminal.c': dependence 'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\MDK-ARM\..\Core\Lib\Include\maxon.h' has been changed.
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-04-08 22:54:33]	[done]
+	build successfully !
+
+[2026-04-08 23:03:10]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-04-08 23:03:11]	[done]
+	build successfully !
+
+[2026-04-08 23:32:50]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-04-08 23:32:52]	[done]
+	build successfully !
+
+[2026-04-08 23:36:01]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-04-08 23:36:02]	[done]
+	build successfully !
+
+[2026-04-08 23:37:12]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-04-08 23:37:13]	[done]
+	build successfully !
+
+[2026-04-08 23:38:09]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-04-08 23:38:10]	[done]
+	build successfully !
+
+[2026-04-08 23:42:23]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-04-08 23:42:25]	[done]
+	build successfully !
+
+[2026-04-08 23:42:53]	[done]
+	build successfully !
+
+[2026-04-08 23:48:18]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-04-08 23:48:19]	[done]
+	build successfully !
+
+[2026-04-08 23:50:06]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-04-08 23:50:08]	[done]
+	build successfully !
+
+[2026-04-08 23:50:51]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-04-08 23:50:53]	[done]
+	build successfully !
+
+[2026-04-08 23:52:01]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-04-08 23:52:02]	[done]
+	build successfully !
+
+[2026-04-08 23:52:51]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-04-08 23:52:53]	[done]
+	build successfully !
+
+[2026-04-09 01:48:46]	link failed !, exit code: 1
+   at unify_builder.Program.Main(String[] args_)
+---
+Error: L6218E: Undefined symbol dynamixel_id_1 (referred from terminal_cmd_handlers.o).
+Error: L6218E: Undefined symbol dynamixel_id_2 (referred from terminal_cmd_handlers.o).
+Error: L6218E: Undefined symbol side_dynamixel_id_1 (referred from terminal_cmd_handlers.o).
+Error: L6218E: Undefined symbol side_dynamixel_id_2 (referred from terminal_cmd_handlers.o).
+Not enough information to list image symbols.
+Finished: 1 information, 0 warning and 4 error messages.
+
+
+[2026-04-09 01:49:24]	link failed !, exit code: 1
+   at unify_builder.Program.Main(String[] args_)
+---
+Error: L6218E: Undefined symbol dynamixel_id_1 (referred from terminal_cmd_handlers.o).
+Error: L6218E: Undefined symbol dynamixel_id_2 (referred from terminal_cmd_handlers.o).
+Error: L6218E: Undefined symbol side_dynamixel_id_1 (referred from terminal_cmd_handlers.o).
+Error: L6218E: Undefined symbol side_dynamixel_id_2 (referred from terminal_cmd_handlers.o).
+Not enough information to list image symbols.
+Finished: 1 information, 0 warning and 4 error messages.
+
+
+[2026-04-09 01:49:45]	link failed !, exit code: 1
+   at unify_builder.Program.Main(String[] args_)
+---
+Error: L6218E: Undefined symbol dynamixel_id_1 (referred from terminal_cmd_handlers.o).
+Error: L6218E: Undefined symbol dynamixel_id_2 (referred from terminal_cmd_handlers.o).
+Error: L6218E: Undefined symbol side_dynamixel_id_1 (referred from terminal_cmd_handlers.o).
+Error: L6218E: Undefined symbol side_dynamixel_id_2 (referred from terminal_cmd_handlers.o).
+Not enough information to list image symbols.
+Finished: 1 information, 0 warning and 4 error messages.
+
+
+[2026-04-09 01:50:07]	link failed !, exit code: 1
+   at unify_builder.Program.Main(String[] args_)
+---
+Error: L6218E: Undefined symbol dynamixel_id_1 (referred from terminal_cmd_handlers.o).
+Error: L6218E: Undefined symbol dynamixel_id_2 (referred from terminal_cmd_handlers.o).
+Error: L6218E: Undefined symbol side_dynamixel_id_1 (referred from terminal_cmd_handlers.o).
+Error: L6218E: Undefined symbol side_dynamixel_id_2 (referred from terminal_cmd_handlers.o).
+Not enough information to list image symbols.
+Finished: 1 information, 0 warning and 4 error messages.
+
+
+[2026-04-09 02:00:14]	link failed !, exit code: 1
+   at unify_builder.Program.Main(String[] args_)
+---
+Error: L6218E: Undefined symbol side_dynamixel_id_1 (referred from terminal_cmd_handlers.o).
+Error: L6218E: Undefined symbol side_dynamixel_id_2 (referred from terminal_cmd_handlers.o).
+Not enough information to list image symbols.
+Finished: 1 information, 0 warning and 2 error messages.
+
+
+[2026-04-09 02:11:39]	[done]
+	build successfully !
+
+[2026-04-09 02:11:48]	[done]
+	build successfully !
+

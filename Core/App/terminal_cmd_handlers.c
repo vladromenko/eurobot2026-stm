@@ -73,8 +73,8 @@ extern	uint8_t servo6_start_angle;
 extern	uint8_t servo6_end_angle;
 */
 
-extern uint8_t dynamixel_id_1;
-extern uint8_t dynamixel_id_2;
+uint8_t dynamixel_id_1 = 98;
+uint8_t dynamixel_id_2 = 112;
 extern uint16_t dynamixel_speed;
 extern uint8_t start_angle;
 extern uint8_t end_angle;
@@ -95,8 +95,8 @@ extern uint8_t cursor_target_angle;
 extern uint8_t cursor_cmd;
 
 // Side dynamixels of the gripper
-extern uint8_t side_dynamixel_id_1;
-extern uint8_t side_dynamixel_id_2;
+uint8_t side_dynamixel_id_1 = 13;
+uint8_t side_dynamixel_id_2 = 14;
 extern uint16_t side_dynamixel_speed;
 extern uint8_t side_off_angle_1;
 extern uint8_t side_on_angle_1;
@@ -107,6 +107,7 @@ extern uint8_t grips_cmd;
 extern uint8_t cmd_isFinished;
 extern uint8_t gripper_cmd;
 extern uint8_t lift_cmd;
+extern uint8_t gripper_id;
 
 extern uint8_t pump_mask;
 extern uint8_t valve_mask;
@@ -1021,7 +1022,8 @@ static void grab_rotate(uint8_t* data, uint8_t data_length)
 {
   ulTaskNotifyTake(pdTRUE, 0); 
   
-  block_mask = data[0];
+  gripper_id = data[0];
+  block_mask = data[1];
   cmd_isFinished = 0; 
   gripper_cmd = 5;
 
@@ -1060,7 +1062,8 @@ static void SideGrips(uint8_t* data, uint8_t data_length)
   // Point this FreeRTOS task as a reciever
   xTerminalTaskHandle = xTaskGetCurrentTaskHandle();
   
-  grips_cmd = data[0];
+  gripper_id = data[0];
+  grips_cmd = data[1];
   gripper_cmd = 1;
 
   WaitForGripperCompletion();
@@ -1079,8 +1082,9 @@ static void GripperLift(uint8_t* data, uint8_t data_length)
   ulTaskNotifyTake(pdTRUE, 0); 
   // Point this FreeRTOS task as a reciever
   xTerminalTaskHandle = xTaskGetCurrentTaskHandle();
-
-  lift_cmd = data[0];
+  
+  gripper_id = data[0];
+  lift_cmd = data[1];
   gripper_cmd = 2;
 
   WaitForGripperCompletion();
@@ -1100,7 +1104,8 @@ static void TogglePumps(uint8_t* data, uint8_t data_length)
   // Point this FreeRTOS task as a reciever
   xTerminalTaskHandle = xTaskGetCurrentTaskHandle();
   
-  pump_mask = data[0];
+  gripper_id = data[0];
+  pump_mask = data[1];
   gripper_cmd = 3;
 
   WaitForGripperCompletion();
@@ -1120,7 +1125,8 @@ static void ToggleValves(uint8_t* data, uint8_t data_length)
   // Point this FreeRTOS task as a reciever
   xTerminalTaskHandle = xTaskGetCurrentTaskHandle();
   
-  valve_mask = data[0];
+  gripper_id = data[0];
+  valve_mask = data[1];
   gripper_cmd = 4;
 
   WaitForGripperCompletion();
