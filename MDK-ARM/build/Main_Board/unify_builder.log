@@ -1468,3 +1468,143 @@ These source files will be recompiled
 [2026-04-09 23:35:09]	[done]
 	build successfully !
 
+[2026-04-10 00:00:07]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\terminal_cmd_handlers.c': source file has been changed.
+
+[2026-04-10 00:00:08]	[done]
+	build successfully !
+
+[2026-04-10 00:15:00]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-04-10 00:15:01]	[done]
+	build successfully !
+
+[2026-04-10 00:38:28]	[done]
+	build successfully !
+
+[2026-04-10 00:40:35]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-04-10 00:40:36]	[done]
+	build successfully !
+
+[2026-04-10 00:41:25]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-04-10 00:41:26]	[done]
+	build successfully !
+
+[2026-04-10 00:55:34]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-04-10 00:55:35]	[done]
+	build successfully !
+
+[2026-04-10 00:56:43]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-04-10 00:56:44]	[done]
+	build successfully !
+
+[2026-04-10 00:57:35]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-04-10 00:57:37]	[done]
+	build successfully !
+
+[2026-04-10 01:01:18]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-04-10 01:01:19]	[done]
+	build successfully !
+
+[2026-04-10 11:33:34]	compilation failed at : "c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\terminal_cmd_handlers.c", exit code: 1
+command: 
+  "D:\Keil_v5\ARM\ARMCC\bin\armcc.exe" -c --apcs=interwork -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/DSP/Include -I../Middlewares/FreeRTOS-Kernel -I../Middlewares/FreeRTOS-Kernel/include -I../Middlewares/FreeRTOS-Kernel/portable/RVDS/ARM_CM4F -I../Core/App/Include -I../Core/BSP/Include -I../Core/Lib/Include -I../Core/OS_Tasks/Include -I.cmsis/include -IRTE/_Main_Board -D"USE_FULL_LL_DRIVER" -D"ARM_MATH_CM4" -D"__FPU_PRESENT=1U" --cpu Cortex-M4.fp --li --c99 -D__MICROLIB -O0 --split_sections --diag_suppress=1 --diag_suppress=1295 -g -o .\build\Main_Board\.obj\__\Core\App\terminal_cmd_handlers.o --no_depend_system_headers --depend .\build\Main_Board\.obj\__\Core\App\terminal_cmd_handlers.d .\..\Core\App\terminal_cmd_handlers.c
+   at unify_builder.Program.compileByMulThread(Int32 thrNum, CmdInfo[] cmds_, List`1 errLogs)
+   at unify_builder.Program.Main(String[] args_)
+---
+".\..\Core\App\terminal_cmd_handlers.c", line 560: Error:  #167: argument of type "float *" is incompatible with parameter of type "uint8_t *"
+          ByteTo_Word32(&move_cmd_speed, data + 1); 
+                        ^
+".\..\Core\App\terminal_cmd_handlers.c", line 561: Error:  #167: argument of type "float *" is incompatible with parameter of type "uint8_t *"
+          ByteTo_Word32(&move_cmd_dist,  data + 5); 
+                        ^
+.\..\Core\App\terminal_cmd_handlers.c: 0 warnings, 2 errors
+
+[2026-04-10 11:34:26]	[info] incremental build: 2 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\terminal_cmd_handlers.c': source file has been changed.
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-04-10 11:34:26]	compilation failed at : "c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\terminal_cmd_handlers.c", exit code: 1
+command: 
+  "D:\Keil_v5\ARM\ARMCC\bin\armcc.exe" -c --apcs=interwork -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/DSP/Include -I../Middlewares/FreeRTOS-Kernel -I../Middlewares/FreeRTOS-Kernel/include -I../Middlewares/FreeRTOS-Kernel/portable/RVDS/ARM_CM4F -I../Core/App/Include -I../Core/BSP/Include -I../Core/Lib/Include -I../Core/OS_Tasks/Include -I.cmsis/include -IRTE/_Main_Board -D"USE_FULL_LL_DRIVER" -D"ARM_MATH_CM4" -D"__FPU_PRESENT=1U" --cpu Cortex-M4.fp --li --c99 -D__MICROLIB -O0 --split_sections --diag_suppress=1 --diag_suppress=1295 -g -o .\build\Main_Board\.obj\__\Core\App\terminal_cmd_handlers.o --no_depend_system_headers --depend .\build\Main_Board\.obj\__\Core\App\terminal_cmd_handlers.d .\..\Core\App\terminal_cmd_handlers.c
+   at unify_builder.Program.Main(String[] args_)
+---
+".\..\Core\App\terminal_cmd_handlers.c", line 560: Error:  #167: argument of type "float" is incompatible with parameter of type "uint8_t *"
+          ByteTo_Word32(move_cmd_speed, data + 1); 
+                        ^
+".\..\Core\App\terminal_cmd_handlers.c", line 561: Error:  #167: argument of type "float" is incompatible with parameter of type "uint8_t *"
+          ByteTo_Word32(move_cmd_dist,  data + 5); 
+                        ^
+.\..\Core\App\terminal_cmd_handlers.c: 0 warnings, 2 errors
+
+[2026-04-10 11:34:32]	[info] incremental build: 2 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\terminal_cmd_handlers.c': source file has been changed.
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-04-10 11:34:32]	compilation failed at : "c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\terminal_cmd_handlers.c", exit code: 1
+command: 
+  "D:\Keil_v5\ARM\ARMCC\bin\armcc.exe" -c --apcs=interwork -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/DSP/Include -I../Middlewares/FreeRTOS-Kernel -I../Middlewares/FreeRTOS-Kernel/include -I../Middlewares/FreeRTOS-Kernel/portable/RVDS/ARM_CM4F -I../Core/App/Include -I../Core/BSP/Include -I../Core/Lib/Include -I../Core/OS_Tasks/Include -I.cmsis/include -IRTE/_Main_Board -D"USE_FULL_LL_DRIVER" -D"ARM_MATH_CM4" -D"__FPU_PRESENT=1U" --cpu Cortex-M4.fp --li --c99 -D__MICROLIB -O0 --split_sections --diag_suppress=1 --diag_suppress=1295 -g -o .\build\Main_Board\.obj\__\Core\App\terminal_cmd_handlers.o --no_depend_system_headers --depend .\build\Main_Board\.obj\__\Core\App\terminal_cmd_handlers.d .\..\Core\App\terminal_cmd_handlers.c
+   at unify_builder.Program.Main(String[] args_)
+---
+".\..\Core\App\terminal_cmd_handlers.c", line 560: Error:  #167: argument of type "float *" is incompatible with parameter of type "uint8_t *"
+          ByteTo_Word32(&move_cmd_speed, data + 1); 
+                        ^
+".\..\Core\App\terminal_cmd_handlers.c", line 561: Error:  #167: argument of type "float *" is incompatible with parameter of type "uint8_t *"
+          ByteTo_Word32(&move_cmd_dist,  data + 5); 
+                        ^
+.\..\Core\App\terminal_cmd_handlers.c: 0 warnings, 2 errors
+
+[2026-04-10 11:37:07]	[info] incremental build: 2 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\terminal_cmd_handlers.c': source file has been changed.
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-04-10 11:37:10]	[done]
+	build successfully !
+
+[2026-04-10 11:42:49]	[done]
+	build successfully !
+
+[2026-04-10 13:05:05]	[done]
+	build successfully !
+
+[2026-04-10 13:06:27]	[done]
+	build successfully !
+
+[2026-04-10 13:29:39]	[done]
+	build successfully !
+

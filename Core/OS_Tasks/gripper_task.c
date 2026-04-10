@@ -74,6 +74,9 @@ extern volatile TaskHandle_t xTerminalTaskHandle;
 #define cos30 	0.8660254f
 #define cos60 	0.5f
 
+float move_cmd_speed = 0.0f; // [m/s]
+float move_cmd_dist = 0.0f;  // [m]
+
 // Structure describing all pins and IDs for one gripper
 typedef struct {
     // Dynamixels ID
@@ -133,7 +136,7 @@ const GripperHardware_t grippers[2] = {
     { // left (index 1) (id == 2)
         .dyn_main_1 = 15, .dyn_main_2 = 16,
         .dyn_side_1 = 7,  .dyn_side_2 = 8,
-		.start_angle = 148, .end_angle = 130, .cursor_angle = 99, // start 149; 61
+		.start_angle = 148, .end_angle = 130, .cursor_angle = 99, // start 148; 130
 		.side_on_angle_1 = 140, .side_off_angle_1 = 69,
 		.side_on_angle_2 = 51, .side_off_angle_2 = 127,
 		.dyn_speed = 150, .dyn_side_speed = 300,
@@ -393,9 +396,10 @@ static void Task(void *arg)
             SPI_GPO_ResetOutputPin(hw->pumps_all_mask | hw->valves_all_mask);
             vTaskDelay(100);
 
-            // Пподнимаем основной механизм в стартовое положение
-            RotateTwoDynamixels(USART3, hw->dyn_main_1, hw->dyn_main_2, hw->end_angle, hw->end_angle);
-            vTaskDelay(500);
+            // Поднимаем основной механизм в стартовое положение
+            //RotateTwoDynamixels(USART3, hw->dyn_main_1, hw->dyn_main_2, hw->end_angle, hw->end_angle);
+			RotateTwoDynamixels(USART3, hw->dyn_main_1, hw->dyn_main_2, 70, 70);
+            vTaskDelay(200);
         }
     #endif
 
@@ -556,54 +560,55 @@ static void Task(void *arg)
 				gripper_cmd = NO_CMD;
 				break;
 			}
-
+			
 			case 6: // move
 			{
-				//cmd_isFinished = 0;
-
 				struct speed_s speed;
+                speed.dphi = 0;
+                speed.dx = 0;
+                speed.dy = 0;
 
-				if(dir == 0){
-					speed.dphi = 0;
-					speed.dx = 0.1f * cos60;
-					speed.dy = -0.1f * cos30;
-					move_delay = 1000;
-				}
-				if(dir == 1){
-					speed.dphi = 0;
-					speed.dx = -0.1f * cos60;
-					speed.dy = 0.1f * cos30;
-					move_delay = 1200;
-				}
+                // Защита от деления на ноль: едем, только если задана скорость
+                if (move_cmd_speed != 0.0f) {
+                    
+                    // Вычисляем время движения в миллисекундах
+                    // Дистанцию и скорость берем по модулю, так как направление задается знаком скорости
+                    float dist = (move_cmd_dist < 0.0f) ? -move_cmd_dist : move_cmd_dist;
+                    float abs_speed = (move_cmd_speed < 0.0f) ? -move_cmd_speed : move_cmd_speed;
+                    
+                    uint32_t delay_ms = (uint32_t)((dist / abs_speed) * 1000.0f);
 
-				dir = 2;
+                    // Расчет проекций скоростей на оси базы
+                    if (gripper_id == 1) {
+                        // Гриппер 1 (смотрит под углом -60 градусов от оси X робота)
+                        speed.dx = move_cmd_speed * cos60;
+                        speed.dy = -move_cmd_speed * cos30; // cos30 используется как sin60 (0.866)
+                    } 
+                    else if (gripper_id == 2) {
+                        // Гриппер 2 (смотрит под углом +60 градусов)
+                        speed.dx = move_cmd_speed * cos60;
+                        speed.dy = move_cmd_speed * cos30;
+                    }
 
-				Odometry.SetSpeed(&speed);
-				vTaskDelay(move_delay);
-				
-				/*
-				// send the "wake up!" notification to TerminalTask
+                    Odometry.SetSpeed(&speed);
+                    vTaskDelay(delay_ms);
+                }
+
+                // stop the robot after movement
+                speed.dphi = 0;
+                speed.dx = 0;
+                speed.dy = 0;
+                Odometry.SetSpeed(&speed);
+                vTaskDelay(100);
+                
+                /*
 				if (xTerminalTaskHandle != NULL) {
-					xTaskNotifyGive(xTerminalTaskHandle);
-				}
-				*/
-
-				speed.dphi = 0;
-				speed.dx = 0;
-				speed.dy = 0;
-				Odometry.SetSpeed(&speed);
-				vTaskDelay(100);
-				
-				/*
-				// send the "wake up!" notification to TerminalTask
-				if (xTerminalTaskHandle != NULL) {
-					xTaskNotifyGive(xTerminalTaskHandle);
-				}
-				*/
-				//cmd_isFinished = 0;
-				gripper_cmd = 0xFF;
-			}
-				break;
+                    xTaskNotifyGive(xTerminalTaskHandle);
+                }
+                */
+                gripper_cmd = 0xFF;
+            }
+                break;
 			}
 		#endif
 

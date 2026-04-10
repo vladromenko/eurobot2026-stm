@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\build\Main_Board\Main_Board.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\build\Main_Board\Main_Board.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Thu Apr 09 23:35:08 2026
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Fri Apr 10 13:29:38 2026
 <BR><P>
 <H3>Maximum Stack Usage =        160 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -1773,7 +1773,8 @@ Local Symbols
 </UL>
 
 <P><STRONG><a name="[16f]"></a>ByteTo_Word32</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, terminal_cmd_handlers.o(i.ByteTo_Word32))
-<BR><BR>[Called By]<UL><LI><a href="#[1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SetRobotSpeed
+<BR><BR>[Called By]<UL><LI><a href="#[18]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SimpleMove
+<LI><a href="#[1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SetRobotSpeed
 <LI><a href="#[3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SetRobotCoord
 </UL>
 
@@ -1890,10 +1891,11 @@ Local Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> terminal_cmd_handlers.o(.data)
 </UL>
-<P><STRONG><a name="[18]"></a>SimpleMove</STRONG> (Thumb, 72 bytes, Stack size 48 bytes, terminal_cmd_handlers.o(i.SimpleMove))
+<P><STRONG><a name="[18]"></a>SimpleMove</STRONG> (Thumb, 92 bytes, Stack size 48 bytes, terminal_cmd_handlers.o(i.SimpleMove))
 <BR><BR>[Stack]<UL><LI>Max Depth = 104<LI>Call Chain = SimpleMove &rArr; ulTaskGenericNotifyTake &rArr; prvAddCurrentTaskToDelayedList &rArr; vListInsert
 </UL>
 <BR>[Calls]<UL><LI><a href="#[12e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ulTaskGenericNotifyTake
+<LI><a href="#[16f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ByteTo_Word32
 <LI><a href="#[125]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr4
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> terminal_cmd_handlers.o(.data)
@@ -2471,9 +2473,9 @@ Local Symbols
 <LI><a href="#[120]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskResumeAll
 <LI><a href="#[11a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskSuspendAll
 </UL>
-<BR>[Called By]<UL><LI><a href="#[ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SetCurrentLimit
-<LI><a href="#[b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SetStepMode
+<BR>[Called By]<UL><LI><a href="#[b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SetStepMode
 <LI><a href="#[bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SetCurrentLimit_mA
+<LI><a href="#[ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SetCurrentLimit
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> l6474_drvr.o(.constdata)
 </UL>
@@ -3462,8 +3464,8 @@ Local Symbols
 <BR>[Called By]<UL><LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Task
 </UL>
 
-<P><STRONG><a name="[9a]"></a>Task</STRONG> (Thumb, 2082 bytes, Stack size 40 bytes, gripper_task.o(i.Task))
-<BR><BR>[Stack]<UL><LI>Max Depth = 128<LI>Call Chain = Task &rArr; WaitDynamixelAngle &rArr; vTaskDelay &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
+<P><STRONG><a name="[9a]"></a>Task</STRONG> (Thumb, 2312 bytes, Stack size 48 bytes, gripper_task.o(i.Task))
+<BR><BR>[Stack]<UL><LI>Max Depth = 136<LI>Call Chain = Task &rArr; WaitDynamixelAngle &rArr; vTaskDelay &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
 </UL>
 <BR>[Calls]<UL><LI><a href="#[133]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI_GPO_ResetOutputPin
 <LI><a href="#[16c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MaxonsEnable

@@ -51,28 +51,6 @@
 // Глобальная переменная, чтобы gripper_task мог отправить сюда сигнал
 volatile TaskHandle_t xTerminalTaskHandle = NULL; 
 
-extern int16_t stepper1_goal_position;
-extern int16_t stepper2_goal_position;
-extern int16_t stepper3_goal_position;
-
-extern uint8_t stepper1_calibrate;
-extern uint8_t stepper2_calibrate;
-extern uint8_t stepper3_calibrate;
-
-// from gripper_task
-/*
-extern 	uint8_t dynamixel_id_1;
-extern	uint8_t dynamixel_id_2;
-extern	uint16_t dynamixel_speed;
-extern	uint8_t start_angle;
-extern	uint8_t end_angle;
-
-extern	uint8_t servo5_start_angle;
-extern	uint8_t servo5_end_angle;
-extern	uint8_t servo6_start_angle;
-extern	uint8_t servo6_end_angle;
-*/
-
 extern uint16_t dynamixel_speed;
 
 extern uint8_t i2c_addr_1;
@@ -99,36 +77,8 @@ extern uint8_t block_mask;
 extern uint16_t current_angle;
 extern uint8_t dir;
 
-/*
-uint8_t dynamixel_id_1 = 98;
-uint8_t dynamixel_id_2 = 112;
-uint16_t dynamixel_speed = 150; //0-1024
-uint8_t start_angle = 62; //0-300 60
-uint8_t end_angle = 110; //0-300 150 125
-
-uint8_t servo5_start_angle = 10; // left shift servo 90 170
-uint8_t servo5_end_angle = 110;
-uint8_t servo6_start_angle = 120; // right shift servo
-uint8_t servo6_end_angle = 30;
-
-uint8_t i2c_addr_1 = 0x40; // I2C address of the PWM driver
-
-uint8_t dynamixel_cursor_id = 15;
-uint16_t cursor_speed = 150; //0-1024
-uint8_t cursor_hor_angle = 40; //0-300 60
-uint8_t cursor_vert_angle = 130; //0-300 150 125
-
-// Side dynamixels of the gripper
-uint8_t side_dynamixel_id_1 = 13;
-uint8_t side_dynamixel_id_2 = 14;
-uint16_t side_dynamixel_speed = 300; //0-1024
-uint8_t side_off_angle_1 = 69; //0-300 44 99
-uint8_t side_on_angle_1 = 140; //0-300 132 140
-uint8_t side_off_angle_2 = 127; //0-300 152 97
-uint8_t side_on_angle_2 = 51; //0-300 59 51
-
-uint16_t current_angle = 0;
-*/
+extern float move_cmd_speed;
+extern float move_cmd_dist;
 
 uint8_t COMM_ENABLE = 1;
 
@@ -583,6 +533,7 @@ static void SimpleMove(uint8_t* data, uint8_t data_length)
 }
 */
 
+/*
 static void SimpleMove(uint8_t* data, uint8_t data_length)
 {
   ulTaskNotifyTake(pdTRUE, 0); 
@@ -597,6 +548,29 @@ static void SimpleMove(uint8_t* data, uint8_t data_length)
   terminal_response.data_length = 1;
   Terminal.SendResponse(&terminal_response);
 }
+*/
+
+static void SimpleMove(uint8_t* data, uint8_t data_length)
+{
+    ulTaskNotifyTake(pdTRUE, 0); 
+    
+    if (data_length >= 9) {
+        gripper_id = data[0];
+        
+        ByteTo_Word32(data + 1, &move_cmd_speed); 
+        ByteTo_Word32(data + 5, &move_cmd_dist); 
+    }
+    
+    cmd_isFinished = 0; 
+    gripper_cmd = 6;
+
+    struct terminal_response_s terminal_response = {0};
+    terminal_response.cmd = BOARD_MOVE;
+    terminal_response.data[0] = 0x01;
+    terminal_response.data_length = 1;
+    Terminal.SendResponse(&terminal_response);
+}
+
 
 
 
