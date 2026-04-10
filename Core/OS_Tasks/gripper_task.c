@@ -74,8 +74,8 @@ extern volatile TaskHandle_t xTerminalTaskHandle;
 #define cos30 	0.8660254f
 #define cos60 	0.5f
 
-float move_cmd_speed = 0.0f; // [m/s]
-float move_cmd_dist = 0.0f;  // [m]
+uint8_t move_cmd_speed = 0; // [mm/s]
+uint8_t move_cmd_time = 0;  // [ms]
 
 // Structure describing all pins and IDs for one gripper
 typedef struct {
@@ -568,31 +568,32 @@ static void Task(void *arg)
                 speed.dx = 0;
                 speed.dy = 0;
 
-                // Защита от деления на ноль: едем, только если задана скорость
-                if (move_cmd_speed != 0.0f) {
-                    
-                    // Вычисляем время движения в миллисекундах
-                    // Дистанцию и скорость берем по модулю, так как направление задается знаком скорости
-                    float dist = (move_cmd_dist < 0.0f) ? -move_cmd_dist : move_cmd_dist;
-                    float abs_speed = (move_cmd_speed < 0.0f) ? -move_cmd_speed : move_cmd_speed;
-                    
-                    uint32_t delay_ms = (uint32_t)((dist / abs_speed) * 1000.0f);
-
-                    // Расчет проекций скоростей на оси базы
-                    if (gripper_id == 1) {
-                        // Гриппер 1 (смотрит под углом -60 градусов от оси X робота)
-                        speed.dx = move_cmd_speed * cos60;
-                        speed.dy = -move_cmd_speed * cos30; // cos30 используется как sin60 (0.866)
-                    } 
-                    else if (gripper_id == 2) {
-                        // Гриппер 2 (смотрит под углом +60 градусов)
-                        speed.dx = move_cmd_speed * cos60;
-                        speed.dy = move_cmd_speed * cos30;
-                    }
-
-                    Odometry.SetSpeed(&speed);
-                    vTaskDelay(delay_ms);
+                float move_speed;
+                
+                if (dir == 0) {
+                    move_speed = (float)(move_cmd_speed * 0.01f);
+                } 
+                else if (dir == 1) {
+                    move_speed = (float)(move_cmd_speed * (-1) * 0.01f);
                 }
+
+                uint32_t delay_ms = (uint32_t)(move_cmd_time * 500.0f);
+
+                // Расчет проекций скоростей на оси базы
+                if (gripper_id == 1) {
+                    // Гриппер 1 (смотрит под углом -60 градусов от оси X робота)
+                    speed.dx = move_speed * cos60;
+                    speed.dy = -move_speed * cos30;
+                } 
+                else if (gripper_id == 2) {
+                    // Гриппер 2 (смотрит под углом +60 градусов)
+                    speed.dx = move_speed * cos60;
+                    speed.dy = move_speed * cos30;
+                }
+
+                Odometry.SetSpeed(&speed);
+                vTaskDelay(delay_ms);
+                
 
                 // stop the robot after movement
                 speed.dphi = 0;

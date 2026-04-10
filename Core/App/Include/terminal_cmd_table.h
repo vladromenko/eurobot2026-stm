@@ -39,7 +39,7 @@
 #define BOARD_GET_AX_ANGLE                	0X0A    /* Command Description  */
 #define BOARD_SET_AX_ANGLE                	0X0B    /* Command Description  */
 #define BOARD_TOGGLE_PUMP										0X0F 		/* Command Description  */
-#define BOARD_GET_KEY                       0X11		/* Command Description  */
+//#define BOARD_GET_KEY                       0X11		/* Command Description  */
 #define BOARD_GET_TOGGLE                    0X12		/* Command Description  */
 #define BOARD_GET_DEBUG_MESSAGE             0X13		/* Command Description  */
 #define BOARD_GET_LINEAR_SWITCHES_STATE     0X14		/* Command Description  */
@@ -59,10 +59,11 @@
 #define BOARD_GRIPPER_LIFT                  0x20    /* [32] Control the angle of the gripper's dynamixels */
 #define BOARD_TOGGLE_PUMPS									0X21 		/* [33] Turn on/off pumpes  */
 #define BOARD_TOGGLE_VALVES                 0x22		/* [34] Turn on/off valves */
-#define BOARD_MOVE                          0x25		/* [35] Move the robot to grab blocks */
+#define BOARD_MOVE                          0x25		/* [37] Move the robot to grab blocks */
+#define BOARD_GET_KEY                       0X26		/* [38] Command Description  */
 
 /*  Do not forget to update the table size with the last one command! */
-#define TERMINAL_CMD_TABLE_SIZE             (BOARD_MOVE + 1)
+#define TERMINAL_CMD_TABLE_SIZE             (BOARD_GET_KEY + 1)
 
 
 #ifdef __cplusplus

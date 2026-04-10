@@ -76,9 +76,8 @@ extern uint8_t block_mask;
 
 extern uint16_t current_angle;
 extern uint8_t dir;
-
-extern float move_cmd_speed;
-extern float move_cmd_dist;
+extern uint8_t move_cmd_speed;
+extern uint8_t move_cmd_time;
 
 uint8_t COMM_ENABLE = 1;
 
@@ -255,21 +254,21 @@ static void SetAxAngle(uint8_t* data, uint8_t data_length)
 
   Terminal.SendResponse(&terminal_response);
 }
-
+/*
 static void GetKey(uint8_t* data, uint8_t data_length)
 {
-	if(COMM_ENABLE){
-	}
-	
- 
+  uint8_t key_request = data[0];
+  uint8_t key_response = (robot_ctrl.starting_cord == STARTING_CORD_ATTACHED) ? 1 : 0;
+
   struct terminal_response_s terminal_response;
 
   terminal_response.cmd = BOARD_GET_KEY;
-  terminal_response.data[0] = (robot_ctrl.starting_cord == STARTING_CORD_RELEASED)?1:0;
+  terminal_response.data[0] = key_response;
   terminal_response.data_length = 1;
 
   Terminal.SendResponse(&terminal_response);
 }
+  */
 
 static void GetToggle(uint8_t* data, uint8_t data_length)
 {
@@ -554,12 +553,10 @@ static void SimpleMove(uint8_t* data, uint8_t data_length)
 {
     ulTaskNotifyTake(pdTRUE, 0); 
     
-    if (data_length >= 9) {
-        gripper_id = data[0];
-        
-        ByteTo_Word32(data + 1, &move_cmd_speed); 
-        ByteTo_Word32(data + 5, &move_cmd_dist); 
-    }
+    gripper_id = data[0];
+    dir = data[1];
+    move_cmd_speed = data[2];
+    move_cmd_time = data[3];
     
     cmd_isFinished = 0; 
     gripper_cmd = 6;
@@ -569,6 +566,20 @@ static void SimpleMove(uint8_t* data, uint8_t data_length)
     terminal_response.data[0] = 0x01;
     terminal_response.data_length = 1;
     Terminal.SendResponse(&terminal_response);
+}
+
+static void GetKey(uint8_t* data, uint8_t data_length)
+{
+  uint8_t key_request = data[0];
+  uint8_t key_response = (robot_ctrl.starting_cord == STARTING_CORD_ATTACHED) ? 1 : 0;
+
+  struct terminal_response_s terminal_response;
+
+  terminal_response.cmd = BOARD_GET_KEY;
+  terminal_response.data[0] = key_response;
+  terminal_response.data_length = 1;
+
+  Terminal.SendResponse(&terminal_response);
 }
 
 
@@ -583,7 +594,7 @@ void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t da
                                                                                               [BOARD_Set_BMS_CalibrationValue] = Set_BMS_CalibrationValue,
 																																															[BOARD_GET_AX_ANGLE] = GetAxAngle,
                                                                                               [BOARD_SET_AX_ANGLE] = SetAxAngle,
-																																															[BOARD_GET_KEY] = GetKey,
+																																															//[BOARD_GET_KEY] = GetKey,
 																																															[BOARD_GET_TOGGLE] = GetToggle,
                                                                                               [BOARD_GET_DEBUG_MESSAGE] = GetDebugMessage,
                                                                                               [BOARD_GET_LINEAR_SWITCHES_STATE] = GetSwitchesState,
@@ -598,7 +609,8 @@ void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t da
                                                                                               [BOARD_GRIPPER_LIFT] = GripperLift,
                                                                                               [BOARD_TOGGLE_PUMPS] = TogglePumps,
                                                                                               [BOARD_TOGGLE_VALVES] = ToggleValves,
-                                                                                              [BOARD_MOVE] = SimpleMove
+                                                                                              [BOARD_MOVE] = SimpleMove,
+                                                                                              [BOARD_GET_KEY] = GetKey
                                                                                               
                                                                                              
 
