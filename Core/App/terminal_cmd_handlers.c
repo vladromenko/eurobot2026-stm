@@ -69,6 +69,7 @@ extern uint8_t cmd_isFinished;
 extern uint8_t gripper_cmd;
 extern uint8_t lift_cmd;
 extern uint8_t gripper_id;
+extern uint8_t gripper_height;
 
 extern uint8_t pump_mask;
 extern uint8_t valve_mask;
@@ -598,6 +599,28 @@ static void GetKey(uint8_t* data, uint8_t data_length)
   Terminal.SendResponse(&terminal_response);
 }
 
+static void GripperVertical(uint8_t* data, uint8_t data_length)
+{
+  if(COMM_ENABLE){
+    ulTaskNotifyTake(pdTRUE, 0); 
+    xTerminalTaskHandle = xTaskGetCurrentTaskHandle();
+    
+    gripper_id = data[0];
+    gripper_height = data[1];
+    gripper_cmd = 7;
+
+    WaitForGripperCompletion();
+	}
+
+  // terminal response
+  struct terminal_response_s terminal_response;
+  terminal_response.cmd = BOARD_GRIPPER_VERTICAL;
+  //terminal_response.data[0] = last_cmd_status;
+  terminal_response.data[0] = 0x01;
+  terminal_response.data_length = 1;
+  Terminal.SendResponse(&terminal_response);
+}
+
 
 
 
@@ -626,7 +649,8 @@ void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t da
                                                                                               [BOARD_TOGGLE_PUMPS] = TogglePumps,
                                                                                               [BOARD_TOGGLE_VALVES] = ToggleValves,
                                                                                               [BOARD_MOVE] = SimpleMove,
-                                                                                              [BOARD_GET_KEY] = GetKey
+                                                                                              [BOARD_GET_KEY] = GetKey,
+                                                                                              [BOARD_GRIPPER_VERTICAL] = GripperVertical
                                                                                               
                                                                                              
 

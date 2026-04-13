@@ -156,6 +156,7 @@ const GripperHardware_t grippers[2] = {
 uint16_t dynamixel_speed = 150; //0-1024
 uint8_t gripper_target_angle;
 uint16_t angle_timeout_ms = 1500; // ms to wait for dynamixel to reach the target angle before timeout
+uint8_t gripper_height = 0;
 
 // I2C address of the PWM driver
 uint8_t i2c_addr_1 = 0x40; 
@@ -198,6 +199,8 @@ uint8_t dir = 0; // diretion of movement in SimleMove command [0-forward, 1-back
 uint16_t move_delay = 800;
 
 uint8_t last_cmd_status = 1; // 1 - успех, 0 - авария/отмена
+
+extern uint8_t stepper1_calibrate;
 
 
 /**
@@ -362,6 +365,8 @@ static void Task(void *arg)
         Dynamixel_AX.TorqueEnable(USART3, dynamixel_cursor_id);
         Dynamixel_AX.SetAngle(USART3, dynamixel_cursor_id, cursor_vert_angle);
         vTaskDelay(100);
+
+        stepper1_calibrate = 1;
 
         // Инициализация обоих грипперов в цикле
         for (int i = 0; i < 2; i++) {
@@ -811,11 +816,25 @@ static void Task(void *arg)
                 }
                 */
                 gripper_cmd = 0xFF;
+                break;
             }
+                
+            case 7: // gripper_vertical
+			{	
+                
+
+                // Ждем с таймаутом
+                WaitDynamixelAngle(active_hw->dyn_main_1, gripper_target_angle, angle_timeout_ms);
+
+                // Будим терминал
+                if (xTerminalTaskHandle != NULL) {
+                    xTaskNotifyGive(xTerminalTaskHandle);
+                }
+                gripper_cmd = NO_CMD;
                 break;
 			}
+        }
 		#endif
-
 	}
 	
 }

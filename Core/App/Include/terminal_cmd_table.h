@@ -60,10 +60,11 @@
 #define BOARD_TOGGLE_PUMPS									0X21 		/* [33] Turn on/off pumpes  */
 #define BOARD_TOGGLE_VALVES                 0x22		/* [34] Turn on/off valves */
 #define BOARD_MOVE                          0x25		/* [37] Move the robot to grab blocks */
-#define BOARD_GET_KEY                       0X26		/* [38] Command Description  */
+#define BOARD_GET_KEY                       0X26		/* [38] Check the state of the starting cord  */
+#define BOARD_GRIPPER_VERTICAL              0X27		/* [39] Control the gripper's height  */
 
 /*  Do not forget to update the table size with the last one command! */
-#define TERMINAL_CMD_TABLE_SIZE             (BOARD_GET_KEY + 1)
+#define TERMINAL_CMD_TABLE_SIZE             (BOARD_GRIPPER_VERTICAL + 1)
 
 
 #ifdef __cplusplus

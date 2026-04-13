@@ -129,7 +129,7 @@ int main(void)
   GameTask.CreateTask(1);
 
   //DemoTask.CreateTask(4);
-	//StepperTask.CreateTask(1);
+	StepperTask.CreateTask(1);
 	GripperTask.CreateTask(1);
   //DebugTerminalTask.CreateTask(1);
 	
