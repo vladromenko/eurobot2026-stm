@@ -86,7 +86,7 @@ typedef struct {
     uint8_t dyn_side_2;
 	
 	// Dynamixels params
-	uint8_t dyn_speed;
+	uint16_t dyn_speed;
 	uint8_t start_angle;
 	uint8_t end_angle;
 	uint8_t cursor_angle;
@@ -120,33 +120,33 @@ const GripperHardware_t grippers[2] = {
     { // right (index 0) (id == 1)
         .dyn_main_1 = 98, .dyn_main_2 = 112,
         .dyn_side_1 = 13, .dyn_side_2 = 14,
-		.start_angle = 149, .end_angle = 61, .cursor_angle = 99,
-		.side_on_angle_1 = 140, .side_off_angle_1 = 69,
-		.side_on_angle_2 = 51, .side_off_angle_2 = 127,
-		.dyn_speed = 150, .dyn_side_speed = 300,
+		.start_angle = 149, .end_angle = 65, .cursor_angle = 99, // 149 71 99
+		.side_on_angle_1 = 140, .side_off_angle_1 = 89, //140 69
+		.side_on_angle_2 = 51, .side_off_angle_2 = 107, //51 127
+		.dyn_speed = 300, .dyn_side_speed = 300, //150 300
         .pumps_pins = {SPI_POWER_OUTPUT_1, SPI_POWER_OUTPUT_3, SPI_POWER_OUTPUT_5, SPI_POWER_OUTPUT_7},
         .pumps_all_mask = SPI_POWER_OUTPUT_1 | SPI_POWER_OUTPUT_3 | SPI_POWER_OUTPUT_5 | SPI_POWER_OUTPUT_7,
         .valves_pins = {SPI_POWER_OUTPUT_2, SPI_POWER_OUTPUT_4, SPI_POWER_OUTPUT_6, SPI_POWER_OUTPUT_8},
         .valves_all_mask = SPI_POWER_OUTPUT_2 | SPI_POWER_OUTPUT_4 | SPI_POWER_OUTPUT_6 | SPI_POWER_OUTPUT_8,
         .block_servos = {PCA9685_CH1, PCA9685_CH2, PCA9685_CH3, PCA9685_CH4},
         .shift_servo_5 = PCA9685_CH5, .shift_servo_6 = PCA9685_CH6,
-		.shift_servo_5_end_angle = 16, .shift_servo_5_start_angle = 110,
+		.shift_servo_5_end_angle = 16, .shift_servo_5_start_angle = 100,
 		.shift_servo_6_end_angle = 112, .shift_servo_6_start_angle = 21
     },
     { // left (index 1) (id == 2)
         .dyn_main_1 = 15, .dyn_main_2 = 16,
         .dyn_side_1 = 7,  .dyn_side_2 = 8,
-		.start_angle = 148, .end_angle = 130, .cursor_angle = 99, // start 148; 130
-		.side_on_angle_1 = 140, .side_off_angle_1 = 69,
-		.side_on_angle_2 = 51, .side_off_angle_2 = 127,
-		.dyn_speed = 150, .dyn_side_speed = 300,
+		.start_angle = 148, .end_angle = 130, .cursor_angle = 99, // start 148; end 130 65
+		.side_on_angle_1 = 156, .side_off_angle_1 = 89,
+		.side_on_angle_2 = 55, .side_off_angle_2 = 107,
+		.dyn_speed = 300, .dyn_side_speed = 300,
         .pumps_pins = {SPI_POWER_OUTPUT_9, SPI_POWER_OUTPUT_11, SPI_POWER_OUTPUT_13, SPI_POWER_OUTPUT_15},
         .pumps_all_mask = SPI_POWER_OUTPUT_9 | SPI_POWER_OUTPUT_11 | SPI_POWER_OUTPUT_13 | SPI_POWER_OUTPUT_15,
         .valves_pins = {SPI_POWER_OUTPUT_10, SPI_POWER_OUTPUT_12, SPI_POWER_OUTPUT_14, SPI_POWER_OUTPUT_16},
         .valves_all_mask = SPI_POWER_OUTPUT_10 | SPI_POWER_OUTPUT_12 | SPI_POWER_OUTPUT_14 | SPI_POWER_OUTPUT_16,
         .block_servos = {PCA9685_CH8, PCA9685_CH9, PCA9685_CH10, PCA9685_CH11},
         .shift_servo_5 = PCA9685_CH12, .shift_servo_6 = PCA9685_CH13,
-		.shift_servo_5_end_angle = 16, .shift_servo_5_start_angle = 109,
+		.shift_servo_5_end_angle = 16, .shift_servo_5_start_angle = 110,
 		.shift_servo_6_end_angle = 112, .shift_servo_6_start_angle = 24
     }
 };
@@ -171,10 +171,12 @@ uint8_t cursor_cmd;
 
 /* Side grips params */
 uint16_t side_dynamixel_speed = 300; //0-1024
+/*
 uint8_t side_off_angle_1 = 69; //0-300 44 99
 uint8_t side_on_angle_1 = 140; //0-300 132 140
 uint8_t side_off_angle_2 = 127; //0-300 152 97
 uint8_t side_on_angle_2 = 51; //0-300 59 51
+*/
 uint8_t grips_cmd;
 
 /* buffer params */
@@ -194,6 +196,8 @@ uint8_t gripper_id;
 uint8_t gripper_cmd = 0xFF; // idle task
 uint8_t dir = 0; // diretion of movement in SimleMove command [0-forward, 1-backward]
 uint16_t move_delay = 800;
+
+uint8_t last_cmd_status = 1; // 1 - успех, 0 - авария/отмена
 
 
 /**
@@ -398,7 +402,7 @@ static void Task(void *arg)
 
             // Поднимаем основной механизм в стартовое положение
             //RotateTwoDynamixels(USART3, hw->dyn_main_1, hw->dyn_main_2, hw->end_angle, hw->end_angle);
-			RotateTwoDynamixels(USART3, hw->dyn_main_1, hw->dyn_main_2, 70, 70);
+			RotateTwoDynamixels(USART3, hw->dyn_main_1, hw->dyn_main_2, 65, 65);
             vTaskDelay(200);
         }
     #endif
@@ -453,6 +457,7 @@ static void Task(void *arg)
 
 			case 1: // SideGrips
 			{
+                /*
 				// Определяем целевой угол для боковых створок из структуры
                 uint16_t target_angle_1 = (grips_cmd == 1) ? active_hw->side_on_angle_1 : active_hw->side_off_angle_1;
                 uint16_t target_angle_2 = (grips_cmd == 1) ? active_hw->side_on_angle_2 : active_hw->side_off_angle_2;
@@ -477,22 +482,127 @@ static void Task(void *arg)
                 }
                 gripper_cmd = NO_CMD;
                 break;
+                */
+
+
+                uint16_t target_angle_1 = (grips_cmd == 1) ? active_hw->side_on_angle_1 : active_hw->side_off_angle_1;
+                uint16_t target_angle_2 = (grips_cmd == 1) ? active_hw->side_on_angle_2 : active_hw->side_off_angle_2;
+
+                Dynamixel_AX.SetMovingSpeed(USART3, active_hw->dyn_side_1, active_hw->dyn_side_speed);
+                Dynamixel_AX.SetMovingSpeed(USART3, active_hw->dyn_side_2, active_hw->dyn_side_speed);
+                Dynamixel_AX.TorqueEnable(USART3, active_hw->dyn_side_1);
+                Dynamixel_AX.TorqueEnable(USART3, active_hw->dyn_side_2);
+
+                if (grips_cmd == 1) 
+                {
+                    // === УМНОЕ СЖАТИЕ С ЦЕНТРИРОВАНИЕМ ===
+                    
+                    // 1. Начинаем движение к центру
+                    RotateTwoDynamixels(USART3, active_hw->dyn_side_1, active_hw->dyn_side_2, target_angle_1, target_angle_2);
+                    
+                    // Даем сервам время тронуться с места (чтобы пропустить пик пускового тока/момента)
+                    vTaskDelay(150); 
+
+                    uint8_t done_1 = 0;
+                    uint8_t done_2 = 0;
+                    uint32_t start_time = xTaskGetTickCount();
+                    
+                    // Порог момента касания (от 0 до 1023). Подбери экспериментально на роботе!
+                    int16_t LOAD_THRESHOLD = 150; 
+
+                    // 2. Ждем касания обоих захватов
+                    while (!done_1 || !done_2) 
+                    {
+                        // Защита от зависания по таймауту (используем твой angle_timeout_ms или жестко 1500)
+                        if ((xTaskGetTickCount() - start_time) * portTICK_PERIOD_MS > 1500) {
+                            break;
+                        }
+
+                        // Проверяем 1-й захват
+                        if (!done_1) {
+                            int16_t load_1 = 0;
+                            Dynamixel_AX.GetPresentLoad(USART3, active_hw->dyn_side_1, &load_1);
+                            if (load_1 < 0) load_1 = -load_1; // Берем момент по модулю
+
+                            uint16_t cur_angle_1 = 0;
+                            Dynamixel_AX.GetAngle(USART3, active_hw->dyn_side_1, &cur_angle_1);
+                            
+                            int16_t diff_1 = (int16_t)cur_angle_1 - (int16_t)target_angle_1;
+                            if (diff_1 < 0) diff_1 = -diff_1;
+
+                            // Если коснулись блока ИЛИ дошли до конца вхолостую
+                            if (load_1 > LOAD_THRESHOLD || diff_1 < tol_window) {
+                                // Тормозим захват в текущей точке
+                                Dynamixel_AX.SetAngle(USART3, active_hw->dyn_side_1, cur_angle_1);
+                                done_1 = 1;
+                            }
+                        }
+
+                        // Проверяем 2-й захват
+                        if (!done_2) {
+                            int16_t load_2 = 0;
+                            Dynamixel_AX.GetPresentLoad(USART3, active_hw->dyn_side_2, &load_2);
+                            if (load_2 < 0) load_2 = -load_2; // Берем момент по модулю
+
+                            uint16_t cur_angle_2 = 0;
+                            Dynamixel_AX.GetAngle(USART3, active_hw->dyn_side_2, &cur_angle_2);
+
+                            int16_t diff_2 = (int16_t)cur_angle_2 - (int16_t)target_angle_2;
+                            if (diff_2 < 0) diff_2 = -diff_2;
+
+                            // Если коснулись блока ИЛИ дошли до конца вхолостую
+                            if (load_2 > LOAD_THRESHOLD || diff_2 < tol_window) {
+                                // Тормозим захват в текущей точке
+                                Dynamixel_AX.SetAngle(USART3, active_hw->dyn_side_2, cur_angle_2);
+                                done_2 = 1;
+                            }
+                        }
+
+                        vTaskDelay(10); // Небольшая задержка, чтобы не забивать шину USART
+                    }
+
+                    // 3. Финальное дожатие и центрирование
+                    // Оба коснулись (или вышли по таймауту). Теперь даем команду на полное сжатие
+                    RotateTwoDynamixels(USART3, active_hw->dyn_side_1, active_hw->dyn_side_2, target_angle_1, target_angle_2);
+                    vTaskDelay(300); // Даем время продавить блоки к центру
+                } 
+                else 
+                {
+                    // === ОБЫЧНОЕ РАЗЖАТИЕ ===
+                    RotateTwoDynamixels(USART3, active_hw->dyn_side_1, active_hw->dyn_side_2, target_angle_1, target_angle_2);
+                    vTaskDelay(200);
+                    
+                    // Ждем достижения угла (при разжатии ничего не мешает)
+                    WaitDynamixelAngle(active_hw->dyn_side_1, target_angle_1, 1500);
+                }
+
+                // Будим терминал
+                if (xTerminalTaskHandle != NULL) {
+                    xTaskNotifyGive(xTerminalTaskHandle);
+                }
+                gripper_cmd = NO_CMD;
+                break;
             }
 			
 			case 2: // gripper_lift
 			{	
+                uint16_t dyn_speed = 150;
 				// Определяем целевой угол подъема из структуры
                 if (lift_cmd == 0) {
                     gripper_target_angle = active_hw->end_angle;
+                    dyn_speed = 150;
                 } else if (lift_cmd == 1) {
                     gripper_target_angle = active_hw->start_angle;
+                    dyn_speed = 150;
                 } else if (lift_cmd == 2) {
                     gripper_target_angle = active_hw->cursor_angle;
                 }
 
                 // Настраиваем основные динамиксели подъема
-                Dynamixel_AX.SetMovingSpeed(USART3, active_hw->dyn_main_1, active_hw->dyn_speed);
-                Dynamixel_AX.SetMovingSpeed(USART3, active_hw->dyn_main_2, active_hw->dyn_speed);
+                //Dynamixel_AX.SetMovingSpeed(USART3, active_hw->dyn_main_1, active_hw->dyn_speed);
+                //Dynamixel_AX.SetMovingSpeed(USART3, active_hw->dyn_main_2, active_hw->dyn_speed);
+                Dynamixel_AX.SetMovingSpeed(USART3, active_hw->dyn_main_1, dyn_speed);
+                Dynamixel_AX.SetMovingSpeed(USART3, active_hw->dyn_main_2, dyn_speed);
                 Dynamixel_AX.TorqueEnable(USART3, active_hw->dyn_main_1);
                 Dynamixel_AX.TorqueEnable(USART3, active_hw->dyn_main_2);
 
@@ -510,7 +620,100 @@ static void Task(void *arg)
                 }
                 gripper_cmd = NO_CMD;
                 break;
-			}
+			} 
+
+            /*case 2: // gripper_lift
+            {   
+                uint8_t lift_success = 1; 
+
+                // Определяем целевой угол
+                if (lift_cmd == 0) {
+                    gripper_target_angle = active_hw->end_angle;   // Вверх
+                } else if (lift_cmd == 1) {
+                    gripper_target_angle = active_hw->start_angle; // Вниз
+                } else if (lift_cmd == 2) {
+                    gripper_target_angle = active_hw->cursor_angle; // Курсор
+                }
+
+                // Настраиваем моторы
+                Dynamixel_AX.SetMovingSpeed(USART3, active_hw->dyn_main_1, active_hw->dyn_speed);
+                Dynamixel_AX.SetMovingSpeed(USART3, active_hw->dyn_main_2, active_hw->dyn_speed);
+                Dynamixel_AX.TorqueEnable(USART3, active_hw->dyn_main_1);
+                Dynamixel_AX.TorqueEnable(USART3, active_hw->dyn_main_2);
+
+                // Запускаем движение
+                RotateTwoDynamixels(USART3, active_hw->dyn_main_1, active_hw->dyn_main_2, gripper_target_angle, gripper_target_angle);
+                
+                // УВЕЛИЧЕННАЯ ЗАДЕРЖКА: даем механизму 250 мс на разгон, 
+                // чтобы полностью пропустить стартовый скачок тока
+                vTaskDelay(250);
+
+                if (lift_cmd == 1) 
+                {
+                    // === ОПУСКАНИЕ (С ЗАЩИТОЙ) ===
+                    uint32_t start_time = xTaskGetTickCount();
+                    int16_t LIFT_LOAD_THRESHOLD = 300; // Порог удара
+                    uint8_t hit_counter = 0; // Счётчик для фильтрации помех
+                    
+                    while (1) 
+                    {
+                        // 1. Защита по таймауту
+                        if ((xTaskGetTickCount() - start_time) * portTICK_PERIOD_MS > angle_timeout_ms) {
+                            break; 
+                        }
+
+                        // 2. Читаем нагрузку
+                        int16_t current_load = 0;
+                        GetPresentLoad(USART3, active_hw->dyn_main_1, &current_load);
+                        
+                        // Твоя функция уже переводит значения в формат от -1023 до +1023.
+                        // Нам нужен только модуль силы:
+                        if (current_load < 0) current_load = -current_load;
+
+                        // 3. ПРОВЕРКА НА УДАР С ФИЛЬТРАЦИЕЙ
+                        if (current_load > LIFT_LOAD_THRESHOLD) {
+                            hit_counter++; // Нагрузка высока - копим счетчик
+                        } else {
+                            hit_counter = 0; // Нагрузка упала - это был случайный скачок, сбрасываем
+                        }
+
+                        // Если нагрузка стабильно высока 3 цикла подряд (~30 мс) - это точно препятствие
+                        if (hit_counter >= 3) {
+                            lift_success = 0; 
+                            
+                            // Спасаем гриппер - отправляем наверх
+                            RotateTwoDynamixels(USART3, active_hw->dyn_main_1, active_hw->dyn_main_2, active_hw->end_angle, active_hw->end_angle);
+                            WaitDynamixelAngle(active_hw->dyn_main_1, active_hw->end_angle, 1500);
+                            break;
+                        }
+
+                        // 4. Проверяем, достигли ли низа
+                        uint16_t cur_angle = 0;
+                        Dynamixel_AX.GetAngle(USART3, active_hw->dyn_main_1, &cur_angle);
+                        int16_t diff = (int16_t)cur_angle - (int16_t)gripper_target_angle;
+                        if (diff < 0) diff = -diff;
+                        
+                        if (diff < tol_window) {
+                            break; // Успешно доехали до низа
+                        }
+
+                        vTaskDelay(10); // Период опроса
+                    }
+                } 
+                else 
+                {
+                    // === ОБЫЧНОЕ ДВИЖЕНИЕ ВВЕРХ ИЛИ КУРСОР ===
+                    WaitDynamixelAngle(active_hw->dyn_main_1, gripper_target_angle, angle_timeout_ms);
+                }
+
+                // Будим терминал
+                if (xTerminalTaskHandle != NULL) {
+                    xTaskNotifyGive(xTerminalTaskHandle);
+                }
+                
+                gripper_cmd = NO_CMD;
+                break;
+            }*/
 
 			case 3: // toggle_pumps
 			{
@@ -536,7 +739,7 @@ static void Task(void *arg)
 				Dynamixel_AX.SetMovingSpeed(USART3, active_hw->dyn_side_2, side_dynamixel_speed);
 
 				// Разводим боковые захваты
-				RotateTwoDynamixels(USART3, active_hw->dyn_side_1, active_hw->dyn_side_2, side_off_angle_1, side_off_angle_2);
+				RotateTwoDynamixels(USART3, active_hw->dyn_side_1, active_hw->dyn_side_2, active_hw->side_off_angle_1, active_hw->side_off_angle_2);
 				vTaskDelay(500);
 
 				PCA9685.SetServoAngleWithAddr(i2c_addr_1, active_hw->shift_servo_5, active_hw->shift_servo_5_end_angle);

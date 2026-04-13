@@ -43,6 +43,8 @@ static TaskHandle_t TaskHandle;
 static StackType_t StackBuffer[TASK_STACK_SIZE];
 static StaticTask_t TaskBuffer;
 
+extern uint8_t COMM_ENABLE; // from terminal_cmd_handlers.c
+
 
 static void Task(void *arg)
 {
@@ -77,6 +79,7 @@ static void Task(void *arg)
       if(((xTaskGetTickCount() - xGameStartTime) >= 80000) && (robot_ctrl.robot_mode == GAME_MODE)){
         /*  STOP THE GAME AND TURN OF ALL ACTUATORS ACCORDING TO THE EUROBOT RULES */
         StopAllActuators();
+        COMM_ENABLE = 0; // disable communication with HL
         break;
       }
         taskYIELD();

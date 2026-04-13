@@ -79,6 +79,8 @@ extern uint8_t dir;
 extern uint8_t move_cmd_speed;
 extern uint8_t move_cmd_time;
 
+extern uint8_t last_cmd_status;
+
 uint8_t COMM_ENABLE = 1;
 
 static void WaitForGripperCompletion(void)
@@ -391,12 +393,14 @@ static void BoardClearReset(uint8_t* data, uint8_t data_length)
 
 static void grab_rotate(uint8_t* data, uint8_t data_length)
 {
-  ulTaskNotifyTake(pdTRUE, 0); 
+  if(COMM_ENABLE){
+    ulTaskNotifyTake(pdTRUE, 0); 
   
-  gripper_id = data[0];
-  block_mask = data[1];
-  cmd_isFinished = 0; 
-  gripper_cmd = 5;
+    gripper_id = data[0];
+    block_mask = data[1];
+    cmd_isFinished = 0; 
+    gripper_cmd = 5;
+	}
 
   struct terminal_response_s terminal_response = {0};
   terminal_response.cmd = BOARD_GRAB_ROTATE;
@@ -407,15 +411,17 @@ static void grab_rotate(uint8_t* data, uint8_t data_length)
 
 static void ToggleCursor(uint8_t* data, uint8_t data_length)
 {
-  // Clear old notify flags to prevent false execution
-  ulTaskNotifyTake(pdTRUE, 0); 
-  // Point this FreeRTOS task as a reciever
-  xTerminalTaskHandle = xTaskGetCurrentTaskHandle();
-  
-  cursor_cmd = data[0];
-  gripper_cmd = 0;
+  if(COMM_ENABLE){
+    // Clear old notify flags to prevent false execution
+    ulTaskNotifyTake(pdTRUE, 0); 
+    // Point this FreeRTOS task as a reciever
+    xTerminalTaskHandle = xTaskGetCurrentTaskHandle();
+    
+    cursor_cmd = data[0];
+    gripper_cmd = 0;
 
-  WaitForGripperCompletion();
+    WaitForGripperCompletion();
+	}
 
   // terminal response
   struct terminal_response_s terminal_response;
@@ -428,16 +434,18 @@ static void ToggleCursor(uint8_t* data, uint8_t data_length)
 
 static void SideGrips(uint8_t* data, uint8_t data_length)
 {
-  // Clear old notify flags to prevent false execution
-  ulTaskNotifyTake(pdTRUE, 0); 
-  // Point this FreeRTOS task as a reciever
-  xTerminalTaskHandle = xTaskGetCurrentTaskHandle();
-  
-  gripper_id = data[0];
-  grips_cmd = data[1];
-  gripper_cmd = 1;
+  if(COMM_ENABLE){
+    // Clear old notify flags to prevent false execution
+    ulTaskNotifyTake(pdTRUE, 0); 
+    // Point this FreeRTOS task as a reciever
+    xTerminalTaskHandle = xTaskGetCurrentTaskHandle();
+    
+    gripper_id = data[0];
+    grips_cmd = data[1];
+    gripper_cmd = 1;
 
-  WaitForGripperCompletion();
+    WaitForGripperCompletion();
+	}
 
   // terminal response
   struct terminal_response_s terminal_response;
@@ -449,20 +457,23 @@ static void SideGrips(uint8_t* data, uint8_t data_length)
 
 static void GripperLift(uint8_t* data, uint8_t data_length)
 {
-  // Clear old notify flags to prevent false execution
-  ulTaskNotifyTake(pdTRUE, 0); 
-  // Point this FreeRTOS task as a reciever
-  xTerminalTaskHandle = xTaskGetCurrentTaskHandle();
-  
-  gripper_id = data[0];
-  lift_cmd = data[1];
-  gripper_cmd = 2;
+  if(COMM_ENABLE){
+    // Clear old notify flags to prevent false execution
+    ulTaskNotifyTake(pdTRUE, 0); 
+    // Point this FreeRTOS task as a reciever
+    xTerminalTaskHandle = xTaskGetCurrentTaskHandle();
+    
+    gripper_id = data[0];
+    lift_cmd = data[1];
+    gripper_cmd = 2;
 
-  WaitForGripperCompletion();
+    WaitForGripperCompletion();
+	}
 
   // terminal response
   struct terminal_response_s terminal_response;
   terminal_response.cmd = BOARD_GRIPPER_LIFT;
+  //terminal_response.data[0] = last_cmd_status;
   terminal_response.data[0] = 0x01;
   terminal_response.data_length = 1;
   Terminal.SendResponse(&terminal_response);
@@ -470,18 +481,19 @@ static void GripperLift(uint8_t* data, uint8_t data_length)
 
 static void TogglePumps(uint8_t* data, uint8_t data_length)
 {
-  // Clear old notify flags to prevent false execution
-  ulTaskNotifyTake(pdTRUE, 0); 
-  // Point this FreeRTOS task as a reciever
-  xTerminalTaskHandle = xTaskGetCurrentTaskHandle();
+  if(COMM_ENABLE){
+    // Clear old notify flags to prevent false execution
+    ulTaskNotifyTake(pdTRUE, 0); 
+    // Point this FreeRTOS task as a reciever
+    xTerminalTaskHandle = xTaskGetCurrentTaskHandle();
+    
+    gripper_id = data[0];
+    pump_mask = data[1];
+    gripper_cmd = 3;
+
+    WaitForGripperCompletion();
+	}
   
-  gripper_id = data[0];
-  pump_mask = data[1];
-  gripper_cmd = 3;
-
-  WaitForGripperCompletion();
-
-  // terminal response
   struct terminal_response_s terminal_response;
   terminal_response.cmd = BOARD_TOGGLE_PUMPS;
   terminal_response.data[0] = 0x01;
@@ -491,16 +503,18 @@ static void TogglePumps(uint8_t* data, uint8_t data_length)
 
 static void ToggleValves(uint8_t* data, uint8_t data_length)
 {
-  // Clear old notify flags to prevent false execution
-  ulTaskNotifyTake(pdTRUE, 0); 
-  // Point this FreeRTOS task as a reciever
-  xTerminalTaskHandle = xTaskGetCurrentTaskHandle();
-  
-  gripper_id = data[0];
-  valve_mask = data[1];
-  gripper_cmd = 4;
+  if(COMM_ENABLE){
+    // Clear old notify flags to prevent false execution
+    ulTaskNotifyTake(pdTRUE, 0); 
+    // Point this FreeRTOS task as a reciever
+    xTerminalTaskHandle = xTaskGetCurrentTaskHandle();
+    
+    gripper_id = data[0];
+    valve_mask = data[1];
+    gripper_cmd = 4;
 
-  WaitForGripperCompletion();
+    WaitForGripperCompletion();
+  }
 
   // terminal response
   struct terminal_response_s terminal_response;
@@ -551,7 +565,8 @@ static void SimpleMove(uint8_t* data, uint8_t data_length)
 
 static void SimpleMove(uint8_t* data, uint8_t data_length)
 {
-    ulTaskNotifyTake(pdTRUE, 0); 
+  if(COMM_ENABLE){
+    ulTaskNotifyTake(pdTRUE, 0);
     
     gripper_id = data[0];
     dir = data[1];
@@ -560,12 +575,13 @@ static void SimpleMove(uint8_t* data, uint8_t data_length)
     
     cmd_isFinished = 0; 
     gripper_cmd = 6;
+  }
 
-    struct terminal_response_s terminal_response = {0};
-    terminal_response.cmd = BOARD_MOVE;
-    terminal_response.data[0] = 0x01;
-    terminal_response.data_length = 1;
-    Terminal.SendResponse(&terminal_response);
+  struct terminal_response_s terminal_response = {0};
+  terminal_response.cmd = BOARD_MOVE;
+  terminal_response.data[0] = 0x01;
+  terminal_response.data_length = 1;
+  Terminal.SendResponse(&terminal_response);
 }
 
 static void GetKey(uint8_t* data, uint8_t data_length)

@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\build\Main_Board\Main_Board.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\build\Main_Board\Main_Board.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Fri Apr 10 22:43:47 2026
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Mon Apr 13 12:22:40 2026
 <BR><P>
 <H3>Maximum Stack Usage =        160 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -1617,6 +1617,7 @@ Global Symbols
 <P><STRONG><a name="[19e]"></a>xTaskGetTickCount</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, tasks.o(i.xTaskGetTickCount))
 <BR><BR>[Called By]<UL><LI><a href="#[9b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Task
 <LI><a href="#[1a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WaitDynamixelAngle
+<LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Task
 <LI><a href="#[99]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Task
 <LI><a href="#[98]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Task
 </UL>
@@ -1826,7 +1827,7 @@ Local Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> terminal_cmd_handlers.o(.data)
 </UL>
-<P><STRONG><a name="[14]"></a>GripperLift</STRONG> (Thumb, 76 bytes, Stack size 48 bytes, terminal_cmd_handlers.o(i.GripperLift))
+<P><STRONG><a name="[14]"></a>GripperLift</STRONG> (Thumb, 82 bytes, Stack size 48 bytes, terminal_cmd_handlers.o(i.GripperLift))
 <BR><BR>[Stack]<UL><LI>Max Depth = 112<LI>Call Chain = GripperLift &rArr; WaitForGripperCompletion &rArr; ulTaskGenericNotifyTake &rArr; prvAddCurrentTaskToDelayedList &rArr; vListInsert
 </UL>
 <BR>[Calls]<UL><LI><a href="#[12f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGetCurrentTaskHandle
@@ -1881,7 +1882,7 @@ Local Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> terminal_cmd_handlers.o(.data)
 </UL>
-<P><STRONG><a name="[13]"></a>SideGrips</STRONG> (Thumb, 76 bytes, Stack size 48 bytes, terminal_cmd_handlers.o(i.SideGrips))
+<P><STRONG><a name="[13]"></a>SideGrips</STRONG> (Thumb, 82 bytes, Stack size 48 bytes, terminal_cmd_handlers.o(i.SideGrips))
 <BR><BR>[Stack]<UL><LI>Max Depth = 112<LI>Call Chain = SideGrips &rArr; WaitForGripperCompletion &rArr; ulTaskGenericNotifyTake &rArr; prvAddCurrentTaskToDelayedList &rArr; vListInsert
 </UL>
 <BR>[Calls]<UL><LI><a href="#[12f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGetCurrentTaskHandle
@@ -1890,7 +1891,7 @@ Local Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> terminal_cmd_handlers.o(.data)
 </UL>
-<P><STRONG><a name="[17]"></a>SimpleMove</STRONG> (Thumb, 90 bytes, Stack size 48 bytes, terminal_cmd_handlers.o(i.SimpleMove))
+<P><STRONG><a name="[17]"></a>SimpleMove</STRONG> (Thumb, 96 bytes, Stack size 48 bytes, terminal_cmd_handlers.o(i.SimpleMove))
 <BR><BR>[Stack]<UL><LI>Max Depth = 104<LI>Call Chain = SimpleMove &rArr; ulTaskGenericNotifyTake &rArr; prvAddCurrentTaskToDelayedList &rArr; vListInsert
 </UL>
 <BR>[Calls]<UL><LI><a href="#[12e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ulTaskGenericNotifyTake
@@ -1898,7 +1899,7 @@ Local Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> terminal_cmd_handlers.o(.data)
 </UL>
-<P><STRONG><a name="[12]"></a>ToggleCursor</STRONG> (Thumb, 70 bytes, Stack size 48 bytes, terminal_cmd_handlers.o(i.ToggleCursor))
+<P><STRONG><a name="[12]"></a>ToggleCursor</STRONG> (Thumb, 76 bytes, Stack size 48 bytes, terminal_cmd_handlers.o(i.ToggleCursor))
 <BR><BR>[Stack]<UL><LI>Max Depth = 112<LI>Call Chain = ToggleCursor &rArr; WaitForGripperCompletion &rArr; ulTaskGenericNotifyTake &rArr; prvAddCurrentTaskToDelayedList &rArr; vListInsert
 </UL>
 <BR>[Calls]<UL><LI><a href="#[12f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGetCurrentTaskHandle
@@ -1907,7 +1908,7 @@ Local Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> terminal_cmd_handlers.o(.data)
 </UL>
-<P><STRONG><a name="[15]"></a>TogglePumps</STRONG> (Thumb, 76 bytes, Stack size 48 bytes, terminal_cmd_handlers.o(i.TogglePumps))
+<P><STRONG><a name="[15]"></a>TogglePumps</STRONG> (Thumb, 82 bytes, Stack size 48 bytes, terminal_cmd_handlers.o(i.TogglePumps))
 <BR><BR>[Stack]<UL><LI>Max Depth = 112<LI>Call Chain = TogglePumps &rArr; WaitForGripperCompletion &rArr; ulTaskGenericNotifyTake &rArr; prvAddCurrentTaskToDelayedList &rArr; vListInsert
 </UL>
 <BR>[Calls]<UL><LI><a href="#[12f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGetCurrentTaskHandle
@@ -1916,7 +1917,7 @@ Local Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> terminal_cmd_handlers.o(.data)
 </UL>
-<P><STRONG><a name="[16]"></a>ToggleValves</STRONG> (Thumb, 76 bytes, Stack size 48 bytes, terminal_cmd_handlers.o(i.ToggleValves))
+<P><STRONG><a name="[16]"></a>ToggleValves</STRONG> (Thumb, 82 bytes, Stack size 48 bytes, terminal_cmd_handlers.o(i.ToggleValves))
 <BR><BR>[Stack]<UL><LI>Max Depth = 112<LI>Call Chain = ToggleValves &rArr; WaitForGripperCompletion &rArr; ulTaskGenericNotifyTake &rArr; prvAddCurrentTaskToDelayedList &rArr; vListInsert
 </UL>
 <BR>[Calls]<UL><LI><a href="#[12f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGetCurrentTaskHandle
@@ -1943,7 +1944,7 @@ Local Symbols
 <LI><a href="#[4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GetRobotCoord
 </UL>
 
-<P><STRONG><a name="[11]"></a>grab_rotate</STRONG> (Thumb, 78 bytes, Stack size 48 bytes, terminal_cmd_handlers.o(i.grab_rotate))
+<P><STRONG><a name="[11]"></a>grab_rotate</STRONG> (Thumb, 84 bytes, Stack size 48 bytes, terminal_cmd_handlers.o(i.grab_rotate))
 <BR><BR>[Stack]<UL><LI>Max Depth = 104<LI>Call Chain = grab_rotate &rArr; ulTaskGenericNotifyTake &rArr; prvAddCurrentTaskToDelayedList &rArr; vListInsert
 </UL>
 <BR>[Calls]<UL><LI><a href="#[12e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ulTaskGenericNotifyTake
@@ -3415,7 +3416,7 @@ Local Symbols
 <P><STRONG><a name="[fd]"></a>GetTaskHandle</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, game_task.o(i.GetTaskHandle))
 <BR>[Address Reference Count : 1]<UL><LI> game_task.o(.constdata)
 </UL>
-<P><STRONG><a name="[99]"></a>Task</STRONG> (Thumb, 160 bytes, Stack size 0 bytes, game_task.o(i.Task))
+<P><STRONG><a name="[99]"></a>Task</STRONG> (Thumb, 166 bytes, Stack size 0 bytes, game_task.o(i.Task))
 <BR><BR>[Stack]<UL><LI>Max Depth = 56<LI>Call Chain = Task &rArr; vTaskDelay &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
 </UL>
 <BR>[Calls]<UL><LI><a href="#[179]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StopAllActuators
@@ -3462,8 +3463,8 @@ Local Symbols
 <BR>[Called By]<UL><LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Task
 </UL>
 
-<P><STRONG><a name="[9a]"></a>Task</STRONG> (Thumb, 2296 bytes, Stack size 40 bytes, gripper_task.o(i.Task))
-<BR><BR>[Stack]<UL><LI>Max Depth = 128<LI>Call Chain = Task &rArr; WaitDynamixelAngle &rArr; vTaskDelay &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
+<P><STRONG><a name="[9a]"></a>Task</STRONG> (Thumb, 2712 bytes, Stack size 64 bytes, gripper_task.o(i.Task))
+<BR><BR>[Stack]<UL><LI>Max Depth = 152<LI>Call Chain = Task &rArr; WaitDynamixelAngle &rArr; vTaskDelay &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
 </UL>
 <BR>[Calls]<UL><LI><a href="#[133]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI_GPO_ResetOutputPin
 <LI><a href="#[16c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MaxonsEnable
@@ -3474,6 +3475,7 @@ Local Symbols
 <LI><a href="#[1a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RotateTwoDynamixels
 <LI><a href="#[135]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Gripper_SetValves
 <LI><a href="#[131]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Gripper_SetPumps
+<LI><a href="#[19e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGetTickCount
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> gripper_task.o(i.CreateTask)
 </UL>
