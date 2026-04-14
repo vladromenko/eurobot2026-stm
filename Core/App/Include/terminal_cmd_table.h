@@ -38,6 +38,7 @@
 
 #define BOARD_GET_AX_ANGLE                	0X0A    /* Command Description  */
 #define BOARD_SET_AX_ANGLE                	0X0B    /* Command Description  */
+//#define BOARD_SET_STEPPER_POSITION          0X0C    /* [12] set the position of the stepper  */
 #define BOARD_TOGGLE_PUMP										0X0F 		/* Command Description  */
 //#define BOARD_GET_KEY                       0X11		/* Command Description  */
 #define BOARD_GET_TOGGLE                    0X12		/* Command Description  */

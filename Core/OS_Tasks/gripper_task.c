@@ -74,6 +74,8 @@ extern volatile TaskHandle_t xTerminalTaskHandle;
 #define cos30 	0.8660254f
 #define cos60 	0.5f
 
+#define MM_TO_STEPS 25
+
 uint8_t move_cmd_speed = 0; // [mm/s]
 uint8_t move_cmd_time = 0;  // [ms]
 
@@ -201,6 +203,7 @@ uint16_t move_delay = 800;
 uint8_t last_cmd_status = 1; // 1 - успех, 0 - авария/отмена
 
 extern uint8_t stepper1_calibrate;
+extern int16_t stepper1_goal_position;
 
 
 /**
@@ -295,6 +298,31 @@ static uint8_t WaitDynamixelAngle(uint8_t id, uint8_t target_angle, uint32_t tim
     }
 }
 
+/**
+ * @brief Ожидание достижения позиции stepper'а с защитой от зависания (тайм-аутом)
+ * @param target_pos Целевая позиция
+ * @param timeout_ms Максимальное время ожидания в миллисекундах
+ * @return 1 если позиция достигнута, 0 если сработал таймаут
+ */
+static uint8_t WaitStepper1Angle(int16_t target_pos, uint32_t timeout_ms) {
+    int16_t current_pos = 0;
+    uint32_t start_time = xTaskGetTickCount(); // Засекаем время старта (FreeRTOS)
+    
+    while (1) {
+        current_pos = Stepper.GetPresentPosisition(STEPPER_MOTOR_1);
+        // Позиция достигнута
+        if (current_pos == target_pos) {
+            return 1; 
+        }
+        // Проверка таймаута
+        if ((xTaskGetTickCount() - start_time) * portTICK_PERIOD_MS >= timeout_ms) {
+            return 0; // Механизм заклинило или он не успел, выходим из цикла
+        }
+        
+        vTaskDelay(20);
+    }
+}
+
 
 static void Task(void *arg)
 {
@@ -366,7 +394,7 @@ static void Task(void *arg)
         Dynamixel_AX.SetAngle(USART3, dynamixel_cursor_id, cursor_vert_angle);
         vTaskDelay(100);
 
-        stepper1_calibrate = 1;
+        stepper1_calibrate = 1; // set the stepper into zero position
 
         // Инициализация обоих грипперов в цикле
         for (int i = 0; i < 2; i++) {
@@ -821,12 +849,20 @@ static void Task(void *arg)
                 
             case 7: // gripper_vertical
 			{	
+                stepper1_goal_position = -1 * (int16_t)gripper_height * (int16_t)MM_TO_STEPS;
+                Stepper.Enable(STEPPER_MOTOR_1);
+                // Даем 10 мс на то, чтобы драйвер L6474 подал ток и жестко зафиксировал вал
+                vTaskDelay(10); 
+                Stepper.StepToPosisition(STEPPER_MOTOR_1, stepper1_goal_position, 32, 10, 300);
                 
+                WaitStepper1Angle(stepper1_goal_position, 2000); 
+                Stepper.Disable(STEPPER_MOTOR_1);
+                
+                // (Альтернатива для п.5: если без питания гриппер падает вниз под своим весом, 
+                // закомментируй Disable и вместо него аппаратно снизь ток:
+                // L6474H.SetCurrentLimit_mA(STEPPER_MOTOR_1, 300); )
 
-                // Ждем с таймаутом
-                WaitDynamixelAngle(active_hw->dyn_main_1, gripper_target_angle, angle_timeout_ms);
-
-                // Будим терминал
+                // Будим терминал и отправляем ответ на HL
                 if (xTerminalTaskHandle != NULL) {
                     xTaskNotifyGive(xTerminalTaskHandle);
                 }

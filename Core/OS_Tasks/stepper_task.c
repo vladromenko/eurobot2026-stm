@@ -36,6 +36,8 @@ uint8_t stepper3_calibrate = 0;
 
 #define TASK_STACK_SIZE             512
 
+#define MM_TO_STEPS 	25
+
 
 static TaskHandle_t task_handle;
 static StackType_t stack_buffer[TASK_STACK_SIZE];
@@ -44,83 +46,58 @@ static StaticTask_t task_buffer;
 
 static void Task(void *arg)
 {
-  vTaskDelay(50);
-	
-	Stepper.Init(STEPPER_MOTOR_1);
-	//Stepper.Init(STEPPER_MOTOR_2);
-	//Stepper.Init(STEPPER_MOTOR_3);
-
-	Stepper.SetZeroPosisition(STEPPER_MOTOR_1);
-	//Stepper.SetZeroPosisition(STEPPER_MOTOR_2);
-	//Stepper.SetZeroPosisition(STEPPER_MOTOR_3);
-	
-	
-	while(1)
-	{
     vTaskDelay(50);
-		
-		if(stepper1_calibrate){
-			if(robot_ctrl.linear_switch_1 != LINEAR_SWITCH_PRESSED){
-				if(Stepper.GetPresentPosisition(STEPPER_MOTOR_1) == stepper1_goal_position){
-					stepper1_goal_position = stepper1_goal_position-50;
-					Stepper.StepToPosisition(STEPPER_MOTOR_1, stepper1_goal_position, 32, 16, 800);
-				}	
-			} else {
-				stepper1_calibrate = 0;
-				stepper1_goal_position = 0;
-				Stepper.SetZeroPosisition(STEPPER_MOTOR_1);
-			}
-		}
-		/*
-		if(stepper2_calibrate){
-			if(robot_ctrl.linear_switch_2 != LINEAR_SWITCH_PRESSED){
-				if(Stepper.GetPresentPosisition(STEPPER_MOTOR_2) == stepper2_goal_position){
-					stepper2_goal_position = stepper2_goal_position-50;
-					Stepper.StepToPosisition(STEPPER_MOTOR_2, stepper2_goal_position, 32, 16, 800);
-				}	
-			} else {
-				stepper2_calibrate = 0;
-				stepper2_goal_position = 0;
-				Stepper.SetZeroPosisition(STEPPER_MOTOR_2);
-			}
-		}
-		
-		if(stepper3_calibrate){
-			if(robot_ctrl.linear_switch_3 != LINEAR_SWITCH_PRESSED){
-				if(Stepper.GetPresentPosisition(STEPPER_MOTOR_3) == stepper3_goal_position){
-					stepper3_goal_position = stepper3_goal_position-50;
-					Stepper.StepToPosisition(STEPPER_MOTOR_3, stepper3_goal_position, 32, 16, 800);
-				}	
-			} else {
-				stepper3_calibrate = 0;
-				stepper3_goal_position = 0;
-				Stepper.SetZeroPosisition(STEPPER_MOTOR_3);
-			}
-		}
-		*/
-		
-		
-		
-		if(Stepper.GetPresentPosisition(STEPPER_MOTOR_1) != stepper1_goal_position) {
-			Stepper.Enable(STEPPER_MOTOR_1);
-		} else {
-			Stepper.Disable(STEPPER_MOTOR_1);
-		}
-		/*
-		if(Stepper.GetPresentPosisition(STEPPER_MOTOR_2) != stepper2_goal_position) {
-			Stepper.Enable(STEPPER_MOTOR_2);
-		} else {
-			Stepper.Disable(STEPPER_MOTOR_2);
-		}
-		
-		if(Stepper.GetPresentPosisition(STEPPER_MOTOR_3) != stepper3_goal_position) {
-			Stepper.Enable(STEPPER_MOTOR_3);
-		} else {
-			Stepper.Disable(STEPPER_MOTOR_3);
-		}
-		*/
-				
-	}
+    
+    Stepper.Init(STEPPER_MOTOR_1);
+    Stepper.SetZeroPosisition(STEPPER_MOTOR_1);
+    
+    // Флаг состояния, чтобы отправлять команды по SPI только один раз
+    uint8_t stepper1_enabled = 0; 
+    
+    while(1)
+    {
+        vTaskDelay(50);
+
+        if (stepper1_calibrate == 1) {
+            
+            // Во время калибровки мотор должен быть включен
+            if (!stepper1_enabled) {
+                Stepper.Enable(STEPPER_MOTOR_1);
+                stepper1_enabled = 1;
+            }
+
+            if (robot_ctrl.linear_switch_1 != LINEAR_SWITCH_PRESSED) {
+                if (Stepper.GetPresentPosisition(STEPPER_MOTOR_1) != 100000) {
+                    Stepper.StepToPosisition(STEPPER_MOTOR_1, 100000, 32, 16, 500); 
+                }
+            } else {
+                Stepper.StopMotor(STEPPER_MOTOR_1);         
+                Stepper.SetZeroPosisition(STEPPER_MOTOR_1); 
+                
+                // ВАЖНО: Синхронизируем глобальную переменную цели!
+                stepper1_goal_position = -400; 
+                Stepper.StepToPosisition(STEPPER_MOTOR_1, stepper1_goal_position, 32, 10, 300);
+                
+                stepper1_calibrate = 0; 
+            }
+        }
+        else {
+            // Обычный режим работы
+            if(Stepper.GetPresentPosisition(STEPPER_MOTOR_1) != stepper1_goal_position) {
+                // Мы в пути -> Включаем драйвер (если еще не включен)
+                if (!stepper1_enabled) {
+                    Stepper.Enable(STEPPER_MOTOR_1);
+                    stepper1_enabled = 1;
+                }
+            } else {
+                // Стоим на цели -> Выключаем драйвер (если еще включен)
+                if (stepper1_enabled) {
+                    Stepper.Disable(STEPPER_MOTOR_1);
+                    stepper1_enabled = 0;
+                }
+            }
+        }
+    }
 }
 
 static TaskHandle_t GetTaskHandle(void)

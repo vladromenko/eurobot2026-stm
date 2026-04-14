@@ -82,6 +82,9 @@ extern uint8_t move_cmd_time;
 
 extern uint8_t last_cmd_status;
 
+extern uint8_t stepper1_calibrate;
+extern int16_t stepper1_goal_position;
+
 uint8_t COMM_ENABLE = 1;
 
 static void WaitForGripperCompletion(void)
@@ -272,6 +275,85 @@ static void GetKey(uint8_t* data, uint8_t data_length)
   Terminal.SendResponse(&terminal_response);
 }
   */
+
+/*
+static void SetStepperZero(uint8_t* data, uint8_t data_length)
+{
+	
+	uint8_t id = data[0];
+  if(COMM_ENABLE){
+	switch(id){
+		case 0:
+			stepper1_calibrate = 1;
+			break;
+		case 1:
+			stepper2_calibrate = 1;
+			break;
+		case 2:
+			stepper3_calibrate = 1;
+			break;
+		default:
+			break;
+	}
+}
+  struct terminal_response_s terminal_response;
+  terminal_response.cmd = BOARD_SET_STEPPER_ZERO;
+	
+  terminal_response.data_length = 0;
+
+  Terminal.SendResponse(&terminal_response);
+}
+
+static void GetStepperPosition(uint8_t* data, uint8_t data_length)
+{
+  int16_t position;
+  struct terminal_response_s terminal_response;
+
+  terminal_response.cmd = BOARD_GET_STEPPER_POSITION;
+	
+	switch(data[0]){
+		case 0:
+			position = Stepper.GetPresentPosisition(STEPPER_MOTOR_1);
+			break;
+		case 1:
+			position = Stepper.GetPresentPosisition(STEPPER_MOTOR_2);
+			break;
+		case 2:
+			position = Stepper.GetPresentPosisition(STEPPER_MOTOR_3);
+			break;
+		default:
+			break;
+	}
+	
+  Word16_ToByte(&position, &terminal_response.data[0]);
+  terminal_response.data_length = 2;
+
+  Terminal.SendResponse(&terminal_response);
+}
+*/
+/*
+static void SetStepperPosition(uint8_t* data, uint8_t data_length)
+{
+	if(COMM_ENABLE){
+    int16_t position;
+    ByteTo_Word16(data,&position);
+
+    if(position >=0){
+      if(!stepper1_calibrate){
+        stepper1_goal_position = position;
+        Stepper.StepToPosisition(STEPPER_MOTOR_1, position, 32, 16, 800);
+      }
+    }
+  }
+  struct terminal_response_s terminal_response;
+
+  terminal_response.cmd = BOARD_SET_STEPPER_POSITION;
+  terminal_response.data_length = 0;
+
+  Terminal.SendResponse(&terminal_response);
+}
+*/
+
 
 static void GetToggle(uint8_t* data, uint8_t data_length)
 {
@@ -605,8 +687,7 @@ static void GripperVertical(uint8_t* data, uint8_t data_length)
     ulTaskNotifyTake(pdTRUE, 0); 
     xTerminalTaskHandle = xTaskGetCurrentTaskHandle();
     
-    gripper_id = data[0];
-    gripper_height = data[1];
+    gripper_height = data[0]; // height in mm
     gripper_cmd = 7;
 
     WaitForGripperCompletion();
@@ -615,12 +696,10 @@ static void GripperVertical(uint8_t* data, uint8_t data_length)
   // terminal response
   struct terminal_response_s terminal_response;
   terminal_response.cmd = BOARD_GRIPPER_VERTICAL;
-  //terminal_response.data[0] = last_cmd_status;
   terminal_response.data[0] = 0x01;
   terminal_response.data_length = 1;
   Terminal.SendResponse(&terminal_response);
 }
-
 
 
 
@@ -633,6 +712,7 @@ void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t da
                                                                                               [BOARD_Set_BMS_CalibrationValue] = Set_BMS_CalibrationValue,
 																																															[BOARD_GET_AX_ANGLE] = GetAxAngle,
                                                                                               [BOARD_SET_AX_ANGLE] = SetAxAngle,
+                                                                                              //[BOARD_SET_STEPPER_POSITION] = SetStepperPosition,
 																																															//[BOARD_GET_KEY] = GetKey,
 																																															[BOARD_GET_TOGGLE] = GetToggle,
                                                                                               [BOARD_GET_DEBUG_MESSAGE] = GetDebugMessage,

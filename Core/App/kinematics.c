@@ -40,7 +40,7 @@
 #define WHEEL_RADIUS_m					0.0245f	// [m]
 #define	GEAR_RATIO						28.0f
 #define ENCODER_TICKS_PER_TURN			4096	// [ticks]
-#define CALIBRATION_COEF				1.158f   // used to equate the real path and path from odometry 1.16f
+#define CALIBRATION_COEF				1.1305f   // used to equate the real path and path from odometry 1.16f 1.1391
 //#define ANGULAR_CALIBRATION_COEF		1.06f	// used to equate the real angle and angle from odometry
 
 
@@ -114,14 +114,14 @@ static void MatrixInit(void)
 	arm_mat_init_f32(&arm_inverse_matrix, 3, 3, inverse_matrix);
 	
 	// wheel's ticks_per_minute = wheel_linear_speed(m/s) * ms_to_tpm
-	ms_to_tpm = (60.0f*GEAR_RATIO*ENCODER_TICKS_PER_TURN)/(2*PI*WHEEL_RADIUS_m);
+	ms_to_tpm = (60.0f*GEAR_RATIO*ENCODER_TICKS_PER_TURN)/(CALIBRATION_COEF*2*PI*WHEEL_RADIUS_m);
 
 	// linear_path = wheel_ticks_per_minute * ticks_to_m 
 	//ticks_to_m =  2*PI*WHEEL_RADIUS_m / (GEAR_RATIO*ENCODER_TICKS_PER_TURN);
 	ticks_to_m =  CALIBRATION_COEF * 2*PI*WHEEL_RADIUS_m / (GEAR_RATIO*ENCODER_TICKS_PER_TURN);
 
 	// wheel_linear_speed(m/s) = wheel_ticks_per_minute * ticks_to_m
-	tpm_to_ms = 2*PI*WHEEL_RADIUS_m / (60.0f*GEAR_RATIO*ENCODER_TICKS_PER_TURN);
+	tpm_to_ms = CALIBRATION_COEF * 2*PI*WHEEL_RADIUS_m / (60.0f*GEAR_RATIO*ENCODER_TICKS_PER_TURN);
 													
 }
 /*from speed to robot's body (m/s), calculate speed of 3 wheels(ticks per minutes)*/
