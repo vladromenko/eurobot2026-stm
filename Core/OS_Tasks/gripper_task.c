@@ -133,7 +133,7 @@ const GripperHardware_t grippers[2] = {
         .block_servos = {PCA9685_CH1, PCA9685_CH2, PCA9685_CH3, PCA9685_CH4},
         .shift_servo_5 = PCA9685_CH5, .shift_servo_6 = PCA9685_CH6,
 		.shift_servo_5_end_angle = 16, .shift_servo_5_start_angle = 100,
-		.shift_servo_6_end_angle = 112, .shift_servo_6_start_angle = 21
+		.shift_servo_6_end_angle = 112, .shift_servo_6_start_angle = 20
     },
     { // left (index 1) (id == 2)
         .dyn_main_1 = 15, .dyn_main_2 = 16,
@@ -420,14 +420,13 @@ static void Task(void *arg)
             // Инициализация сервоприводов блоков (каналы 1-4 или 8-11)
             for (int j = 0; j < 4; j++) {
                 PCA9685.SetServoAngleWithAddr(i2c_addr_1, hw->block_servos[j], 0);
-                vTaskDelay(200);
+                vTaskDelay(20);
             }
 
             // Инициализация сервоприводов сдвига
             PCA9685.SetServoAngleWithAddr(i2c_addr_1, hw->shift_servo_5, hw->shift_servo_5_start_angle);
-            vTaskDelay(500);
             PCA9685.SetServoAngleWithAddr(i2c_addr_1, hw->shift_servo_6, hw->shift_servo_6_start_angle);
-            vTaskDelay(500);
+            vTaskDelay(200);
 
             // Выключаем все насосы и клапаны этого гриппера
             SPI_GPO_ResetOutputPin(hw->pumps_all_mask | hw->valves_all_mask);
@@ -776,22 +775,21 @@ static void Task(void *arg)
 				vTaskDelay(500);
 
 				PCA9685.SetServoAngleWithAddr(i2c_addr_1, active_hw->shift_servo_5, active_hw->shift_servo_5_end_angle);
-				vTaskDelay(500);
 				PCA9685.SetServoAngleWithAddr(i2c_addr_1, active_hw->shift_servo_6, active_hw->shift_servo_6_end_angle);
-				vTaskDelay(500);
+				vTaskDelay(200);
 
 				// Крутим блоки
 				for (int i = 0; i < 4; i++) {
 					servo_target_angle = ((block_mask & (1 << (3 - i))) == 0) ? 0 : 180;
 					PCA9685.SetServoAngleWithAddr(i2c_addr_1, active_hw->block_servos[i], servo_target_angle); 
-					vTaskDelay(350);
+					vTaskDelay(20);
 				}
-
-				// Возвращаем на место
+                vTaskDelay(500);
+				
+                // Возвращаем на место
 				PCA9685.SetServoAngleWithAddr(i2c_addr_1, active_hw->shift_servo_5, active_hw->shift_servo_5_start_angle);
-				vTaskDelay(500);
 				PCA9685.SetServoAngleWithAddr(i2c_addr_1, active_hw->shift_servo_6, active_hw->shift_servo_6_start_angle);
-				vTaskDelay(500);
+				vTaskDelay(200);
 
 				gripper_cmd = NO_CMD;
 				break;
