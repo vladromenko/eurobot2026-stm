@@ -305,13 +305,18 @@ static uint8_t WaitDynamixelAngle(uint8_t id, uint8_t target_angle, uint32_t tim
  * @return 1 если позиция достигнута, 0 если сработал таймаут
  */
 static uint8_t WaitStepper1Angle(int16_t target_pos, uint32_t timeout_ms) {
-    int16_t current_pos = 0;
+    int32_t current_pos = 0;
+    int32_t diff = 0;
+    int32_t pos_tol = 100;
     uint32_t start_time = xTaskGetTickCount(); // Засекаем время старта (FreeRTOS)
     
     while (1) {
         current_pos = Stepper.GetPresentPosisition(STEPPER_MOTOR_1);
+        diff = (int32_t)current_pos - (int32_t)target_pos;
+        if (diff < 0) diff = -diff;
+        
         // Позиция достигнута
-        if (current_pos == target_pos) {
+        if (diff < pos_tol) {
             return 1; 
         }
         // Проверка таймаута
@@ -815,15 +820,32 @@ static void Task(void *arg)
 
                 // Расчет проекций скоростей на оси базы
                 if (gripper_id == 1) {
-                    // Гриппер 1 (смотрит под углом -60 градусов от оси X робота)
+                    // Gripper 1 (rotated on -60 deg along the X axis of the robot)
                     speed.dx = move_speed * cos60;
                     speed.dy = -move_speed * cos30;
-                } 
+                }
                 else if (gripper_id == 2) {
-                    // Гриппер 2 (смотрит под углом +60 градусов)
+                    // Gripper 2 (rotated on +60 deg)
                     speed.dx = move_speed * cos60;
                     speed.dy = move_speed * cos30;
                 }
+                /*else if (gripper_id == 0) {
+                    // along X axis
+                    speed.dx = move_speed;
+                    speed.dy = 0.0f;
+                } */
+                /*
+                else if (gripper_id == 3) {
+                    // along X axis
+                    speed.dx = move_speed;
+                    speed.dy = 0.0f;
+                }
+                else if (gripper_id == 4) {
+                    // along Y axis
+                    speed.dx = 0.0f;
+                    speed.dy = move_speed;
+                }
+                */
 
                 Odometry.SetSpeed(&speed);
                 vTaskDelay(delay_ms);
@@ -850,11 +872,12 @@ static void Task(void *arg)
                 stepper1_goal_position = -1 * (int16_t)gripper_height * (int16_t)MM_TO_STEPS;
                 Stepper.Enable(STEPPER_MOTOR_1);
                 // Даем 10 мс на то, чтобы драйвер L6474 подал ток и жестко зафиксировал вал
-                vTaskDelay(10); 
+                vTaskDelay(50);
                 Stepper.StepToPosisition(STEPPER_MOTOR_1, stepper1_goal_position, 32, 10, 300);
                 
-                WaitStepper1Angle(stepper1_goal_position, 2000); 
+                WaitStepper1Angle(stepper1_goal_position, 4000); 
                 Stepper.Disable(STEPPER_MOTOR_1);
+                vTaskDelay(50);
                 
                 // (Альтернатива для п.5: если без питания гриппер падает вниз под своим весом, 
                 // закомментируй Disable и вместо него аппаратно снизь ток:
