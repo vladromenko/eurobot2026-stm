@@ -39,6 +39,8 @@
 #define BOARD_GET_AX_ANGLE                	0X0A    /* Command Description  */
 #define BOARD_SET_AX_ANGLE                	0X0B    /* Command Description  */
 //#define BOARD_SET_STEPPER_POSITION          0X0C    /* [12] set the position of the stepper  */
+#define BOARD_RESET_WHEEL_TICKS             0X0D    /* [13] reset wheel ticks */
+#define BOARD_GET_WHEEL_TICKS               0X0E    /* [14] reset wheel ticks */
 #define BOARD_TOGGLE_PUMP										0X0F 		/* Command Description  */
 //#define BOARD_GET_KEY                       0X11		/* Command Description  */
 #define BOARD_GET_TOGGLE                    0X12		/* Command Description  */
@@ -60,12 +62,14 @@
 #define BOARD_GRIPPER_LIFT                  0x20    /* [32] Control the angle of the gripper's dynamixels */
 #define BOARD_TOGGLE_PUMPS									0X21 		/* [33] Turn on/off pumpes  */
 #define BOARD_TOGGLE_VALVES                 0x22		/* [34] Turn on/off valves */
+#define BOARD_GET_WHEEL_PATH                0x23		/* [35] get linear dist of wheel */
 #define BOARD_MOVE                          0x25		/* [37] Move the robot to grab blocks */
 #define BOARD_GET_KEY                       0X26		/* [38] Check the state of the starting cord  */
 #define BOARD_GRIPPER_VERTICAL              0X27		/* [39] Control the gripper's height  */
+#define BOARD_ROTATE_WHEEL_ONCE             0x28    /* [40] Rotate a wheel by one full revolution for calibration */
 
 /*  Do not forget to update the table size with the last one command! */
-#define TERMINAL_CMD_TABLE_SIZE             (BOARD_GRIPPER_VERTICAL + 1)
+#define TERMINAL_CMD_TABLE_SIZE             (BOARD_ROTATE_WHEEL_ONCE + 1)
 
 
 #ifdef __cplusplus

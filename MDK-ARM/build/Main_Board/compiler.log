@@ -1,7 +1,10 @@
 >>> cc
 
-
+".\..\Core\App\terminal_cmd_handlers.c", line 673: Warning:  #177-D: variable "key_request"  was declared but never referenced
+    uint8_t key_request = data[0];
+            ^
+.\..\Core\App\terminal_cmd_handlers.c: 1 warning, 0 errors
 
 >>> ld
 
-Program Size: Code=36920 RO-data=218160 RW-data=2912 ZI-data=19976  
+Program Size: Code=37340 RO-data=218160 RW-data=2912 ZI-data=19976  

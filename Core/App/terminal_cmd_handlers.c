@@ -44,6 +44,7 @@
 #include "rc_servo.h" 
 #include "stepper.h"
 #include "pca9685.h"
+#include "maxon.h"
 
 #include "FreeRTOS.h"
 #include "task.h"
@@ -701,7 +702,184 @@ static void GripperVertical(uint8_t* data, uint8_t data_length)
   Terminal.SendResponse(&terminal_response);
 }
 
+/**
+ * @brief Сбрасывает счетчик энкодера (TotalTicks) на заданном колесе в 0.
+ * @param data[0] Номер колеса (1, 2 или 3)
+ */
+static void ResetWheelTicks(uint8_t* data, uint8_t data_length)
+{
+  struct terminal_response_s terminal_response;
+  terminal_response.cmd = BOARD_RESET_WHEEL_TICKS; // Эту команду нужно добавить в enum
+  terminal_response.data_length = 1; // 1 байт статуса (0=OK, 1=Error)
+  terminal_response.data[0] = 1; // По умолчанию - ошибка
 
+  if (data_length > 0) {
+    enum bus_devices_e motor_device_id;
+    uint8_t wheel_num = data[0];
+
+    switch (wheel_num) {
+      case 1: motor_device_id = MAXON_MOTOR_1; break;
+      case 2: motor_device_id = MAXON_MOTOR_2; break;
+      case 3: motor_device_id = MAXON_MOTOR_3; break;
+      default:
+        Terminal.SendResponse(&terminal_response); // Отправляем ответ с ошибкой
+        return;
+    }
+    Maxon.Disable(bus_devices[motor_device_id].usart, bus_devices[motor_device_id].id);
+    Maxon.Enable(bus_devices[motor_device_id].usart, bus_devices[motor_device_id].id);
+    
+    Maxon.SetTotalTicks(bus_devices[motor_device_id].usart, bus_devices[motor_device_id].id, 0);
+    terminal_response.data[0] = 0; // Успех
+  }
+  Terminal.SendResponse(&terminal_response);
+}
+
+/**
+ * @brief Запрашивает текущее значение счетчика энкодера (TotalTicks) с заданного колеса.
+ * @param data[0] Номер колеса (1, 2 или 3)
+ */
+static void GetWheelTicks(uint8_t* data, uint8_t data_length)
+{
+  struct terminal_response_s terminal_response;
+  terminal_response.cmd = BOARD_GET_WHEEL_TICKS; // Эту команду нужно добавить в enum
+  terminal_response.data_length = 0; // По умолчанию - пустой ответ (ошибка)
+
+  if (data_length > 0) {
+    int32_t ticks = 0;
+    uint8_t error = 1;
+    enum bus_devices_e motor_device_id;
+    uint8_t wheel_num = data[0];
+
+    switch (wheel_num) {
+      case 1: motor_device_id = MAXON_MOTOR_1; break;
+      case 2: motor_device_id = MAXON_MOTOR_2; break;
+      case 3: motor_device_id = MAXON_MOTOR_3; break;
+      default:
+        Terminal.SendResponse(&terminal_response);
+        return;
+    }
+
+    error = Maxon.GetTotalTicks(bus_devices[motor_device_id].usart, bus_devices[motor_device_id].id, &ticks);
+    if (error == 0) { // Если запрос к мотору прошел успешно
+      Word32_ToByte(&ticks, terminal_response.data);
+      terminal_response.data_length = 4; // Отправляем 4 байта (int32_t)
+    }
+  }
+  Terminal.SendResponse(&terminal_response);
+}
+
+/**
+ * @brief Запрашивает пройденный путь для колеса в метрах.
+ * @param data[0] Номер колеса (1, 2 или 3)
+ */
+static void GetWheelPath(uint8_t* data, uint8_t data_length)
+{
+  struct terminal_response_s terminal_response;
+  terminal_response.cmd = BOARD_GET_WHEEL_PATH;
+  terminal_response.data_length = 0; // По умолчанию - пустой ответ (ошибка)
+
+  if (data_length > 0) {
+    int32_t ticks = 0;
+    uint8_t error = 1;
+    enum bus_devices_e motor_device_id;
+    uint8_t wheel_num = data[0];
+
+    switch (wheel_num) {
+      case 1: motor_device_id = MAXON_MOTOR_1; break;
+      case 2: motor_device_id = MAXON_MOTOR_2; break;
+      case 3: motor_device_id = MAXON_MOTOR_3; break;
+      default:
+        Terminal.SendResponse(&terminal_response);
+        return;
+    }
+
+    // Запрашиваем тики с мотора
+    error = Maxon.GetTotalTicks(bus_devices[motor_device_id].usart, bus_devices[motor_device_id].id, &ticks);
+    
+    if (error == 0) { // Если запрос к мотору прошел успешно
+      float path_m = (float)ticks * ticks_to_m;
+
+      Word32_ToByte(&path_m, terminal_response.data);
+      terminal_response.data_length = 4; // Отправляем 4 байта (float)
+    }
+  }
+  Terminal.SendResponse(&terminal_response);
+}
+
+/**
+ * @brief Вращает выбранное колесо ровно на один оборот для калибровки.
+ * @param data[0] Номер колеса (1, 2 или 3)
+ */
+static void RotateWheelOnce(uint8_t* data, uint8_t data_length)
+{
+  struct terminal_response_s terminal_response;
+  terminal_response.cmd = BOARD_ROTATE_WHEEL_ONCE;
+  terminal_response.data_length = 1;
+  terminal_response.data[0] = 1; // Status: 1 for Error by default
+
+  if (data_length < 1) {
+    Terminal.SendResponse(&terminal_response);
+    return;
+  }
+
+  uint8_t wheel_num = data[0];
+  if (wheel_num < 1 || wheel_num > 3) {
+    Terminal.SendResponse(&terminal_response);
+    return;
+  }
+
+  enum bus_devices_e motor_device_id;
+  switch (wheel_num) {
+    case 1: motor_device_id = MAXON_MOTOR_1; break;
+    case 2: motor_device_id = MAXON_MOTOR_2; break;
+    case 3: motor_device_id = MAXON_MOTOR_3; break;
+    default: // Should not happen due to check above
+      Terminal.SendResponse(&terminal_response);
+      return;
+  }
+  
+  USART_TypeDef* usart = bus_devices[motor_device_id].usart;
+  uint8_t id = bus_devices[motor_device_id].id;
+
+  // NOTE: These values are duplicated from kinematics.c.
+  // For production code, consider moving them to a shared header file like 'robot_params.h'.
+  const float GEAR_RATIO = 28.0f;
+  const int32_t ENCODER_TICKS_PER_TURN = 4096;
+  const int32_t ticks_for_one_revolution = (int32_t)(GEAR_RATIO * ENCODER_TICKS_PER_TURN);
+
+  int32_t start_ticks = 0;
+  if (Maxon.GetTotalTicks(usart, id, &start_ticks) != 0) {
+    // Cannot get start position, send error
+    Terminal.SendResponse(&terminal_response);
+    return;
+  }
+
+  const int32_t target_ticks = start_ticks + ticks_for_one_revolution;
+  const int32_t rotation_speed_tpm = 8000; // A moderate speed in Ticks Per Minute
+
+  Maxon.Set_TPM(usart, id, rotation_speed_tpm);
+
+  int32_t current_ticks = start_ticks;
+  uint8_t error = 0;
+
+  // Polling loop to check for completion
+  while (current_ticks < target_ticks) {
+    vTaskDelay(pdMS_TO_TICKS(20)); // Poll every 20ms
+    if (Maxon.GetTotalTicks(usart, id, &current_ticks) != 0) {
+      error = 1;
+      break; // Exit loop on communication error
+    }
+  }
+
+  // Stop the motor regardless of outcome
+  Maxon.Set_TPM(usart, id, 0);
+
+  if (error == 0) {
+    terminal_response.data[0] = 0; // Status: 0 for Success
+  }
+  
+  Terminal.SendResponse(&terminal_response);
+}
 
 void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t data_length) = {[BOARD_Ping] = Ping,
                                                                                               [BOARD_SetSpeed] = SetRobotSpeed,
@@ -713,6 +891,10 @@ void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t da
 																																															[BOARD_GET_AX_ANGLE] = GetAxAngle,
                                                                                               [BOARD_SET_AX_ANGLE] = SetAxAngle,
                                                                                               //[BOARD_SET_STEPPER_POSITION] = SetStepperPosition,
+                                                                                              [BOARD_RESET_WHEEL_TICKS] = ResetWheelTicks,
+                                                                                              [BOARD_GET_WHEEL_TICKS] = GetWheelTicks,
+                                                                                              //[BOARD_SET_STEPPER_ZERO,
+
 																																															//[BOARD_GET_KEY] = GetKey,
 																																															[BOARD_GET_TOGGLE] = GetToggle,
                                                                                               [BOARD_GET_DEBUG_MESSAGE] = GetDebugMessage,
@@ -728,12 +910,11 @@ void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t da
                                                                                               [BOARD_GRIPPER_LIFT] = GripperLift,
                                                                                               [BOARD_TOGGLE_PUMPS] = TogglePumps,
                                                                                               [BOARD_TOGGLE_VALVES] = ToggleValves,
+                                                                                              [BOARD_GET_WHEEL_PATH] = GetWheelPath,
                                                                                               [BOARD_MOVE] = SimpleMove,
                                                                                               [BOARD_GET_KEY] = GetKey,
-                                                                                              [BOARD_GRIPPER_VERTICAL] = GripperVertical
-                                                                                              
-                                                                                             
-
+                                                                                              [BOARD_GRIPPER_VERTICAL] = GripperVertical,
+                                                                                              [BOARD_ROTATE_WHEEL_ONCE] = RotateWheelOnce
 };
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

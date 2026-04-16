@@ -49,3 +49,4 @@
 .\build\Main_Board\.obj\__\Core\App\terminal_cmd_handlers.o: ../Core/BSP/Include/stepper.h
 .\build\Main_Board\.obj\__\Core\App\terminal_cmd_handlers.o: ../Core/BSP/Include/l6474_drvr.h
 .\build\Main_Board\.obj\__\Core\App\terminal_cmd_handlers.o: ../Core/Lib/Include/pca9685.h
+.\build\Main_Board\.obj\__\Core\App\terminal_cmd_handlers.o: ../Core/Lib/Include/maxon.h

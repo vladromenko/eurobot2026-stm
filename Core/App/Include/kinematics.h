@@ -49,6 +49,8 @@ struct kinematics_s{
 
 extern const struct kinematics_s Kinematics;
 
+extern float ticks_to_m;
+
 
 #ifdef __cplusplus
 }

@@ -410,3 +410,73 @@ These source files will be recompiled
 [2026-04-16 04:30:27]	[done]
 	build successfully !
 
+[2026-04-16 20:41:28]	[info] incremental build: 2 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\kinematics.c': source file has been changed.
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\odometry.c': source file has been changed.
+
+[2026-04-16 20:41:30]	[done]
+	build successfully !
+
+[2026-04-16 20:45:13]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\odometry.c': source file has been changed.
+
+[2026-04-16 20:45:14]	[done]
+	build successfully !
+
+[2026-04-16 21:57:37]	[info] incremental build: 5 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\debug_terminal_cmd_handlers.c': dependence 'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\MDK-ARM\..\Core\App\Include\terminal_cmd_table.h' has been changed.
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\terminal_cmd_handlers.c': source file has been changed.
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\debug_task.c': dependence 'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\MDK-ARM\..\Core\App\Include\terminal_cmd_table.h' has been changed.
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\game_task.c': dependence 'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\MDK-ARM\..\Core\App\Include\terminal_cmd_table.h' has been changed.
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\terminal_task.c': dependence 'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\MDK-ARM\..\Core\App\Include\terminal_cmd_table.h' has been changed.
+
+[2026-04-16 21:57:37]	compilation failed at : "c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\terminal_cmd_handlers.c", exit code: 1
+command: 
+  "D:\Keil_v5\ARM\ARMCC\bin\armcc.exe" -c --apcs=interwork -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/DSP/Include -I../Middlewares/FreeRTOS-Kernel -I../Middlewares/FreeRTOS-Kernel/include -I../Middlewares/FreeRTOS-Kernel/portable/RVDS/ARM_CM4F -I../Core/App/Include -I../Core/BSP/Include -I../Core/Lib/Include -I../Core/OS_Tasks/Include -I.cmsis/include -IRTE/_Main_Board -D"USE_FULL_LL_DRIVER" -D"ARM_MATH_CM4" -D"__FPU_PRESENT=1U" --cpu Cortex-M4.fp --li --c99 -D__MICROLIB -O0 --split_sections --diag_suppress=1 --diag_suppress=1295 -g -o .\build\Main_Board\.obj\__\Core\App\terminal_cmd_handlers.o --no_depend_system_headers --depend .\build\Main_Board\.obj\__\Core\App\terminal_cmd_handlers.d .\..\Core\App\terminal_cmd_handlers.c
+   at unify_builder.Program.Main(String[] args_)
+---
+".\..\Core\App\terminal_cmd_handlers.c", line 673: Warning:  #177-D: variable "key_request"  was declared but never referenced
+    uint8_t key_request = data[0];
+            ^
+".\..\Core\App\terminal_cmd_handlers.c", line 717: Error:  #70: incomplete type is not allowed
+      enum bus_device_e motor_device_id;
+                        ^
+".\..\Core\App\terminal_cmd_handlers.c", line 747: Error:  #70: incomplete type is not allowed
+      enum bus_device_e motor_device_id;
+                        ^
+.\..\Core\App\terminal_cmd_handlers.c: 1 warning, 2 errors
+
+[2026-04-16 22:00:16]	[info] incremental build: 4 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\terminal_cmd_handlers.c': source file has been changed.
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\debug_task.c': dependence 'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\MDK-ARM\..\Core\App\Include\terminal_cmd_table.h' has been changed.
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\game_task.c': dependence 'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\MDK-ARM\..\Core\App\Include\terminal_cmd_table.h' has been changed.
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\terminal_task.c': dependence 'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\MDK-ARM\..\Core\App\Include\terminal_cmd_table.h' has been changed.
+
+[2026-04-16 22:00:19]	[done]
+	build successfully !
+
+[2026-04-16 22:19:12]	[done]
+	build successfully !
+
+[2026-04-16 22:20:29]	[done]
+	build successfully !
+
+[2026-04-16 22:22:39]	[done]
+	build successfully !
+
+[2026-04-16 22:24:33]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\terminal_cmd_handlers.c': source file has been changed.
+
+[2026-04-16 22:24:34]	[done]
+	build successfully !
+

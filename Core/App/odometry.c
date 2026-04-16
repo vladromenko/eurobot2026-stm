@@ -66,11 +66,11 @@ static void SetSpeed(struct speed_s* speed)
 
   Kinematics.SpeedTo_TPM(speed,tpm);
 
-  Maxon.Set_TPM(bus_devices[MAXON_MOTOR_3].usart, bus_devices[MAXON_MOTOR_3].id, tpm[2]);
-  Maxon.Set_TPM(bus_devices[MAXON_MOTOR_2].usart, bus_devices[MAXON_MOTOR_2].id, tpm[1]);
-  Maxon.Set_TPM(bus_devices[MAXON_MOTOR_1].usart, bus_devices[MAXON_MOTOR_1].id, tpm[0]);
-  //Maxon.Set_TPM(bus_devices[MAXON_MOTOR_2].usart, bus_devices[MAXON_MOTOR_2].id, tpm[1]);
   //Maxon.Set_TPM(bus_devices[MAXON_MOTOR_3].usart, bus_devices[MAXON_MOTOR_3].id, tpm[2]);
+  //Maxon.Set_TPM(bus_devices[MAXON_MOTOR_2].usart, bus_devices[MAXON_MOTOR_2].id, tpm[1]);
+  Maxon.Set_TPM(bus_devices[MAXON_MOTOR_1].usart, bus_devices[MAXON_MOTOR_1].id, tpm[0]);
+  Maxon.Set_TPM(bus_devices[MAXON_MOTOR_2].usart, bus_devices[MAXON_MOTOR_2].id, tpm[1]);
+  Maxon.Set_TPM(bus_devices[MAXON_MOTOR_3].usart, bus_devices[MAXON_MOTOR_3].id, tpm[2]);
 }
 
 static void GetSpeed(struct speed_s* speed)
@@ -80,9 +80,9 @@ static void GetSpeed(struct speed_s* speed)
   Maxon.Get_TPM(bus_devices[MAXON_MOTOR_1].usart, bus_devices[MAXON_MOTOR_1].id, tpm);
   Maxon.Get_TPM(bus_devices[MAXON_MOTOR_2].usart, bus_devices[MAXON_MOTOR_2].id, tpm+1);
   Maxon.Get_TPM(bus_devices[MAXON_MOTOR_3].usart, bus_devices[MAXON_MOTOR_3].id, tpm+2);
-	tpm[0] = tpm[0] * 0.86f;
-	tpm[1] = tpm[1] * 0.86f;
-	tpm[2] = tpm[2] * 0.86f;
+	//tpm[0] = tpm[0] * 0.86f;
+	//tpm[1] = tpm[1] * 0.86f;
+	//tpm[2] = tpm[2] * 0.86f;
   Kinematics.TPM_ToSpeed(tpm,speed);
 }
 

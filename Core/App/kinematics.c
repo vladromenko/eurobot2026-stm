@@ -40,7 +40,7 @@
 #define WHEEL_RADIUS_m					0.0245f	// [m]
 #define	GEAR_RATIO						28.0f
 #define ENCODER_TICKS_PER_TURN			4096	// [ticks]
-#define CALIBRATION_COEF				1.1396f   // used to equate the real path and path from odometry 1.16f 1.1391
+#define CALIBRATION_COEF				1.0f   // used to equate the real path and path from odometry 1.16f 1.1391
 //#define CALIBRATION_COEF				1.1305f
 //#define ANGULAR_CALIBRATION_COEF		1.06f	// used to equate the real angle and angle from odometry
 
