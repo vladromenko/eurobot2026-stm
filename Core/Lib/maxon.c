@@ -59,10 +59,14 @@ static uint8_t GetRange_TPM(USART_TypeDef* usart, uint8_t maxon_id, uint32_t* tp
   DynamixelMaster.Read(usart,maxon_id,MAXON_RangeTPM,8,&response);
 
   while(response.is_data_ready==0) taskYIELD();
+
+  if(response.bus_error || response.device_error)
+    return response.bus_error | response.device_error;
+
   ByteTo_Word32(response.data,tpm_bottom);
   ByteTo_Word32(response.data+4,tpm_top);
 
-  return response.bus_error;
+  return 0;
 }
 
 static void Set_TPM(USART_TypeDef* usart, uint8_t maxon_id, int32_t tpm)
@@ -78,9 +82,13 @@ static uint8_t Get_TPM(USART_TypeDef* usart, uint8_t maxon_id, int32_t* tpm)
   
   DynamixelMaster.Read(usart,maxon_id,MAXON_TPM,4,&response);
   while(response.is_data_ready==0) taskYIELD();
+
+  if(response.bus_error || response.device_error)
+    return response.bus_error | response.device_error;
+
   ByteTo_Word32(response.data,tpm);
 
-  return response.bus_error;
+  return 0;
 }
 
 static void SetTotalTicks(USART_TypeDef* usart, uint8_t maxon_id, int32_t ticks)
@@ -96,9 +104,13 @@ static uint8_t GetTotalTicks(USART_TypeDef* usart, uint8_t maxon_id, int32_t* ti
   
   DynamixelMaster.Read(usart,maxon_id,MAXON_TotalTicks,4,&response);
   while(response.is_data_ready==0) taskYIELD();
+
+  if(response.bus_error || response.device_error)
+    return response.bus_error | response.device_error;
+
   ByteTo_Word32(response.data,ticks);
 
-  return response.bus_error;
+  return 0;
 }
 
 static void Enable(USART_TypeDef* usart, uint8_t maxon_id)

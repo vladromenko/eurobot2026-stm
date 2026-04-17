@@ -54,10 +54,10 @@ static void Task(void *arg)
 
   Kinematics.MatrixInit();
   Odometry.Init();
+  xLastWakeTime = xTaskGetTickCount();
   
 	while(1)
 	{
-    xLastWakeTime = xTaskGetTickCount();
     Odometry.UpdatePath();
     xTaskDelayUntil(&xLastWakeTime,xFrequency);
 	}

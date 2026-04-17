@@ -385,14 +385,14 @@ static void Task(void *arg)
         Kinematics.MatrixInit();
         MaxonsEnable();
         vTaskDelay(100);
-
+        /*
         struct speed_s speed;
         speed.dphi = 0;
         speed.dx = 0;
         speed.dy = 0;
         Odometry.SetSpeed(&speed);
         vTaskDelay(100);
-
+        */
         // cursor init
         Dynamixel_AX.SetMovingSpeed(USART3, dynamixel_cursor_id, cursor_speed);
         Dynamixel_AX.TorqueEnable(USART3, dynamixel_cursor_id);
@@ -829,11 +829,24 @@ static void Task(void *arg)
                     speed.dx = move_speed * cos60;
                     speed.dy = move_speed * cos30;
                 }
-                /*else if (gripper_id == 0) {
+                else if (gripper_id == 0) {
                     // along X axis
                     speed.dx = move_speed;
                     speed.dy = 0.0f;
-                } */
+                    speed.dphi = 0.0f;
+                }
+                else if (gripper_id == 3) {
+                    // along Y axis
+                    speed.dx = 0.0f;
+                    speed.dy = move_speed;
+                    speed.dphi = 0.0f;
+                }
+                else if (gripper_id == 4) {
+                    // along Z axis
+                    speed.dx = 0.0f;
+                    speed.dy = 0.0f;
+                    speed.dphi =  move_speed;
+                }    
                 /*
                 else if (gripper_id == 3) {
                     // along X axis

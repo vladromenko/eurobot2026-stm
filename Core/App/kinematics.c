@@ -40,9 +40,11 @@
 #define WHEEL_RADIUS_m					0.0245f	// [m]
 #define	GEAR_RATIO						28.0f
 #define ENCODER_TICKS_PER_TURN			4096	// [ticks]
-#define CALIBRATION_COEF				1.0f   // used to equate the real path and path from odometry 1.16f 1.1391
+#define CMD_CALIBRATION_COEF			1.133f   // (1.128) command-side scaling: decrease commanded wheel TPM
+#define ODOMETRY_CALIBRATION_COEF		1.142f  // (1.137) odometry-side scaling: increase meters estimated from encoder ticks
+#define ANGULAR_CMD_CALIBRATION_COEF	1.0f    // scale factor for commanded angular speed
+#define ANGULAR_ODOMETRY_CALIBRATION_COEF 1.0f  // scale factor for heading from wheel odometry
 //#define CALIBRATION_COEF				1.1305f
-//#define ANGULAR_CALIBRATION_COEF		1.06f	// used to equate the real angle and angle from odometry
 
 
 #define cos30 	0.8660254f
@@ -115,14 +117,14 @@ static void MatrixInit(void)
 	arm_mat_init_f32(&arm_inverse_matrix, 3, 3, inverse_matrix);
 	
 	// wheel's ticks_per_minute = wheel_linear_speed(m/s) * ms_to_tpm
-	ms_to_tpm = (60.0f*GEAR_RATIO*ENCODER_TICKS_PER_TURN)/(CALIBRATION_COEF*2*PI*WHEEL_RADIUS_m);
+	ms_to_tpm = (60.0f*GEAR_RATIO*ENCODER_TICKS_PER_TURN)/(CMD_CALIBRATION_COEF*2*PI*WHEEL_RADIUS_m);
 
 	// linear_path = wheel_ticks_per_minute * ticks_to_m 
 	//ticks_to_m =  2*PI*WHEEL_RADIUS_m / (GEAR_RATIO*ENCODER_TICKS_PER_TURN);
-	ticks_to_m =  CALIBRATION_COEF * 2*PI*WHEEL_RADIUS_m / (GEAR_RATIO*ENCODER_TICKS_PER_TURN);
+	ticks_to_m =  ODOMETRY_CALIBRATION_COEF * 2*PI*WHEEL_RADIUS_m / (GEAR_RATIO*ENCODER_TICKS_PER_TURN);
 
 	// wheel_linear_speed(m/s) = wheel_ticks_per_minute * ticks_to_m
-	tpm_to_ms = CALIBRATION_COEF * 2*PI*WHEEL_RADIUS_m / (60.0f*GEAR_RATIO*ENCODER_TICKS_PER_TURN);
+	tpm_to_ms = ODOMETRY_CALIBRATION_COEF * 2*PI*WHEEL_RADIUS_m / (60.0f*GEAR_RATIO*ENCODER_TICKS_PER_TURN);
 													
 }
 /*from speed to robot's body (m/s), calculate speed of 3 wheels(ticks per minutes)*/
@@ -130,9 +132,13 @@ static void SpeedTo_TPM(struct speed_s* desired_body_speed, int32_t* tpm)
 {
 	arm_matrix_instance_f32 desired_body_speed_matrix;
 	arm_matrix_instance_f32 rad_per_second;
+	struct speed_s calibrated_body_speed;
 	float ms[3];
-	
-	arm_mat_init_f32(&desired_body_speed_matrix, 3, 1, (float*)desired_body_speed);
+
+	calibrated_body_speed = *desired_body_speed;
+	calibrated_body_speed.dphi *= ANGULAR_CMD_CALIBRATION_COEF;
+
+	arm_mat_init_f32(&desired_body_speed_matrix, 3, 1, (float*)&calibrated_body_speed);
 	arm_mat_init_f32(&rad_per_second, 3, 1, ms);
 											
 	arm_mat_mult_f32(&arm_inverse_matrix, &desired_body_speed_matrix, &rad_per_second);
@@ -158,6 +164,7 @@ static void TPM_ToSpeed(int32_t* tpm, struct speed_s* real_body_speed)
 	arm_mat_init_f32(&linear_wheel_speed_matrix, 3, 1, ms);
 											
 	arm_mat_mult_f32(&arm_direct_matrix, &linear_wheel_speed_matrix, &real_body_speed_matrix);
+	real_body_speed->dphi *= ANGULAR_ODOMETRY_CALIBRATION_COEF;
 }
 
 // d_ticks is in ticks per 10ms
@@ -165,6 +172,8 @@ static void UpdatePath(int32_t* d_ticks, struct coord_s* path)
 {
 	float d_m[3];
 	struct coord_s d_coord;
+	float dphi;
+	float phi_mid;
 
 	d_m[0] = d_ticks[0]*ticks_to_m;
 	d_m[1] = d_ticks[1]*ticks_to_m;
@@ -179,16 +188,20 @@ static void UpdatePath(int32_t* d_ticks, struct coord_s* path)
 	//arm_mat_mult_f32(&arm_inverse_matrix, &d_ms_matrix, &d_coord_matrix);
 	arm_mat_mult_f32(&arm_direct_matrix, &d_ms_matrix, &d_coord_matrix);
 
-	//path->phi += d_coord.phi * ANGULAR_CALIBRATION_COEF;
-	path->phi += d_coord.phi;
+	dphi = d_coord.phi * ANGULAR_ODOMETRY_CALIBRATION_COEF;
+
+	/* Integrate translation in the middle-of-step heading to reduce arc error. */
+	phi_mid = path->phi + 0.5f*dphi;
+
+	path->phi += dphi;
 
 	while(path->phi>2*PI)
 		path->phi -= 2*PI;
 	while(path->phi<-2*PI)
 		path->phi += 2*PI;
 
-	path->x += d_coord.x*arm_cos_f32(path->phi) - d_coord.y*arm_sin_f32(path->phi);
-	path->y += d_coord.x*arm_sin_f32(path->phi) + d_coord.y*arm_cos_f32(path->phi);
+	path->x += d_coord.x*arm_cos_f32(phi_mid) - d_coord.y*arm_sin_f32(phi_mid);
+	path->y += d_coord.x*arm_sin_f32(phi_mid) + d_coord.y*arm_cos_f32(phi_mid);
 }
 
 const struct kinematics_s Kinematics = {.MatrixInit = MatrixInit,
