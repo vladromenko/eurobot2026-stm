@@ -74,7 +74,6 @@ static void Task(void *arg)
                 Stepper.StopMotor(STEPPER_MOTOR_1);         
                 Stepper.SetZeroPosisition(STEPPER_MOTOR_1); 
                 
-                // ВАЖНО: Синхронизируем глобальную переменную цели!
                 //stepper1_goal_position = -2200;
                 stepper1_goal_position = -600; 
                 Stepper.StepToPosisition(STEPPER_MOTOR_1, stepper1_goal_position, 32, 10, 300);

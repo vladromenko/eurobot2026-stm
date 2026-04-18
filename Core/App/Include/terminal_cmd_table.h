@@ -67,9 +67,10 @@
 #define BOARD_GET_KEY                       0X26		/* [38] Check the state of the starting cord  */
 #define BOARD_GRIPPER_VERTICAL              0X27		/* [39] Control the gripper's height  */
 #define BOARD_ROTATE_WHEEL_ONCE             0x28    /* [40] Rotate a wheel by one full revolution for calibration */
+#define BOARD_MOVE_RELATIVE                 0x29    /* [41] Relative move in robot frame by dx/dy */
 
 /*  Do not forget to update the table size with the last one command! */
-#define TERMINAL_CMD_TABLE_SIZE             (BOARD_ROTATE_WHEEL_ONCE + 1)
+#define TERMINAL_CMD_TABLE_SIZE             (BOARD_MOVE_RELATIVE + 1)
 
 
 #ifdef __cplusplus
