@@ -82,14 +82,11 @@ extern volatile TaskHandle_t xTerminalTaskHandle;
 #define WHEEL_CALIBRATION_TIMEOUT_MS    100000U
 #define WHEEL_CALIBRATION_POLL_MS       5U
 #define WHEEL_CALIBRATION_STOP_MARGIN   ((int32_t)50)
-
 uint8_t move_cmd_speed = 0; // [mm/s]
 uint8_t move_cmd_time = 0;  // [ms]
-uint8_t move_rel_dx_mm = 0;
-uint8_t move_rel_dy_mm = 0;
+int32_t move_rel_dx_mm = 0;
+int32_t move_rel_dy_mm = 0;
 uint8_t move_rel_speed_cms = 0;
-uint8_t move_rel_dir_x = 0;
-uint8_t move_rel_dir_y = 0;
 uint8_t rotate_wheel_num = 0;
 int32_t rotate_wheel_actual_ticks = 0;
 int32_t rotate_wheel_theoretical_ticks = WHEEL_CALIBRATION_TICKS_PER_REV;
@@ -135,7 +132,7 @@ typedef struct {
 // configs for two grippers: right (index 0) and left (index 1)
 const GripperHardware_t grippers[2] = {
     { // right (index 0) (id == 1)
-        .dyn_main_1 = 98, .dyn_main_2 = 112,
+        .dyn_main_1 = 254, .dyn_main_2 = 112,
         .dyn_side_1 = 13, .dyn_side_2 = 14,
 		.start_angle = 149, .end_angle = 65, .cursor_angle = 99, // 149 71 99
 		.side_on_angle_1 = 140, .side_off_angle_1 = 89, //140 69
@@ -181,10 +178,10 @@ uint8_t i2c_addr_1 = 0x40;
 uint8_t servo_target_angle = 0;
 
 /* Cursor params */
-uint8_t dynamixel_cursor_id = 0xFF; //15
+uint8_t dynamixel_cursor_id = 98; //15
 uint16_t cursor_speed = 300; //0-1024
-uint8_t cursor_hor_angle = 40; //0-300 60
-uint8_t cursor_vert_angle = 130; //0-300 150 125
+uint8_t cursor_hor_angle = 135; //0-300 60
+uint8_t cursor_vert_angle = 65; //0-300 150 125
 uint8_t cursor_cmd;
 
 /* Side grips params */
@@ -234,6 +231,115 @@ static float NormalizeAngle(float angle)
     return angle;
 }
 
+static void StopBaseMotion(void)
+{
+    struct speed_s stop_speed = {0};
+    Odometry.SetSpeed(&stop_speed);
+    MaxonsStop();
+}
+
+static void GetRobotFrameDisplacementLocal(const struct coord_s* start_coord,
+                                           const struct coord_s* current_coord,
+                                           float* dx_robot,
+                                           float* dy_robot)
+{
+    float dx_global = current_coord->x - start_coord->x;
+    float dy_global = current_coord->y - start_coord->y;
+    float start_cos = cosf(start_coord->phi);
+    float start_sin = sinf(start_coord->phi);
+
+    *dx_robot = dx_global * start_cos + dy_global * start_sin;
+    *dy_robot = -dx_global * start_sin + dy_global * start_cos;
+}
+
+static uint8_t MoveAxisByOdometryAsync(float target_m, float speed_mps, uint8_t move_along_y)
+{
+    const float pos_tolerance_m = 0.002f;
+    const float min_speed_mps = 0.02f;
+    const float max_accel_mps2 = 0.2f;
+    const float angle_kp = 3.0f; //2.2
+    const float y_align_kp = 3.0f;
+    const float max_angular_speed = 0.4f;
+    const TickType_t control_period_ticks = pdMS_TO_TICKS(20);
+    struct coord_s start_coord;
+    struct coord_s current_coord;
+    struct speed_s speed = {0};
+    float direction;
+    float commanded_linear_speed = 0.0f;
+    float heading_ref;
+    TickType_t start_tick;
+    TickType_t timeout_ticks;
+
+    if (fabsf(target_m) <= pos_tolerance_m)
+        return 1;
+
+    if (speed_mps <= 0.0f)
+        return 0;
+
+    direction = (target_m >= 0.0f) ? 1.0f : -1.0f;
+    Odometry.GetCoord(&start_coord);
+    heading_ref = start_coord.phi;
+    start_tick = xTaskGetTickCount();
+    timeout_ticks = pdMS_TO_TICKS((uint32_t)((fabsf(target_m) / speed_mps) * 3500.0f + 1500.0f));
+
+    while ((xTaskGetTickCount() - start_tick) < timeout_ticks)
+    {
+        float dx_robot;
+        float dy_robot;
+        float progress_m;
+        float error_m;
+        float abs_error_m;
+        float profile_speed_mps;
+        float max_speed_step;
+        float heading_error;
+        float align_angle;
+
+        Odometry.GetCoord(&current_coord);
+        GetRobotFrameDisplacementLocal(&start_coord, &current_coord, &dx_robot, &dy_robot);
+
+        progress_m = move_along_y ? dy_robot : dx_robot;
+        error_m = target_m - progress_m;
+        abs_error_m = fabsf(error_m);
+
+        if (abs_error_m <= pos_tolerance_m)
+        {
+            StopBaseMotion();
+            vTaskDelay(pdMS_TO_TICKS(80));
+            return 1;
+        }
+
+        profile_speed_mps = sqrtf(2.0f * max_accel_mps2 * abs_error_m);
+        profile_speed_mps = ClampFloat(profile_speed_mps, min_speed_mps, speed_mps);
+
+        max_speed_step = max_accel_mps2 * 0.02f;
+        if (profile_speed_mps > commanded_linear_speed)
+            commanded_linear_speed = fminf(profile_speed_mps, commanded_linear_speed + max_speed_step);
+        else
+            commanded_linear_speed = profile_speed_mps;
+
+        heading_error = NormalizeAngle(heading_ref - current_coord.phi);
+
+        speed.dx = move_along_y ? 0.0f : (direction * commanded_linear_speed);
+        speed.dy = move_along_y ? (direction * commanded_linear_speed) : 0.0f;
+
+        if (move_along_y)
+        {
+            align_angle = atanf(ClampFloat(-dx_robot / fmaxf(abs_error_m, 0.05f), -0.8f, 0.8f));
+            speed.dphi = ClampFloat(y_align_kp * align_angle, -max_angular_speed, max_angular_speed);
+        }
+        else
+        {
+            speed.dphi = ClampFloat(angle_kp * heading_error, -max_angular_speed, max_angular_speed);
+        }
+
+        Odometry.SetSpeed(&speed);
+        vTaskDelay(control_period_ticks);
+    }
+
+    StopBaseMotion();
+    vTaskDelay(pdMS_TO_TICKS(80));
+    return 0;
+}
 
 /**
  * @brief Rotate two Dynamixels by a given angle synchronously.
@@ -492,7 +598,7 @@ static void Task(void *arg)
 			}
 
 			switch(gripper_cmd){
-			case 0: // toggle cursor
+            case 0: // toggle cursor
 			{
 				//cmd_isFinished = 0;
 				
@@ -503,7 +609,7 @@ static void Task(void *arg)
 				uint8_t cursor_target_angle = (cursor_cmd == 1)?cursor_hor_angle:cursor_vert_angle;
 
 				Dynamixel_AX.SetAngle(USART3, dynamixel_cursor_id, cursor_target_angle);
-				vTaskDelay(100);
+				vTaskDelay(50);
 				
 				// checking the achievement of a set angle
 				Dynamixel_AX.GetAngle(USART3, dynamixel_cursor_id, &current_angle);
@@ -939,129 +1045,32 @@ static void Task(void *arg)
             
             case 8: // relative move in robot frame
             {
-                struct coord_s start_coord;
-                struct coord_s current_coord;
-                struct speed_s speed;
                 float target_dx_m = (float)move_rel_dx_mm * 0.001f;
                 float target_dy_m = (float)move_rel_dy_mm * 0.001f;
                 float max_speed_mps = (float)move_rel_speed_cms * 0.01f;
-                float target_distance_m = sqrtf(target_dx_m * target_dx_m + target_dy_m * target_dy_m);
-                const float pos_tolerance_m = 0.005f;
-                const float angle_kp = 2.0f;
-                const float max_angular_speed = 1.0f;
                 uint8_t move_success = 0;
 
-                speed.dx = 0.0f;
-                speed.dy = 0.0f;
-                speed.dphi = 0.0f;
                 last_cmd_status = 0;
 
                 MaxonsEnable();
                 vTaskDelay(20);
 
-                if (move_rel_dir_x != 0)
-                    target_dx_m = -target_dx_m;
-
-                if (move_rel_dir_y != 0)
-                    target_dy_m = -target_dy_m;
-
-                if ((max_speed_mps <= 0.0f) || (target_distance_m <= pos_tolerance_m))
+                if (max_speed_mps <= 0.0f)
                 {
-                    move_success = 1;
+                    move_success = 0;
                 }
                 else
                 {
-                    TickType_t start_tick;
-                    TickType_t timeout_ticks;
-                    float target_sign_x = (target_dx_m >= 0.0f) ? 1.0f : -1.0f;
-                    float target_sign_y = (target_dy_m >= 0.0f) ? 1.0f : -1.0f;
+                    move_success = MoveAxisByOdometryAsync(target_dy_m, max_speed_mps, 1);
 
-                    Odometry.GetCoord(&start_coord);
-                    start_tick = xTaskGetTickCount();
-                    timeout_ticks = pdMS_TO_TICKS((uint32_t)((target_distance_m / max_speed_mps) * 3000.0f + 1500.0f));
-
-                    while ((xTaskGetTickCount() - start_tick) < timeout_ticks)
-                    {
-                        float delta_x_global;
-                        float delta_y_global;
-                        float traveled_x_robot;
-                        float traveled_y_robot;
-                        float error_y;
-                        float heading_error;
-
-                        Odometry.GetCoord(&current_coord);
-
-                        delta_x_global = current_coord.x - start_coord.x;
-                        delta_y_global = current_coord.y - start_coord.y;
-
-                        traveled_x_robot = delta_x_global * cosf(start_coord.phi) + delta_y_global * sinf(start_coord.phi);
-                        traveled_y_robot = -delta_x_global * sinf(start_coord.phi) + delta_y_global * cosf(start_coord.phi);
-                        error_y = target_dy_m - traveled_y_robot;
-
-                        if (fabsf(error_y) <= pos_tolerance_m)
-                            break;
-
-                        heading_error = NormalizeAngle(start_coord.phi - current_coord.phi);
-                        speed.dphi = ClampFloat(angle_kp * heading_error, -max_angular_speed, max_angular_speed);
-                        speed.dx = 0.0f;
-                        speed.dy = target_sign_y * max_speed_mps;
-
-                        Odometry.SetSpeed(&speed);
-                        vTaskDelay(pdMS_TO_TICKS(20));
-                    }
-
-                    speed.dx = 0.0f;
-                    speed.dy = 0.0f;
-                    speed.dphi = 0.0f;
-                    Odometry.SetSpeed(&speed);
-                    vTaskDelay(100);
-
-                    while ((xTaskGetTickCount() - start_tick) < timeout_ticks)
-                    {
-                        float delta_x_global;
-                        float delta_y_global;
-                        float traveled_x_robot;
-                        float traveled_y_robot;
-                        float error_x;
-                        float heading_error;
-
-                        Odometry.GetCoord(&current_coord);
-
-                        delta_x_global = current_coord.x - start_coord.x;
-                        delta_y_global = current_coord.y - start_coord.y;
-
-                        traveled_x_robot = delta_x_global * cosf(start_coord.phi) + delta_y_global * sinf(start_coord.phi);
-                        traveled_y_robot = -delta_x_global * sinf(start_coord.phi) + delta_y_global * cosf(start_coord.phi);
-                        error_x = target_dx_m - traveled_x_robot;
-
-                        if ((fabsf(error_x) <= pos_tolerance_m) && (fabsf(target_dy_m - traveled_y_robot) <= pos_tolerance_m))
-                        {
-                            move_success = 1;
-                            break;
-                        }
-
-                        heading_error = NormalizeAngle(start_coord.phi - current_coord.phi);
-                        speed.dphi = ClampFloat(angle_kp * heading_error, -max_angular_speed, max_angular_speed);
-                        speed.dx = target_sign_x * max_speed_mps;
-                        speed.dy = 0.0f;
-
-                        Odometry.SetSpeed(&speed);
-                        vTaskDelay(pdMS_TO_TICKS(20));
-                    }
+                    if (move_success)
+                        move_success = MoveAxisByOdometryAsync(target_dx_m, max_speed_mps, 0);
                 }
 
-                speed.dx = 0.0f;
-                speed.dy = 0.0f;
-                speed.dphi = 0.0f;
-                Odometry.SetSpeed(&speed);
-                MaxonsStop();
+                StopBaseMotion();
                 vTaskDelay(100);
 
                 last_cmd_status = move_success;
-
-                if (xTerminalTaskHandle != NULL) {
-                    xTaskNotifyGive(xTerminalTaskHandle);
-                }
                 gripper_cmd = NO_CMD;
                 break;
             }

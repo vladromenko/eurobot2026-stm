@@ -72,6 +72,9 @@ extern uint8_t gripper_cmd;
 extern uint8_t lift_cmd;
 extern uint8_t gripper_id;
 extern uint8_t gripper_height;
+extern int32_t move_rel_dx_mm;
+extern int32_t move_rel_dy_mm;
+extern uint8_t move_rel_speed_cms;
 extern uint8_t rotate_wheel_num;
 extern int32_t rotate_wheel_actual_ticks;
 extern int32_t rotate_wheel_theoretical_ticks;
@@ -97,6 +100,7 @@ uint8_t COMM_ENABLE = 1;
 #define CALIBRATION_POLL_PERIOD_MS        5U
 #define CALIBRATION_TIMEOUT_MS            15000U
 #define CALIBRATION_STOP_MARGIN_TICKS     ((int32_t)1750)
+#define LOCAL_PI                          3.14159265359f
 
 static uint8_t GetWheelBusDevice(uint8_t wheel_number, enum bus_devices_e* device)
 {
@@ -131,82 +135,6 @@ static void WaitForGripperCompletion(void)
   
   // Как только мы здесь — значит задача гриппера выполнила работу.
 }
-
-static void StopRobotMotion(void)
-{
-  struct speed_s stop_speed = {0};
-
-  Odometry.SetSpeed(&stop_speed);
-  MaxonsStop();
-}
-
-static void GetRobotFrameDisplacement(const struct coord_s* start_coord,
-                                      const struct coord_s* current_coord,
-                                      float* dx_robot,
-                                      float* dy_robot)
-{
-  float dx_global = current_coord->x - start_coord->x;
-  float dy_global = current_coord->y - start_coord->y;
-  float start_cos = cosf(start_coord->phi);
-  float start_sin = sinf(start_coord->phi);
-
-  *dx_robot = dx_global * start_cos + dy_global * start_sin;
-  *dy_robot = -dx_global * start_sin + dy_global * start_cos;
-}
-
-static uint8_t MoveAxisByOdometry(float target_m, float speed_mps, uint8_t move_along_y)
-{
-  const float pos_tolerance_m = 0.005f;
-  struct coord_s start_coord;
-  struct coord_s current_coord;
-  struct speed_s speed = {0};
-  float direction;
-  TickType_t start_tick;
-  TickType_t timeout_ticks;
-
-  if(fabsf(target_m) <= pos_tolerance_m)
-    return 1;
-
-  if(speed_mps <= 0.0f)
-    return 0;
-
-  direction = (target_m >= 0.0f) ? 1.0f : -1.0f;
-
-  Odometry.GetCoord(&start_coord);
-  start_tick = xTaskGetTickCount();
-  timeout_ticks = pdMS_TO_TICKS((uint32_t)((fabsf(target_m) / speed_mps) * 2500.0f + 1000.0f));
-
-  speed.dx = move_along_y ? 0.0f : (direction * speed_mps);
-  speed.dy = move_along_y ? (direction * speed_mps) : 0.0f;
-  speed.dphi = 0.0f;
-  Odometry.SetSpeed(&speed);
-
-  while((xTaskGetTickCount() - start_tick) < timeout_ticks)
-  {
-    float dx_robot;
-    float dy_robot;
-    float progress_m;
-
-    Odometry.GetCoord(&current_coord);
-    GetRobotFrameDisplacement(&start_coord, &current_coord, &dx_robot, &dy_robot);
-
-    progress_m = move_along_y ? dy_robot : dx_robot;
-
-    if(fabsf(target_m - progress_m) <= pos_tolerance_m)
-    {
-      StopRobotMotion();
-      vTaskDelay(50);
-      return 1;
-    }
-
-    vTaskDelay(pdMS_TO_TICKS(20));
-  }
-
-  StopRobotMotion();
-  vTaskDelay(50);
-  return 0;
-}
-
 
 static void Ping(uint8_t* data, uint8_t data_length)
 {
@@ -802,37 +730,42 @@ static void RelativeMove(uint8_t* data, uint8_t data_length)
   int32_t dx_mm;
   int32_t dy_mm;
   uint8_t speed_cm_s;
-  float target_dx_m;
-  float target_dy_m;
-  float speed_mps;
   uint8_t status = 0;
 
   terminal_response.cmd = BOARD_MOVE_RELATIVE;
   terminal_response.data[0] = 0x00;
   terminal_response.data_length = 1;
 
-  if(COMM_ENABLE && (data_length >= 9)){
+  /*
+   * Relative move is executed in the robot local frame captured at command start:
+   *   dx > 0  -> move along local +X
+   *   dy > 0  -> move along local +Y
+   *
+   * Sequence:
+   *   1. Move along local Y while steering to reduce lateral X error.
+   *   2. Move along local X while holding the heading obtained after phase 1.
+   *
+   * Main tuning knobs are inside MoveAxisByOdometry():
+   *   max_accel_mps2   - approach softness / aggressiveness
+   *   min_speed_mps    - near-target crawl speed
+   *   y_align_kp       - how strongly Y phase aligns robot to the Y line
+   *   angle_kp         - how strongly X phase holds heading
+   *   max_angular_speed- yaw rate clamp for both phases
+   */
+  if(COMM_ENABLE && (data_length >= 9) && (gripper_cmd == 0xFF)){
     ByteTo_Word32(data, &dx_mm);
     ByteTo_Word32(data + 4, &dy_mm);
     speed_cm_s = data[8];
 
-    target_dx_m = 0.001f * (float)dx_mm;
-    target_dy_m = 0.001f * (float)dy_mm;
-    speed_mps = 0.01f * (float)speed_cm_s;
-
-    MaxonsEnable();
-    vTaskDelay(20);
-
-    status = MoveAxisByOdometry(target_dy_m, speed_mps, 1);
-
-    if(status)
-      status = MoveAxisByOdometry(target_dx_m, speed_mps, 0);
-
-    StopRobotMotion();
-    last_cmd_status = status;
-    terminal_response.data[0] = status;
+    move_rel_dx_mm = dx_mm;
+    move_rel_dy_mm = dy_mm;
+    move_rel_speed_cms = speed_cm_s;
+    last_cmd_status = 0;
+    gripper_cmd = 8;
+    status = 1;
   }
 
+  terminal_response.data[0] = status;
   Terminal.SendResponse(&terminal_response);
 }
 

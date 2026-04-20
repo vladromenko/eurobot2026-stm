@@ -1193,3 +1193,139 @@ These source files will be recompiled
 [2026-04-20 04:45:04]	[done]
 	build successfully !
 
+[2026-04-20 05:28:37]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\odometry.c': source file has been changed.
+
+[2026-04-20 05:28:40]	[done]
+	build successfully !
+
+[2026-04-20 05:38:41]	[done]
+	build successfully !
+
+[2026-04-20 05:43:46]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\kinematics.c': source file has been changed.
+
+[2026-04-20 05:43:47]	[done]
+	build successfully !
+
+[2026-04-20 16:29:19]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-04-20 16:29:21]	[done]
+	build successfully !
+
+[2026-04-20 16:30:35]	[done]
+	build successfully !
+
+[2026-04-20 17:44:05]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\terminal_cmd_handlers.c': source file has been changed.
+
+[2026-04-20 17:44:07]	[done]
+	build successfully !
+
+[2026-04-20 17:57:45]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\terminal_cmd_handlers.c': source file has been changed.
+
+[2026-04-20 17:57:46]	[done]
+	build successfully !
+
+[2026-04-20 18:01:13]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-04-20 18:01:15]	[done]
+	build successfully !
+
+[2026-04-20 18:02:13]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-04-20 18:02:14]	[done]
+	build successfully !
+
+[2026-04-20 18:03:14]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-04-20 18:03:15]	[done]
+	build successfully !
+
+[2026-04-20 18:18:57]	[info] incremental build: 2 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\terminal_cmd_handlers.c': source file has been changed.
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-04-20 18:18:58]	[done]
+	build successfully !
+
+[2026-04-20 18:24:18]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\terminal_cmd_handlers.c': source file has been changed.
+
+[2026-04-20 18:24:20]	[done]
+	build successfully !
+
+[2026-04-20 18:26:00]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-04-20 18:26:02]	[done]
+	build successfully !
+
+[2026-04-20 19:32:45]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-04-20 19:32:45]	[done]
+	build successfully !
+
+[2026-04-20 19:39:27]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-04-20 19:39:27]	[done]
+	build successfully !
+
+[2026-04-20 19:45:15]	[done]
+	build successfully !
+
+[2026-04-20 20:41:27]	[info] incremental build: 4 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\debug_terminal_cmd_handlers.c': dependence 'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\MDK-ARM\..\Core\App\Include\terminal_cmd_table.h' has been changed.
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\debug_task.c': dependence 'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\MDK-ARM\..\Core\App\Include\terminal_cmd_table.h' has been changed.
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\stepper_task.c': source file has been changed.
+
+[2026-04-20 20:41:29]	[done]
+	build successfully !
+
+[2026-04-20 20:43:47]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\stepper_task.c': source file has been changed.
+
+[2026-04-20 20:43:48]	[done]
+	build successfully !
+
+[2026-04-20 20:44:03]	[done]
+	build successfully !
+

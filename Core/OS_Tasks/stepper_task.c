@@ -78,7 +78,7 @@ static void Task(void *arg)
                 Stepper.SetZeroPosisition(STEPPER_MOTOR_1); 
                 
                 //stepper1_goal_position = -2200;
-                stepper1_goal_position = -600; 
+                stepper1_goal_position = -1000; 
                 Stepper.StepToPosisition(STEPPER_MOTOR_1, stepper1_goal_position, 32, 10, 300);
                 
                 stepper1_calibrate = 0; 

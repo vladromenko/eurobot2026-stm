@@ -51,7 +51,7 @@
 #define ODOMETRY_X_COEF                 0.970f
 #define ODOMETRY_Y_COEF                 1.0f
 #define ANGULAR_CMD_CALIBRATION_COEF	1.0f
-#define ANGULAR_ODOMETRY_CALIBRATION_COEF 1.216f
+#define ANGULAR_ODOMETRY_CALIBRATION_COEF 0.971f //1.216f
 #define WHEEL_1_ODOMETRY_COEF           1.0f
 #define WHEEL_2_ODOMETRY_COEF           0.961f
 #define WHEEL_3_ODOMETRY_COEF           1.0f
@@ -215,9 +215,9 @@ static void UpdatePath(int32_t* d_ticks, struct coord_s* path)
 
 	path->phi += dphi;
 
-	while(path->phi>2*PI)
+	while(path->phi>PI)
 		path->phi -= 2*PI;
-	while(path->phi<-2*PI)
+	while(path->phi<-PI)
 		path->phi += 2*PI;
 
 	path->x += d_coord.x*arm_cos_f32(phi_mid) - d_coord.y*arm_sin_f32(phi_mid);

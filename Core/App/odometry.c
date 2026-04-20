@@ -34,6 +34,22 @@
 
 
 struct coord_s path;
+static int32_t ticks_old[3] = {0};
+
+static void SyncTicksReference(void)
+{
+  uint8_t error = 0;
+
+  error |= Maxon.GetTotalTicks(bus_devices[MAXON_MOTOR_1].usart, bus_devices[MAXON_MOTOR_1].id, ticks_old);
+  error |= Maxon.GetTotalTicks(bus_devices[MAXON_MOTOR_2].usart, bus_devices[MAXON_MOTOR_2].id, ticks_old + 1);
+  error |= Maxon.GetTotalTicks(bus_devices[MAXON_MOTOR_3].usart, bus_devices[MAXON_MOTOR_3].id, ticks_old + 2);
+
+  if(error){
+    ticks_old[0] = 0;
+    ticks_old[1] = 0;
+    ticks_old[2] = 0;
+  }
+}
 
 static void Init(void)
 {
@@ -44,6 +60,10 @@ static void Init(void)
   path.x = 0; //0.25
   path.y = 0; //2.65
   path.phi = 0; //-2.0944
+
+  ticks_old[0] = 0;
+  ticks_old[1] = 0;
+  ticks_old[2] = 0;
 }
 
 static void SetCoord(struct coord_s* coord)
@@ -51,6 +71,9 @@ static void SetCoord(struct coord_s* coord)
   path.x = coord->x;
   path.y = coord->y;
   path.phi = coord->phi;
+
+  // Start integrating the new pose from current encoder totals.
+  SyncTicksReference();
 }
 
 static void GetCoord(struct coord_s* coord)
@@ -89,8 +112,6 @@ static void GetSpeed(struct speed_s* speed)
 // this update path will be called with frequency of 100 Hz
 static void UpdatePath(void)
 {
-  static int32_t ticks_old[3] = {0};
-
   int32_t ticks_new[3];
   int32_t d_ticks[3];
   uint8_t error = 0;
