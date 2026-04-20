@@ -77,6 +77,11 @@ extern volatile TaskHandle_t xTerminalTaskHandle;
 #define LOCAL_PI 3.14159265f
 
 #define MM_TO_STEPS 25
+#define WHEEL_CALIBRATION_TICKS_PER_REV ((int32_t)(28.0f * 4096.0f))
+#define WHEEL_CALIBRATION_TPM           ((int32_t)400000)
+#define WHEEL_CALIBRATION_TIMEOUT_MS    100000U
+#define WHEEL_CALIBRATION_POLL_MS       5U
+#define WHEEL_CALIBRATION_STOP_MARGIN   ((int32_t)50)
 
 uint8_t move_cmd_speed = 0; // [mm/s]
 uint8_t move_cmd_time = 0;  // [ms]
@@ -85,6 +90,9 @@ uint8_t move_rel_dy_mm = 0;
 uint8_t move_rel_speed_cms = 0;
 uint8_t move_rel_dir_x = 0;
 uint8_t move_rel_dir_y = 0;
+uint8_t rotate_wheel_num = 0;
+int32_t rotate_wheel_actual_ticks = 0;
+int32_t rotate_wheel_theoretical_ticks = WHEEL_CALIBRATION_TICKS_PER_REV;
 
 // Structure describing all pins and IDs for one gripper
 typedef struct {
@@ -1054,6 +1062,76 @@ static void Task(void *arg)
                 if (xTerminalTaskHandle != NULL) {
                     xTaskNotifyGive(xTerminalTaskHandle);
                 }
+                gripper_cmd = NO_CMD;
+                break;
+            }
+
+            case 9: // rotate wheel once for calibration
+            {
+                enum bus_devices_e wheel_device;
+                enum maxons_state_e maxons_state_before_calibration = robot_ctrl.maxons_state;
+                TickType_t start_tick;
+                int32_t actual_ticks = 0;
+                int32_t abs_ticks = 0;
+
+                rotate_wheel_actual_ticks = 0;
+                rotate_wheel_theoretical_ticks = WHEEL_CALIBRATION_TICKS_PER_REV;
+                last_cmd_status = 0;
+
+                switch(rotate_wheel_num)
+                {
+                    case 1:
+                        wheel_device = MAXON_MOTOR_1;
+                        break;
+                    case 2:
+                        wheel_device = MAXON_MOTOR_2;
+                        break;
+                    case 3:
+                        wheel_device = MAXON_MOTOR_3;
+                        break;
+                    default:
+                        gripper_cmd = NO_CMD;
+                        break;
+                }
+
+                if (gripper_cmd == NO_CMD)
+                    break;
+
+                if(maxons_state_before_calibration == MAXONS_DISABLED)
+                    MaxonsEnable();
+
+                MaxonsStop();
+                vTaskDelay(pdMS_TO_TICKS(20));
+
+                Maxon.SetTotalTicks(bus_devices[wheel_device].usart, bus_devices[wheel_device].id, 0);
+                vTaskDelay(pdMS_TO_TICKS(20));
+
+                start_tick = xTaskGetTickCount();
+                Maxon.Set_TPM(bus_devices[wheel_device].usart, bus_devices[wheel_device].id, WHEEL_CALIBRATION_TPM);
+
+                while((xTaskGetTickCount() - start_tick) < pdMS_TO_TICKS(WHEEL_CALIBRATION_TIMEOUT_MS))
+                {
+                    if(Maxon.GetTotalTicks(bus_devices[wheel_device].usart, bus_devices[wheel_device].id, &actual_ticks) == 0)
+                    {
+                        abs_ticks = (actual_ticks < 0) ? -actual_ticks : actual_ticks;
+
+                        if(abs_ticks >= (rotate_wheel_theoretical_ticks - WHEEL_CALIBRATION_STOP_MARGIN))
+                        {
+                            last_cmd_status = 1;
+                            break;
+                        }
+                    }
+
+                    vTaskDelay(pdMS_TO_TICKS(WHEEL_CALIBRATION_POLL_MS));
+                }
+
+                Maxon.Set_TPM(bus_devices[wheel_device].usart, bus_devices[wheel_device].id, 0);
+                vTaskDelay(pdMS_TO_TICKS(20));
+                (void)Maxon.GetTotalTicks(bus_devices[wheel_device].usart, bus_devices[wheel_device].id, &rotate_wheel_actual_ticks);
+
+                if(maxons_state_before_calibration == MAXONS_DISABLED)
+                    MaxonsDisable();
+
                 gripper_cmd = NO_CMD;
                 break;
             }

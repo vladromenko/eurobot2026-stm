@@ -52,6 +52,7 @@ void MaxonsEnable(void)
 	Maxon.Enable(bus_devices[MAXON_MOTOR_1].usart, bus_devices[MAXON_MOTOR_1].id);
   	Maxon.Enable(bus_devices[MAXON_MOTOR_2].usart, bus_devices[MAXON_MOTOR_2].id);
   	Maxon.Enable(bus_devices[MAXON_MOTOR_3].usart, bus_devices[MAXON_MOTOR_3].id);
+	robot_ctrl.maxons_state = MAXONS_ENABLED;
 }
 
 void MaxonsDisable(void)
@@ -59,6 +60,7 @@ void MaxonsDisable(void)
 	Maxon.Disable(bus_devices[MAXON_MOTOR_1].usart, bus_devices[MAXON_MOTOR_1].id);
   	Maxon.Disable(bus_devices[MAXON_MOTOR_2].usart, bus_devices[MAXON_MOTOR_2].id);
   	Maxon.Disable(bus_devices[MAXON_MOTOR_3].usart, bus_devices[MAXON_MOTOR_3].id);
+	robot_ctrl.maxons_state = MAXONS_DISABLED;
 }
 
 void MaxonsStop(void)

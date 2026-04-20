@@ -40,12 +40,21 @@
 #define WHEEL_RADIUS_m					0.0245f	// [m]
 #define	GEAR_RATIO						28.0f
 #define ENCODER_TICKS_PER_TURN			4096	// [ticks]
-#define CMD_CALIBRATION_COEF			1.133f   // (1.128) command-side scaling: decrease commanded wheel TPM
-#define ODOMETRY_CALIBRATION_COEF		1.142f  // (1.137) odometry-side scaling: increase meters estimated from encoder ticks
-#define ANGULAR_CMD_CALIBRATION_COEF	1.0f    // scale factor for commanded angular speed
-#define ANGULAR_ODOMETRY_CALIBRATION_COEF 1.0f  // scale factor for heading from wheel odometry
-//#define CALIBRATION_COEF				1.1305f
 
+// Final low-speed odometry calibration.
+// 1. Angular odometry was calibrated first from manual 360 deg rotations.
+// 2. Global linear scale was then calibrated from manual 1.55 m translations.
+// 3. Wheel 2 got an additional correction to remove yaw drift during pure Y motion.
+// 4. X-axis scale was corrected separately because X and Y showed different gains.
+#define CMD_CALIBRATION_COEF			1.133f
+#define ODOMETRY_CALIBRATION_COEF		1.264f
+#define ODOMETRY_X_COEF                 0.970f
+#define ODOMETRY_Y_COEF                 1.0f
+#define ANGULAR_CMD_CALIBRATION_COEF	1.0f
+#define ANGULAR_ODOMETRY_CALIBRATION_COEF 1.216f
+#define WHEEL_1_ODOMETRY_COEF           1.0f
+#define WHEEL_2_ODOMETRY_COEF           0.961f
+#define WHEEL_3_ODOMETRY_COEF           1.0f
 
 #define cos30 	0.8660254f
 #define cos60 	0.5f
@@ -109,6 +118,7 @@ arm_matrix_instance_f32 arm_inverse_matrix;
 
 
 float ms_to_tpm, ticks_to_m, tpm_to_ms;
+float wheel_ticks_to_m[3], wheel_tpm_to_ms[3];
 
 													
 static void MatrixInit(void)
@@ -122,9 +132,15 @@ static void MatrixInit(void)
 	// linear_path = wheel_ticks_per_minute * ticks_to_m 
 	//ticks_to_m =  2*PI*WHEEL_RADIUS_m / (GEAR_RATIO*ENCODER_TICKS_PER_TURN);
 	ticks_to_m =  ODOMETRY_CALIBRATION_COEF * 2*PI*WHEEL_RADIUS_m / (GEAR_RATIO*ENCODER_TICKS_PER_TURN);
+	wheel_ticks_to_m[0] = ticks_to_m * WHEEL_1_ODOMETRY_COEF;
+	wheel_ticks_to_m[1] = ticks_to_m * WHEEL_2_ODOMETRY_COEF;
+	wheel_ticks_to_m[2] = ticks_to_m * WHEEL_3_ODOMETRY_COEF;
 
 	// wheel_linear_speed(m/s) = wheel_ticks_per_minute * ticks_to_m
 	tpm_to_ms = ODOMETRY_CALIBRATION_COEF * 2*PI*WHEEL_RADIUS_m / (60.0f*GEAR_RATIO*ENCODER_TICKS_PER_TURN);
+	wheel_tpm_to_ms[0] = wheel_ticks_to_m[0] / 60.0f;
+	wheel_tpm_to_ms[1] = wheel_ticks_to_m[1] / 60.0f;
+	wheel_tpm_to_ms[2] = wheel_ticks_to_m[2] / 60.0f;
 													
 }
 /*from speed to robot's body (m/s), calculate speed of 3 wheels(ticks per minutes)*/
@@ -156,14 +172,16 @@ static void TPM_ToSpeed(int32_t* tpm, struct speed_s* real_body_speed)
 	arm_matrix_instance_f32 linear_wheel_speed_matrix;
 	float ms[3];
 	// find linear speed of 3 wheels (m/s) = ticks_per_minute * tpm_to_ms
-	ms[0] = tpm[0]*tpm_to_ms;
-	ms[1] = tpm[1]*tpm_to_ms;
-	ms[2] = tpm[2]*tpm_to_ms;
+	ms[0] = tpm[0]*wheel_tpm_to_ms[0];
+	ms[1] = tpm[1]*wheel_tpm_to_ms[1];
+	ms[2] = tpm[2]*wheel_tpm_to_ms[2];
 	
 	arm_mat_init_f32(&real_body_speed_matrix, 3, 1, (float*)real_body_speed);
 	arm_mat_init_f32(&linear_wheel_speed_matrix, 3, 1, ms);
 											
 	arm_mat_mult_f32(&arm_direct_matrix, &linear_wheel_speed_matrix, &real_body_speed_matrix);
+	real_body_speed->dx *= ODOMETRY_X_COEF;
+	real_body_speed->dy *= ODOMETRY_Y_COEF;
 	real_body_speed->dphi *= ANGULAR_ODOMETRY_CALIBRATION_COEF;
 }
 
@@ -175,9 +193,9 @@ static void UpdatePath(int32_t* d_ticks, struct coord_s* path)
 	float dphi;
 	float phi_mid;
 
-	d_m[0] = d_ticks[0]*ticks_to_m;
-	d_m[1] = d_ticks[1]*ticks_to_m;
-	d_m[2] = d_ticks[2]*ticks_to_m;
+	d_m[0] = d_ticks[0]*wheel_ticks_to_m[0];
+	d_m[1] = d_ticks[1]*wheel_ticks_to_m[1];
+	d_m[2] = d_ticks[2]*wheel_ticks_to_m[2];
 
 	arm_matrix_instance_f32 d_ms_matrix;
 	arm_matrix_instance_f32 d_coord_matrix;
@@ -187,6 +205,8 @@ static void UpdatePath(int32_t* d_ticks, struct coord_s* path)
 											
 	//arm_mat_mult_f32(&arm_inverse_matrix, &d_ms_matrix, &d_coord_matrix);
 	arm_mat_mult_f32(&arm_direct_matrix, &d_ms_matrix, &d_coord_matrix);
+	d_coord.x *= ODOMETRY_X_COEF;
+	d_coord.y *= ODOMETRY_Y_COEF;
 
 	dphi = d_coord.phi * ANGULAR_ODOMETRY_CALIBRATION_COEF;
 

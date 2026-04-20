@@ -68,9 +68,10 @@
 #define BOARD_GRIPPER_VERTICAL              0X27		/* [39] Control the gripper's height  */
 #define BOARD_ROTATE_WHEEL_ONCE             0x28    /* [40] Rotate a wheel by one full revolution for calibration */
 #define BOARD_MOVE_RELATIVE                 0x29    /* [41] Relative move in robot frame by dx/dy */
+#define BOARD_FREE_WHEELS                   0x2A    /* [42] Disable wheel holding for manual odometry tests */
 
 /*  Do not forget to update the table size with the last one command! */
-#define TERMINAL_CMD_TABLE_SIZE             (BOARD_MOVE_RELATIVE + 1)
+#define TERMINAL_CMD_TABLE_SIZE             (BOARD_FREE_WHEELS + 1)
 
 
 #ifdef __cplusplus

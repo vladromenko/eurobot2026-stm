@@ -72,6 +72,9 @@ extern uint8_t gripper_cmd;
 extern uint8_t lift_cmd;
 extern uint8_t gripper_id;
 extern uint8_t gripper_height;
+extern uint8_t rotate_wheel_num;
+extern int32_t rotate_wheel_actual_ticks;
+extern int32_t rotate_wheel_theoretical_ticks;
 
 extern uint8_t pump_mask;
 extern uint8_t valve_mask;
@@ -90,9 +93,10 @@ extern int16_t stepper1_goal_position;
 uint8_t COMM_ENABLE = 1;
 
 #define CALIBRATION_WHEEL_TICKS_PER_REV   ((int32_t)(28.0f * 4096.0f))
-#define CALIBRATION_WHEEL_TPM             ((int32_t)2000000)
-#define CALIBRATION_POLL_PERIOD_MS        20U
-#define CALIBRATION_TIMEOUT_MS            10000U
+#define CALIBRATION_WHEEL_TPM             ((int32_t)400000)
+#define CALIBRATION_POLL_PERIOD_MS        5U
+#define CALIBRATION_TIMEOUT_MS            15000U
+#define CALIBRATION_STOP_MARGIN_TICKS     ((int32_t)1750)
 
 static uint8_t GetWheelBusDevice(uint8_t wheel_number, enum bus_devices_e* device)
 {
@@ -541,6 +545,28 @@ static void SetCommState(uint8_t* data, uint8_t data_length){
 	
 }
 
+static void FreeWheels(uint8_t* data, uint8_t data_length)
+{
+  struct terminal_response_s terminal_response = {0};
+  struct speed_s speed = {0};
+  uint8_t status = 0;
+
+  terminal_response.cmd = BOARD_FREE_WHEELS;
+
+  if(COMM_ENABLE){
+    Odometry.SetSpeed(&speed);
+    vTaskDelay(pdMS_TO_TICKS(20));
+    MaxonsStop();
+    vTaskDelay(pdMS_TO_TICKS(20));
+    MaxonsDisable();
+    status = 1;
+  }
+
+  terminal_response.data[0] = status;
+  terminal_response.data_length = 1;
+  Terminal.SendResponse(&terminal_response);
+}
+
 static void BoardReset(uint8_t* data, uint8_t data_length){
 	struct terminal_response_s terminal_response;
 	terminal_response.cmd = BOARD_RESET;
@@ -851,19 +877,30 @@ static void GripperVertical(uint8_t* data, uint8_t data_length)
 static void ResetWheelTicks(uint8_t* data, uint8_t data_length)
 {
   struct terminal_response_s terminal_response = {0};
-  enum bus_devices_e wheel_device;
+  int32_t ticks[3] = {0};
   uint8_t status = 0;
 
   terminal_response.cmd = BOARD_RESET_WHEEL_TICKS;
 
-  if(COMM_ENABLE && (data_length > 0) && GetWheelBusDevice(data[0], &wheel_device))
+  if(COMM_ENABLE)
   {
-    Maxon.SetTotalTicks(bus_devices[wheel_device].usart, bus_devices[wheel_device].id, 0);
-    status = 1;
+    Maxon.SetTotalTicks(bus_devices[MAXON_MOTOR_1].usart, bus_devices[MAXON_MOTOR_1].id, 0);
+    Maxon.SetTotalTicks(bus_devices[MAXON_MOTOR_2].usart, bus_devices[MAXON_MOTOR_2].id, 0);
+    Maxon.SetTotalTicks(bus_devices[MAXON_MOTOR_3].usart, bus_devices[MAXON_MOTOR_3].id, 0);
+
+    if((Maxon.GetTotalTicks(bus_devices[MAXON_MOTOR_1].usart, bus_devices[MAXON_MOTOR_1].id, &ticks[0]) == 0) &&
+       (Maxon.GetTotalTicks(bus_devices[MAXON_MOTOR_2].usart, bus_devices[MAXON_MOTOR_2].id, &ticks[1]) == 0) &&
+       (Maxon.GetTotalTicks(bus_devices[MAXON_MOTOR_3].usart, bus_devices[MAXON_MOTOR_3].id, &ticks[2]) == 0))
+    {
+      status = 1;
+    }
   }
 
   terminal_response.data[0] = status;
-  terminal_response.data_length = 1;
+  Word32_ToByte(&ticks[0], &terminal_response.data[1]);
+  Word32_ToByte(&ticks[1], &terminal_response.data[5]);
+  Word32_ToByte(&ticks[2], &terminal_response.data[9]);
+  terminal_response.data_length = 13;
   Terminal.SendResponse(&terminal_response);
 }
 
@@ -874,21 +911,26 @@ static void ResetWheelTicks(uint8_t* data, uint8_t data_length)
 static void GetWheelTicks(uint8_t* data, uint8_t data_length)
 {
   struct terminal_response_s terminal_response = {0};
-  enum bus_devices_e wheel_device;
-  int32_t ticks = 0;
+  int32_t ticks[3] = {0};
   uint8_t status = 0;
 
   terminal_response.cmd = BOARD_GET_WHEEL_TICKS;
 
-  if(COMM_ENABLE && (data_length > 0) && GetWheelBusDevice(data[0], &wheel_device))
+  if(COMM_ENABLE)
   {
-    if(Maxon.GetTotalTicks(bus_devices[wheel_device].usart, bus_devices[wheel_device].id, &ticks) == 0)
+    if((Maxon.GetTotalTicks(bus_devices[MAXON_MOTOR_1].usart, bus_devices[MAXON_MOTOR_1].id, &ticks[0]) == 0) &&
+       (Maxon.GetTotalTicks(bus_devices[MAXON_MOTOR_2].usart, bus_devices[MAXON_MOTOR_2].id, &ticks[1]) == 0) &&
+       (Maxon.GetTotalTicks(bus_devices[MAXON_MOTOR_3].usart, bus_devices[MAXON_MOTOR_3].id, &ticks[2]) == 0))
+    {
       status = 1;
+    }
   }
 
   terminal_response.data[0] = status;
-  Word32_ToByte(&ticks, &terminal_response.data[1]);
-  terminal_response.data_length = 5;
+  Word32_ToByte(&ticks[0], &terminal_response.data[1]);
+  Word32_ToByte(&ticks[1], &terminal_response.data[5]);
+  Word32_ToByte(&ticks[2], &terminal_response.data[9]);
+  terminal_response.data_length = 13;
   Terminal.SendResponse(&terminal_response);
 }
 
@@ -899,9 +941,8 @@ static void GetWheelTicks(uint8_t* data, uint8_t data_length)
 static void GetWheelPath(uint8_t* data, uint8_t data_length)
 {
   struct terminal_response_s terminal_response = {0};
-  enum bus_devices_e wheel_device;
-  int32_t ticks = 0;
-  float wheel_path_m = 0.0f;
+  int32_t ticks[3] = {0};
+  float wheel_path_m[3] = {0.0f};
   uint8_t status = 0;
 
   terminal_response.cmd = BOARD_GET_WHEEL_PATH;
@@ -909,18 +950,24 @@ static void GetWheelPath(uint8_t* data, uint8_t data_length)
   if(ticks_to_m == 0.0f)
     Kinematics.MatrixInit();
 
-  if(COMM_ENABLE && (data_length > 0) && GetWheelBusDevice(data[0], &wheel_device))
+  if(COMM_ENABLE)
   {
-    if(Maxon.GetTotalTicks(bus_devices[wheel_device].usart, bus_devices[wheel_device].id, &ticks) == 0)
+    if((Maxon.GetTotalTicks(bus_devices[MAXON_MOTOR_1].usart, bus_devices[MAXON_MOTOR_1].id, &ticks[0]) == 0) &&
+       (Maxon.GetTotalTicks(bus_devices[MAXON_MOTOR_2].usart, bus_devices[MAXON_MOTOR_2].id, &ticks[1]) == 0) &&
+       (Maxon.GetTotalTicks(bus_devices[MAXON_MOTOR_3].usart, bus_devices[MAXON_MOTOR_3].id, &ticks[2]) == 0))
     {
-      wheel_path_m = ticks * ticks_to_m;
+      wheel_path_m[0] = ticks[0] * wheel_ticks_to_m[0];
+      wheel_path_m[1] = ticks[1] * wheel_ticks_to_m[1];
+      wheel_path_m[2] = ticks[2] * wheel_ticks_to_m[2];
       status = 1;
     }
   }
 
   terminal_response.data[0] = status;
-  Word32_ToByte(&wheel_path_m, &terminal_response.data[1]);
-  terminal_response.data_length = 5;
+  Word32_ToByte(&wheel_path_m[0], &terminal_response.data[1]);
+  Word32_ToByte(&wheel_path_m[1], &terminal_response.data[5]);
+  Word32_ToByte(&wheel_path_m[2], &terminal_response.data[9]);
+  terminal_response.data_length = 13;
   Terminal.SendResponse(&terminal_response);
 }
 
@@ -931,57 +978,28 @@ static void GetWheelPath(uint8_t* data, uint8_t data_length)
 static void RotateWheelOnce(uint8_t* data, uint8_t data_length)
 {
   struct terminal_response_s terminal_response = {0};
-  enum bus_devices_e wheel_device;
-  int32_t actual_ticks = 0;
-  int32_t abs_ticks = 0;
   int32_t theoretical_ticks = CALIBRATION_WHEEL_TICKS_PER_REV;
   uint8_t status = 0;
+  uint8_t wheel_num = 0;
 
   terminal_response.cmd = BOARD_ROTATE_WHEEL_ONCE;
 
-  if(COMM_ENABLE && (data_length > 0) && GetWheelBusDevice(data[0], &wheel_device))
+  if(data_length > 0)
+    wheel_num = data[0];
+
+  if(COMM_ENABLE && (data_length > 0) && (gripper_cmd == 0xFF) &&
+     ((wheel_num == 1) || (wheel_num == 2) || (wheel_num == 3)))
   {
-    enum maxons_state_e maxons_state_before_calibration = robot_ctrl.maxons_state;
-    TickType_t start_tick;
-
-    if(maxons_state_before_calibration == MAXONS_DISABLED)
-      MaxonsEnable();
-
-    MaxonsStop();
-    vTaskDelay(pdMS_TO_TICKS(20));
-
-    Maxon.SetTotalTicks(bus_devices[wheel_device].usart, bus_devices[wheel_device].id, 0);
-    vTaskDelay(pdMS_TO_TICKS(20));
-
-    start_tick = xTaskGetTickCount();
-    Maxon.Set_TPM(bus_devices[wheel_device].usart, bus_devices[wheel_device].id, CALIBRATION_WHEEL_TPM);
-
-    while((xTaskGetTickCount() - start_tick) < pdMS_TO_TICKS(CALIBRATION_TIMEOUT_MS))
-    {
-      if(Maxon.GetTotalTicks(bus_devices[wheel_device].usart, bus_devices[wheel_device].id, &actual_ticks) == 0)
-      {
-        abs_ticks = (actual_ticks < 0) ? -actual_ticks : actual_ticks;
-
-        if(abs_ticks >= theoretical_ticks)
-        {
-          status = 1;
-          break;
-        }
-      }
-
-      vTaskDelay(pdMS_TO_TICKS(CALIBRATION_POLL_PERIOD_MS));
-    }
-
-    Maxon.Set_TPM(bus_devices[wheel_device].usart, bus_devices[wheel_device].id, 0);
-    vTaskDelay(pdMS_TO_TICKS(20));
-    (void)Maxon.GetTotalTicks(bus_devices[wheel_device].usart, bus_devices[wheel_device].id, &actual_ticks);
-
-    if(maxons_state_before_calibration == MAXONS_DISABLED)
-      MaxonsDisable();
+    rotate_wheel_num = wheel_num;
+    rotate_wheel_actual_ticks = 0;
+    rotate_wheel_theoretical_ticks = theoretical_ticks;
+    last_cmd_status = 0;
+    gripper_cmd = 9;
+    status = 1;
   }
 
   terminal_response.data[0] = status;
-  Word32_ToByte(&actual_ticks, &terminal_response.data[1]);
+  Word32_ToByte(&rotate_wheel_actual_ticks, &terminal_response.data[1]);
   Word32_ToByte(&theoretical_ticks, &terminal_response.data[5]);
   terminal_response.data_length = 9;
   Terminal.SendResponse(&terminal_response);
@@ -1007,6 +1025,7 @@ void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t da
                                                                                               [BOARD_GET_LINEAR_SWITCHES_STATE] = GetSwitchesState,
 																																															[BOARD_SET_MAXONS_STATE] = SetMaxonsState,
 																																															[BOARD_SET_COMM_STATE] = SetCommState,
+																																															[BOARD_FREE_WHEELS] = FreeWheels,
 																																															[BOARD_RESET] = BoardReset,
 																																															[BOARD_GET_RESET] = BoardGetReset,
 																																															[BOARD_CLEAR_RESET] = BoardClearReset,

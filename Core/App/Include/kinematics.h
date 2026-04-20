@@ -50,6 +50,7 @@ struct kinematics_s{
 extern const struct kinematics_s Kinematics;
 
 extern float ticks_to_m;
+extern float wheel_ticks_to_m[3];
 
 
 #ifdef __cplusplus
