@@ -54,7 +54,7 @@
 
 #define BOARD_GRAB_ROTATE									  0X1C		/* [28] Command Description  */
 /* PCA9685 (I2C2, 0x40) debug commands */
-#define BOARD_PCA9685_SET_SERVO_ANGLE       0x1D    /* Set servo angle: i2c_addr, ch, angle_deg */
+#define BOARD_PCA9685_SET_SERVO_ANGLE       0x1D    /* [29]Set servo angle: i2c_addr, ch, angle_deg */
 #define BOARD_TOGGLE_CURSOR                 0x1E    /* [30] Change the state of the cursor dynamixel */
 
 /* Microcommands for BT */
@@ -69,9 +69,11 @@
 #define BOARD_ROTATE_WHEEL_ONCE             0x28    /* [40] Rotate a wheel by one full revolution for calibration */
 #define BOARD_MOVE_RELATIVE                 0x29    /* [41] Relative move in robot frame by dx/dy */
 #define BOARD_FREE_WHEELS                   0x2A    /* [42] Disable wheel holding for manual odometry tests */
+#define BOARD_BLOCKS_SHIFT                  0x2B    /* [43] Spread or close block holders */
+#define BOARD_BLOCKS_ROTATE_MASK            0x2C    /* [44] Rotate blocks according to mask */
 
 /*  Do not forget to update the table size with the last one command! */
-#define TERMINAL_CMD_TABLE_SIZE             (BOARD_FREE_WHEELS + 1)
+#define TERMINAL_CMD_TABLE_SIZE             (BOARD_BLOCKS_ROTATE_MASK + 1)
 
 
 #ifdef __cplusplus

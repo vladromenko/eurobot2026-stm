@@ -151,9 +151,9 @@ const GripperHardware_t grippers[2] = {
         .dyn_main_1 = 15, .dyn_main_2 = 16,
         .dyn_side_1 = 7,  .dyn_side_2 = 8,
 		.start_angle = 148, .end_angle = 130, .cursor_angle = 99, // start 148; end 130 65
-		.side_on_angle_1 = 156, .side_off_angle_1 = 89,
-		.side_on_angle_2 = 55, .side_off_angle_2 = 107,
-		.dyn_speed = 300, .dyn_side_speed = 300,
+		.side_on_angle_1 = 154, .side_off_angle_1 = 34,
+		.side_on_angle_2 = 59, .side_off_angle_2 = 175,
+		.dyn_speed = 300, .dyn_side_speed = 800,
         .pumps_pins = {SPI_POWER_OUTPUT_9, SPI_POWER_OUTPUT_11, SPI_POWER_OUTPUT_13, SPI_POWER_OUTPUT_15},
         .pumps_all_mask = SPI_POWER_OUTPUT_9 | SPI_POWER_OUTPUT_11 | SPI_POWER_OUTPUT_13 | SPI_POWER_OUTPUT_15,
         .valves_pins = {SPI_POWER_OUTPUT_10, SPI_POWER_OUTPUT_12, SPI_POWER_OUTPUT_14, SPI_POWER_OUTPUT_16},
@@ -180,7 +180,7 @@ uint8_t servo_target_angle = 0;
 /* Cursor params */
 uint8_t dynamixel_cursor_id = 98; //15
 uint16_t cursor_speed = 300; //0-1024
-uint8_t cursor_hor_angle = 135; //0-300 60
+uint8_t cursor_hor_angle = 150; //0-300 60
 uint8_t cursor_vert_angle = 65; //0-300 150 125
 uint8_t cursor_cmd;
 
@@ -201,6 +201,7 @@ uint16_t tol_window = 10; // [deg] angle tolerance (+-) in which angle is consid
 uint8_t pump_mask;
 uint8_t valve_mask;
 uint8_t block_mask;
+uint8_t blocks_shift_state;
 
 uint8_t gripper_state;
 
@@ -254,8 +255,8 @@ static void GetRobotFrameDisplacementLocal(const struct coord_s* start_coord,
 
 static uint8_t MoveAxisByOdometryAsync(float target_m, float speed_mps, uint8_t move_along_y)
 {
-    const float pos_tolerance_m = 0.002f;
-    const float min_speed_mps = 0.02f;
+    const float pos_tolerance_m = 0.001f;
+    const float min_speed_mps = 0.005f;
     const float max_accel_mps2 = 0.2f;
     const float angle_kp = 3.0f; //2.2
     const float y_align_kp = 3.0f;
@@ -387,7 +388,7 @@ static void Gripper_SetPumps(const GripperHardware_t* hw, uint8_t mask) {
     for (int i = 0; i < 4; i++) {
         if ((mask & (1 << i)) == 0) {
             SPI_GPO_ResetOutputPin(hw->pumps_pins[i]);
-            vTaskDelay(50);
+            vTaskDelay(20);
         }
     }
 }
@@ -397,7 +398,7 @@ static void Gripper_SetValves(const GripperHardware_t* hw, uint8_t mask) {
     for (int i = 0; i < 4; i++) {
         if ((mask & (1 << i)) == 0) {
             SPI_GPO_ResetOutputPin(hw->valves_pins[i]);
-            vTaskDelay(50);
+            vTaskDelay(20);
         }
     }
 }
@@ -461,6 +462,25 @@ static uint8_t WaitStepper1Angle(int16_t target_pos, uint32_t timeout_ms) {
         
         vTaskDelay(20);
     }
+}
+
+static void SetBlocksShiftState(const GripperHardware_t* hw, uint8_t spread)
+{
+    PCA9685.SetServoAngleWithAddr(i2c_addr_1, hw->shift_servo_5,
+        spread ? hw->shift_servo_5_end_angle : hw->shift_servo_5_start_angle);
+    PCA9685.SetServoAngleWithAddr(i2c_addr_1, hw->shift_servo_6,
+        spread ? hw->shift_servo_6_end_angle : hw->shift_servo_6_start_angle);
+    vTaskDelay(200);
+}
+
+static void RotateBlocksByMask(const GripperHardware_t* hw, uint8_t mask)
+{
+    for (int i = 0; i < 4; i++) {
+        servo_target_angle = ((mask & (1 << (3 - i))) == 0) ? 0 : 180;
+        PCA9685.SetServoAngleWithAddr(i2c_addr_1, hw->block_servos[i], servo_target_angle);
+        vTaskDelay(20);
+    }
+    vTaskDelay(500);
 }
 
 
@@ -939,6 +959,22 @@ static void Task(void *arg)
 				break;
 			}
 			
+			case 10: // spread/close blocks only
+			{
+				SetBlocksShiftState(active_hw, blocks_shift_state);
+				if (xTerminalTaskHandle != NULL) xTaskNotifyGive(xTerminalTaskHandle);
+				gripper_cmd = NO_CMD;
+				break;
+			}
+
+			case 11: // rotate blocks only by mask
+			{
+				RotateBlocksByMask(active_hw, block_mask);
+				if (xTerminalTaskHandle != NULL) xTaskNotifyGive(xTerminalTaskHandle);
+				gripper_cmd = NO_CMD;
+				break;
+			}
+
 			case 6: // move
 			{
 				struct speed_s speed;

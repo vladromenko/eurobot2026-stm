@@ -82,6 +82,7 @@ extern int32_t rotate_wheel_theoretical_ticks;
 extern uint8_t pump_mask;
 extern uint8_t valve_mask;
 extern uint8_t block_mask;
+extern uint8_t blocks_shift_state;
 
 extern uint16_t current_angle;
 extern uint8_t dir;
@@ -549,6 +550,40 @@ static void grab_rotate(uint8_t* data, uint8_t data_length)
   Terminal.SendResponse(&terminal_response);
 }
 
+static void BlocksShift(uint8_t* data, uint8_t data_length)
+{
+  if(COMM_ENABLE){
+    ulTaskNotifyTake(pdTRUE, 0);
+
+    gripper_id = data[0];
+    blocks_shift_state = data[1];
+    gripper_cmd = 10;
+  }
+
+  struct terminal_response_s terminal_response = {0};
+  terminal_response.cmd = BOARD_BLOCKS_SHIFT;
+  terminal_response.data[0] = 0x01;
+  terminal_response.data_length = 1;
+  Terminal.SendResponse(&terminal_response);
+}
+
+static void BlocksRotateMask(uint8_t* data, uint8_t data_length)
+{
+  if(COMM_ENABLE){
+    ulTaskNotifyTake(pdTRUE, 0);
+
+    gripper_id = data[0];
+    block_mask = data[1];
+    gripper_cmd = 11;
+  }
+
+  struct terminal_response_s terminal_response = {0};
+  terminal_response.cmd = BOARD_BLOCKS_ROTATE_MASK;
+  terminal_response.data[0] = 0x01;
+  terminal_response.data_length = 1;
+  Terminal.SendResponse(&terminal_response);
+}
+
 static void ToggleCursor(uint8_t* data, uint8_t data_length)
 {
   if(COMM_ENABLE){
@@ -963,6 +998,8 @@ void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t da
 																																															[BOARD_GET_RESET] = BoardGetReset,
 																																															[BOARD_CLEAR_RESET] = BoardClearReset,
                                                                                               [BOARD_GRAB_ROTATE] = grab_rotate,
+                                                                                              [BOARD_BLOCKS_SHIFT] = BlocksShift,
+                                                                                              [BOARD_BLOCKS_ROTATE_MASK] = BlocksRotateMask,
                                                                                               [BOARD_TOGGLE_CURSOR] = ToggleCursor,
                                                                                               [BOARD_SIDE_GRIPS] = SideGrips,
                                                                                               [BOARD_GRIPPER_LIFT] = GripperLift,
