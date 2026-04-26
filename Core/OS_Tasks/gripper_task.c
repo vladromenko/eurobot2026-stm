@@ -169,7 +169,7 @@ const GripperHardware_t grippers[2] = {
 /* Gripper params */
 uint16_t dynamixel_speed = 150; //0-1024
 uint8_t gripper_target_angle;
-uint16_t angle_timeout_ms = 1500; // ms to wait for dynamixel to reach the target angle before timeout
+uint16_t angle_timeout_ms = 3000; // ms to wait for dynamixel to reach the target angle before timeout
 uint8_t gripper_height = 0;
 
 // I2C address of the PWM driver
@@ -179,13 +179,13 @@ uint8_t servo_target_angle = 0;
 
 /* Cursor params */
 uint8_t dynamixel_cursor_id = 98; //15
-uint16_t cursor_speed = 300; //0-1024
+uint16_t cursor_speed = 500; //0-1024
 uint8_t cursor_hor_angle = 150; //0-300 60
 uint8_t cursor_vert_angle = 65; //0-300 150 125
 uint8_t cursor_cmd;
 
 /* Side grips params */
-uint16_t side_dynamixel_speed = 300; //0-1024
+uint16_t side_dynamixel_speed = 800; //0-1024
 /*
 uint8_t side_off_angle_1 = 69; //0-300 44 99
 uint8_t side_on_angle_1 = 140; //0-300 132 140
@@ -255,7 +255,7 @@ static void GetRobotFrameDisplacementLocal(const struct coord_s* start_coord,
 
 static uint8_t MoveAxisByOdometryAsync(float target_m, float speed_mps, uint8_t move_along_y)
 {
-    const float pos_tolerance_m = 0.001f;
+    const float pos_tolerance_m = 0.002f;
     const float min_speed_mps = 0.005f;
     const float max_accel_mps2 = 0.2f;
     const float angle_kp = 3.0f; //2.2

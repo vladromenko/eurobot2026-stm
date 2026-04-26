@@ -47,14 +47,14 @@
 // 3. Wheel 2 got an additional correction to remove yaw drift during pure Y motion.
 // 4. X-axis scale was corrected separately because X and Y showed different gains.
 #define CMD_CALIBRATION_COEF			1.133f
-#define ODOMETRY_CALIBRATION_COEF		1.264f
-#define ODOMETRY_X_COEF                 0.970f
+#define ODOMETRY_CALIBRATION_COEF		1.256f
+#define ODOMETRY_X_COEF                 0.974f
 #define ODOMETRY_Y_COEF                 1.0f
 #define ANGULAR_CMD_CALIBRATION_COEF	1.0f
-#define ANGULAR_ODOMETRY_CALIBRATION_COEF 0.971f //1.216f
-#define WHEEL_1_ODOMETRY_COEF           1.0f
-#define WHEEL_2_ODOMETRY_COEF           0.961f
-#define WHEEL_3_ODOMETRY_COEF           1.0f
+#define ANGULAR_ODOMETRY_CALIBRATION_COEF 0.976f
+#define WHEEL_1_ODOMETRY_COEF           1.001f
+#define WHEEL_2_ODOMETRY_COEF           0.964f
+#define WHEEL_3_ODOMETRY_COEF           0.999f
 
 #define cos30 	0.8660254f
 #define cos60 	0.5f

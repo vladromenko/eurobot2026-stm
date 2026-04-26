@@ -1442,3 +1442,116 @@ These source files will be recompiled
 [2026-04-24 19:18:33]	[done]
 	build successfully !
 
+[2026-04-24 23:15:32]	[info] incremental build: 3 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\debug_terminal_cmd_handlers.c': dependence 'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\MDK-ARM\..\Core\App\Include\terminal_cmd_table.h' has been changed.
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\debug_task.c': dependence 'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\MDK-ARM\..\Core\App\Include\terminal_cmd_table.h' has been changed.
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-04-24 23:15:34]	[done]
+	build successfully !
+
+[2026-04-25 23:09:51]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\kinematics.c': source file has been changed.
+
+[2026-04-25 23:09:54]	[done]
+	build successfully !
+
+[2026-04-25 23:21:39]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\kinematics.c': source file has been changed.
+
+[2026-04-25 23:21:40]	[done]
+	build successfully !
+
+[2026-04-25 23:23:19]	[done]
+	build successfully !
+
+[2026-04-25 23:35:14]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\kinematics.c': source file has been changed.
+
+[2026-04-25 23:35:15]	[done]
+	build successfully !
+
+[2026-04-25 23:50:37]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\kinematics.c': source file has been changed.
+
+[2026-04-25 23:50:38]	[done]
+	build successfully !
+
+[2026-04-26 00:13:15]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\kinematics.c': source file has been changed.
+
+[2026-04-26 00:13:16]	[done]
+	build successfully !
+
+[2026-04-26 00:31:40]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\kinematics.c': source file has been changed.
+
+[2026-04-26 00:31:42]	[done]
+	build successfully !
+
+[2026-04-26 00:46:20]	[done]
+	build successfully !
+
+[2026-04-26 01:01:12]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\kinematics.c': source file has been changed.
+
+[2026-04-26 01:01:13]	[done]
+	build successfully !
+
+[2026-04-26 01:18:35]	[done]
+	build successfully !
+
+[2026-04-26 01:31:20]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\kinematics.c': source file has been changed.
+
+[2026-04-26 01:31:21]	[done]
+	build successfully !
+
+[2026-04-26 01:37:11]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\kinematics.c': source file has been changed.
+
+[2026-04-26 01:37:13]	[done]
+	build successfully !
+
+[2026-04-26 01:37:39]	[done]
+	build successfully !
+
+[2026-04-26 01:55:07]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\kinematics.c': source file has been changed.
+
+[2026-04-26 01:55:09]	[done]
+	build successfully !
+
+[2026-04-26 01:55:53]	[done]
+	build successfully !
+
+[2026-04-26 02:29:24]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\App\kinematics.c': source file has been changed.
+
+[2026-04-26 02:29:25]	[done]
+	build successfully !
+
