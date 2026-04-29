@@ -87,6 +87,7 @@ uint8_t move_cmd_time = 0;  // [ms]
 int32_t move_rel_dx_mm = 0;
 int32_t move_rel_dy_mm = 0;
 uint8_t move_rel_speed_cms = 0;
+uint8_t move_status_flag = 0;
 uint8_t rotate_wheel_num = 0;
 int32_t rotate_wheel_actual_ticks = 0;
 int32_t rotate_wheel_theoretical_ticks = WHEEL_CALIBRATION_TICKS_PER_REV;
@@ -1107,6 +1108,34 @@ static void Task(void *arg)
                 vTaskDelay(100);
 
                 last_cmd_status = move_success;
+                gripper_cmd = NO_CMD;
+                break;
+            }
+
+            case 12: // poll-based relative move in robot frame
+            {
+                float target_dx_m = (float)move_rel_dx_mm * 0.001f;
+                float target_dy_m = (float)move_rel_dy_mm * 0.001f;
+                float max_speed_mps = (float)move_rel_speed_cms * 0.01f;
+                uint8_t move_success = 0;
+
+                move_status_flag = 0;
+
+                MaxonsEnable();
+                vTaskDelay(20);
+
+                if (max_speed_mps > 0.0f)
+                {
+                    move_success = MoveAxisByOdometryAsync(target_dy_m, max_speed_mps, 1);
+
+                    if (move_success)
+                        move_success = MoveAxisByOdometryAsync(target_dx_m, max_speed_mps, 0);
+                }
+
+                StopBaseMotion();
+                vTaskDelay(100);
+
+                move_status_flag = move_success ? 1 : 0;
                 gripper_cmd = NO_CMD;
                 break;
             }

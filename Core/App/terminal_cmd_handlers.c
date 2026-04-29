@@ -78,6 +78,7 @@ extern uint8_t move_rel_speed_cms;
 extern uint8_t rotate_wheel_num;
 extern int32_t rotate_wheel_actual_ticks;
 extern int32_t rotate_wheel_theoretical_ticks;
+extern uint8_t move_status_flag;
 
 extern uint8_t pump_mask;
 extern uint8_t valve_mask;
@@ -804,6 +805,41 @@ static void RelativeMove(uint8_t* data, uint8_t data_length)
   Terminal.SendResponse(&terminal_response);
 }
 
+static void RelativeMovePoll(uint8_t* data, uint8_t data_length)
+{
+  int32_t dx_mm;
+  int32_t dy_mm;
+  uint8_t speed_cm_s;
+
+  /*
+   * Poll-based relative move:
+   *  - this command starts motion and does not send an immediate response;
+   *  - completion is exposed through BOARD_GET_MOVE_STATUS.
+   */
+  if(COMM_ENABLE && (data_length >= 9) && (gripper_cmd == 0xFF)){
+    ByteTo_Word32(data, &dx_mm);
+    ByteTo_Word32(data + 4, &dy_mm);
+    speed_cm_s = data[8];
+
+    move_rel_dx_mm = dx_mm;
+    move_rel_dy_mm = dy_mm;
+    move_rel_speed_cms = speed_cm_s;
+    move_status_flag = 0;
+    gripper_cmd = 12;
+  }
+}
+
+static void GetMoveStatus(uint8_t* data, uint8_t data_length)
+{
+  struct terminal_response_s terminal_response = {0};
+
+  terminal_response.cmd = BOARD_GET_MOVE_STATUS;
+  terminal_response.data[0] = move_status_flag;
+  terminal_response.data_length = 1;
+
+  Terminal.SendResponse(&terminal_response);
+}
+
 static void GetKey(uint8_t* data, uint8_t data_length)
 {
   uint8_t key_request = data[0];
@@ -1000,6 +1036,8 @@ void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t da
                                                                                               [BOARD_GRAB_ROTATE] = grab_rotate,
                                                                                               [BOARD_BLOCKS_SHIFT] = BlocksShift,
                                                                                               [BOARD_BLOCKS_ROTATE_MASK] = BlocksRotateMask,
+                                                                                              [BOARD_MOVE_RELATIVE_POLL] = RelativeMovePoll,
+                                                                                              [BOARD_GET_MOVE_STATUS] = GetMoveStatus,
                                                                                               [BOARD_TOGGLE_CURSOR] = ToggleCursor,
                                                                                               [BOARD_SIDE_GRIPS] = SideGrips,
                                                                                               [BOARD_GRIPPER_LIFT] = GripperLift,
