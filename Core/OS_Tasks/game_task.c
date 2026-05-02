@@ -51,7 +51,7 @@ static void Task(void *arg)
   TickType_t xGameStartTime;
 
   robot_ctrl.starting_cord = STARTING_CORD_ATTACHED;
-  robot_ctrl.robot_mode = GAME_MODE; // [GAME_MODE, DEBUG_MODE]
+  robot_ctrl.robot_mode = DEBUG_MODE; // [GAME_MODE, DEBUG_MODE]
 	robot_ctrl.reset_state = RESETED;
 
   vTaskDelay(50);

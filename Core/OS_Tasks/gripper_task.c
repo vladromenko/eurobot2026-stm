@@ -257,9 +257,9 @@ static void GetRobotFrameDisplacementLocal(const struct coord_s* start_coord,
 static uint8_t MoveAxisByOdometryAsync(float target_m, float speed_mps, uint8_t move_along_y)
 {
     const float pos_tolerance_m = 0.002f;
-    const float min_speed_mps = 0.005f;
+    const float min_speed_mps = 0.002f;
     const float max_accel_mps2 = 0.2f;
-    const float angle_kp = 3.0f; //2.2
+    const float angle_kp = 5.0f; //2.2
     const float y_align_kp = 3.0f;
     const float max_angular_speed = 0.4f;
     const TickType_t control_period_ticks = pdMS_TO_TICKS(20);
@@ -1058,7 +1058,7 @@ static void Task(void *arg)
                 
             case 7: // gripper_vertical
 			{	
-                stepper1_goal_position = -1 * (int16_t)gripper_height * (int16_t)MM_TO_STEPS;
+                stepper1_goal_position = (int16_t)gripper_height * (int16_t)MM_TO_STEPS;
                 Stepper.Enable(STEPPER_MOTOR_1);
                 // Даем 10 мс на то, чтобы драйвер L6474 подал ток и жестко зафиксировал вал
                 vTaskDelay(50);
