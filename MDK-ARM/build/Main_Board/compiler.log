@@ -1,7 +1,13 @@
 >>> cc
 
-
+".\..\Core\App\terminal_cmd_handlers.c", line 845: Warning:  #177-D: variable "key_request"  was declared but never referenced
+    uint8_t key_request = data[0];
+            ^
+".\..\Core\App\terminal_cmd_handlers.c", line 107: Warning:  #177-D: function "GetWheelBusDevice"  was declared but never referenced
+  static uint8_t GetWheelBusDevice(uint8_t wheel_number, enum bus_devices_e* device)
+                 ^
+.\..\Core\App\terminal_cmd_handlers.c: 2 warnings, 0 errors
 
 >>> ld
 
-Program Size: Code=42552 RO-data=218192 RW-data=2964 ZI-data=20000  
+Program Size: Code=42156 RO-data=218192 RW-data=2964 ZI-data=20000  

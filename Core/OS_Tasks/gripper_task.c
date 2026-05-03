@@ -145,15 +145,15 @@ const GripperHardware_t grippers[2] = {
         .valves_all_mask = SPI_POWER_OUTPUT_2 | SPI_POWER_OUTPUT_4 | SPI_POWER_OUTPUT_6 | SPI_POWER_OUTPUT_8,
         .block_servos = {PCA9685_CH1, PCA9685_CH2, PCA9685_CH3, PCA9685_CH4},
         .shift_servo_5 = PCA9685_CH5, .shift_servo_6 = PCA9685_CH6,
-		.shift_servo_5_end_angle = 16, .shift_servo_5_start_angle = 100,
+		.shift_servo_5_end_angle = 16, .shift_servo_5_start_angle = 102,
 		.shift_servo_6_end_angle = 112, .shift_servo_6_start_angle = 20
     },
     { // left (index 1) (id == 2)
         .dyn_main_1 = 15, .dyn_main_2 = 16,
         .dyn_side_1 = 7,  .dyn_side_2 = 8,
 		.start_angle = 148, .end_angle = 130, .cursor_angle = 99, // start 148; end 130 65
-		.side_on_angle_1 = 154, .side_off_angle_1 = 34,
-		.side_on_angle_2 = 59, .side_off_angle_2 = 175,
+		.side_on_angle_1 = 147, .side_off_angle_1 = 34,
+		.side_on_angle_2 = 64, .side_off_angle_2 = 175,
 		.dyn_speed = 300, .dyn_side_speed = 800,
         .pumps_pins = {SPI_POWER_OUTPUT_9, SPI_POWER_OUTPUT_11, SPI_POWER_OUTPUT_13, SPI_POWER_OUTPUT_15},
         .pumps_all_mask = SPI_POWER_OUTPUT_9 | SPI_POWER_OUTPUT_11 | SPI_POWER_OUTPUT_13 | SPI_POWER_OUTPUT_15,
@@ -180,9 +180,9 @@ uint8_t servo_target_angle = 0;
 
 /* Cursor params */
 uint8_t dynamixel_cursor_id = 98; //15
-uint16_t cursor_speed = 500; //0-1024
-uint8_t cursor_hor_angle = 150; //0-300 60
-uint8_t cursor_vert_angle = 65; //0-300 150 125
+uint16_t cursor_speed = 300; //0-1024
+uint8_t cursor_hor_angle = 148; //0-300 60
+uint8_t cursor_vert_angle = 218; //0-300 150 82
 uint8_t cursor_cmd;
 
 /* Side grips params */
@@ -256,13 +256,13 @@ static void GetRobotFrameDisplacementLocal(const struct coord_s* start_coord,
 
 static uint8_t MoveAxisByOdometryAsync(float target_m, float speed_mps, uint8_t move_along_y)
 {
-    const float pos_tolerance_m = 0.002f;
+    const float pos_tolerance_m = 0.003f;
     const float min_speed_mps = 0.002f;
     const float max_accel_mps2 = 0.2f;
-    const float angle_kp = 5.0f; //2.2
-    const float y_align_kp = 3.0f;
+    const float angle_kp = 2.2f; //2.2
+    const float y_align_kp = 2.0f;
     const float max_angular_speed = 0.4f;
-    const TickType_t control_period_ticks = pdMS_TO_TICKS(20);
+    const TickType_t control_period_ticks = pdMS_TO_TICKS(10);
     struct coord_s start_coord;
     struct coord_s current_coord;
     struct speed_s speed = {0};
@@ -282,7 +282,7 @@ static uint8_t MoveAxisByOdometryAsync(float target_m, float speed_mps, uint8_t 
     Odometry.GetCoord(&start_coord);
     heading_ref = start_coord.phi;
     start_tick = xTaskGetTickCount();
-    timeout_ticks = pdMS_TO_TICKS((uint32_t)((fabsf(target_m) / speed_mps) * 3500.0f + 1500.0f));
+    timeout_ticks = pdMS_TO_TICKS((uint32_t)((fabsf(target_m) / speed_mps) * 3500.0f + 3000.0f));
 
     while ((xTaskGetTickCount() - start_tick) < timeout_ticks)
     {
@@ -444,7 +444,7 @@ static uint8_t WaitDynamixelAngle(uint8_t id, uint8_t target_angle, uint32_t tim
 static uint8_t WaitStepper1Angle(int16_t target_pos, uint32_t timeout_ms) {
     int32_t current_pos = 0;
     int32_t diff = 0;
-    int32_t pos_tol = 100;
+    int32_t pos_tol = 50;
     uint32_t start_time = xTaskGetTickCount(); // Засекаем время старта (FreeRTOS)
     
     while (1) {
@@ -456,12 +456,49 @@ static uint8_t WaitStepper1Angle(int16_t target_pos, uint32_t timeout_ms) {
         if (diff < pos_tol) {
             return 1; 
         }
+        /*// Позиция достигнута
+        if ((target_pos == 0)&&(robot_ctrl.linear_switch_2 == LINEAR_SWITCH_PRESSED)) {
+            return 1;
+        }
+        if ((target_pos > 0)&&(diff < pos_tol)) {
+            return 1; 
+        }
+        */
         // Проверка таймаута
         if ((xTaskGetTickCount() - start_time) * portTICK_PERIOD_MS >= timeout_ms) {
             return 0; // Механизм заклинило или он не успел, выходим из цикла
         }
         
         vTaskDelay(20);
+    }
+}
+
+static uint8_t HomeStepper1ToZero(uint32_t timeout_ms)
+{
+    uint32_t start_time = xTaskGetTickCount();
+
+    Stepper.Enable(STEPPER_MOTOR_1);
+    vTaskDelay(50);
+
+    if (robot_ctrl.linear_switch_2 != LINEAR_SWITCH_PRESSED) {
+        Stepper.StepToPosisition(STEPPER_MOTOR_1, -100000, 32, 16, 500);
+    }
+
+    while (1) {
+        if (robot_ctrl.linear_switch_2 == LINEAR_SWITCH_PRESSED) {
+            Stepper.StopMotor(STEPPER_MOTOR_1);
+            vTaskDelay(20);
+            Stepper.SetZeroPosisition(STEPPER_MOTOR_1);
+            stepper1_goal_position = 0;
+            return 1;
+        }
+
+        if ((xTaskGetTickCount() - start_time) * portTICK_PERIOD_MS >= timeout_ms) {
+            Stepper.StopMotor(STEPPER_MOTOR_1);
+            return 0;
+        }
+
+        vTaskDelay(10);
     }
 }
 
@@ -654,7 +691,7 @@ static void Task(void *arg)
 
 			case 1: // SideGrips
 			{
-                /*
+                
 				// Определяем целевой угол для боковых створок из структуры
                 uint16_t target_angle_1 = (grips_cmd == 1) ? active_hw->side_on_angle_1 : active_hw->side_off_angle_1;
                 uint16_t target_angle_2 = (grips_cmd == 1) ? active_hw->side_on_angle_2 : active_hw->side_off_angle_2;
@@ -679,9 +716,8 @@ static void Task(void *arg)
                 }
                 gripper_cmd = NO_CMD;
                 break;
-                */
 
-
+                /*
                 uint16_t target_angle_1 = (grips_cmd == 1) ? active_hw->side_on_angle_1 : active_hw->side_off_angle_1;
                 uint16_t target_angle_2 = (grips_cmd == 1) ? active_hw->side_on_angle_2 : active_hw->side_off_angle_2;
 
@@ -779,7 +815,9 @@ static void Task(void *arg)
                 }
                 gripper_cmd = NO_CMD;
                 break;
+                */
             }
+            
 			
 			case 2: // gripper_lift
 			{	
@@ -997,16 +1035,6 @@ static void Task(void *arg)
                 // Расчет проекций скоростей на оси базы
                 if (gripper_id == 1) {
                     // Gripper 1 (rotated on -60 deg along the X axis of the robot)
-                    speed.dx = move_speed * cos60;
-                    speed.dy = -move_speed * cos30;
-                }
-                else if (gripper_id == 2) {
-                    // Gripper 2 (rotated on +60 deg)
-                    speed.dx = move_speed * cos60;
-                    speed.dy = move_speed * cos30;
-                }
-                else if (gripper_id == 0) {
-                    // along X axis
                     speed.dx = move_speed;
                     speed.dy = 0.0f;
                     speed.dphi = 0.0f;
@@ -1045,7 +1073,7 @@ static void Task(void *arg)
                 speed.dx = 0;
                 speed.dy = 0;
                 Odometry.SetSpeed(&speed);
-                vTaskDelay(100);
+                vTaskDelay(50);
                 
                 /*
 				if (xTerminalTaskHandle != NULL) {
@@ -1059,12 +1087,16 @@ static void Task(void *arg)
             case 7: // gripper_vertical
 			{	
                 stepper1_goal_position = (int16_t)gripper_height * (int16_t)MM_TO_STEPS;
-                Stepper.Enable(STEPPER_MOTOR_1);
+                if (stepper1_goal_position == 0) {
+                    HomeStepper1ToZero(4000);
+                } else {
+                    Stepper.Enable(STEPPER_MOTOR_1);
                 // Даем 10 мс на то, чтобы драйвер L6474 подал ток и жестко зафиксировал вал
                 vTaskDelay(50);
-                Stepper.StepToPosisition(STEPPER_MOTOR_1, stepper1_goal_position, 32, 10, 300);
-                
-                WaitStepper1Angle(stepper1_goal_position, 4000); 
+                Stepper.StepToPosisition(STEPPER_MOTOR_1, stepper1_goal_position, 32, 10, 500);
+
+                WaitStepper1Angle(stepper1_goal_position, 4000);
+                }
                 Stepper.Disable(STEPPER_MOTOR_1);
                 vTaskDelay(50);
                 

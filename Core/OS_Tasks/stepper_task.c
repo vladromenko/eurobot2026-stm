@@ -66,13 +66,14 @@ static void Task(void *arg)
                 stepper1_enabled = 1;
             }
 
-            if ((robot_ctrl.linear_switch_1 != LINEAR_SWITCH_PRESSED)||(robot_ctrl.linear_switch_2 != LINEAR_SWITCH_PRESSED)) {
+            //if ((robot_ctrl.linear_switch_1 != LINEAR_SWITCH_PRESSED)||(robot_ctrl.linear_switch_2 != LINEAR_SWITCH_PRESSED)) {
+            if (robot_ctrl.linear_switch_2 != LINEAR_SWITCH_PRESSED) {
                 if (Stepper.GetPresentPosisition(STEPPER_MOTOR_1) != -100000) {
                     Stepper.StepToPosisition(STEPPER_MOTOR_1, -100000, 32, 16, 500); 
                 }
             } else {
                 int32_t current_pos = Stepper.GetPresentPosisition(STEPPER_MOTOR_1);
-                Stepper.StepToPosisition(STEPPER_MOTOR_1, -(current_pos+200), 32, 10, 500);
+                Stepper.StepToPosisition(STEPPER_MOTOR_1, current_pos-200, 32, 10, 500);
                 vTaskDelay(100);
                 Stepper.StopMotor(STEPPER_MOTOR_1);         
                 Stepper.SetZeroPosisition(STEPPER_MOTOR_1); 
