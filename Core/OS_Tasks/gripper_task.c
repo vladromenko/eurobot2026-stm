@@ -76,7 +76,9 @@ extern volatile TaskHandle_t xTerminalTaskHandle;
 #define cos60 	0.5f
 #define LOCAL_PI 3.14159265f
 
-#define MM_TO_STEPS 25
+#define MM_TO_STEPS 25 // for stepper calibration
+#define MM_TO_DEG 3.979f // for pinion angle calculation
+
 #define WHEEL_CALIBRATION_TICKS_PER_REV ((int32_t)(28.0f * 4096.0f))
 #define WHEEL_CALIBRATION_TPM           ((int32_t)400000)
 #define WHEEL_CALIBRATION_TIMEOUT_MS    100000U
@@ -134,7 +136,7 @@ typedef struct {
 const GripperHardware_t grippers[2] = {
     { // right (index 0) (id == 1)
         .dyn_main_1 = 254, .dyn_main_2 = 112,
-        .dyn_side_1 = 13, .dyn_side_2 = 14,
+        .dyn_side_1 = 1, .dyn_side_2 = 14,
 		.start_angle = 149, .end_angle = 65, .cursor_angle = 99, // 149 71 99
 		.side_on_angle_1 = 140, .side_off_angle_1 = 89, //140 69
 		.side_on_angle_2 = 51, .side_off_angle_2 = 107, //51 127
@@ -184,6 +186,14 @@ uint16_t cursor_speed = 300; //0-1024
 uint8_t cursor_hor_angle = 148; //0-300 60
 uint8_t cursor_vert_angle = 218; //0-300 150 82
 uint8_t cursor_cmd;
+
+/* Pinion params */
+uint8_t pinion_dyn_id = 13;
+uint16_t pinion_start_angle = 150;
+uint16_t pinion_dyn_speed = 800;
+uint16_t pinion_goal_angle = 0;
+int32_t rack_distance = 0;
+
 
 /* Side grips params */
 uint16_t side_dynamixel_speed = 800; //0-1024
@@ -444,7 +454,7 @@ static uint8_t WaitDynamixelAngle(uint8_t id, uint8_t target_angle, uint32_t tim
 static uint8_t WaitStepper1Angle(int16_t target_pos, uint32_t timeout_ms) {
     int32_t current_pos = 0;
     int32_t diff = 0;
-    int32_t pos_tol = 50;
+    int32_t pos_tol = 100;
     uint32_t start_time = xTaskGetTickCount(); // Засекаем время старта (FreeRTOS)
     
     while (1) {
@@ -456,49 +466,12 @@ static uint8_t WaitStepper1Angle(int16_t target_pos, uint32_t timeout_ms) {
         if (diff < pos_tol) {
             return 1; 
         }
-        /*// Позиция достигнута
-        if ((target_pos == 0)&&(robot_ctrl.linear_switch_2 == LINEAR_SWITCH_PRESSED)) {
-            return 1;
-        }
-        if ((target_pos > 0)&&(diff < pos_tol)) {
-            return 1; 
-        }
-        */
         // Проверка таймаута
         if ((xTaskGetTickCount() - start_time) * portTICK_PERIOD_MS >= timeout_ms) {
             return 0; // Механизм заклинило или он не успел, выходим из цикла
         }
         
         vTaskDelay(20);
-    }
-}
-
-static uint8_t HomeStepper1ToZero(uint32_t timeout_ms)
-{
-    uint32_t start_time = xTaskGetTickCount();
-
-    Stepper.Enable(STEPPER_MOTOR_1);
-    vTaskDelay(50);
-
-    if (robot_ctrl.linear_switch_2 != LINEAR_SWITCH_PRESSED) {
-        Stepper.StepToPosisition(STEPPER_MOTOR_1, -100000, 32, 16, 500);
-    }
-
-    while (1) {
-        if (robot_ctrl.linear_switch_2 == LINEAR_SWITCH_PRESSED) {
-            Stepper.StopMotor(STEPPER_MOTOR_1);
-            vTaskDelay(20);
-            Stepper.SetZeroPosisition(STEPPER_MOTOR_1);
-            stepper1_goal_position = 0;
-            return 1;
-        }
-
-        if ((xTaskGetTickCount() - start_time) * portTICK_PERIOD_MS >= timeout_ms) {
-            Stepper.StopMotor(STEPPER_MOTOR_1);
-            return 0;
-        }
-
-        vTaskDelay(10);
     }
 }
 
@@ -579,11 +552,15 @@ static void Task(void *arg)
         MaxonsEnable();
         vTaskDelay(100);
         
+        /*
         struct speed_s speed;
         speed.dphi = 0;
         speed.dx = 0;
         speed.dy = 0;
         Odometry.SetSpeed(&speed);
+        */
+
+        MaxonsStop();
         vTaskDelay(50);
         
         // cursor init
@@ -635,6 +612,11 @@ static void Task(void *arg)
 			RotateTwoDynamixels(USART3, hw->dyn_main_1, hw->dyn_main_2, 65, 65);
             vTaskDelay(200);
         }
+
+        Dynamixel_AX.SetMovingSpeed(USART3, pinion_dyn_id, pinion_dyn_speed);
+        Dynamixel_AX.TorqueEnable(USART3, pinion_dyn_id);
+        Dynamixel_AX.SetAngle(USART3, pinion_dyn_id, pinion_start_angle);
+		vTaskDelay(50);
     #endif
 
 	while(1)
@@ -1087,16 +1069,12 @@ static void Task(void *arg)
             case 7: // gripper_vertical
 			{	
                 stepper1_goal_position = (int16_t)gripper_height * (int16_t)MM_TO_STEPS;
-                if (stepper1_goal_position == 0) {
-                    HomeStepper1ToZero(4000);
-                } else {
-                    Stepper.Enable(STEPPER_MOTOR_1);
+                Stepper.Enable(STEPPER_MOTOR_1);
                 // Даем 10 мс на то, чтобы драйвер L6474 подал ток и жестко зафиксировал вал
                 vTaskDelay(50);
                 Stepper.StepToPosisition(STEPPER_MOTOR_1, stepper1_goal_position, 32, 10, 500);
-
-                WaitStepper1Angle(stepper1_goal_position, 4000);
-                }
+                
+                WaitStepper1Angle(stepper1_goal_position, 4000); 
                 Stepper.Disable(STEPPER_MOTOR_1);
                 vTaskDelay(50);
                 
@@ -1171,6 +1149,36 @@ static void Task(void *arg)
                 gripper_cmd = NO_CMD;
                 break;
             }
+
+            case 13: // slide_gripper
+			{	
+                pinion_goal_angle = (uint16_t)(pinion_start_angle + rack_distance * MM_TO_DEG);
+
+                Dynamixel_AX.SetMovingSpeed(USART3, pinion_dyn_id, pinion_dyn_speed);
+                Dynamixel_AX.TorqueEnable(USART3, pinion_dyn_id);
+
+                Dynamixel_AX.SetAngle(USART3, pinion_dyn_id, pinion_goal_angle);
+				vTaskDelay(50);
+
+                // checking the achievement of a set angle
+				Dynamixel_AX.GetAngle(USART3, pinion_dyn_id, &current_angle);
+				diff = (int16_t)current_angle - (int16_t)pinion_goal_angle;
+				if (diff < 0) diff = -diff;
+				
+				while(diff >= tol_window){
+					vTaskDelay(20);
+					Dynamixel_AX.GetAngle(USART3, pinion_dyn_id, &current_angle);
+					diff = (int16_t)current_angle - (int16_t)pinion_goal_angle;
+					if (diff < 0) diff = -diff;
+				}
+
+                // Будим терминал
+                if (xTerminalTaskHandle != NULL) {
+                    xTaskNotifyGive(xTerminalTaskHandle);
+                }
+                gripper_cmd = NO_CMD;
+                break;
+			}
 
             case 9: // rotate wheel once for calibration
             {

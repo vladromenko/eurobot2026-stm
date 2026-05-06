@@ -73,9 +73,10 @@
 #define BOARD_BLOCKS_ROTATE_MASK            0x2C    /* [44] Rotate blocks according to mask */
 #define BOARD_MOVE_RELATIVE_POLL            0x2D    /* [45] Start relative move without immediate response */
 #define BOARD_GET_MOVE_STATUS               0x2E    /* [46] Get completion flag of polled relative move */
+#define BOARD_GRIPPER_SLIDE                 0x2F    /* [47] Slide the gripper through the rack and pinion gear*/
 
 /*  Do not forget to update the table size with the last one command! */
-#define TERMINAL_CMD_TABLE_SIZE             (BOARD_GET_MOVE_STATUS + 1)
+#define TERMINAL_CMD_TABLE_SIZE             (BOARD_GRIPPER_SLIDE + 1)
 
 
 #ifdef __cplusplus

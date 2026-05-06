@@ -80,6 +80,8 @@ extern int32_t rotate_wheel_actual_ticks;
 extern int32_t rotate_wheel_theoretical_ticks;
 extern uint8_t move_status_flag;
 
+extern int32_t rack_distance;
+
 extern uint8_t pump_mask;
 extern uint8_t valve_mask;
 extern uint8_t block_mask;
@@ -1009,6 +1011,29 @@ static void RotateWheelOnce(uint8_t* data, uint8_t data_length)
   Terminal.SendResponse(&terminal_response);
 }
 
+static void SlideGripper(uint8_t* data, uint8_t data_length)
+{
+  int32_t gripper_distance_mm;
+
+  if(COMM_ENABLE){
+    ulTaskNotifyTake(pdTRUE, 0); 
+    xTerminalTaskHandle = xTaskGetCurrentTaskHandle();
+    
+    ByteTo_Word32(data, &gripper_distance_mm);
+    rack_distance = gripper_distance_mm; // distance in mm
+    gripper_cmd = 13;
+
+    WaitForGripperCompletion();
+	}
+
+  // terminal response
+  struct terminal_response_s terminal_response;
+  terminal_response.cmd = BOARD_GRIPPER_SLIDE;
+  terminal_response.data[0] = 0x01;
+  terminal_response.data_length = 1;
+  Terminal.SendResponse(&terminal_response);
+}
+
 void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t data_length) = {[BOARD_Ping] = Ping,
                                                                                               [BOARD_SetSpeed] = SetRobotSpeed,
                                                                                               [BOARD_GetSpeed] = GetRobotSpeed,
@@ -1048,7 +1073,8 @@ void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t da
                                                                                               [BOARD_MOVE_RELATIVE] = RelativeMove,
                                                                                               [BOARD_GET_KEY] = GetKey,
                                                                                               [BOARD_GRIPPER_VERTICAL] = GripperVertical,
-                                                                                              [BOARD_ROTATE_WHEEL_ONCE] = RotateWheelOnce
+                                                                                              [BOARD_ROTATE_WHEEL_ONCE] = RotateWheelOnce,
+                                                                                              [BOARD_GRIPPER_SLIDE] = SlideGripper
 };
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
