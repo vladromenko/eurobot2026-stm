@@ -1014,22 +1014,25 @@ static void RotateWheelOnce(uint8_t* data, uint8_t data_length)
 static void SlideGripper(uint8_t* data, uint8_t data_length)
 {
   int32_t gripper_distance_mm;
+  uint8_t status = 0;
 
-  if(COMM_ENABLE){
+  if(COMM_ENABLE && (data_length >= 4) && (gripper_cmd == 0xFF)){
     ulTaskNotifyTake(pdTRUE, 0); 
     xTerminalTaskHandle = xTaskGetCurrentTaskHandle();
     
     ByteTo_Word32(data, &gripper_distance_mm);
     rack_distance = gripper_distance_mm; // distance in mm
+    last_cmd_status = 0;
     gripper_cmd = 13;
 
     WaitForGripperCompletion();
+    status = last_cmd_status;
 	}
 
   // terminal response
   struct terminal_response_s terminal_response;
   terminal_response.cmd = BOARD_GRIPPER_SLIDE;
-  terminal_response.data[0] = 0x01;
+  terminal_response.data[0] = status;
   terminal_response.data_length = 1;
   Terminal.SendResponse(&terminal_response);
 }

@@ -73,7 +73,7 @@ static void Task(void *arg)
                 }
             } else {
                 int32_t current_pos = Stepper.GetPresentPosisition(STEPPER_MOTOR_1);
-                Stepper.StepToPosisition(STEPPER_MOTOR_1, current_pos-200, 32, 10, 500);
+                Stepper.StepToPosisition(STEPPER_MOTOR_1, current_pos-50, 32, 10, 500);
                 vTaskDelay(100);
                 Stepper.StopMotor(STEPPER_MOTOR_1);         
                 Stepper.SetZeroPosisition(STEPPER_MOTOR_1); 
