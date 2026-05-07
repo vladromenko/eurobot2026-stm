@@ -172,7 +172,7 @@ const GripperHardware_t grippers[2] = {
 /* Gripper params */
 uint16_t dynamixel_speed = 150; //0-1024
 uint8_t gripper_target_angle;
-uint16_t angle_timeout_ms = 3000; // ms to wait for dynamixel to reach the target angle before timeout
+uint16_t angle_timeout_ms = 1500; // ms to wait for dynamixel to reach the target angle before timeout
 uint8_t gripper_height = 0;
 
 // I2C address of the PWM driver
@@ -490,7 +490,7 @@ static uint8_t WaitDynamixelAngle(uint8_t id, uint16_t target_angle, uint32_t ti
 static uint8_t WaitStepper1Angle(int32_t target_pos, uint32_t timeout_ms) {
     int32_t current_pos = 0;
     int32_t diff = 0;
-    int32_t pos_tol = 25;
+    int32_t pos_tol = 75;
     uint32_t start_time = xTaskGetTickCount(); // Засекаем время старта (FreeRTOS)
     
     while (1) {
@@ -687,17 +687,7 @@ static void Task(void *arg)
 				Dynamixel_AX.SetAngle(USART3, dynamixel_cursor_id, cursor_target_angle);
 				vTaskDelay(50);
 				
-				// checking the achievement of a set angle
-				Dynamixel_AX.GetAngle(USART3, dynamixel_cursor_id, &current_angle);
-				diff = (int16_t)current_angle - (int16_t)cursor_target_angle;
-				if (diff < 0) diff = -diff;
-				
-				while(diff >= tol_window){
-					vTaskDelay(20);
-					Dynamixel_AX.GetAngle(USART3, dynamixel_cursor_id, &current_angle);
-					diff = (int16_t)current_angle - (int16_t)cursor_target_angle;
-					if (diff < 0) diff = -diff;
-				}
+				WaitDynamixelAngle(dynamixel_cursor_id, cursor_target_angle, angle_timeout_ms);
 
 				// send the "wake up!" notification to TerminalTask
 				if (xTerminalTaskHandle != NULL) {

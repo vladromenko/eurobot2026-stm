@@ -31,3 +31,7 @@
 .\build\Main_Board\.obj\__\Core\App\robot_behavior_routine.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usart.h
 .\build\Main_Board\.obj\__\Core\App\robot_behavior_routine.o: ../Core/Lib/Include/maxon.h
 .\build\Main_Board\.obj\__\Core\App\robot_behavior_routine.o: ../Core/Lib/Include/dynamixel_ax.h
+.\build\Main_Board\.obj\__\Core\App\robot_behavior_routine.o: ../Core/BSP/Include/spi_gpo.h
+.\build\Main_Board\.obj\__\Core\App\robot_behavior_routine.o: ../Core/BSP/Include/spi_gpo_defines.h
+.\build\Main_Board\.obj\__\Core\App\robot_behavior_routine.o: ../Core/BSP/Include/stepper.h
+.\build\Main_Board\.obj\__\Core\App\robot_behavior_routine.o: ../Core/BSP/Include/l6474_drvr.h

@@ -25,6 +25,9 @@
 #include "bus_device.h"
 #include "maxon.h"
 #include "dynamixel_ax.h"
+#include "spi_gpo.h" 
+#include "spi_gpo_defines.h"
+#include "stepper.h"
 
 struct robot_ctrl_s robot_ctrl;
 QueueHandle_t button_callbacks_queue_handle = NULL;
@@ -74,6 +77,8 @@ void MaxonsStop(void)
 void StopAllActuators(void)
 {
 	MaxonsDisable();
+	SPI_GPO_ResetOutputPin(SPI_GPO_ALL);
+	Stepper.StopMotor(STEPPER_MOTOR_1);
 }
 
 

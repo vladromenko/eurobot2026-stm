@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\build\Main_Board\Main_Board.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\build\Main_Board\Main_Board.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Thu May 07 21:38:36 2026
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Fri May 08 00:33:41 2026
 <BR><P>
 <H3>Maximum Stack Usage =        260 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -888,7 +888,8 @@ Global Symbols
 <LI><a href="#[131]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskResumeAll
 <LI><a href="#[12b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskSuspendAll
 </UL>
-<BR>[Called By]<UL><LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
+<BR>[Called By]<UL><LI><a href="#[199]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StopAllActuators
+<LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 <LI><a href="#[ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HardReset
 <LI><a href="#[a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Task
 <LI><a href="#[149]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Gripper_SetValves
@@ -946,10 +947,11 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> stepper.o(.data)
 </UL>
-<P><STRONG><a name="[199]"></a>StopAllActuators</STRONG> (Thumb, 8 bytes, Stack size 8 bytes, robot_behavior_routine.o(i.StopAllActuators))
-<BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = StopAllActuators &rArr; MaxonsDisable
+<P><STRONG><a name="[199]"></a>StopAllActuators</STRONG> (Thumb, 24 bytes, Stack size 8 bytes, robot_behavior_routine.o(i.StopAllActuators))
+<BR><BR>[Stack]<UL><LI>Max Depth = 64<LI>Call Chain = StopAllActuators &rArr; SPI_GPO_ResetOutputPin &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
 </UL>
-<BR>[Calls]<UL><LI><a href="#[138]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MaxonsDisable
+<BR>[Calls]<UL><LI><a href="#[148]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI_GPO_ResetOutputPin
+<LI><a href="#[138]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MaxonsDisable
 </UL>
 <BR>[Called By]<UL><LI><a href="#[a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Task
 </UL>
@@ -1474,7 +1476,7 @@ Global Symbols
 
 <P><STRONG><a name="[1e2]"></a>uxListRemove</STRONG> (Thumb, 40 bytes, Stack size 0 bytes, list.o(i.uxListRemove))
 <BR><BR>[Called By]<UL><LI><a href="#[131]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskResumeAll
-<LI><a href="#[1c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGenericNotify
+<LI><a href="#[1c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGenericNotify
 <LI><a href="#[1e9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvCheckTasksWaitingTermination
 <LI><a href="#[1e1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvAddCurrentTaskToDelayedList
 <LI><a href="#[1f7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskRemoveFromEventList
@@ -1504,7 +1506,7 @@ Global Symbols
 
 <P><STRONG><a name="[1e3]"></a>vListInsertEnd</STRONG> (Thumb, 24 bytes, Stack size 0 bytes, list.o(i.vListInsertEnd))
 <BR><BR>[Called By]<UL><LI><a href="#[131]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskResumeAll
-<LI><a href="#[1c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGenericNotify
+<LI><a href="#[1c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGenericNotify
 <LI><a href="#[1e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvAddNewTaskToReadyList
 <LI><a href="#[1e1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvAddCurrentTaskToDelayedList
 <LI><a href="#[1f7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskRemoveFromEventList
@@ -1515,7 +1517,7 @@ Global Symbols
 <P><STRONG><a name="[1e6]"></a>vPortEnterCritical</STRONG> (Thumb, 76 bytes, Stack size 0 bytes, port.o(i.vPortEnterCritical))
 <BR><BR>[Called By]<UL><LI><a href="#[11e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ulTaskGenericNotifyTake
 <LI><a href="#[131]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskResumeAll
-<LI><a href="#[1c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGenericNotify
+<LI><a href="#[1c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGenericNotify
 <LI><a href="#[124]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xQueueGenericSend
 <LI><a href="#[1bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xQueueReceive
 <LI><a href="#[1e9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvCheckTasksWaitingTermination
@@ -1530,7 +1532,7 @@ Global Symbols
 <P><STRONG><a name="[1e8]"></a>vPortExitCritical</STRONG> (Thumb, 56 bytes, Stack size 0 bytes, port.o(i.vPortExitCritical))
 <BR><BR>[Called By]<UL><LI><a href="#[11e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ulTaskGenericNotifyTake
 <LI><a href="#[131]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskResumeAll
-<LI><a href="#[1c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGenericNotify
+<LI><a href="#[1c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGenericNotify
 <LI><a href="#[124]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xQueueGenericSend
 <LI><a href="#[1bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xQueueReceive
 <LI><a href="#[1e9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvCheckTasksWaitingTermination
@@ -1559,7 +1561,7 @@ Global Symbols
 <LI><a href="#[a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Task
 <LI><a href="#[a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Task
 <LI><a href="#[1c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WaitStepper1Angle
-<LI><a href="#[1c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WaitDynamixelAngle
+<LI><a href="#[1c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WaitDynamixelAngle
 <LI><a href="#[a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Task
 <LI><a href="#[190]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SetSpeedWithRampUpProfile
 <LI><a href="#[18b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SetBlocksShiftState
@@ -1727,7 +1729,7 @@ Global Symbols
 <LI><a href="#[a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Task
 </UL>
 
-<P><STRONG><a name="[1c0]"></a>xTaskGenericNotify</STRONG> (Thumb, 362 bytes, Stack size 40 bytes, tasks.o(i.xTaskGenericNotify))
+<P><STRONG><a name="[1c1]"></a>xTaskGenericNotify</STRONG> (Thumb, 362 bytes, Stack size 40 bytes, tasks.o(i.xTaskGenericNotify))
 <BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = xTaskGenericNotify
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1e3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vListInsertEnd
@@ -1757,7 +1759,7 @@ Global Symbols
 <P><STRONG><a name="[159]"></a>xTaskGetTickCount</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, tasks.o(i.xTaskGetTickCount))
 <BR><BR>[Called By]<UL><LI><a href="#[a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Task
 <LI><a href="#[1c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WaitStepper1Angle
-<LI><a href="#[1c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WaitDynamixelAngle
+<LI><a href="#[1c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WaitDynamixelAngle
 <LI><a href="#[a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Task
 <LI><a href="#[158]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MoveAxisByOdometryAsync
 <LI><a href="#[a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Task
@@ -3676,8 +3678,8 @@ Local Symbols
 <P><STRONG><a name="[10a]"></a>GetTaskHandle</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, game_task.o(i.GetTaskHandle))
 <BR>[Address Reference Count : 1]<UL><LI> game_task.o(.constdata)
 </UL>
-<P><STRONG><a name="[a5]"></a>Task</STRONG> (Thumb, 166 bytes, Stack size 0 bytes, game_task.o(i.Task))
-<BR><BR>[Stack]<UL><LI>Max Depth = 56<LI>Call Chain = Task &rArr; vTaskDelay &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
+<P><STRONG><a name="[a5]"></a>Task</STRONG> (Thumb, 162 bytes, Stack size 0 bytes, game_task.o(i.Task))
+<BR><BR>[Stack]<UL><LI>Max Depth = 64<LI>Call Chain = Task &rArr; StopAllActuators &rArr; SPI_GPO_ResetOutputPin &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
 </UL>
 <BR>[Calls]<UL><LI><a href="#[199]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StopAllActuators
 <LI><a href="#[137]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MaxonsStop
@@ -3790,7 +3792,7 @@ Local Symbols
 <LI><a href="#[158]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MoveAxisByOdometryAsync
 </UL>
 
-<P><STRONG><a name="[a6]"></a>Task</STRONG> (Thumb, 3680 bytes, Stack size 40 bytes, gripper_task.o(i.Task))
+<P><STRONG><a name="[a6]"></a>Task</STRONG> (Thumb, 3562 bytes, Stack size 40 bytes, gripper_task.o(i.Task))
 <BR><BR>[Stack]<UL><LI>Max Depth = 260<LI>Call Chain = Task &rArr; MoveAxisByOdometryAsync &rArr; GetRobotFrameDisplacementLocal &rArr; __hardfp_sinf &rArr; __mathlib_rredf2
 </UL>
 <BR>[Calls]<UL><LI><a href="#[137]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MaxonsStop
@@ -3798,9 +3800,9 @@ Local Symbols
 <LI><a href="#[18d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MaxonsEnable
 <LI><a href="#[138]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MaxonsDisable
 <LI><a href="#[136]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskDelay
-<LI><a href="#[1c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGenericNotify
+<LI><a href="#[1c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGenericNotify
 <LI><a href="#[1c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WaitStepper1Angle
-<LI><a href="#[1c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WaitDynamixelAngle
+<LI><a href="#[1c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WaitDynamixelAngle
 <LI><a href="#[15a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StopBaseMotion
 <LI><a href="#[190]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SetSpeedWithRampUpProfile
 <LI><a href="#[18b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SetBlocksShiftState
@@ -3813,7 +3815,7 @@ Local Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> gripper_task.o(i.CreateTask)
 </UL>
-<P><STRONG><a name="[1c1]"></a>WaitDynamixelAngle</STRONG> (Thumb, 86 bytes, Stack size 32 bytes, gripper_task.o(i.WaitDynamixelAngle))
+<P><STRONG><a name="[1c0]"></a>WaitDynamixelAngle</STRONG> (Thumb, 86 bytes, Stack size 32 bytes, gripper_task.o(i.WaitDynamixelAngle))
 <BR><BR>[Stack]<UL><LI>Max Depth = 88<LI>Call Chain = WaitDynamixelAngle &rArr; vTaskDelay &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
 </UL>
 <BR>[Calls]<UL><LI><a href="#[136]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskDelay
