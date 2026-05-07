@@ -148,14 +148,14 @@ const GripperHardware_t grippers[2] = {
         .block_servos = {PCA9685_CH1, PCA9685_CH2, PCA9685_CH3, PCA9685_CH4},
         .shift_servo_5 = PCA9685_CH5, .shift_servo_6 = PCA9685_CH6,
 		.shift_servo_5_end_angle = 16, .shift_servo_5_start_angle = 102,
-		.shift_servo_6_end_angle = 112, .shift_servo_6_start_angle = 20
+		.shift_servo_6_end_angle = 112, .shift_servo_6_start_angle = 15
     },
     { // left (index 1) (id == 2)
         .dyn_main_1 = 15, .dyn_main_2 = 16,
         .dyn_side_1 = 7,  .dyn_side_2 = 8,
 		.start_angle = 148, .end_angle = 130, .cursor_angle = 99, // start 148; end 130 65
-		.side_on_angle_1 = 54, .side_off_angle_1 = 74,
-		.side_on_angle_2 = 155, .side_off_angle_2 = 135,
+		.side_on_angle_1 = 54, .side_off_angle_1 = 135,
+		.side_on_angle_2 = 155, .side_off_angle_2 = 75,
 		.dyn_speed = 300, .dyn_side_speed = 800,
         .pumps_pins = {SPI_POWER_OUTPUT_9, SPI_POWER_OUTPUT_11, SPI_POWER_OUTPUT_13, SPI_POWER_OUTPUT_15},
         .pumps_all_mask = SPI_POWER_OUTPUT_9 | SPI_POWER_OUTPUT_11 | SPI_POWER_OUTPUT_13 | SPI_POWER_OUTPUT_15,
@@ -227,7 +227,7 @@ uint16_t move_delay = 800;
 uint8_t last_cmd_status = 1; // 1 - успех, 0 - авария/отмена
 
 extern uint8_t stepper1_calibrate;
-extern int16_t stepper1_goal_position;
+extern int32_t stepper1_goal_position;
 
 static float ClampFloat(float value, float min_value, float max_value)
 {
@@ -421,14 +421,14 @@ static void Gripper_SetValves(const GripperHardware_t* hw, uint8_t mask) {
  * @param timeout_ms Максимальное время ожидания в миллисекундах
  * @return 1 если угол достигнут, 0 если сработал таймаут
  */
-static uint8_t WaitDynamixelAngle(uint8_t id, uint8_t target_angle, uint32_t timeout_ms) {
+static uint8_t WaitDynamixelAngle(uint8_t id, uint16_t target_angle, uint32_t timeout_ms) {
     uint16_t current_angle = 0;
-    int16_t diff = 0;
+    int32_t diff = 0;
     uint32_t start_time = xTaskGetTickCount(); // Засекаем время старта (FreeRTOS)
     
     while (1) {
         Dynamixel_AX.GetAngle(USART3, id, &current_angle);
-        diff = (int16_t)current_angle - (int16_t)target_angle;
+        diff = (int32_t)current_angle - (int32_t)target_angle;
         if (diff < 0) diff = -diff;
         
         // Угол достигнут с учетом допуска
@@ -451,7 +451,7 @@ static uint8_t WaitDynamixelAngle(uint8_t id, uint8_t target_angle, uint32_t tim
  * @param timeout_ms Максимальное время ожидания в миллисекундах
  * @return 1 если позиция достигнута, 0 если сработал таймаут
  */
-static uint8_t WaitStepper1Angle(int16_t target_pos, uint32_t timeout_ms) {
+static uint8_t WaitStepper1Angle(int32_t target_pos, uint32_t timeout_ms) {
     int32_t current_pos = 0;
     int32_t diff = 0;
     int32_t pos_tol = 25;
@@ -1068,7 +1068,7 @@ static void Task(void *arg)
                 
             case 7: // gripper_vertical
 			{	
-                stepper1_goal_position = (int16_t)gripper_height * (int16_t)MM_TO_STEPS;
+                stepper1_goal_position = (int32_t)gripper_height * (int32_t)MM_TO_STEPS;
                 Stepper.Enable(STEPPER_MOTOR_1);
                 // Даем 10 мс на то, чтобы драйвер L6474 подал ток и жестко зафиксировал вал
                 vTaskDelay(50);
@@ -1170,7 +1170,7 @@ static void Task(void *arg)
                 Dynamixel_AX.SetAngle(USART3, pinion_dyn_id, pinion_goal_angle);
 				vTaskDelay(50);
 
-                last_cmd_status = WaitDynamixelAngle(pinion_dyn_id, (uint8_t)pinion_goal_angle, angle_timeout_ms);
+                last_cmd_status = WaitDynamixelAngle(pinion_dyn_id, pinion_goal_angle, angle_timeout_ms);
 
                 // Будим терминал
                 if (xTerminalTaskHandle != NULL) {

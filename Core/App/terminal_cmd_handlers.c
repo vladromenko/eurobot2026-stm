@@ -95,7 +95,7 @@ extern uint8_t move_cmd_time;
 extern uint8_t last_cmd_status;
 
 extern uint8_t stepper1_calibrate;
-extern int16_t stepper1_goal_position;
+extern int32_t stepper1_goal_position;
 
 uint8_t COMM_ENABLE = 1;
 

@@ -25,7 +25,7 @@
 #include "stepper.h" 
 #include "robot_behavior_routine.h"
 
-int16_t stepper1_goal_position = 0;
+int32_t stepper1_goal_position = 0;
 int16_t stepper2_goal_position = 0;
 int16_t stepper3_goal_position = 0;
 

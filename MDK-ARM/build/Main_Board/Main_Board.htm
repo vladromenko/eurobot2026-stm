@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\build\Main_Board\Main_Board.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\build\Main_Board\Main_Board.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Wed May 06 20:32:32 2026
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Thu May 07 11:54:59 2026
 <BR><P>
 <H3>Maximum Stack Usage =        260 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -2142,7 +2142,7 @@ Local Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> terminal_cmd_handlers.o(.data)
 </UL>
-<P><STRONG><a name="[24]"></a>SlideGripper</STRONG> (Thumb, 84 bytes, Stack size 56 bytes, terminal_cmd_handlers.o(i.SlideGripper))
+<P><STRONG><a name="[24]"></a>SlideGripper</STRONG> (Thumb, 108 bytes, Stack size 56 bytes, terminal_cmd_handlers.o(i.SlideGripper))
 <BR><BR>[Stack]<UL><LI>Max Depth = 120<LI>Call Chain = SlideGripper &rArr; WaitForGripperCompletion &rArr; ulTaskGenericNotifyTake &rArr; prvAddCurrentTaskToDelayedList &rArr; vListInsert
 </UL>
 <BR>[Calls]<UL><LI><a href="#[144]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGetCurrentTaskHandle
@@ -3781,7 +3781,7 @@ Local Symbols
 <LI><a href="#[158]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MoveAxisByOdometryAsync
 </UL>
 
-<P><STRONG><a name="[a6]"></a>Task</STRONG> (Thumb, 3688 bytes, Stack size 40 bytes, gripper_task.o(i.Task))
+<P><STRONG><a name="[a6]"></a>Task</STRONG> (Thumb, 3598 bytes, Stack size 40 bytes, gripper_task.o(i.Task))
 <BR><BR>[Stack]<UL><LI>Max Depth = 260<LI>Call Chain = Task &rArr; MoveAxisByOdometryAsync &rArr; GetRobotFrameDisplacementLocal &rArr; __hardfp_sinf &rArr; __mathlib_rredf2
 </UL>
 <BR>[Calls]<UL><LI><a href="#[137]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MaxonsStop
@@ -3803,7 +3803,7 @@ Local Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> gripper_task.o(i.CreateTask)
 </UL>
-<P><STRONG><a name="[1c0]"></a>WaitDynamixelAngle</STRONG> (Thumb, 90 bytes, Stack size 32 bytes, gripper_task.o(i.WaitDynamixelAngle))
+<P><STRONG><a name="[1c0]"></a>WaitDynamixelAngle</STRONG> (Thumb, 86 bytes, Stack size 32 bytes, gripper_task.o(i.WaitDynamixelAngle))
 <BR><BR>[Stack]<UL><LI>Max Depth = 88<LI>Call Chain = WaitDynamixelAngle &rArr; vTaskDelay &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
 </UL>
 <BR>[Calls]<UL><LI><a href="#[136]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskDelay
@@ -3850,7 +3850,7 @@ Local Symbols
 <P><STRONG><a name="[110]"></a>GetTaskHandle</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, stepper_task.o(i.GetTaskHandle))
 <BR>[Address Reference Count : 1]<UL><LI> stepper_task.o(.constdata)
 </UL>
-<P><STRONG><a name="[a8]"></a>Task</STRONG> (Thumb, 234 bytes, Stack size 8 bytes, stepper_task.o(i.Task))
+<P><STRONG><a name="[a8]"></a>Task</STRONG> (Thumb, 230 bytes, Stack size 8 bytes, stepper_task.o(i.Task))
 <BR><BR>[Stack]<UL><LI>Max Depth = 64<LI>Call Chain = Task &rArr; vTaskDelay &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
 </UL>
 <BR>[Calls]<UL><LI><a href="#[136]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskDelay

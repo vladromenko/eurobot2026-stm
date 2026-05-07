@@ -45,7 +45,7 @@
 #include "serial.h" 
 #include "pca9685.h" 
 
-extern int16_t stepper1_goal_position;
+extern int32_t stepper1_goal_position;
 extern int16_t stepper2_goal_position;
 extern int16_t stepper3_goal_position;
 
