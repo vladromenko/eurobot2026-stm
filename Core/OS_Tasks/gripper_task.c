@@ -250,6 +250,42 @@ static void StopBaseMotion(void)
     MaxonsStop();
 }
 
+static void SetSpeedWithRampUpProfile(const struct speed_s* target_speed, uint32_t total_time_ms)
+{
+    const uint32_t control_period_ms = 20U;
+    const uint32_t max_ramp_time_ms = 250U;
+    uint32_t ramp_time_ms = total_time_ms;
+    uint32_t elapsed_ms = 0U;
+
+    if (ramp_time_ms > max_ramp_time_ms) {
+        ramp_time_ms = max_ramp_time_ms;
+    }
+
+    if (total_time_ms == 0U) {
+        return;
+    }
+
+    while (elapsed_ms < total_time_ms) {
+        struct speed_s speed = {0};
+        float scale = 1.0f;
+
+        if ((ramp_time_ms > 0U) && (elapsed_ms < ramp_time_ms)) {
+            scale = (float)elapsed_ms / (float)ramp_time_ms;
+        }
+
+        speed.dx = target_speed->dx * scale;
+        speed.dy = target_speed->dy * scale;
+        speed.dphi = target_speed->dphi * scale;
+
+        Odometry.SetSpeed(&speed);
+
+        uint32_t remaining_ms = total_time_ms - elapsed_ms;
+        uint32_t delay_ms = (remaining_ms < control_period_ms) ? remaining_ms : control_period_ms;
+        vTaskDelay(pdMS_TO_TICKS(delay_ms));
+        elapsed_ms += delay_ms;
+    }
+}
+
 static void GetRobotFrameDisplacementLocal(const struct coord_s* start_coord,
                                            const struct coord_s* current_coord,
                                            float* dx_robot,
@@ -1015,11 +1051,26 @@ static void Task(void *arg)
                 uint32_t delay_ms = (uint32_t)(move_cmd_time * 500.0f);
 
                 // Расчет проекций скоростей на оси базы
-                if (gripper_id == 1) {
-                    // Gripper 1 (rotated on -60 deg along the X axis of the robot)
+                if (gripper_id == 2) {
                     speed.dx = move_speed;
                     speed.dy = 0.0f;
                     speed.dphi = 0.0f;
+                }
+                else if (gripper_id == 1) {
+                    speed.dx = move_speed;
+                    speed.dy = 0.0f;
+                    speed.dphi = 0.0f;
+
+                    SetSpeedWithRampUpProfile(&speed, delay_ms);
+
+                    speed.dphi = 0;
+                    speed.dx = 0;
+                    speed.dy = 0;
+                    Odometry.SetSpeed(&speed);
+                    vTaskDelay(50);
+
+                    gripper_cmd = 0xFF;
+                    break;
                 }
                 else if (gripper_id == 3) {
                     // along Y axis
