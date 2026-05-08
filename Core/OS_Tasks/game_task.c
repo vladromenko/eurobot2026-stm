@@ -44,6 +44,9 @@ static StackType_t StackBuffer[TASK_STACK_SIZE];
 static StaticTask_t TaskBuffer;
 
 extern uint8_t COMM_ENABLE; // from terminal_cmd_handlers.c
+extern uint8_t gripper_cmd;
+extern uint8_t gripper_id;
+extern uint8_t grips_cmd;
 
 
 static void Task(void *arg)
@@ -72,6 +75,12 @@ static void Task(void *arg)
     }
     /*  INITIALISE GAMING 100 SECONDS TIMEOUT  */
     xGameStartTime = xTaskGetTickCount();
+
+    if (gripper_cmd == 0xFF) {
+      gripper_id = 2;
+      grips_cmd = 0;
+      gripper_cmd = 1;
+    }
 
     /*  START THE GAME AND WAIT UNTIL 100 SECONDS ARE RUNNNING OUT OR THE STARTING CORD IS ATTACHED AGAIN  */
     while(robot_ctrl.starting_cord == STARTING_CORD_RELEASED)

@@ -1041,12 +1041,7 @@ static void Task(void *arg)
                 uint32_t delay_ms = (uint32_t)(move_cmd_time * 500.0f);
 
                 // Расчет проекций скоростей на оси базы
-                if (gripper_id == 2) {
-                    speed.dx = move_speed;
-                    speed.dy = 0.0f;
-                    speed.dphi = 0.0f;
-                }
-                else if (gripper_id == 1) {
+                if (gripper_id == 1) {
                     speed.dx = move_speed;
                     speed.dy = 0.0f;
                     speed.dphi = 0.0f;
@@ -1057,15 +1052,30 @@ static void Task(void *arg)
                     speed.dx = 0;
                     speed.dy = 0;
                     Odometry.SetSpeed(&speed);
-                    vTaskDelay(50);
+                    vTaskDelay(20);
+
+                    gripper_cmd = 0xFF;
+                    break;
+                }
+                else if (gripper_id == 2) {
+                    speed.dx = 0.0f;
+                    speed.dy = move_speed;
+                    speed.dphi = 0.0f;
+
+                    SetSpeedWithRampUpProfile(&speed, delay_ms);
+
+                    speed.dphi = 0;
+                    speed.dx = 0;
+                    speed.dy = 0;
+                    Odometry.SetSpeed(&speed);
+                    vTaskDelay(20);
 
                     gripper_cmd = 0xFF;
                     break;
                 }
                 else if (gripper_id == 3) {
-                    // along Y axis
-                    speed.dx = 0.0f;
-                    speed.dy = move_speed;
+                    speed.dx = move_speed;
+                    speed.dy = 0.0f;
                     speed.dphi = 0.0f;
                 }
                 else if (gripper_id == 4) {
