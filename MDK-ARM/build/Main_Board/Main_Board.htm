@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\build\Main_Board\Main_Board.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\build\Main_Board\Main_Board.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Fri May 08 17:22:15 2026
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Mon May 11 01:02:15 2026
 <BR><P>
 <H3>Maximum Stack Usage =        260 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -908,6 +908,7 @@ Global Symbols
 <LI><a href="#[12b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskSuspendAll
 </UL>
 <BR>[Called By]<UL><LI><a href="#[ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HardReset
+<LI><a href="#[a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Task
 <LI><a href="#[149]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Gripper_SetValves
 <LI><a href="#[146]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Gripper_SetPumps
 </UL>
@@ -3678,7 +3679,7 @@ Local Symbols
 <P><STRONG><a name="[10a]"></a>GetTaskHandle</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, game_task.o(i.GetTaskHandle))
 <BR>[Address Reference Count : 1]<UL><LI> game_task.o(.constdata)
 </UL>
-<P><STRONG><a name="[a5]"></a>Task</STRONG> (Thumb, 188 bytes, Stack size 0 bytes, game_task.o(i.Task))
+<P><STRONG><a name="[a5]"></a>Task</STRONG> (Thumb, 198 bytes, Stack size 0 bytes, game_task.o(i.Task))
 <BR><BR>[Stack]<UL><LI>Max Depth = 64<LI>Call Chain = Task &rArr; StopAllActuators &rArr; SPI_GPO_ResetOutputPin &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
 </UL>
 <BR>[Calls]<UL><LI><a href="#[199]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StopAllActuators
@@ -3792,10 +3793,11 @@ Local Symbols
 <LI><a href="#[158]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MoveAxisByOdometryAsync
 </UL>
 
-<P><STRONG><a name="[a6]"></a>Task</STRONG> (Thumb, 3616 bytes, Stack size 40 bytes, gripper_task.o(i.Task))
+<P><STRONG><a name="[a6]"></a>Task</STRONG> (Thumb, 3620 bytes, Stack size 40 bytes, gripper_task.o(i.Task))
 <BR><BR>[Stack]<UL><LI>Max Depth = 260<LI>Call Chain = Task &rArr; MoveAxisByOdometryAsync &rArr; GetRobotFrameDisplacementLocal &rArr; __hardfp_sinf &rArr; __mathlib_rredf2
 </UL>
 <BR>[Calls]<UL><LI><a href="#[137]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MaxonsStop
+<LI><a href="#[147]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI_GPO_SetOutputPin
 <LI><a href="#[148]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI_GPO_ResetOutputPin
 <LI><a href="#[18d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MaxonsEnable
 <LI><a href="#[138]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MaxonsDisable

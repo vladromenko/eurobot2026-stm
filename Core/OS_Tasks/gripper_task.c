@@ -147,16 +147,16 @@ const GripperHardware_t grippers[2] = {
         .valves_all_mask = SPI_POWER_OUTPUT_2 | SPI_POWER_OUTPUT_4 | SPI_POWER_OUTPUT_6 | SPI_POWER_OUTPUT_8,
         .block_servos = {PCA9685_CH1, PCA9685_CH2, PCA9685_CH3, PCA9685_CH4},
         .shift_servo_5 = PCA9685_CH5, .shift_servo_6 = PCA9685_CH6,
-		.shift_servo_5_end_angle = 16, .shift_servo_5_start_angle = 102,
+		.shift_servo_5_end_angle = 16, .shift_servo_5_start_angle = 108,
 		.shift_servo_6_end_angle = 112, .shift_servo_6_start_angle = 15
     },
     { // left (index 1) (id == 2)
         .dyn_main_1 = 15, .dyn_main_2 = 16,
         .dyn_side_1 = 7,  .dyn_side_2 = 8,
 		.start_angle = 148, .end_angle = 130, .cursor_angle = 99, // start 148; end 130 65
-		.side_on_angle_1 = 54, .side_off_angle_1 = 135,
-		.side_on_angle_2 = 155, .side_off_angle_2 = 75,
-		.dyn_speed = 300, .dyn_side_speed = 800,
+		.side_on_angle_1 = 56, .side_off_angle_1 = 124,
+		.side_on_angle_2 = 155, .side_off_angle_2 = 86,
+		.dyn_speed = 300, .dyn_side_speed = 900,
         .pumps_pins = {SPI_POWER_OUTPUT_9, SPI_POWER_OUTPUT_11, SPI_POWER_OUTPUT_13, SPI_POWER_OUTPUT_15},
         .pumps_all_mask = SPI_POWER_OUTPUT_9 | SPI_POWER_OUTPUT_11 | SPI_POWER_OUTPUT_13 | SPI_POWER_OUTPUT_15,
         .valves_pins = {SPI_POWER_OUTPUT_10, SPI_POWER_OUTPUT_12, SPI_POWER_OUTPUT_14, SPI_POWER_OUTPUT_16},
@@ -182,7 +182,7 @@ uint8_t servo_target_angle = 0;
 
 /* Cursor params */
 uint8_t dynamixel_cursor_id = 98; //15
-uint16_t cursor_speed = 300; //0-1024
+uint16_t cursor_speed = 600; //0-1024
 uint8_t cursor_hor_angle = 198; //0-300 60
 uint8_t cursor_vert_angle = 80; //0-300 150 82
 uint8_t cursor_cmd;
@@ -435,7 +435,7 @@ static void Gripper_SetPumps(const GripperHardware_t* hw, uint8_t mask) {
     for (int i = 0; i < 4; i++) {
         if ((mask & (1 << i)) == 0) {
             SPI_GPO_ResetOutputPin(hw->pumps_pins[i]);
-            vTaskDelay(20);
+            vTaskDelay(10);
         }
     }
 }
@@ -445,7 +445,7 @@ static void Gripper_SetValves(const GripperHardware_t* hw, uint8_t mask) {
     for (int i = 0; i < 4; i++) {
         if ((mask & (1 << i)) == 0) {
             SPI_GPO_ResetOutputPin(hw->valves_pins[i]);
-            vTaskDelay(20);
+            vTaskDelay(10);
         }
     }
 }
@@ -653,6 +653,8 @@ static void Task(void *arg)
         Dynamixel_AX.TorqueEnable(USART3, pinion_dyn_id);
         Dynamixel_AX.SetAngle(USART3, pinion_dyn_id, pinion_start_angle);
 		vTaskDelay(100);
+
+        SPI_GPO_SetOutputPin(SPI_POWER_OUTPUT_17 | SPI_POWER_OUTPUT_18);
     #endif
 
 	while(1)
@@ -713,7 +715,7 @@ static void Task(void *arg)
                 // Запускаем синхронный поворот (обе створки получают одинаковый угол target_angle)
                 RotateTwoDynamixels(USART3, active_hw->dyn_side_1, active_hw->dyn_side_2, target_angle_1, target_angle_2);
                 
-                vTaskDelay(200); 
+                vTaskDelay(100); 
 
                 // Ждем достижения угла с таймаутом
                 WaitDynamixelAngle(active_hw->dyn_side_1, target_angle_1, angle_timeout_ms);
@@ -1122,12 +1124,12 @@ static void Task(void *arg)
                 stepper1_goal_position = (int32_t)gripper_height * (int32_t)MM_TO_STEPS;
                 Stepper.Enable(STEPPER_MOTOR_1);
                 // Даем 10 мс на то, чтобы драйвер L6474 подал ток и жестко зафиксировал вал
-                vTaskDelay(50);
-                Stepper.StepToPosisition(STEPPER_MOTOR_1, stepper1_goal_position, 32, 10, 500);
+                vTaskDelay(10);
+                Stepper.StepToPosisition(STEPPER_MOTOR_1, stepper1_goal_position, 64, 10, 200);
                 
                 WaitStepper1Angle(stepper1_goal_position, 4000); 
                 Stepper.Disable(STEPPER_MOTOR_1);
-                vTaskDelay(50);
+                vTaskDelay(10);
                 
                 // (Альтернатива для п.5: если без питания гриппер падает вниз под своим весом, 
                 // закомментируй Disable и вместо него аппаратно снизь ток:
