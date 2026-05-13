@@ -52,7 +52,6 @@ extern uint8_t dir;
 extern uint8_t move_cmd_speed;
 extern uint8_t move_cmd_time;
 
-
 static void Task(void *arg)
 {
   TickType_t xGameStartTime;
@@ -81,10 +80,15 @@ static void Task(void *arg)
     xGameStartTime = xTaskGetTickCount();
 
     if (gripper_cmd == 0xFF) {
+      SPI_GPO_SetOutputPin(SPI_POWER_OUTPUT_17 | SPI_POWER_OUTPUT_18);
+      gripper_id = 1;
+      grips_cmd = 0;
+      gripper_cmd = 1;
+      vTaskDelay(150);
       gripper_id = 2;
       grips_cmd = 0;
       gripper_cmd = 1;
-      vTaskDelay(20);
+      vTaskDelay(150);
       /*
       gripper_id = 1;
       dir = 0;

@@ -134,37 +134,38 @@ typedef struct {
 
 // configs for two grippers: right (index 0) and left (index 1)
 const GripperHardware_t grippers[2] = {
-    { // right (index 0) (id == 1)
+
+    { // main gripper (index 0) (id == 1)
         .dyn_main_1 = 254, .dyn_main_2 = 112,
-        .dyn_side_1 = 1, .dyn_side_2 = 14,
+        .dyn_side_1 = 7, .dyn_side_2 = 8, //1 14
 		.start_angle = 149, .end_angle = 65, .cursor_angle = 99, // 149 71 99
-		.side_on_angle_1 = 140, .side_off_angle_1 = 89, //140 69
-		.side_on_angle_2 = 51, .side_off_angle_2 = 107, //51 127
-		.dyn_speed = 300, .dyn_side_speed = 300, //150 300
+		.side_on_angle_1 = 54, .side_off_angle_1 = 124, //140 89
+		.side_on_angle_2 = 155, .side_off_angle_2 = 86, //51 107
+		.dyn_speed = 300, .dyn_side_speed = 900, //150 300
         .pumps_pins = {SPI_POWER_OUTPUT_1, SPI_POWER_OUTPUT_3, SPI_POWER_OUTPUT_5, SPI_POWER_OUTPUT_7},
         .pumps_all_mask = SPI_POWER_OUTPUT_1 | SPI_POWER_OUTPUT_3 | SPI_POWER_OUTPUT_5 | SPI_POWER_OUTPUT_7,
         .valves_pins = {SPI_POWER_OUTPUT_2, SPI_POWER_OUTPUT_4, SPI_POWER_OUTPUT_6, SPI_POWER_OUTPUT_8},
         .valves_all_mask = SPI_POWER_OUTPUT_2 | SPI_POWER_OUTPUT_4 | SPI_POWER_OUTPUT_6 | SPI_POWER_OUTPUT_8,
         .block_servos = {PCA9685_CH1, PCA9685_CH2, PCA9685_CH3, PCA9685_CH4},
         .shift_servo_5 = PCA9685_CH5, .shift_servo_6 = PCA9685_CH6,
-		.shift_servo_5_end_angle = 16, .shift_servo_5_start_angle = 108,
+		.shift_servo_5_end_angle = 17, .shift_servo_5_start_angle = 102,
 		.shift_servo_6_end_angle = 112, .shift_servo_6_start_angle = 15
     },
-    { // left (index 1) (id == 2)
-        .dyn_main_1 = 15, .dyn_main_2 = 16,
-        .dyn_side_1 = 7,  .dyn_side_2 = 8,
-		.start_angle = 148, .end_angle = 130, .cursor_angle = 99, // start 148; end 130 65
-		.side_on_angle_1 = 56, .side_off_angle_1 = 124,
+    { // reserve gripper (index 1) (id == 2)
+        .dyn_main_1 = 1, .dyn_main_2 = 2,
+        .dyn_side_1 = 16,  .dyn_side_2 = 25,
+		.start_angle = 149, .end_angle = 65, .cursor_angle = 99, // start 148; end 130 65
+		.side_on_angle_1 = 54, .side_off_angle_1 = 123,
 		.side_on_angle_2 = 155, .side_off_angle_2 = 86,
 		.dyn_speed = 300, .dyn_side_speed = 900,
-        .pumps_pins = {SPI_POWER_OUTPUT_9, SPI_POWER_OUTPUT_11, SPI_POWER_OUTPUT_13, SPI_POWER_OUTPUT_15},
-        .pumps_all_mask = SPI_POWER_OUTPUT_9 | SPI_POWER_OUTPUT_11 | SPI_POWER_OUTPUT_13 | SPI_POWER_OUTPUT_15,
-        .valves_pins = {SPI_POWER_OUTPUT_10, SPI_POWER_OUTPUT_12, SPI_POWER_OUTPUT_14, SPI_POWER_OUTPUT_16},
-        .valves_all_mask = SPI_POWER_OUTPUT_10 | SPI_POWER_OUTPUT_12 | SPI_POWER_OUTPUT_14 | SPI_POWER_OUTPUT_16,
-        .block_servos = {PCA9685_CH8, PCA9685_CH9, PCA9685_CH10, PCA9685_CH11},
-        .shift_servo_5 = PCA9685_CH12, .shift_servo_6 = PCA9685_CH13,
-		.shift_servo_5_end_angle = 16, .shift_servo_5_start_angle = 110,
-		.shift_servo_6_end_angle = 112, .shift_servo_6_start_angle = 24
+        .pumps_pins = {SPI_POWER_OUTPUT_1, SPI_POWER_OUTPUT_3, SPI_POWER_OUTPUT_5, SPI_POWER_OUTPUT_7},
+        .pumps_all_mask = SPI_POWER_OUTPUT_1 | SPI_POWER_OUTPUT_3 | SPI_POWER_OUTPUT_5 | SPI_POWER_OUTPUT_7,
+        .valves_pins = {SPI_POWER_OUTPUT_2, SPI_POWER_OUTPUT_4, SPI_POWER_OUTPUT_6, SPI_POWER_OUTPUT_8},
+        .valves_all_mask = SPI_POWER_OUTPUT_2 | SPI_POWER_OUTPUT_4 | SPI_POWER_OUTPUT_6 | SPI_POWER_OUTPUT_8,
+        .block_servos = {PCA9685_CH7, PCA9685_CH8, PCA9685_CH9, PCA9685_CH10},
+        .shift_servo_5 = PCA9685_CH11, .shift_servo_6 = PCA9685_CH12,
+		.shift_servo_5_end_angle = 16, .shift_servo_5_start_angle = 103,
+		.shift_servo_6_end_angle = 112, .shift_servo_6_start_angle = 18
     }
 };
 
@@ -546,7 +547,7 @@ static void Task(void *arg)
 	// Set custom id to single dynamixel (DISCONNECT ANY OTHER DYNAMIXELS!)
 	/*
 	uint8_t dynamixel_id = 0xFE;
-	uint8_t dynamixel_new_id = 8;
+	uint8_t dynamixel_new_id = 98;
 	while(dynamixel_id > 0)
 	{
 		dynamixel_id --;
@@ -654,7 +655,7 @@ static void Task(void *arg)
         Dynamixel_AX.SetAngle(USART3, pinion_dyn_id, pinion_start_angle);
 		vTaskDelay(100);
 
-        SPI_GPO_SetOutputPin(SPI_POWER_OUTPUT_17 | SPI_POWER_OUTPUT_18);
+        //SPI_GPO_SetOutputPin(SPI_POWER_OUTPUT_17 | SPI_POWER_OUTPUT_18);
     #endif
 
 	while(1)
@@ -717,7 +718,6 @@ static void Task(void *arg)
                 
                 vTaskDelay(100); 
 
-                // Ждем достижения угла с таймаутом
                 WaitDynamixelAngle(active_hw->dyn_side_1, target_angle_1, angle_timeout_ms);
 
                 // Будим терминал
@@ -980,12 +980,12 @@ static void Task(void *arg)
 
 			case 5: // rotate
 			{
-				Dynamixel_AX.SetMovingSpeed(USART3, active_hw->dyn_side_1, side_dynamixel_speed);
-				Dynamixel_AX.SetMovingSpeed(USART3, active_hw->dyn_side_2, side_dynamixel_speed);
+				//Dynamixel_AX.SetMovingSpeed(USART3, active_hw->dyn_side_1, side_dynamixel_speed);
+				//Dynamixel_AX.SetMovingSpeed(USART3, active_hw->dyn_side_2, side_dynamixel_speed);
 
 				// Разводим боковые захваты
-				RotateTwoDynamixels(USART3, active_hw->dyn_side_1, active_hw->dyn_side_2, active_hw->side_off_angle_1, active_hw->side_off_angle_2);
-				vTaskDelay(500);
+				//RotateTwoDynamixels(USART3, active_hw->dyn_side_1, active_hw->dyn_side_2, active_hw->side_off_angle_1, active_hw->side_off_angle_2);
+				//vTaskDelay(500);
 
 				PCA9685.SetServoAngleWithAddr(i2c_addr_1, active_hw->shift_servo_5, active_hw->shift_servo_5_end_angle);
 				PCA9685.SetServoAngleWithAddr(i2c_addr_1, active_hw->shift_servo_6, active_hw->shift_servo_6_end_angle);
