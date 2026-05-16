@@ -1142,7 +1142,6 @@ Section Cross References
     game_task.o(i.Task) refers to robot_behavior_routine.o(i.MaxonsStop) for MaxonsStop
     game_task.o(i.Task) refers to robot_behavior_routine.o(i.MaxonsEnable) for MaxonsEnable
     game_task.o(i.Task) refers to tasks.o(i.xTaskGetTickCount) for xTaskGetTickCount
-    game_task.o(i.Task) refers to spi_gpo.o(i.SPI_GPO_SetOutputPin) for SPI_GPO_SetOutputPin
     game_task.o(i.Task) refers to robot_behavior_routine.o(i.StopAllActuators) for StopAllActuators
     game_task.o(i.Task) refers to robot_behavior_routine.o(.bss) for robot_ctrl
     game_task.o(i.Task) refers to gripper_task.o(.data) for gripper_cmd
@@ -3111,89 +3110,89 @@ Image Symbol Table
     i.SetSpeed                               0x08004c40   Section        0  odometry.o(i.SetSpeed)
     SetSpeed                                 0x08004c41   Thumb Code    58  odometry.o(i.SetSpeed)
     i.SetSpeedWithRampUpProfile              0x08004c88   Section        0  gripper_task.o(i.SetSpeedWithRampUpProfile)
-    SetSpeedWithRampUpProfile                0x08004c89   Thumb Code   188  gripper_task.o(i.SetSpeedWithRampUpProfile)
-    i.SetStepMode                            0x08004d48   Section        0  l6474_drvr.o(i.SetStepMode)
-    SetStepMode                              0x08004d49   Thumb Code    26  l6474_drvr.o(i.SetStepMode)
-    i.SetTimeout                             0x08004d64   Section        0  usartx_timeout.o(i.SetTimeout)
-    i.SetTotalTicks                          0x08004dc8   Section        0  maxon.o(i.SetTotalTicks)
-    SetTotalTicks                            0x08004dc9   Thumb Code    42  maxon.o(i.SetTotalTicks)
-    i.SetWheelMode                           0x08004df8   Section        0  dynamixel_ax.o(i.SetWheelMode)
-    SetWheelMode                             0x08004df9   Thumb Code    32  dynamixel_ax.o(i.SetWheelMode)
-    i.SetZeroPosisition                      0x08004e1c   Section        0  stepper.o(i.SetZeroPosisition)
-    SetZeroPosisition                        0x08004e1d   Thumb Code    44  stepper.o(i.SetZeroPosisition)
-    i.Set_BMS_CalibrationValue               0x08004e4c   Section        0  terminal_cmd_handlers.o(i.Set_BMS_CalibrationValue)
-    Set_BMS_CalibrationValue                 0x08004e4d   Thumb Code    58  terminal_cmd_handlers.o(i.Set_BMS_CalibrationValue)
-    i.Set_HSV_Color                          0x08004e94   Section        0  ws2812b.o(i.Set_HSV_Color)
-    Set_HSV_Color                            0x08004e95   Thumb Code    10  ws2812b.o(i.Set_HSV_Color)
-    i.Set_ID                                 0x08004ea0   Section        0  bms_board.o(i.Set_ID)
-    Set_ID                                   0x08004ea1   Thumb Code    34  bms_board.o(i.Set_ID)
-    i.Set_ID                                 0x08004ec8   Section        0  dynamixel_ax.o(i.Set_ID)
-    Set_ID                                   0x08004ec9   Thumb Code    34  dynamixel_ax.o(i.Set_ID)
-    i.Set_ID                                 0x08004ef0   Section        0  maxon.o(i.Set_ID)
-    Set_ID                                   0x08004ef1   Thumb Code    34  maxon.o(i.Set_ID)
-    i.Set_RGB_Color                          0x08004f18   Section        0  ws2812b.o(i.Set_RGB_Color)
-    Set_RGB_Color                            0x08004f19   Thumb Code   212  ws2812b.o(i.Set_RGB_Color)
-    i.Set_TPM                                0x08004ffc   Section        0  maxon.o(i.Set_TPM)
-    Set_TPM                                  0x08004ffd   Thumb Code    42  maxon.o(i.Set_TPM)
-    i.SideGrips                              0x0800502c   Section        0  terminal_cmd_handlers.o(i.SideGrips)
-    SideGrips                                0x0800502d   Thumb Code    82  terminal_cmd_handlers.o(i.SideGrips)
-    i.SimpleMove                             0x08005098   Section        0  terminal_cmd_handlers.o(i.SimpleMove)
-    SimpleMove                               0x08005099   Thumb Code    96  terminal_cmd_handlers.o(i.SimpleMove)
-    i.SlideGripper                           0x08005118   Section        0  terminal_cmd_handlers.o(i.SlideGripper)
-    SlideGripper                             0x08005119   Thumb Code   108  terminal_cmd_handlers.o(i.SlideGripper)
-    i.SpeedTo_TPM                            0x0800519c   Section        0  kinematics.o(i.SpeedTo_TPM)
-    SpeedTo_TPM                              0x0800519d   Thumb Code   132  kinematics.o(i.SpeedTo_TPM)
-    i.StartDMA                               0x08005228   Section        0  usartx_communication.o(i.StartDMA)
-    StartDMA                                 0x08005229   Thumb Code    82  usartx_communication.o(i.StartDMA)
-    i.StartRx                                0x08005280   Section        0  usartx_communication.o(i.StartRx)
-    StartRx                                  0x08005281   Thumb Code   140  usartx_communication.o(i.StartRx)
-    i.StartTx                                0x0800530c   Section        0  usartx_communication.o(i.StartTx)
-    StartTx                                  0x0800530d   Thumb Code   132  usartx_communication.o(i.StartTx)
-    i.StepToPosisition                       0x08005390   Section        0  stepper.o(i.StepToPosisition)
-    StepToPosisition                         0x08005391   Thumb Code  1084  stepper.o(i.StepToPosisition)
-    i.StepperMotor_1_Init                    0x080057cc   Section        0  stepper.o(i.StepperMotor_1_Init)
-    i.StepperMotor_2_Init                    0x08005834   Section        0  stepper.o(i.StepperMotor_2_Init)
-    i.StepperMotor_3_Init                    0x0800588c   Section        0  stepper.o(i.StepperMotor_3_Init)
-    i.StepperMotor_4_Init                    0x080058e4   Section        0  stepper.o(i.StepperMotor_4_Init)
-    i.StopAllActuators                       0x0800593c   Section        0  robot_behavior_routine.o(i.StopAllActuators)
-    i.StopBaseMotion                         0x08005958   Section        0  gripper_task.o(i.StopBaseMotion)
-    StopBaseMotion                           0x08005959   Thumb Code    24  gripper_task.o(i.StopBaseMotion)
-    i.StopDMA                                0x08005974   Section        0  usartx_communication.o(i.StopDMA)
-    StopDMA                                  0x08005975   Thumb Code    36  usartx_communication.o(i.StopDMA)
-    i.StopMotor                              0x0800599c   Section        0  stepper.o(i.StopMotor)
-    StopMotor                                0x0800599d   Thumb Code    50  stepper.o(i.StopMotor)
-    i.StopRx                                 0x080059d8   Section        0  usartx_communication.o(i.StopRx)
-    StopRx                                   0x080059d9   Thumb Code    92  usartx_communication.o(i.StopRx)
-    i.StopTx                                 0x08005a34   Section        0  usartx_communication.o(i.StopTx)
-    StopTx                                   0x08005a35   Thumb Code   104  usartx_communication.o(i.StopTx)
-    i.SyncTicksReference                     0x08005a9c   Section        0  odometry.o(i.SyncTicksReference)
-    SyncTicksReference                       0x08005a9d   Thumb Code    70  odometry.o(i.SyncTicksReference)
-    i.SyncWriteCmd                           0x08005af0   Section        0  dynamixel_master.o(i.SyncWriteCmd)
-    SyncWriteCmd                             0x08005af1   Thumb Code   184  dynamixel_master.o(i.SyncWriteCmd)
-    i.SysTick_Handler                        0x08005bac   Section        0  port.o(i.SysTick_Handler)
-    i.SystemClockConfig                      0x08005be0   Section        0  board_hw_config.o(i.SystemClockConfig)
-    i.SystemCoreClockUpdate                  0x08005d28   Section        0  system_stm32f4xx.o(i.SystemCoreClockUpdate)
-    i.SystemInit                             0x08005de4   Section        0  system_stm32f4xx.o(i.SystemInit)
-    i.TIM14_USARTx_TimeoutInit               0x08005df8   Section        0  board_hw_config.o(i.TIM14_USARTx_TimeoutInit)
-    i.TIM1_CC_IRQHandler                     0x08005e60   Section        0  stm32f4xx_it.o(i.TIM1_CC_IRQHandler)
-    i.TIM1_Steppers_PWM_CC_IRQ_Process       0x08005e68   Section        0  stepper.o(i.TIM1_Steppers_PWM_CC_IRQ_Process)
-    i.TIM1_Steppers_PWM_Init                 0x080061f0   Section        0  board_hw_config.o(i.TIM1_Steppers_PWM_Init)
-    i.TIM4_PWM_Group1234_Init                0x0800634c   Section        0  board_hw_config.o(i.TIM4_PWM_Group1234_Init)
-    i.TIM5_PWM_Group5678_Init                0x0800642c   Section        0  board_hw_config.o(i.TIM5_PWM_Group5678_Init)
-    i.TIM8_TRG_COM_TIM14_IRQHandler          0x0800650c   Section        0  stm32f4xx_it.o(i.TIM8_TRG_COM_TIM14_IRQHandler)
-    i.TIM8_WS2812B_Init                      0x08006514   Section        0  board_hw_config.o(i.TIM8_WS2812B_Init)
-    i.TIM_CC_DisableChannel                  0x080065f4   Section        0  stepper.o(i.TIM_CC_DisableChannel)
-    TIM_CC_DisableChannel                    0x080065f5   Thumb Code    24  stepper.o(i.TIM_CC_DisableChannel)
-    i.TIM_DisableIT_CC                       0x08006610   Section        0  stepper.o(i.TIM_DisableIT_CC)
-    TIM_DisableIT_CC                         0x08006611   Thumb Code    16  stepper.o(i.TIM_DisableIT_CC)
-    i.TPM_ToSpeed                            0x08006620   Section        0  kinematics.o(i.TPM_ToSpeed)
-    TPM_ToSpeed                              0x08006621   Thumb Code   156  kinematics.o(i.TPM_ToSpeed)
-    i.Task                                   0x080066c8   Section        0  buttons_callback_task.o(i.Task)
-    Task                                     0x080066c9   Thumb Code    72  buttons_callback_task.o(i.Task)
-    i.Task                                   0x08006718   Section        0  buttons_poll_task.o(i.Task)
-    Task                                     0x08006719   Thumb Code   286  buttons_poll_task.o(i.Task)
-    i.Task                                   0x0800685c   Section        0  game_task.o(i.Task)
-    Task                                     0x0800685d   Thumb Code   228  game_task.o(i.Task)
+    SetSpeedWithRampUpProfile                0x08004c89   Thumb Code   192  gripper_task.o(i.SetSpeedWithRampUpProfile)
+    i.SetStepMode                            0x08004d4c   Section        0  l6474_drvr.o(i.SetStepMode)
+    SetStepMode                              0x08004d4d   Thumb Code    26  l6474_drvr.o(i.SetStepMode)
+    i.SetTimeout                             0x08004d68   Section        0  usartx_timeout.o(i.SetTimeout)
+    i.SetTotalTicks                          0x08004dcc   Section        0  maxon.o(i.SetTotalTicks)
+    SetTotalTicks                            0x08004dcd   Thumb Code    42  maxon.o(i.SetTotalTicks)
+    i.SetWheelMode                           0x08004dfc   Section        0  dynamixel_ax.o(i.SetWheelMode)
+    SetWheelMode                             0x08004dfd   Thumb Code    32  dynamixel_ax.o(i.SetWheelMode)
+    i.SetZeroPosisition                      0x08004e20   Section        0  stepper.o(i.SetZeroPosisition)
+    SetZeroPosisition                        0x08004e21   Thumb Code    44  stepper.o(i.SetZeroPosisition)
+    i.Set_BMS_CalibrationValue               0x08004e50   Section        0  terminal_cmd_handlers.o(i.Set_BMS_CalibrationValue)
+    Set_BMS_CalibrationValue                 0x08004e51   Thumb Code    58  terminal_cmd_handlers.o(i.Set_BMS_CalibrationValue)
+    i.Set_HSV_Color                          0x08004e98   Section        0  ws2812b.o(i.Set_HSV_Color)
+    Set_HSV_Color                            0x08004e99   Thumb Code    10  ws2812b.o(i.Set_HSV_Color)
+    i.Set_ID                                 0x08004ea4   Section        0  bms_board.o(i.Set_ID)
+    Set_ID                                   0x08004ea5   Thumb Code    34  bms_board.o(i.Set_ID)
+    i.Set_ID                                 0x08004ecc   Section        0  dynamixel_ax.o(i.Set_ID)
+    Set_ID                                   0x08004ecd   Thumb Code    34  dynamixel_ax.o(i.Set_ID)
+    i.Set_ID                                 0x08004ef4   Section        0  maxon.o(i.Set_ID)
+    Set_ID                                   0x08004ef5   Thumb Code    34  maxon.o(i.Set_ID)
+    i.Set_RGB_Color                          0x08004f1c   Section        0  ws2812b.o(i.Set_RGB_Color)
+    Set_RGB_Color                            0x08004f1d   Thumb Code   212  ws2812b.o(i.Set_RGB_Color)
+    i.Set_TPM                                0x08005000   Section        0  maxon.o(i.Set_TPM)
+    Set_TPM                                  0x08005001   Thumb Code    42  maxon.o(i.Set_TPM)
+    i.SideGrips                              0x08005030   Section        0  terminal_cmd_handlers.o(i.SideGrips)
+    SideGrips                                0x08005031   Thumb Code    82  terminal_cmd_handlers.o(i.SideGrips)
+    i.SimpleMove                             0x0800509c   Section        0  terminal_cmd_handlers.o(i.SimpleMove)
+    SimpleMove                               0x0800509d   Thumb Code    96  terminal_cmd_handlers.o(i.SimpleMove)
+    i.SlideGripper                           0x0800511c   Section        0  terminal_cmd_handlers.o(i.SlideGripper)
+    SlideGripper                             0x0800511d   Thumb Code   108  terminal_cmd_handlers.o(i.SlideGripper)
+    i.SpeedTo_TPM                            0x080051a0   Section        0  kinematics.o(i.SpeedTo_TPM)
+    SpeedTo_TPM                              0x080051a1   Thumb Code   132  kinematics.o(i.SpeedTo_TPM)
+    i.StartDMA                               0x0800522c   Section        0  usartx_communication.o(i.StartDMA)
+    StartDMA                                 0x0800522d   Thumb Code    82  usartx_communication.o(i.StartDMA)
+    i.StartRx                                0x08005284   Section        0  usartx_communication.o(i.StartRx)
+    StartRx                                  0x08005285   Thumb Code   140  usartx_communication.o(i.StartRx)
+    i.StartTx                                0x08005310   Section        0  usartx_communication.o(i.StartTx)
+    StartTx                                  0x08005311   Thumb Code   132  usartx_communication.o(i.StartTx)
+    i.StepToPosisition                       0x08005394   Section        0  stepper.o(i.StepToPosisition)
+    StepToPosisition                         0x08005395   Thumb Code  1084  stepper.o(i.StepToPosisition)
+    i.StepperMotor_1_Init                    0x080057d0   Section        0  stepper.o(i.StepperMotor_1_Init)
+    i.StepperMotor_2_Init                    0x08005838   Section        0  stepper.o(i.StepperMotor_2_Init)
+    i.StepperMotor_3_Init                    0x08005890   Section        0  stepper.o(i.StepperMotor_3_Init)
+    i.StepperMotor_4_Init                    0x080058e8   Section        0  stepper.o(i.StepperMotor_4_Init)
+    i.StopAllActuators                       0x08005940   Section        0  robot_behavior_routine.o(i.StopAllActuators)
+    i.StopBaseMotion                         0x0800595c   Section        0  gripper_task.o(i.StopBaseMotion)
+    StopBaseMotion                           0x0800595d   Thumb Code    24  gripper_task.o(i.StopBaseMotion)
+    i.StopDMA                                0x08005978   Section        0  usartx_communication.o(i.StopDMA)
+    StopDMA                                  0x08005979   Thumb Code    36  usartx_communication.o(i.StopDMA)
+    i.StopMotor                              0x080059a0   Section        0  stepper.o(i.StopMotor)
+    StopMotor                                0x080059a1   Thumb Code    50  stepper.o(i.StopMotor)
+    i.StopRx                                 0x080059dc   Section        0  usartx_communication.o(i.StopRx)
+    StopRx                                   0x080059dd   Thumb Code    92  usartx_communication.o(i.StopRx)
+    i.StopTx                                 0x08005a38   Section        0  usartx_communication.o(i.StopTx)
+    StopTx                                   0x08005a39   Thumb Code   104  usartx_communication.o(i.StopTx)
+    i.SyncTicksReference                     0x08005aa0   Section        0  odometry.o(i.SyncTicksReference)
+    SyncTicksReference                       0x08005aa1   Thumb Code    70  odometry.o(i.SyncTicksReference)
+    i.SyncWriteCmd                           0x08005af4   Section        0  dynamixel_master.o(i.SyncWriteCmd)
+    SyncWriteCmd                             0x08005af5   Thumb Code   184  dynamixel_master.o(i.SyncWriteCmd)
+    i.SysTick_Handler                        0x08005bb0   Section        0  port.o(i.SysTick_Handler)
+    i.SystemClockConfig                      0x08005be4   Section        0  board_hw_config.o(i.SystemClockConfig)
+    i.SystemCoreClockUpdate                  0x08005d2c   Section        0  system_stm32f4xx.o(i.SystemCoreClockUpdate)
+    i.SystemInit                             0x08005de8   Section        0  system_stm32f4xx.o(i.SystemInit)
+    i.TIM14_USARTx_TimeoutInit               0x08005dfc   Section        0  board_hw_config.o(i.TIM14_USARTx_TimeoutInit)
+    i.TIM1_CC_IRQHandler                     0x08005e64   Section        0  stm32f4xx_it.o(i.TIM1_CC_IRQHandler)
+    i.TIM1_Steppers_PWM_CC_IRQ_Process       0x08005e6c   Section        0  stepper.o(i.TIM1_Steppers_PWM_CC_IRQ_Process)
+    i.TIM1_Steppers_PWM_Init                 0x080061f4   Section        0  board_hw_config.o(i.TIM1_Steppers_PWM_Init)
+    i.TIM4_PWM_Group1234_Init                0x08006350   Section        0  board_hw_config.o(i.TIM4_PWM_Group1234_Init)
+    i.TIM5_PWM_Group5678_Init                0x08006430   Section        0  board_hw_config.o(i.TIM5_PWM_Group5678_Init)
+    i.TIM8_TRG_COM_TIM14_IRQHandler          0x08006510   Section        0  stm32f4xx_it.o(i.TIM8_TRG_COM_TIM14_IRQHandler)
+    i.TIM8_WS2812B_Init                      0x08006518   Section        0  board_hw_config.o(i.TIM8_WS2812B_Init)
+    i.TIM_CC_DisableChannel                  0x080065f8   Section        0  stepper.o(i.TIM_CC_DisableChannel)
+    TIM_CC_DisableChannel                    0x080065f9   Thumb Code    24  stepper.o(i.TIM_CC_DisableChannel)
+    i.TIM_DisableIT_CC                       0x08006614   Section        0  stepper.o(i.TIM_DisableIT_CC)
+    TIM_DisableIT_CC                         0x08006615   Thumb Code    16  stepper.o(i.TIM_DisableIT_CC)
+    i.TPM_ToSpeed                            0x08006624   Section        0  kinematics.o(i.TPM_ToSpeed)
+    TPM_ToSpeed                              0x08006625   Thumb Code   156  kinematics.o(i.TPM_ToSpeed)
+    i.Task                                   0x080066cc   Section        0  buttons_callback_task.o(i.Task)
+    Task                                     0x080066cd   Thumb Code    72  buttons_callback_task.o(i.Task)
+    i.Task                                   0x0800671c   Section        0  buttons_poll_task.o(i.Task)
+    Task                                     0x0800671d   Thumb Code   286  buttons_poll_task.o(i.Task)
+    i.Task                                   0x08006860   Section        0  game_task.o(i.Task)
+    Task                                     0x08006861   Thumb Code   222  game_task.o(i.Task)
     i.Task                                   0x08006960   Section        0  gripper_task.o(i.Task)
     Task                                     0x08006961   Thumb Code  3520  gripper_task.o(i.Task)
     i.Task                                   0x0800773c   Section        0  odometry_task.o(i.Task)
@@ -3704,24 +3703,24 @@ Image Symbol Table
     SPI_GPO_ResetOutputPin                   0x080045f9   Thumb Code   130  spi_gpo.o(i.SPI_GPO_ResetOutputPin)
     SPI_GPO_SetOutputPin                     0x08004689   Thumb Code   130  spi_gpo.o(i.SPI_GPO_SetOutputPin)
     SYSCFG_PWR_Init                          0x08004719   Thumb Code    20  board_hw_config.o(i.SYSCFG_PWR_Init)
-    SetTimeout                               0x08004d65   Thumb Code    86  usartx_timeout.o(i.SetTimeout)
-    StepperMotor_1_Init                      0x080057cd   Thumb Code    94  stepper.o(i.StepperMotor_1_Init)
-    StepperMotor_2_Init                      0x08005835   Thumb Code    78  stepper.o(i.StepperMotor_2_Init)
-    StepperMotor_3_Init                      0x0800588d   Thumb Code    78  stepper.o(i.StepperMotor_3_Init)
-    StepperMotor_4_Init                      0x080058e5   Thumb Code    78  stepper.o(i.StepperMotor_4_Init)
-    StopAllActuators                         0x0800593d   Thumb Code    24  robot_behavior_routine.o(i.StopAllActuators)
-    SysTick_Handler                          0x08005bad   Thumb Code    46  port.o(i.SysTick_Handler)
-    SystemClockConfig                        0x08005be1   Thumb Code   308  board_hw_config.o(i.SystemClockConfig)
-    SystemCoreClockUpdate                    0x08005d29   Thumb Code   170  system_stm32f4xx.o(i.SystemCoreClockUpdate)
-    SystemInit                               0x08005de5   Thumb Code    14  system_stm32f4xx.o(i.SystemInit)
-    TIM14_USARTx_TimeoutInit                 0x08005df9   Thumb Code    98  board_hw_config.o(i.TIM14_USARTx_TimeoutInit)
-    TIM1_CC_IRQHandler                       0x08005e61   Thumb Code     8  stm32f4xx_it.o(i.TIM1_CC_IRQHandler)
-    TIM1_Steppers_PWM_CC_IRQ_Process         0x08005e69   Thumb Code   886  stepper.o(i.TIM1_Steppers_PWM_CC_IRQ_Process)
-    TIM1_Steppers_PWM_Init                   0x080061f1   Thumb Code   340  board_hw_config.o(i.TIM1_Steppers_PWM_Init)
-    TIM4_PWM_Group1234_Init                  0x0800634d   Thumb Code   218  board_hw_config.o(i.TIM4_PWM_Group1234_Init)
-    TIM5_PWM_Group5678_Init                  0x0800642d   Thumb Code   218  board_hw_config.o(i.TIM5_PWM_Group5678_Init)
-    TIM8_TRG_COM_TIM14_IRQHandler            0x0800650d   Thumb Code     8  stm32f4xx_it.o(i.TIM8_TRG_COM_TIM14_IRQHandler)
-    TIM8_WS2812B_Init                        0x08006515   Thumb Code   214  board_hw_config.o(i.TIM8_WS2812B_Init)
+    SetTimeout                               0x08004d69   Thumb Code    86  usartx_timeout.o(i.SetTimeout)
+    StepperMotor_1_Init                      0x080057d1   Thumb Code    94  stepper.o(i.StepperMotor_1_Init)
+    StepperMotor_2_Init                      0x08005839   Thumb Code    78  stepper.o(i.StepperMotor_2_Init)
+    StepperMotor_3_Init                      0x08005891   Thumb Code    78  stepper.o(i.StepperMotor_3_Init)
+    StepperMotor_4_Init                      0x080058e9   Thumb Code    78  stepper.o(i.StepperMotor_4_Init)
+    StopAllActuators                         0x08005941   Thumb Code    24  robot_behavior_routine.o(i.StopAllActuators)
+    SysTick_Handler                          0x08005bb1   Thumb Code    46  port.o(i.SysTick_Handler)
+    SystemClockConfig                        0x08005be5   Thumb Code   308  board_hw_config.o(i.SystemClockConfig)
+    SystemCoreClockUpdate                    0x08005d2d   Thumb Code   170  system_stm32f4xx.o(i.SystemCoreClockUpdate)
+    SystemInit                               0x08005de9   Thumb Code    14  system_stm32f4xx.o(i.SystemInit)
+    TIM14_USARTx_TimeoutInit                 0x08005dfd   Thumb Code    98  board_hw_config.o(i.TIM14_USARTx_TimeoutInit)
+    TIM1_CC_IRQHandler                       0x08005e65   Thumb Code     8  stm32f4xx_it.o(i.TIM1_CC_IRQHandler)
+    TIM1_Steppers_PWM_CC_IRQ_Process         0x08005e6d   Thumb Code   886  stepper.o(i.TIM1_Steppers_PWM_CC_IRQ_Process)
+    TIM1_Steppers_PWM_Init                   0x080061f5   Thumb Code   340  board_hw_config.o(i.TIM1_Steppers_PWM_Init)
+    TIM4_PWM_Group1234_Init                  0x08006351   Thumb Code   218  board_hw_config.o(i.TIM4_PWM_Group1234_Init)
+    TIM5_PWM_Group5678_Init                  0x08006431   Thumb Code   218  board_hw_config.o(i.TIM5_PWM_Group5678_Init)
+    TIM8_TRG_COM_TIM14_IRQHandler            0x08006511   Thumb Code     8  stm32f4xx_it.o(i.TIM8_TRG_COM_TIM14_IRQHandler)
+    TIM8_WS2812B_Init                        0x08006519   Thumb Code   214  board_hw_config.o(i.TIM8_WS2812B_Init)
     UART4_IRQHandler                         0x08007c91   Thumb Code    10  stm32f4xx_it.o(i.UART4_IRQHandler)
     UART4_RS485_Init                         0x08007ca1   Thumb Code   184  board_hw_config.o(i.UART4_RS485_Init)
     UART5_IRQHandler                         0x08007d69   Thumb Code    10  stm32f4xx_it.o(i.UART5_IRQHandler)
@@ -4263,59 +4262,59 @@ Memory Map of the image
     0x08004bd0   0x00000058   Code   RO          871    i.SetRobotSpeed     terminal_cmd_handlers.o
     0x08004c28   0x00000018   Code   RO         1934    i.SetRxTimeout      usartx_communication.o
     0x08004c40   0x00000048   Code   RO          513    i.SetSpeed          odometry.o
-    0x08004c88   0x000000c0   Code   RO         3327    i.SetSpeedWithRampUpProfile  gripper_task.o
-    0x08004d48   0x0000001a   Code   RO         1569    i.SetStepMode       l6474_drvr.o
-    0x08004d62   0x00000002   PAD
-    0x08004d64   0x00000064   Code   RO         2073    i.SetTimeout        usartx_timeout.o
-    0x08004dc8   0x00000030   Code   RO         2802    i.SetTotalTicks     maxon.o
-    0x08004df8   0x00000024   Code   RO         2308    i.SetWheelMode      dynamixel_ax.o
-    0x08004e1c   0x00000030   Code   RO         1811    i.SetZeroPosisition  stepper.o
-    0x08004e4c   0x00000048   Code   RO          872    i.Set_BMS_CalibrationValue  terminal_cmd_handlers.o
-    0x08004e94   0x0000000a   Code   RO         2122    i.Set_HSV_Color     ws2812b.o
-    0x08004e9e   0x00000002   PAD
-    0x08004ea0   0x00000028   Code   RO         2182    i.Set_ID            bms_board.o
-    0x08004ec8   0x00000028   Code   RO         2309    i.Set_ID            dynamixel_ax.o
-    0x08004ef0   0x00000028   Code   RO         2803    i.Set_ID            maxon.o
-    0x08004f18   0x000000e4   Code   RO         2123    i.Set_RGB_Color     ws2812b.o
-    0x08004ffc   0x00000030   Code   RO         2804    i.Set_TPM           maxon.o
-    0x0800502c   0x0000006c   Code   RO          873    i.SideGrips         terminal_cmd_handlers.o
-    0x08005098   0x00000080   Code   RO          874    i.SimpleMove        terminal_cmd_handlers.o
-    0x08005118   0x00000084   Code   RO          875    i.SlideGripper      terminal_cmd_handlers.o
-    0x0800519c   0x0000008c   Code   RO          402    i.SpeedTo_TPM       kinematics.o
-    0x08005228   0x00000058   Code   RO         1935    i.StartDMA          usartx_communication.o
-    0x08005280   0x0000008c   Code   RO         1936    i.StartRx           usartx_communication.o
-    0x0800530c   0x00000084   Code   RO         1937    i.StartTx           usartx_communication.o
-    0x08005390   0x0000043c   Code   RO         1812    i.StepToPosisition  stepper.o
-    0x080057cc   0x00000068   Code   RO         1813    i.StepperMotor_1_Init  stepper.o
-    0x08005834   0x00000058   Code   RO         1814    i.StepperMotor_2_Init  stepper.o
-    0x0800588c   0x00000058   Code   RO         1815    i.StepperMotor_3_Init  stepper.o
-    0x080058e4   0x00000058   Code   RO         1816    i.StepperMotor_4_Init  stepper.o
-    0x0800593c   0x0000001c   Code   RO          574    i.StopAllActuators  robot_behavior_routine.o
-    0x08005958   0x0000001c   Code   RO         3328    i.StopBaseMotion    gripper_task.o
-    0x08005974   0x00000028   Code   RO         1938    i.StopDMA           usartx_communication.o
-    0x0800599c   0x0000003c   Code   RO         1817    i.StopMotor         stepper.o
-    0x080059d8   0x0000005c   Code   RO         1939    i.StopRx            usartx_communication.o
-    0x08005a34   0x00000068   Code   RO         1940    i.StopTx            usartx_communication.o
-    0x08005a9c   0x00000054   Code   RO          514    i.SyncTicksReference  odometry.o
-    0x08005af0   0x000000bc   Code   RO         2409    i.SyncWriteCmd      dynamixel_master.o
-    0x08005bac   0x00000034   Code   RO         5182    i.SysTick_Handler   port.o
-    0x08005be0   0x00000148   Code   RO         1163    i.SystemClockConfig  board_hw_config.o
-    0x08005d28   0x000000bc   Code   RO          768    i.SystemCoreClockUpdate  system_stm32f4xx.o
-    0x08005de4   0x00000014   Code   RO          769    i.SystemInit        system_stm32f4xx.o
-    0x08005df8   0x00000068   Code   RO         1164    i.TIM14_USARTx_TimeoutInit  board_hw_config.o
-    0x08005e60   0x00000008   Code   RO          660    i.TIM1_CC_IRQHandler  stm32f4xx_it.o
-    0x08005e68   0x00000388   Code   RO         1818    i.TIM1_Steppers_PWM_CC_IRQ_Process  stepper.o
-    0x080061f0   0x0000015c   Code   RO         1165    i.TIM1_Steppers_PWM_Init  board_hw_config.o
-    0x0800634c   0x000000e0   Code   RO         1166    i.TIM4_PWM_Group1234_Init  board_hw_config.o
-    0x0800642c   0x000000e0   Code   RO         1167    i.TIM5_PWM_Group5678_Init  board_hw_config.o
-    0x0800650c   0x00000008   Code   RO          661    i.TIM8_TRG_COM_TIM14_IRQHandler  stm32f4xx_it.o
-    0x08006514   0x000000e0   Code   RO         1168    i.TIM8_WS2812B_Init  board_hw_config.o
-    0x080065f4   0x0000001c   Code   RO         1819    i.TIM_CC_DisableChannel  stepper.o
-    0x08006610   0x00000010   Code   RO         1820    i.TIM_DisableIT_CC  stepper.o
-    0x08006620   0x000000a8   Code   RO          403    i.TPM_ToSpeed       kinematics.o
-    0x080066c8   0x00000050   Code   RO         3065    i.Task              buttons_callback_task.o
-    0x08006718   0x00000144   Code   RO         3108    i.Task              buttons_poll_task.o
-    0x0800685c   0x00000104   Code   RO         3272    i.Task              game_task.o
+    0x08004c88   0x000000c4   Code   RO         3327    i.SetSpeedWithRampUpProfile  gripper_task.o
+    0x08004d4c   0x0000001a   Code   RO         1569    i.SetStepMode       l6474_drvr.o
+    0x08004d66   0x00000002   PAD
+    0x08004d68   0x00000064   Code   RO         2073    i.SetTimeout        usartx_timeout.o
+    0x08004dcc   0x00000030   Code   RO         2802    i.SetTotalTicks     maxon.o
+    0x08004dfc   0x00000024   Code   RO         2308    i.SetWheelMode      dynamixel_ax.o
+    0x08004e20   0x00000030   Code   RO         1811    i.SetZeroPosisition  stepper.o
+    0x08004e50   0x00000048   Code   RO          872    i.Set_BMS_CalibrationValue  terminal_cmd_handlers.o
+    0x08004e98   0x0000000a   Code   RO         2122    i.Set_HSV_Color     ws2812b.o
+    0x08004ea2   0x00000002   PAD
+    0x08004ea4   0x00000028   Code   RO         2182    i.Set_ID            bms_board.o
+    0x08004ecc   0x00000028   Code   RO         2309    i.Set_ID            dynamixel_ax.o
+    0x08004ef4   0x00000028   Code   RO         2803    i.Set_ID            maxon.o
+    0x08004f1c   0x000000e4   Code   RO         2123    i.Set_RGB_Color     ws2812b.o
+    0x08005000   0x00000030   Code   RO         2804    i.Set_TPM           maxon.o
+    0x08005030   0x0000006c   Code   RO          873    i.SideGrips         terminal_cmd_handlers.o
+    0x0800509c   0x00000080   Code   RO          874    i.SimpleMove        terminal_cmd_handlers.o
+    0x0800511c   0x00000084   Code   RO          875    i.SlideGripper      terminal_cmd_handlers.o
+    0x080051a0   0x0000008c   Code   RO          402    i.SpeedTo_TPM       kinematics.o
+    0x0800522c   0x00000058   Code   RO         1935    i.StartDMA          usartx_communication.o
+    0x08005284   0x0000008c   Code   RO         1936    i.StartRx           usartx_communication.o
+    0x08005310   0x00000084   Code   RO         1937    i.StartTx           usartx_communication.o
+    0x08005394   0x0000043c   Code   RO         1812    i.StepToPosisition  stepper.o
+    0x080057d0   0x00000068   Code   RO         1813    i.StepperMotor_1_Init  stepper.o
+    0x08005838   0x00000058   Code   RO         1814    i.StepperMotor_2_Init  stepper.o
+    0x08005890   0x00000058   Code   RO         1815    i.StepperMotor_3_Init  stepper.o
+    0x080058e8   0x00000058   Code   RO         1816    i.StepperMotor_4_Init  stepper.o
+    0x08005940   0x0000001c   Code   RO          574    i.StopAllActuators  robot_behavior_routine.o
+    0x0800595c   0x0000001c   Code   RO         3328    i.StopBaseMotion    gripper_task.o
+    0x08005978   0x00000028   Code   RO         1938    i.StopDMA           usartx_communication.o
+    0x080059a0   0x0000003c   Code   RO         1817    i.StopMotor         stepper.o
+    0x080059dc   0x0000005c   Code   RO         1939    i.StopRx            usartx_communication.o
+    0x08005a38   0x00000068   Code   RO         1940    i.StopTx            usartx_communication.o
+    0x08005aa0   0x00000054   Code   RO          514    i.SyncTicksReference  odometry.o
+    0x08005af4   0x000000bc   Code   RO         2409    i.SyncWriteCmd      dynamixel_master.o
+    0x08005bb0   0x00000034   Code   RO         5182    i.SysTick_Handler   port.o
+    0x08005be4   0x00000148   Code   RO         1163    i.SystemClockConfig  board_hw_config.o
+    0x08005d2c   0x000000bc   Code   RO          768    i.SystemCoreClockUpdate  system_stm32f4xx.o
+    0x08005de8   0x00000014   Code   RO          769    i.SystemInit        system_stm32f4xx.o
+    0x08005dfc   0x00000068   Code   RO         1164    i.TIM14_USARTx_TimeoutInit  board_hw_config.o
+    0x08005e64   0x00000008   Code   RO          660    i.TIM1_CC_IRQHandler  stm32f4xx_it.o
+    0x08005e6c   0x00000388   Code   RO         1818    i.TIM1_Steppers_PWM_CC_IRQ_Process  stepper.o
+    0x080061f4   0x0000015c   Code   RO         1165    i.TIM1_Steppers_PWM_Init  board_hw_config.o
+    0x08006350   0x000000e0   Code   RO         1166    i.TIM4_PWM_Group1234_Init  board_hw_config.o
+    0x08006430   0x000000e0   Code   RO         1167    i.TIM5_PWM_Group5678_Init  board_hw_config.o
+    0x08006510   0x00000008   Code   RO          661    i.TIM8_TRG_COM_TIM14_IRQHandler  stm32f4xx_it.o
+    0x08006518   0x000000e0   Code   RO         1168    i.TIM8_WS2812B_Init  board_hw_config.o
+    0x080065f8   0x0000001c   Code   RO         1819    i.TIM_CC_DisableChannel  stepper.o
+    0x08006614   0x00000010   Code   RO         1820    i.TIM_DisableIT_CC  stepper.o
+    0x08006624   0x000000a8   Code   RO          403    i.TPM_ToSpeed       kinematics.o
+    0x080066cc   0x00000050   Code   RO         3065    i.Task              buttons_callback_task.o
+    0x0800671c   0x00000144   Code   RO         3108    i.Task              buttons_poll_task.o
+    0x08006860   0x00000100   Code   RO         3272    i.Task              game_task.o
     0x08006960   0x00000ddc   Code   RO         3329    i.Task              gripper_task.o
     0x0800773c   0x00000038   Code   RO         3433    i.Task              odometry_task.o
     0x08007774   0x000000fc   Code   RO         3475    i.Task              stepper_task.o
@@ -4554,8 +4553,8 @@ Image component sizes
          0          0          0          0          0      22384   event_groups.o
        182          0          0          0          0       4378   fifo_routine.o
         24         10          0          0        148      11156   freertos_routine_plug.o
-       336         68          8          4       2132       5842   game_task.o
-      5338        498        196         79       2132      21068   gripper_task.o
+       332         70          8          4       2132       5838   game_task.o
+      5342        498        196         79       2132      21068   gripper_task.o
        678         48         20          8          0       8573   hl_rtu.o
        556          8          0          0          0      16947   i2c2.o
        924        108         52        100         24      43899   kinematics.o
@@ -4589,7 +4588,7 @@ Image component sizes
        384         30         52          0       2880      46084   ws2812b.o
 
     ----------------------------------------------------------------------
-     40408       3766     218160       2976      20000    1435276   Object Totals
+     40408       3768     218160       2976      20000    1435272   Object Totals
          0          0         48          0          0          0   (incl. Generated)
         36          0          3          4          1          0   (incl. Padding)
 
@@ -4650,9 +4649,9 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-     42616       3992     218192       2980      20000    1396212   Grand Totals
-     42616       3992     218192        428      20000    1396212   ELF Image Totals (compressed)
-     42616       3992     218192        428          0          0   ROM Totals
+     42616       3994     218192       2980      20000    1396208   Grand Totals
+     42616       3994     218192        428      20000    1396208   ELF Image Totals (compressed)
+     42616       3994     218192        428          0          0   ROM Totals
 
 ==============================================================================
 

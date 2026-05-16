@@ -254,7 +254,7 @@ static void StopBaseMotion(void)
 static void SetSpeedWithRampUpProfile(const struct speed_s* target_speed, uint32_t total_time_ms)
 {
     const uint32_t control_period_ms = 20U;
-    const uint32_t max_ramp_time_ms = 250U;
+    const uint32_t max_ramp_time_ms = 350U;
     uint32_t ramp_time_ms = total_time_ms;
     uint32_t elapsed_ms = 0U;
 
@@ -963,7 +963,7 @@ static void Task(void *arg)
 			case 3: // toggle_pumps
 			{
 				Gripper_SetPumps(active_hw, pump_mask);
-				vTaskDelay(100);
+				vTaskDelay(50);
 				if (xTerminalTaskHandle != NULL) xTaskNotifyGive(xTerminalTaskHandle);
 				gripper_cmd = NO_CMD;
 				break;
@@ -972,7 +972,7 @@ static void Task(void *arg)
 			case 4: // toggle_valves
 			{
 				Gripper_SetValves(active_hw, valve_mask);
-				vTaskDelay(100);
+				vTaskDelay(50);
 				if (xTerminalTaskHandle != NULL) xTaskNotifyGive(xTerminalTaskHandle);
 				gripper_cmd = NO_CMD;
 				break;

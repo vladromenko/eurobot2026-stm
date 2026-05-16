@@ -973,3 +973,19 @@ These source files will be recompiled
 [2026-05-15 01:30:05]	[done]
 	build successfully !
 
+[2026-05-15 23:26:36]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\gripper_task.c': source file has been changed.
+
+[2026-05-15 23:26:38]	[done]
+	build successfully !
+
+[2026-05-16 14:12:26]	[info] incremental build: 1 source files changed
+These source files will be recompiled
+---
+'c:\Users\artem\Documents\Skoltech\Eurobot\Electronics\STM32\eurobot2026-stm\Core\OS_Tasks\game_task.c': source file has been changed.
+
+[2026-05-16 14:12:30]	[done]
+	build successfully !
+

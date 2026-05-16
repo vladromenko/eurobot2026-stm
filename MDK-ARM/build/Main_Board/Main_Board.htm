@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\build\Main_Board\Main_Board.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\build\Main_Board\Main_Board.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Fri May 15 01:30:04 2026
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Sat May 16 14:12:29 2026
 <BR><P>
 <H3>Maximum Stack Usage =        260 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -910,7 +910,6 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HardReset
 <LI><a href="#[149]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Gripper_SetValves
 <LI><a href="#[146]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Gripper_SetPumps
-<LI><a href="#[a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Task
 </UL>
 
 <P><STRONG><a name="[187]"></a>SYSCFG_PWR_Init</STRONG> (Thumb, 20 bytes, Stack size 8 bytes, board_hw_config.o(i.SYSCFG_PWR_Init))
@@ -3679,12 +3678,11 @@ Local Symbols
 <P><STRONG><a name="[10a]"></a>GetTaskHandle</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, game_task.o(i.GetTaskHandle))
 <BR>[Address Reference Count : 1]<UL><LI> game_task.o(.constdata)
 </UL>
-<P><STRONG><a name="[a5]"></a>Task</STRONG> (Thumb, 228 bytes, Stack size 0 bytes, game_task.o(i.Task))
+<P><STRONG><a name="[a5]"></a>Task</STRONG> (Thumb, 222 bytes, Stack size 0 bytes, game_task.o(i.Task))
 <BR><BR>[Stack]<UL><LI>Max Depth = 64<LI>Call Chain = Task &rArr; StopAllActuators &rArr; SPI_GPO_ResetOutputPin &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
 </UL>
 <BR>[Calls]<UL><LI><a href="#[199]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StopAllActuators
 <LI><a href="#[137]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MaxonsStop
-<LI><a href="#[147]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI_GPO_SetOutputPin
 <LI><a href="#[18d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MaxonsEnable
 <LI><a href="#[136]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskDelay
 <LI><a href="#[159]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGetTickCount
@@ -3777,7 +3775,7 @@ Local Symbols
 <BR>[Called By]<UL><LI><a href="#[a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Task
 </UL>
 
-<P><STRONG><a name="[190]"></a>SetSpeedWithRampUpProfile</STRONG> (Thumb, 188 bytes, Stack size 64 bytes, gripper_task.o(i.SetSpeedWithRampUpProfile))
+<P><STRONG><a name="[190]"></a>SetSpeedWithRampUpProfile</STRONG> (Thumb, 192 bytes, Stack size 64 bytes, gripper_task.o(i.SetSpeedWithRampUpProfile))
 <BR><BR>[Stack]<UL><LI>Max Depth = 120<LI>Call Chain = SetSpeedWithRampUpProfile &rArr; vTaskDelay &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
 </UL>
 <BR>[Calls]<UL><LI><a href="#[136]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskDelay
