@@ -1,9 +1,0 @@
-.\build\Main_Board\.obj\__\Core\App\system_stm32f4xx.o: .\..\Core\App\system_stm32f4xx.c
-.\build\Main_Board\.obj\__\Core\App\system_stm32f4xx.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h
-.\build\Main_Board\.obj\__\Core\App\system_stm32f4xx.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h
-.\build\Main_Board\.obj\__\Core\App\system_stm32f4xx.o: ../Drivers/CMSIS/Include/core_cm4.h
-.\build\Main_Board\.obj\__\Core\App\system_stm32f4xx.o: ../Drivers/CMSIS/Include/cmsis_version.h
-.\build\Main_Board\.obj\__\Core\App\system_stm32f4xx.o: ../Drivers/CMSIS/Include/cmsis_compiler.h
-.\build\Main_Board\.obj\__\Core\App\system_stm32f4xx.o: ../Drivers/CMSIS/Include/cmsis_armcc.h
-.\build\Main_Board\.obj\__\Core\App\system_stm32f4xx.o: ../Drivers/CMSIS/Include/mpu_armv7.h
-.\build\Main_Board\.obj\__\Core\App\system_stm32f4xx.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/system_stm32f4xx.h

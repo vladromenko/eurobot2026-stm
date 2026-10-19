@@ -1,9 +1,15 @@
 MDK-ARM/Main_Board_Output/
+MDK-ARM/build/
 MDK-ARM/Main_Board.uvguix.*
 MDK-ARM/startup_stm32f407xx.lst
 MDK-ARM/Main_Board.*
 !MDK-ARM/Main_Board.uvoptx
 !MDK-ARM/Main_Board.uvprojx
+MDK-ARM/*.o
+MDK-ARM/*.d
+MDK-ARM/*.crf
+MDK-ARM/*.dep
+MDK-ARM/*.local
 
 # CMake/Ninja output and local diagnostics
 /build/
