@@ -81,10 +81,10 @@ static void Task(void *arg)
 
     if (gripper_cmd == 0xFF) {
       //SPI_GPO_SetOutputPin(SPI_POWER_OUTPUT_17 | SPI_POWER_OUTPUT_18);
-      gripper_id = 1;
+      /*gripper_id = 1;
       grips_cmd = 0;
       gripper_cmd = 1;
-      vTaskDelay(150);
+      vTaskDelay(200); */
       gripper_id = 2;
       grips_cmd = 0;
       gripper_cmd = 1;

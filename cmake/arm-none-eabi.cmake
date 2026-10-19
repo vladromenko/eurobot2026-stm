@@ -1,0 +1,26 @@
+set(CMAKE_SYSTEM_NAME Generic)
+set(CMAKE_SYSTEM_PROCESSOR arm)
+set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
+
+# Override using -DARM_TOOLCHAIN_BIN=/path/to/bin or ARM_TOOLCHAIN_BIN env.
+set(ARM_TOOLCHAIN_BIN "$ENV{ARM_TOOLCHAIN_BIN}" CACHE PATH "ARM GNU toolchain bin directory")
+set(_arm_hints "${ARM_TOOLCHAIN_BIN}")
+if(CMAKE_HOST_APPLE)
+  file(GLOB _cube_bins LIST_DIRECTORIES true
+    "/Applications/STM32CubeIDE.app/Contents/Eclipse/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.*/tools/bin"
+    "/Applications/STMicroelectronics/STM32CubeCLT*/GNU-tools-for-STM32/bin")
+  list(SORT _cube_bins COMPARE NATURAL ORDER DESCENDING)
+  list(APPEND _arm_hints ${_cube_bins})
+endif()
+find_program(CMAKE_C_COMPILER arm-none-eabi-gcc HINTS ${_arm_hints} REQUIRED)
+get_filename_component(_arm_bin "${CMAKE_C_COMPILER}" DIRECTORY)
+find_program(CMAKE_CXX_COMPILER arm-none-eabi-g++ HINTS "${_arm_bin}" NO_DEFAULT_PATH REQUIRED)
+set(CMAKE_ASM_COMPILER "${CMAKE_C_COMPILER}")
+foreach(_tool objcopy size objdump readelf nm)
+  string(TOUPPER "${_tool}" _upper)
+  find_program(CMAKE_${_upper} arm-none-eabi-${_tool} HINTS "${_arm_bin}" NO_DEFAULT_PATH REQUIRED)
+endforeach()
+set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)

@@ -77,6 +77,8 @@ extern volatile TaskHandle_t xTerminalTaskHandle;
 #define LOCAL_PI 3.14159265f
 
 #define MM_TO_STEPS 25 // for stepper calibration
+#define GRIPPER_STEPPER_NORMAL_CURRENT_MA 1100.0f
+#define GRIPPER_STEPPER_DOWN_CURRENT_MA   320.0f
 #define MM_TO_DEG 3.979f // for pinion angle calculation
 
 #define WHEEL_CALIBRATION_TICKS_PER_REV ((int32_t)(28.0f * 4096.0f))
@@ -1122,6 +1124,14 @@ static void Task(void *arg)
             case 7: // gripper_vertical
 			{	
                 stepper1_goal_position = (int32_t)gripper_height * (int32_t)MM_TO_STEPS;
+                int32_t current_position = Stepper.GetPresentPosisition(STEPPER_MOTOR_1);
+
+                if (stepper1_goal_position < current_position) {
+                    L6474H.SetCurrentLimit_mA(STEPPER_MOTOR_1, GRIPPER_STEPPER_DOWN_CURRENT_MA);
+                } else {
+                    L6474H.SetCurrentLimit_mA(STEPPER_MOTOR_1, GRIPPER_STEPPER_NORMAL_CURRENT_MA);
+                }
+
                 Stepper.Enable(STEPPER_MOTOR_1);
                 // Даем 10 мс на то, чтобы драйвер L6474 подал ток и жестко зафиксировал вал
                 vTaskDelay(10);
@@ -1129,6 +1139,7 @@ static void Task(void *arg)
                 
                 WaitStepper1Angle(stepper1_goal_position, 4000); 
                 Stepper.Disable(STEPPER_MOTOR_1);
+                L6474H.SetCurrentLimit_mA(STEPPER_MOTOR_1, GRIPPER_STEPPER_NORMAL_CURRENT_MA);
                 vTaskDelay(10);
                 
                 // (Альтернатива для п.5: если без питания гриппер падает вниз под своим весом, 

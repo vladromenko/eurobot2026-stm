@@ -133,10 +133,10 @@ void I2C2_Init(void)
 	LL_APB1_GRP1_ForceReset(LL_APB1_GRP1_PERIPH_I2C2);
 	LL_APB1_GRP1_ReleaseReset(LL_APB1_GRP1_PERIPH_I2C2);
 
-	/* Configure I2C2 (standard mode 100 kHz, 8 MHz APB1 freq assumption) */
+	/* Configure I2C2: APB1 is 42 MHz, standard mode is 100 kHz. */
 	LL_I2C_Disable(I2C2);
 	LL_I2C_SetClockSpeedMode(I2C2, LL_I2C_CLOCK_SPEED_STANDARD_MODE);
-	LL_I2C_ConfigSpeed(I2C2, 84000000U, 100000U, LL_I2C_DUTYCYCLE_2);
+	LL_I2C_ConfigSpeed(I2C2, 42000000U, 100000U, LL_I2C_DUTYCYCLE_2);
 	LL_I2C_Enable(I2C2);
 }
 
