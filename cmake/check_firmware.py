@@ -22,11 +22,15 @@ def main():
         flags = c.get('arguments') or shlex.split(c['command'])
         for flag in ['-mcpu=cortex-m4','-mthumb','-mfpu=fpv4-sp-d16','-mfloat-abi=hard']:
             require(flag in flags, 'missing CPU/FPU flag: '+c['file'])
-        if c['file'].endswith('.c'):
+        if c['file'].endswith(('.c', '.cpp')):
             for define in ['STM32F407xx','USE_FULL_LL_DRIVER','ARM_MATH_CM4','__FPU_PRESENT=1U']:
                 require('-D'+define in flags, 'missing define '+define)
-            for flag in ['-fshort-enums','-fshort-wchar','-funsigned-char','-fno-strict-aliasing','-std=c99']:
+            std = '-std=c++20' if c['file'].endswith('.cpp') else '-std=c99'
+            for flag in ['-fshort-enums','-fshort-wchar','-funsigned-char','-fno-strict-aliasing',std]:
                 require(flag in flags, 'missing ABI/language flag '+flag)
+            if c['file'].endswith('.cpp'):
+                for flag in ['-fno-exceptions','-fno-rtti']:
+                    require(flag in flags, 'missing C++ flag '+flag)
     print(f'PASS: {len(actual)} compilation units; all defines/CPU flags')
     for ext in ['elf','bin','hex','map']:
         require((build/('firmware.'+ext)).stat().st_size > 0, 'missing/empty '+ext)
@@ -64,7 +68,7 @@ def main():
     for i,name in enumerate(names[1:], 1):
         expected_value = 0 if name == '0' else symbols[name][0]
         require(vectors[i] == expected_value,'vector mismatch '+name)
-    handlers = re.findall(r'\bvoid\s+(\w+(?:IRQHandler|Handler))\s*\(', (root/'Core/App/stm32f4xx_it.c').read_text())
+    handlers = re.findall(r'\bvoid\s+(\w+(?:IRQHandler|Handler))\s*\(', (root/'Core/App/stm32f4xx_it.cpp').read_text())
     handlers += ['SVC_Handler','PendSV_Handler','SysTick_Handler']
     for name in handlers:
         require(symbols[name][1] == 1, 'ISR must be a strong symbol: '+name)

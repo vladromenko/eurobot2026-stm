@@ -9,7 +9,8 @@ endif()
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 include(cmake/sources.cmake)
 add_executable(firmware ${EUROBOT_SOURCES} cmake/gcc_runtime.c)
-set_target_properties(firmware PROPERTIES SUFFIX ".elf" C_STANDARD 99 C_STANDARD_REQUIRED YES C_EXTENSIONS NO)
+set_target_properties(firmware PROPERTIES SUFFIX ".elf" C_STANDARD 99 C_STANDARD_REQUIRED YES C_EXTENSIONS NO
+  CXX_STANDARD 20 CXX_STANDARD_REQUIRED YES CXX_EXTENSIONS NO)
 target_include_directories(firmware PRIVATE ${EUROBOT_INCLUDES})
 target_compile_definitions(firmware PRIVATE STM32F407xx
   USE_FULL_LL_DRIVER ARM_MATH_CM4 __FPU_PRESENT=1U)
@@ -19,11 +20,16 @@ target_compile_options(firmware PRIVATE ${_cpu}
   "$<$<AND:$<COMPILE_LANGUAGE:C,CXX>,$<CONFIG:Debug>>:-O0;-g3>"
   "$<$<AND:$<COMPILE_LANGUAGE:C,CXX>,$<CONFIG:Release>>:-Os;-g>"
   "$<$<COMPILE_LANGUAGE:C,CXX>:-Wall;-Wextra>"
+  # No exceptions, RTTI or guarded statics: keeps the C++ build free of the C++ runtime.
+  "$<$<COMPILE_LANGUAGE:CXX>:-fno-exceptions;-fno-rtti;-fno-threadsafe-statics;-fno-use-cxa-atexit>"
+  # GCC 15 enables libstdc++ bounds assertions at -O0; their failure path pulls in
+  # fprintf/abort/malloc (~6 KB) that have nowhere to print on this board.
+  "$<$<COMPILE_LANGUAGE:CXX>:-D_GLIBCXX_NO_ASSERTIONS>"
   "$<$<COMPILE_LANGUAGE:ASM>:-g3>")
 # Existing Dynamixel/WS2812B code accesses pointer storage through uint32_t*.
 # Disable type-based alias optimization to preserve those accesses in Release.
 # Bit-banged timing in this driver relies on unoptimized code.
-set_source_files_properties(Core/BSP/l6474_drvr.c PROPERTIES COMPILE_OPTIONS "-O0")
+set_source_files_properties(Core/BSP/l6474_drvr.cpp PROPERTIES COMPILE_OPTIONS "-O0")
 set(_ld "${CMAKE_CURRENT_SOURCE_DIR}/cmake/STM32F407VG_FLASH.ld")
 set_property(TARGET firmware APPEND PROPERTY LINK_DEPENDS "${_ld}")
 target_link_options(firmware PRIVATE ${_cpu} -nostartfiles --specs=nano.specs
