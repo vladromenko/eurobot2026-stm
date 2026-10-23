@@ -608,7 +608,9 @@ static void Task(void *arg)
         Dynamixel_AX.SetAngle(USART3, dynamixel_cursor_id, cursor_vert_angle);
         vTaskDelay(100);
 
-        stepper1_calibrate = 1; // set the stepper into zero position
+        // TEMPORARY: height calibration disabled while the limit switch (28 GPIO pin 26, PC13) is disconnected.
+        // Restore this line when the switch is connected again.
+        // stepper1_calibrate = 1; // set the stepper into zero position
 
         // Инициализация обоих грипперов в цикле
         for (int i = 0; i < 2; i++) {
