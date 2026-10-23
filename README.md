@@ -46,6 +46,7 @@ make                # Debug
 make release
 make check          # check-release для Release
 make flash          # flash-release для Release
+make flash-remote   # Release → scp на reset10 → ~/flash_stm32.sh (REMOTE=host для другого)
 make reset
 make monitor
 make clean

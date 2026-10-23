@@ -62,7 +62,7 @@ def main():
     symbols = get_symbols(cache['CMAKE_NM'], build / 'firmware.elf')
     names = ['SystemCoreClock', 'PCA9685_InitStatus', 'uxCurrentNumberOfTasks',
              'xSchedulerRunning', 'xTickCount', 'SPI_GPO_REG']
-    for name in names + ['DemoTask']:
+    for name in names:
         if name not in symbols:
             raise RuntimeError('Символ отсутствует в ELF: ' + name)
     for name in names:
@@ -101,14 +101,12 @@ def main():
         dt = samples[-1]['time'] - samples[0]['time']
         ticks = (samples[-1]['xTickCount'] - samples[0]['xTickCount']) & 0xffffffff
         rate = ticks / dt if dt else 0
-        states = {sample['SPI_GPO_REG'] & mask for sample in samples}
         checks = {
             'SystemCoreClock = 168000000': clock == 168000000,
             'PCA9685 initialization succeeded': all(x['PCA9685_InitStatus'] == 0 for x in samples),
             'FreeRTOS scheduler running': all(x['xSchedulerRunning'] == 1 for x in samples),
-            'At least 9 tasks (8 application + idle)': all(x['uxCurrentNumberOfTasks'] >= 9 for x in samples),
+            'At least 8 tasks (7 application + idle)': all(x['uxCurrentNumberOfTasks'] >= 8 for x in samples),
             'Tick progressing near 1000/s': 700 < rate < 1300,
-            'Demo outputs 1-4 observed OFF and ON': 0 in states and mask in states,
         }
         print(f'Tick rate estimate: {rate:.1f}/s; SWD snapshots are not simultaneous across words.')
         for title, ok in checks.items():

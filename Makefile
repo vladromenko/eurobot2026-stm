@@ -1,6 +1,8 @@
 # Thin wrapper over CMake presets: make, make release, make flash, ...
 
-.PHONY: all debug release check check-release flash flash-release reset monitor clean help
+REMOTE ?= reset10
+
+.PHONY: all debug release check check-release flash flash-release flash-remote reset monitor clean help
 
 all: debug
 
@@ -20,6 +22,10 @@ flash: debug
 flash-release: release
 	cmake --build --preset release --target flash
 
+flash-remote: release
+	scp build/release/firmware.hex $(REMOTE):~/firmware.hex
+	ssh $(REMOTE) 'cd ~ && ./flash_stm32.sh'
+
 reset:
 	cmake --preset debug
 	cmake --build --preset debug --target reset
@@ -35,6 +41,7 @@ help:
 	@echo "make release        build Release (build/release)"
 	@echo "make check          verify Debug image; check-release for Release"
 	@echo "make flash          build and flash Debug via OpenOCD; flash-release for Release"
+	@echo "make flash-remote   build Release, copy to $(REMOTE) and run flash_stm32.sh there"
 	@echo "make reset          reset the MCU"
 	@echo "make monitor        read-only SWD runtime check"
 	@echo "make clean          remove build/"

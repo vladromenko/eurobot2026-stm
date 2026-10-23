@@ -128,7 +128,7 @@ int main(void)
 	TerminalTask.CreateTask(1);
   GameTask.CreateTask(1);
 
-  DemoTask.CreateTask(4);
+  //DemoTask.CreateTask(4);
 	StepperTask.CreateTask(1);
 	GripperTask.CreateTask(1);
   //DebugTerminalTask.CreateTask(1);
