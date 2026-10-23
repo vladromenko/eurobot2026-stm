@@ -107,7 +107,6 @@
 
 #endif
 
-constinit USARTx_Driver USARTx;
 
 
 namespace {

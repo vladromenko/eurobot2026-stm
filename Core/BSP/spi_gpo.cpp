@@ -30,7 +30,6 @@
 #include "task.h"
 
 
-constinit SPI_GPO_Driver SPI_GPO;
 
 void SPI_GPO_Driver::SetOutputPin(uint32_t spi_gpo_pin)
 {

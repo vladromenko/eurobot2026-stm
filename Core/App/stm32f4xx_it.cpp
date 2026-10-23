@@ -21,15 +21,12 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_it.hpp"
 
-#include "usartx_communication.hpp" 
+#include "hw_instance.hpp"
 #include "robot_behavior_routine.hpp" 
-#include "stepper.hpp"
-#include "usartx_timeout.hpp" 
 
 #include "board_gpio_defines.hpp"
 #include "stm32f4xx_ll_gpio.h"
 #include "stm32f4xx_ll_dma.h"
-#include "ws2812b.hpp" 
 
 /******************************************************************************/
 /*           Application Interruption and Exception Handlers          */
@@ -37,42 +34,42 @@
 
 void USART1_IRQHandler()
 {
-  USARTx.IRQ_Process(USART1);
+  GetHwInstance().usartx.IRQ_Process(USART1);
 }
 
 void USART3_IRQHandler()
 {
-  USARTx.IRQ_Process(USART3);
+  GetHwInstance().usartx.IRQ_Process(USART3);
 }
 
 void UART4_IRQHandler()
 {
-  USARTx.IRQ_Process(UART4);
+  GetHwInstance().usartx.IRQ_Process(UART4);
 }
 
 void UART5_IRQHandler()
 {
-  USARTx.IRQ_Process(UART5);
+  GetHwInstance().usartx.IRQ_Process(UART5);
 }
 
 void USART6_IRQHandler()
 {
-  USARTx.IRQ_Process(USART6);
+  GetHwInstance().usartx.IRQ_Process(USART6);
 }
 
 void TIM1_CC_IRQHandler()
 {
-	Stepper.TIM_IRQ_Process();
+	GetHwInstance().stepper.TIM_IRQ_Process();
 }
 
 void TIM8_TRG_COM_TIM14_IRQHandler()
 {
-  USARTx_Timeout.TIM_IRQ_Process();
+  GetHwInstance().usartx_timeout.TIM_IRQ_Process();
 }
 
 void DMA2_Stream1_IRQHandler()
 {
-  WS2812B.DMA_IRQ_Process();
+  GetHwInstance().ws2812b.DMA_IRQ_Process();
 }
 
 

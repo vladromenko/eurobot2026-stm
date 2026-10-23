@@ -21,6 +21,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "robot_behavior_routine.hpp" 
+#include "hw_instance.hpp"
 #include "robot_gpio_defines.hpp"
 #include "bus_device.hpp"
 #include "spi_gpo.hpp" 
@@ -30,7 +31,7 @@
 struct robot_ctrl_s robot_ctrl;
 QueueHandle_t button_callbacks_queue_handle = NULL;
 
-constinit RobotBehavior Robot{Maxon};
+constinit RobotBehavior Robot{GetHwInstance().maxon};
 
 
 namespace {

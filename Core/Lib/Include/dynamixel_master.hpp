@@ -24,8 +24,6 @@
 #include "stm32f4xx_ll_usart.h"
 #include "usartx_communication.hpp"
 
-
-
 #define BROADCAST_ID            0xFE
 #define MAX_DATA_LENGTH         32
 
@@ -52,8 +50,6 @@
 #define ANGLE_LIMIT_ERROR       (1U<<1UL)   /* When Goal Position is written out of the range from CW Angle Limit to CCW Angle Limit	                            */
 #define INPUT_VOLTAGE_ERROR     (1U<<0UL)   /* When the applied voltage is out of the range of operating voltage set in the Control table	                        */
 
-
-
 struct dynamixel_master_response_s{
 	uint8_t is_data_ready;
   uint8_t bus_error;
@@ -61,7 +57,6 @@ struct dynamixel_master_response_s{
   uint8_t data_length;
   uint8_t data[MAX_DATA_LENGTH];
 };
-
 
 /**
  * Dynamixel Protocol 1.0 master on one half-duplex line.
@@ -83,11 +78,11 @@ private:
 };
 
 /*  Dynamixel buses, bound to their USARTs in main()  */
-extern DynamixelMasterDriver DynamixelBus3;   /*  USART3: AX servos  */
-extern DynamixelMasterDriver DynamixelBus4;   /*  UART4: BMS board  */
-extern DynamixelMasterDriver DynamixelBus6;   /*  USART6: Maxon motors  */
+/*  The object lives in HwInstance (hw_instance.hpp); this is a shortcut to it  */
+extern DynamixelMasterDriver& DynamixelBus3;   /*  USART3: AX servos  */
+extern DynamixelMasterDriver& DynamixelBus4;   /*  UART4: BMS board  */
+extern DynamixelMasterDriver& DynamixelBus6;   /*  USART6: Maxon motors  */
 
-
-#endif 
+#endif
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

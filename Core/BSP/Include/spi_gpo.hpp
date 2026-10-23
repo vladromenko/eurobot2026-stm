@@ -34,7 +34,8 @@ private:
   uint32_t spi_gpo_reg = 0;
 };
 
-extern SPI_GPO_Driver SPI_GPO;
+/*  The object lives in HwInstance (hw_instance.hpp); this is a shortcut to it  */
+extern SPI_GPO_Driver& SPI_GPO;
 
 #endif 
 

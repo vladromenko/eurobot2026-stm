@@ -21,17 +21,15 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "dynamixel_master.hpp"
-#include "fifo_routine.hpp" 
+#include "fifo_routine.hpp"
 
 #include "FreeRTOS.h"
 #include "task.h"
-
 
 namespace {
 
 constexpr uint8_t MAX_RETRANSMIT_NUMBER = 2;
 constexpr uint32_t TIMEOUT_US = 2000;
-
 
 struct packet_s{
     uint8_t header1;
@@ -69,10 +67,10 @@ inline rx_fifo_element_s* RxData(USARTx_Line* line)
 uint8_t Calc_CRC(const packet_s* packet)
 {
     uint16_t crc = packet->packet_id + packet->length + packet->instruction_error;
-    
+
     for(uint8_t ik=0; ik<(packet->length-2); ik++)
         crc += packet->param_crc[ik];
-    
+
     crc = ~crc;
     crc &= 0xFF;
 
@@ -95,7 +93,7 @@ uint8_t VerifyPacket(const packet_s* packet, uint8_t packet_length)
 
     if(packet_crc != calc_crc)
         return 1;
-    
+
     return 0;
 }
 
@@ -124,7 +122,7 @@ void TransmitCmd(USARTx_Line* line, tx_fifo_element_s* tx_fifo_data)
         xTaskResumeAll();
         taskYIELD();
     }
-    
+
     line->tx_fifo.Add(tx_fifo_data);
 
     if(line->is_line_busy==0){
@@ -155,15 +153,10 @@ void SendPacket(USARTx_Line* line, tx_fifo_element_s* tx_fifo_data)
 
 }
 
-constinit DynamixelMasterDriver DynamixelBus3;
-constinit DynamixelMasterDriver DynamixelBus4;
-constinit DynamixelMasterDriver DynamixelBus6;
-
-
 void DynamixelMasterDriver::Ping(uint8_t device_id, dynamixel_master_response_s* response)
 {
     tx_fifo_element_s tx_fifo_data;
-    
+
     tx_fifo_data.packet.packet_id = device_id;
     tx_fifo_data.packet.length = 2;
     tx_fifo_data.packet.instruction_error = Ping_CMD;
@@ -179,7 +172,7 @@ void DynamixelMasterDriver::Ping(uint8_t device_id, dynamixel_master_response_s*
 void DynamixelMasterDriver::Read(uint8_t device_id, uint8_t starting_address, uint8_t data_length, dynamixel_master_response_s* response)
 {
     tx_fifo_element_s tx_fifo_data;
-    
+
     tx_fifo_data.packet.packet_id = device_id;
     tx_fifo_data.packet.length = 4;
     tx_fifo_data.packet.instruction_error = Read_CMD;
@@ -198,7 +191,7 @@ void DynamixelMasterDriver::Read(uint8_t device_id, uint8_t starting_address, ui
 void DynamixelMasterDriver::Write(uint8_t device_id, uint8_t starting_address, uint8_t* data, uint8_t data_length, dynamixel_master_response_s* response)
 {
     tx_fifo_element_s tx_fifo_data;
-    
+
     tx_fifo_data.packet.packet_id = device_id;
     tx_fifo_data.packet.length = data_length+3;
     tx_fifo_data.packet.instruction_error = Write_CMD;
@@ -218,7 +211,7 @@ void DynamixelMasterDriver::Write(uint8_t device_id, uint8_t starting_address, u
 void DynamixelMasterDriver::SyncWrite(uint8_t* device_id_array, uint8_t boards_number, uint8_t starting_address, uint8_t* data_array, uint8_t data_length, dynamixel_master_response_s* response_array)
 {
     tx_fifo_element_s tx_fifo_data;
-    
+
     tx_fifo_data.packet.packet_id = BROADCAST_ID;
     tx_fifo_data.packet.length = 4 + boards_number*(data_length+1);
     tx_fifo_data.packet.instruction_error = SyncWrite_CMD;
@@ -240,7 +233,6 @@ void DynamixelMasterDriver::SyncWrite(uint8_t* device_id_array, uint8_t boards_n
 
     SendPacket(line, &tx_fifo_data);
 }
-
 
 void DynamixelMasterDriver::RxTimeoutCallback()
 {
@@ -295,7 +287,7 @@ void DynamixelMasterDriver::RxCompleteCallback(uint32_t data_length)
     rx_fifo_data->cumulative_error |= (packet->instruction_error)&(INSTRUCTION_ERROR|CHECKSUM_ERROR|RANGE_ERROR);
 
     if(rx_fifo_data->cumulative_error)
-    {     
+    {
         if(tx_fifo_data->retransmit_downcounter)
         {
             if(rx_fifo_data->responses_downcounter)
@@ -304,14 +296,13 @@ void DynamixelMasterDriver::RxCompleteCallback(uint32_t data_length)
             return;
         }
     }
-        
+
     if(tx_fifo_data->response != nullptr){
         tx_fifo_data->response->bus_error = 0;
         tx_fifo_data->response->device_error = packet->instruction_error;
         tx_fifo_data->response->data_length = packet->length-2;
         memcpy(tx_fifo_data->response->data, packet->param_crc, packet->length-2);
     }
-    
 
     if(rx_fifo_data->responses_downcounter){
         if(tx_fifo_data->response != nullptr)

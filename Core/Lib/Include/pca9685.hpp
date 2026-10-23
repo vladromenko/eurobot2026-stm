@@ -9,7 +9,6 @@
 #ifndef __PCA9685_H
 #define __PCA9685_H
 
-
 #include "stdint.h"
 #include "i2c2.hpp"
 
@@ -121,13 +120,9 @@ private:
   uint16_t max_angle_deg = 180U;
 };
 
-extern PCA9685_Driver PCA9685;
-
+/*  The object lives in HwInstance (hw_instance.hpp); this is a shortcut to it  */
+extern PCA9685_Driver& PCA9685;
 
 #endif /* __PCA9685_H */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
-
-
-
-

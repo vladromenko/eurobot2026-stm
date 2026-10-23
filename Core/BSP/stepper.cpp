@@ -109,7 +109,6 @@ inline void TIM_CC_EnableChannel(TIM_TypeDef *TIMx, uint32_t m_index)
 
 }
 
-constinit StepperDriver Stepper;
 
 
 void StepperDriver::Init(l6474h_motor_s m_index)

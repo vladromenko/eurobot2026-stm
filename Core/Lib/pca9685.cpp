@@ -10,7 +10,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "pca9685.hpp"
 
-
 namespace {
 
 /* Частота генератора внутри PCA9685: 25 МГц */
@@ -29,9 +28,6 @@ uint8_t CalcPrescale(float pwm_freq_hz)
 }
 
 }
-
-constinit PCA9685_Driver PCA9685;
-
 
 /* Вспомогательные функции ---------------------------------------------------*/
 int PCA9685_Driver::WriteReg(uint8_t reg, uint8_t value)
@@ -81,10 +77,10 @@ int PCA9685_Driver::SetChannelPWM(uint8_t i2c_addr_7bit, pca9685_channel_e ch, u
   /* Вычисляем адрес регистра для конкретного канала */
   /* LED0_ON_L = 0x06, каждый канал занимает 4 регистра */
   uint8_t reg = (uint8_t)(PCA9685_REG_LED0_ON_L + 4U * (uint8_t)ch);
-  
+
   /* Защита: убеждаемся, что не попадаем в регистры ALL_LED (0xFA-0xFD) */
   if (reg >= PCA9685_REG_ALL_LED_ON_L) return -1;
-  
+
   uint8_t buf[4];
 
   buf[0] = (uint8_t)(on  & 0xFFU);

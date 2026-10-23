@@ -44,7 +44,8 @@ private:
   uint8_t working_flag;
 };
 
-extern USARTx_TimeoutDriver USARTx_Timeout;
+/*  The object lives in HwInstance (hw_instance.hpp); this is a shortcut to it  */
+extern USARTx_TimeoutDriver& USARTx_Timeout;
 
 #endif 
 

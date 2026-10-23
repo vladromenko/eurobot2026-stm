@@ -34,6 +34,7 @@ set(EUROBOT_SOURCES
   "Core/BSP/i2c2.cpp"
   "Core/App/bus_device.cpp"
   "Core/App/debug_terminal_cmd_handlers.cpp"
+  "Core/App/hw_instance.cpp"
   "Core/App/debug_terminal.cpp"
   "Core/App/kinematics.cpp"
   "Core/App/main.cpp"

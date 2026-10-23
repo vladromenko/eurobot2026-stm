@@ -22,7 +22,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "fifo_routine.hpp"
 
-
 void FIFO::Init(void* fifo_ptr, uint32_t fifo_size, uint32_t fifo_element_size)
 {
   this->fifo_bot_edge_ptr = static_cast<uint8_t*>(fifo_ptr);

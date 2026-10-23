@@ -72,7 +72,8 @@ private:
   ButtonParams buttons[BUTTONS_NUMBER];
 };
 
-extern ButtonDriver Button;
+/*  The object lives in HwInstance (hw_instance.hpp); this is a shortcut to it  */
+extern ButtonDriver& Button;
 
 #endif
 

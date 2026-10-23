@@ -46,7 +46,6 @@ uint16_t leds_dma_data[WS2812B_Driver::MAX_LEDS_NUMBER*24];
 
 }
 
-constinit WS2812B_Driver WS2812B;
 
 
 void WS2812B_Driver::Set_RGB_Color(const rgb_color_s* leds, uint8_t leds_number)

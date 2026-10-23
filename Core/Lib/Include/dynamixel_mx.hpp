@@ -23,8 +23,6 @@
 #include "std_def.hpp"
 #include "dynamixel_master.hpp"
 
-	 
-
 /*	MX EEPROM Area registers define ------------------------------------------------------------- */
 #define MX_ModelNumber           	0     /* Model Number (2 bytes)                       */
 #define MX_FirmwareVersion       	2     /* Firmware Version (1 byte)	                  */
@@ -43,7 +41,6 @@
 #define MX_Shutdown            		18    /* Shutdown Error Information (1 byte)	        */
 #define MX_MultiTurnOffset        20    /* Adjust Position with Offset (2 bytes)	      */
 #define MX_ResolutionDivider      22    /* Divider for Position Resolution (1 byte)	    */
-
 
 /*	MX RAM Area registers define ---------------------------------------------------------------- */
 #define MX_TorqueEnable          	24    /* Motor Torque On/Off (1 byte)	                */
@@ -69,8 +66,6 @@
 #define MX_GoalTorque            	71    /* Goal Torque (2 bytes)	                      */
 #define MX_GoalAcceleration       73    /* Goal Acceleration (1 byte)	                  */
 
-
-
 /*  MX-28/64 servo on a Dynamixel line; angle in degrees 0..360  */
 class Dynamixel_MX_Driver{
 public:
@@ -93,11 +88,9 @@ private:
     DynamixelMasterDriver& bus;
 };
 
-extern Dynamixel_MX_Driver Dynamixel_MX;
+/*  The object lives in HwInstance (hw_instance.hpp); this is a shortcut to it  */
+extern Dynamixel_MX_Driver& Dynamixel_MX;
 
-
-
-
-#endif 
+#endif
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

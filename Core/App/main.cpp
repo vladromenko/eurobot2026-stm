@@ -20,20 +20,11 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.hpp"
 #include "board_hw_config.hpp"
-#include "spi_gpo.hpp" 
 #include "spi_gpo_defines.hpp"
 #include "board_gpio_defines.hpp"
 #include "board_gpio_config.hpp"
 #include "robot_gpio_config.hpp"
-#include "maxon.hpp" 
-#include "stepper.hpp" 
-#include "rc_servo.hpp" 
-#include "byte2word.hpp" 
-
-#include "dynamixel_master.hpp"
-#include "dynamixel_ax.hpp" 
-#include "usartx_communication.hpp" 
-
+#include "hw_instance.hpp"
 
 #include "FreeRTOS.h"
 #include "task.h"
@@ -43,9 +34,6 @@
 #include "event_groups.h"
 
 #include "os_tasks.hpp" 
-#include "hl_rtu.hpp"
-#include "serial.hpp"
-#include "pca9685.hpp"
 
 volatile int PCA9685_InitStatus;
 
@@ -56,6 +44,8 @@ volatile int PCA9685_InitStatus;
   */
 int main(void)
 {
+  HwInstance& hw = GetHwInstance();
+
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
 	SYSCFG_PWR_Init();
 	SystemClockConfig();
@@ -70,10 +60,10 @@ int main(void)
 	I2C2_Init();
 	/* Инициализация PCA9685 плат (I2C2, 50 Гц, стандартные параметры сервоприводов) */
 	/* Статус сохраняется для диагностики; ошибка не блокирует запуск FreeRTOS. */
-	PCA9685_InitStatus = PCA9685.Init(0x40, 50.0f, 500, 2500, 180);  /* Плата 1 */
+	PCA9685_InitStatus = hw.pca9685.Init(0x40, 50.0f, 500, 2500, 180);  /* Плата 1 */
 
 	SPI1_Board_HW_Init();
-	SPI_GPO.ResetOutputPin(SPI_GPO_ALL);
+	hw.spi_gpo.ResetOutputPin(SPI_GPO_ALL);
 
 	
 
@@ -112,11 +102,11 @@ int main(void)
 
   
   /*  Binding USART ports with protocols  */
-  USARTx.BindProtocol(USART3, DynamixelBus3);
-  USARTx.BindProtocol(USART6, DynamixelBus6);
-  USARTx.BindProtocol(UART4, DynamixelBus4);
-  USARTx.BindProtocol(UART5, Serial);
-  USARTx.BindProtocol(USART1, HL_RTU);
+  hw.usartx.BindProtocol(USART3, hw.dynamixel_bus3);
+  hw.usartx.BindProtocol(USART6, hw.dynamixel_bus6);
+  hw.usartx.BindProtocol(UART4, hw.dynamixel_bus4);
+  hw.usartx.BindProtocol(UART5, hw.serial);
+  hw.usartx.BindProtocol(USART1, hw.hl_rtu);
 	
 	//IWDG_Init();
 	

@@ -23,17 +23,14 @@
 #include "stdint.h"
 #include "dynamixel_master.hpp"
 
-	 
 /*	MAXON FLASH MEMORY Area registers define ----------------------------------------------------------- */
-#define MAXON_BOARD_ID            0x01    /*  Maxon board id	              */  
+#define MAXON_BOARD_ID            0x01    /*  Maxon board id	              */
 #define MAXON_RangeTPM            0x04    /*  Ticks Per Second (TPM) range  */
 
 /*	MAXON SRAM MEMORY Area registers define ------------------------------------------------------------ */
 #define MAXON_TPM                 0x10    /*  Ticks Per Second (TPM)        */
 #define MAXON_TotalTicks          0x14    /*  Total number of ticks         */
 #define MAXON_Enable              0x18    /*  Enable/disable state          */
-
-
 
 /*  Maxon motor controller board, Dynamixel protocol  */
 class MaxonDriver{
@@ -55,9 +52,9 @@ private:
     DynamixelMasterDriver& bus;
 };
 
-extern MaxonDriver Maxon;
+/*  The object lives in HwInstance (hw_instance.hpp); this is a shortcut to it  */
+extern MaxonDriver& Maxon;
 
-
-#endif 
+#endif
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

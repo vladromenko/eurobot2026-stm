@@ -20,9 +20,7 @@
 #ifndef __BUTTONS_ENUM_H
 #define __BUTTONS_ENUM_H
 
-	 
 #include "std_def.hpp"
-
 
 enum buttons_e{
   STARTING_CORD_BTN,
@@ -41,8 +39,6 @@ enum buttons_e{
   BUTTONS_NUMBER
 };
 
-
-
-#endif 
+#endif
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

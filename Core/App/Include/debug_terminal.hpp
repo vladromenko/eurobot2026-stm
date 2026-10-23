@@ -22,6 +22,7 @@
 
 #include "std_def.hpp"
 #include "terminal.hpp"
+#include "serial.hpp"
 
 struct debug_terminal_request_s{
     uint8_t cmd;
@@ -38,9 +39,14 @@ struct debug_terminal_response_s{
 /*  Debug terminal: fixed-size packets over Serial on UART5  */
 class DebugTerminalModule{
 public:
+    constexpr explicit DebugTerminalModule(SerialDriver& serial) : serial(serial) {}
+
     void SendResponse(debug_terminal_response_s* debug_terminal_response);
     /*  Waits up to 100 ms; returns 1 if a full request was received  */
     uint8_t GetRequest(debug_terminal_request_s* debug_terminal_request);
+
+private:
+    SerialDriver& serial;
 };
 
 extern DebugTerminalModule Debug_Terminal;

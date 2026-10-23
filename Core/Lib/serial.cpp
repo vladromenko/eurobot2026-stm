@@ -21,11 +21,10 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "serial.hpp"
-#include "fifo_routine.hpp" 
+#include "fifo_routine.hpp"
 
 #include "FreeRTOS.h"
 #include "task.h"
-
 
 namespace {
 
@@ -57,7 +56,7 @@ void TransmitBytes(USARTx_Line* line, tx_fifo_element_s* tx_fifo_data_unit)
         xTaskResumeAll();
         taskYIELD();
     }
-    
+
     line->tx_fifo.Add(tx_fifo_data_unit);
 
     if(line->is_line_busy==0){
@@ -70,14 +69,11 @@ void TransmitBytes(USARTx_Line* line, tx_fifo_element_s* tx_fifo_data_unit)
 
 }
 
-constinit SerialDriver Serial;
-
-
 void SerialDriver::WriteBytes(uint8_t* bytes, uint8_t bytes_number)
 {
     if(bytes_number>SERIAL_MAX_BYTES_NUMBER)
         return;
-    
+
     tx_fifo_element_s tx_fifo_data_unit;
 
     memcpy(tx_fifo_data_unit.bytes, bytes, bytes_number);
@@ -92,7 +88,7 @@ uint32_t SerialDriver::ReadBytes(uint8_t* bytes, uint32_t timeout_ms)
         is_timeout_expired = 0;
         line->SetRxTimeout(timeout_ms*1000);
     }
-    
+
     while(1)
     {
         if(line->rx_fifo.IsNotEmpty()){
@@ -103,7 +99,6 @@ uint32_t SerialDriver::ReadBytes(uint8_t* bytes, uint32_t timeout_ms)
             memcpy(bytes, rx_fifo_data_unit.bytes, rx_fifo_data_unit.bytes_number);
             return rx_fifo_data_unit.bytes_number;
         }
-
 
         if((timeout_ms && is_timeout_expired)||(timeout_ms==0))
             return 0;
@@ -120,7 +115,7 @@ void SerialDriver::RxTimeoutCallback()
 void SerialDriver::TxCompleteCallback()
 {
     line->StopTx();
-    
+
     if(line->tx_fifo.IsNotEmpty())
         TransmitNextQueueElement(line);
     else
@@ -135,7 +130,7 @@ void SerialDriver::RxCompleteCallback(uint32_t data_length)
         reinterpret_cast<rx_fifo_element_s*>(line->rx_buffer)->bytes_number = data_length;
         line->rx_fifo.Add(line->rx_buffer);
     }
-        
+
     line->StartRx();
 }
 

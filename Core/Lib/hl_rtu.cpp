@@ -21,11 +21,10 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "hl_rtu.hpp"
-#include "fifo_routine.hpp" 
+#include "fifo_routine.hpp"
 
 #include "FreeRTOS.h"
 #include "task.h"
-
 
 namespace {
 
@@ -48,10 +47,10 @@ using rx_fifo_element_s = pdu_s;
 uint8_t Calc_CRC(const pdu_s* pdu)
 {
     uint16_t crc = pdu->pdu_length + pdu->cmd;
-    
+
     for(uint8_t ik=0; ik<(pdu->pdu_length-2); ik++)
         crc += pdu->data_crc[ik];
-    
+
     crc = ~crc;
     crc &= 0xFF;
 
@@ -74,7 +73,7 @@ uint8_t VerifyPacket(const packet_s* packet, uint8_t pdu_length)
 
     if(packet_crc!=calc_crc)
         return 1;
-    
+
     return 0;
 }
 
@@ -101,7 +100,7 @@ void TransmitCmd(USARTx_Line* line, tx_fifo_element_s* tx_fifo_data_unit)
         xTaskResumeAll();
         taskYIELD();
     }
-    
+
     line->tx_fifo.Add(tx_fifo_data_unit);
 
     if(line->is_line_busy==0){
@@ -113,9 +112,6 @@ void TransmitCmd(USARTx_Line* line, tx_fifo_element_s* tx_fifo_data_unit)
 }
 
 }
-
-constinit HL_RTU_Driver HL_RTU;
-
 
 void HL_RTU_Driver::SendResponse(hl_rtu_response_s* response)
 {
@@ -146,7 +142,7 @@ uint8_t HL_RTU_Driver::GetRequest(hl_rtu_request_s* request)
 void HL_RTU_Driver::TxCompleteCallback()
 {
     line->StopTx();
-    
+
     if(line->tx_fifo.IsNotEmpty())
         TransmitNext(line);
     else
@@ -164,7 +160,7 @@ void HL_RTU_Driver::RxCompleteCallback(uint32_t data_length)
         if(line->rx_fifo.IsNotFull())
             line->rx_fifo.Add(&packet->pdu);
     }
-    
+
     memset(line->rx_buffer, 0x55, sizeof(packet_s));
 
     line->StartRx();

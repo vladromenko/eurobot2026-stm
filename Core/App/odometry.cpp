@@ -21,10 +21,11 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "odometry.hpp" 
+#include "hw_instance.hpp"
 #include "bus_device.hpp"
 
 
-constinit OdometryModule Odometry{Maxon, Kinematics};
+constinit OdometryModule Odometry{GetHwInstance().maxon, Kinematics};
 
 
 void OdometryModule::SyncTicksReference()

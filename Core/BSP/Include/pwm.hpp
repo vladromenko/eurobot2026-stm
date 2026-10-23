@@ -50,7 +50,8 @@ public:
   void Disable(pwm_output_e pwm_output);
 };
 
-extern PWM_Driver PWM;
+/*  The object lives in HwInstance (hw_instance.hpp); this is a shortcut to it  */
+extern PWM_Driver& PWM;
 
 #endif 
 

@@ -97,7 +97,8 @@ private:
   USARTx_Line lines[6];
 };
 
-extern USARTx_Driver USARTx;
+/*  The object lives in HwInstance (hw_instance.hpp); this is a shortcut to it  */
+extern USARTx_Driver& USARTx;
 
 #endif
 

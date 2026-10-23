@@ -43,7 +43,8 @@ private:
 };
 
 /*  Debug terminal, bound to UART5 in main()  */
-extern SerialDriver Serial;
+/*  The object lives in HwInstance (hw_instance.hpp); this is a shortcut to it  */
+extern SerialDriver& Serial;
 
 #endif
 

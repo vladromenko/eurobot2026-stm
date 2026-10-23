@@ -23,7 +23,6 @@
 #include "stdint.h"
 #include "dynamixel_master.hpp"
 
-	 
 /*	BMS Board FLASH MEMORY Area registers define ----------------------------------------------------------- */
 #define BMS_BOARD_ID              	              0x01  /*  1 byte  */
 
@@ -73,9 +72,9 @@ private:
     DynamixelMasterDriver& bus;
 };
 
-extern BMS_Driver BMS;
+/*  The object lives in HwInstance (hw_instance.hpp); this is a shortcut to it  */
+extern BMS_Driver& BMS;
 
-
-#endif 
+#endif
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

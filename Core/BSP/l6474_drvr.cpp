@@ -44,7 +44,6 @@ constexpr uint32_t dir_pin[] = {DIR1_PE8,DIR2_PE10,DIR3_PE12,DIR4_PE15};
 
 }
 
-L6474H_Driver L6474H;
 
 
 void L6474H_Driver::SetParam(l6474h_motor_s motor, uint8_t address, uint32_t data, uint8_t length)

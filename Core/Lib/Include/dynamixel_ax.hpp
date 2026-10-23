@@ -23,7 +23,6 @@
 #include "std_def.hpp"
 #include "dynamixel_master.hpp"
 
-	 
 /*	AX EEPROM Area registers define ------------------------------------------------------------- */
 #define AX_ModelNumber           	0     /* Model Number (2 bytes)                         */
 #define AX_FirmwareVersion       	2     /* Firmware Version (1 byte) 	                    */
@@ -39,7 +38,6 @@
 #define AX_StatusReturnLevel     	16    /* Select Types of Status Return (1 byte)         */
 #define AX_AlarmLED          			17    /* LED for Alarm (1 byte)     						        */
 #define AX_Shutdown            		18    /* Shutdown Error Information (1 byte) 		        */
-
 
 /*	AX RAM Area registers define ---------------------------------------------------------------- */
 #define AX_TorqueEnable          	24    /* Motor Torque On/Off (1 byte)    						    */
@@ -60,8 +58,6 @@
 #define AX_Moving            			46    /* Movement Status (1 byte)				                */
 #define AX_Lock            				47    /* Locking EEPROM (1 byte)				                */
 #define AX_Punch            			48    /* Minimum Current Threshold	 (2 bytes)	        */
-
-
 
 /*  AX-12 servo on a Dynamixel line; angle in degrees 0..300  */
 class Dynamixel_AX_Driver{
@@ -86,9 +82,9 @@ private:
     DynamixelMasterDriver& bus;
 };
 
-extern Dynamixel_AX_Driver Dynamixel_AX;
+/*  The object lives in HwInstance (hw_instance.hpp); this is a shortcut to it  */
+extern Dynamixel_AX_Driver& Dynamixel_AX;
 
-
-#endif 
+#endif
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

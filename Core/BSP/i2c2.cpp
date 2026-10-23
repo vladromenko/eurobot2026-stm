@@ -126,7 +126,6 @@ int I2C2_StartAndAddress(uint8_t address_byte)
 
 }
 
-constinit I2C2_Driver I2C2_Bus;
 
 int I2C2_Driver::Write(uint8_t dev_addr_7bit, uint8_t reg,
                        const uint8_t *data, uint16_t size)

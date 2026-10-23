@@ -21,13 +21,27 @@
 | массивы `terminal_cmd_handlers[]` / `debug_terminal_cmd_handlers[]`, глобальные `COMM_ENABLE` / `DEBUG_COMM_ENABLE` | `TerminalCmd.Handle(&request)`, `DebugTerminalCmd.Handle(&request)`; обработчики стали методами, таблица методов лежит во FLASH; флаг связи — поле класса, `TerminalCmd.SetCommEnable(0)` в `game_task` |
 
 - Зависимости модулей App передаются в `constexpr`-конструктор (`Odometry{Maxon, Kinematics}`, `Robot{Maxon}`), объекты `constinit`.
-- `robot_ctrl`, `bus_devices`, `Robot_GPIO_Config()`, `main()` и обработчики прерываний остались как были.
+- `robot_ctrl`, `bus_devices` и `Robot_GPIO_Config()` остались как были.
 - У `debug_terminal.hpp` и `debug_terminal_cmd_handlers.hpp` теперь свои include guard'ы. Раньше они совпадали с `terminal*.hpp`, и `debug_terminal.hpp` фактически не подключался.
 - Удалены неиспользуемые `debug_terminal_cmd_table.hpp`, `PrepareRobot()`, `SpeedTo_TPM_2()` (было только объявление) и `GetWheelBusDevice()`.
 - Обработчики концевиков в `ButtonsCallback` сведены к общему помощнику, инверсия «нажат → `LINEAR_SWITCH_RELEASED`» сохранена.
 - Исправлено: `terminal_task` и `debug_task` читали `handlers[cmd]` до проверки `cmd < TERMINAL_CMD_TABLE_SIZE`, то есть за пределами таблицы при неизвестной команде. Теперь проверка в `Handle()` идёт первой.
 - Исправлено: `Odometry.GetSpeed` при ошибке связи с Maxon считал скорость из неинициализированных значений; теперь для неответившего колеса берётся 0.
-- FLASH (Debug): 62548 → 62792 Б. RAM: 19416 → 19208 Б.
+- FLASH (Debug): 62548 → 62884 Б. RAM: 19416 → 19208 Б.
+
+### HwInstance: вся периферия в одном объекте
+
+- Новая структура `HwInstance` в [hw_instance.hpp](Core/App/Include/hw_instance.hpp) хранит все драйверы BSP и Lib: `stepper`, `l6474h`, `pwm`, `spi_gpo`, `ws2812b`, `usartx`, `usartx_timeout`, `i2c2`, `dynamixel_bus3/4/6`, `serial`, `hl_rtu`, `dynamixel_ax`, `dynamixel_mx`, `maxon`, `bms`, `pca9685`, `rc_servo`, `h_bridge`, `button`.
+- Объект один, статический, создаётся при компиляции (`constinit`), копирование запрещено. Привязка устройств к шинам Dynamixel задаётся в конструкторе `HwInstance`.
+- `GetHwInstance()` возвращает ссылку на него. Функция `constexpr`, поэтому поля можно передавать в конструкторы других `constinit`-объектов:
+
+  ```cpp
+  constinit OdometryModule Odometry{GetHwInstance().maxon, Kinematics};
+  ```
+
+- Так теперь создаются `Odometry`, `Robot`, `Terminal` (получает `hl_rtu`) и `Debug_Terminal` (получает `serial`). `main()` и обработчики прерываний обращаются к драйверам через `GetHwInstance()`.
+- Старые глобальные имена (`Stepper`, `Maxon`, `DynamixelBus3`, …) остались как ссылки на поля `HwInstance` (определены в [hw_instance.cpp](Core/App/hw_instance.cpp)). Существующий код работает без изменений, второй копии драйвера нет.
+- Цена: `hw_instance` (3476 Б) лежит в `.data`, потому что в нём есть ненулевые поля (vtable протоколов, ссылки на шины, настройки PCA9685). Образ объекта хранится во FLASH и копируется в RAM при старте. FLASH (Debug): 62884 → 66784 Б. RAM не изменилась.
 
 ### USART: новый интерфейс протоколов
 
@@ -35,9 +49,9 @@
   - `USARTx_Line` — линия с буферами, FIFO и методами `StartTx`, `StopTx`, `StartRx`, `StopRx`, `SetRxTimeout`, `ResetRxTimeout`;
   - `USARTx_Protocol` — базовый класс протокола с виртуальными `InitLine`, `TxCompleteCallback`, `RxCompleteCallback`, `RxTimeoutCallback`. Протокол хранит свою линию: один объект — одна линия.
 - `DynamixelMaster`, `Serial` и `HL_RTU` наследуются от `USARTx_Protocol`. Вместо общего `DynamixelMaster` теперь по объекту на линию: `DynamixelBus3` (USART3, сервы AX), `DynamixelBus4` (UART4, BMS), `DynamixelBus6` (USART6, Maxon).
-- Привязка в [main.cpp](Core/App/main.cpp): `USARTx.BindProtocol(USART3, DynamixelBus3)`, `USARTx.BindProtocol(UART5, Serial)` и т.д., без `.GetProtocol()`.
+- Привязка в [main.cpp](Core/App/main.cpp): `hw.usartx.BindProtocol(USART3, hw.dynamixel_bus3)`, `hw.usartx.BindProtocol(UART5, hw.serial)` и т.д., где `hw = GetHwInstance()`; без `.GetProtocol()`.
 - FIFO (`fifo_routine`) стал классом `FIFO` с методами `Init`, `Add`, `Remove`, `IsFull` и т.д.
-- Обработчики прерываний вызывают методы: `Stepper.TIM_IRQ_Process()`, `USARTx.IRQ_Process(...)`, `USARTx_Timeout.TIM_IRQ_Process()`, `WS2812B.DMA_IRQ_Process()`.
+- Обработчики прерываний вызывают методы драйверов: `GetHwInstance().stepper.TIM_IRQ_Process()`, `GetHwInstance().usartx.IRQ_Process(...)`, `GetHwInstance().usartx_timeout.TIM_IRQ_Process()`, `GetHwInstance().ws2812b.DMA_IRQ_Process()`.
 
 ### Шина внутри объекта, а не параметром
 

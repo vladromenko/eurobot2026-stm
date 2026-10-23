@@ -22,7 +22,6 @@
 
 #include "std_def.hpp"
 
-
 enum h_bridge_e{
   H_BRIDGE1,
   H_BRIDGE2
@@ -36,9 +35,9 @@ public:
     void Disable(h_bridge_e h_bridge);
 };
 
-extern H_BridgeDriver H_Bridge;
+/*  The object lives in HwInstance (hw_instance.hpp); this is a shortcut to it  */
+extern H_BridgeDriver& H_Bridge;
 
-
-#endif 
+#endif
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

@@ -60,7 +60,6 @@ void TIM_CC_DisableChannel(uint32_t pwm_output)
 
 }
 
-PWM_Driver PWM;
 
 
 

@@ -21,6 +21,7 @@
 #define __TERMINAL_H
 
 #include "std_def.hpp"
+#include "hl_rtu.hpp"
 
 #define TERMINAL_MAX_DATA_LENGTH    32
 
@@ -39,9 +40,14 @@ struct terminal_response_s{
 /*  Main terminal: high level (Raspberry Pi) link over HL_RTU on USART1  */
 class TerminalModule{
 public:
+    constexpr explicit TerminalModule(HL_RTU_Driver& hl_rtu) : hl_rtu(hl_rtu) {}
+
     void SendResponse(terminal_response_s* terminal_response);
     /*  Returns 1 if a request was received  */
     uint8_t GetRequest(terminal_request_s* terminal_request);
+
+private:
+    HL_RTU_Driver& hl_rtu;
 };
 
 extern TerminalModule Terminal;

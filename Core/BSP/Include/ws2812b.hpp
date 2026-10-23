@@ -44,7 +44,8 @@ public:
   void DMA_IRQ_Process();
 };
 
-extern WS2812B_Driver WS2812B;
+/*  The object lives in HwInstance (hw_instance.hpp); this is a shortcut to it  */
+extern WS2812B_Driver& WS2812B;
 
 #endif 
 

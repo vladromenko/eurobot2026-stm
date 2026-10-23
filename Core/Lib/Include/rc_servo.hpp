@@ -22,7 +22,6 @@
 
 #include "std_def.hpp"
 
-
 enum rc_servo_e{
   RC_SERVO_1,
   RC_SERVO_2,
@@ -42,9 +41,9 @@ public:
     void Disable(rc_servo_e servo);
 };
 
-extern RC_ServoDriver RC_Servo;
+/*  The object lives in HwInstance (hw_instance.hpp); this is a shortcut to it  */
+extern RC_ServoDriver& RC_Servo;
 
-
-#endif 
+#endif
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

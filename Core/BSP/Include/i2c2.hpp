@@ -18,6 +18,7 @@ public:
   int Read(uint8_t dev_addr_7bit, uint8_t reg, uint8_t *data, uint16_t size);
 };
 
-extern I2C2_Driver I2C2_Bus;
+/*  The object lives in HwInstance (hw_instance.hpp); this is a shortcut to it  */
+extern I2C2_Driver& I2C2_Bus;
 
 #endif

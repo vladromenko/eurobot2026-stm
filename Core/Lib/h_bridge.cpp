@@ -25,7 +25,6 @@
 #include "stm32f4xx_ll_gpio.h"
 #include "board_gpio_defines.hpp"
 
-
 namespace {
 
 /*  H_BRIDGE1: PWM 1/2, H_BRIDGE2: PWM 3/4  */
@@ -64,9 +63,5 @@ void H_BridgeDriver::Disable(h_bridge_e h_bridge)
   PWM.Disable(H_BRIDGE_P1[h_bridge]);
   PWM.Disable(H_BRIDGE_P2[h_bridge]);
 }
-
-
-
-constinit H_BridgeDriver H_Bridge;
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

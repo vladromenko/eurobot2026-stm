@@ -23,7 +23,6 @@
 #include "button.hpp"
 #include "stm32f4xx_ll_gpio.h"
 
-
 namespace {
 
 constexpr uint32_t PRESSED_TIME_ms = 8;
@@ -33,9 +32,6 @@ constexpr uint32_t HOLD_TIME_ms = 500;
 constexpr uint32_t PRESSED_MASK = 0xFFFFFFFF>>(32-PRESSED_TIME_ms);
 
 }
-
-constinit ButtonDriver Button;
-
 
 button_state_e ButtonDriver::GetState(buttons_e button_id)
 {

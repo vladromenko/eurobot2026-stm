@@ -63,7 +63,8 @@ private:
     Motor motor[MOTORS_NUMBER];
 };
 
-extern StepperDriver Stepper;
+/*  The object lives in HwInstance (hw_instance.hpp); this is a shortcut to it  */
+extern StepperDriver& Stepper;
 
 #endif 
 

@@ -36,8 +36,6 @@ constexpr pwm_group_e pwm_group[] = {PWM_GROUP_1234,PWM_GROUP_1234,PWM_GROUP_123
 
 }
 
-
-
 void RC_ServoDriver::SetServoAngle(rc_servo_e servo, uint32_t pulse_min_us, uint32_t pulse_max_us, uint32_t angle_range, uint32_t angle)
 {
   uint32_t pulse_us = pulse_min_us + (angle*(pulse_max_us-pulse_min_us))/angle_range;
@@ -57,7 +55,5 @@ void RC_ServoDriver::Disable(rc_servo_e servo)
 {
   PWM.Disable((pwm_output_e)servo);
 }
-
-constinit RC_ServoDriver RC_Servo;
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

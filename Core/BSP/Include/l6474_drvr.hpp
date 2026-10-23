@@ -174,7 +174,8 @@ public:
   void HardReset(l6474h_motor_s motor);
 };
 
-extern L6474H_Driver L6474H;
+/*  The object lives in HwInstance (hw_instance.hpp); this is a shortcut to it  */
+extern L6474H_Driver& L6474H;
 
 
 #endif 

@@ -52,7 +52,8 @@ private:
 };
 
 /*  Raspberry Pi link, bound to USART1 in main()  */
-extern HL_RTU_Driver HL_RTU;
+/*  The object lives in HwInstance (hw_instance.hpp); this is a shortcut to it  */
+extern HL_RTU_Driver& HL_RTU;
 
 #endif
 

@@ -36,7 +36,6 @@ TIM_TypeDef* const TIMx = TIM14;
 
 }
 
-constinit USARTx_TimeoutDriver USARTx_Timeout;
 
 
 void USARTx_TimeoutDriver::SetTimeout(uint8_t timeout_channel, uint32_t timeout_us, void (*TimeoutCallback)(void* callback_params), void* callback_params)

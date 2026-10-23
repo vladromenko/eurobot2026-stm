@@ -20,9 +20,7 @@
 #ifndef __BYTE_TO_WORD_H
 #define __BYTE_TO_WORD_H
 
-	 
-#include "string.h" 
-
+#include "string.h"
 
 inline void ByteTo_Word32(uint8_t* byte, void* var)
 {
@@ -44,7 +42,6 @@ inline void Word16_ToByte(void* var, uint8_t* byte)
   memcpy(byte,var,2);
 }
 
-
-#endif 
+#endif
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
