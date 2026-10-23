@@ -20,18 +20,31 @@
 #ifndef __USARTX_TIMEOUT_H
 #define __USARTX_TIMEOUT_H
 
-#ifdef __cplusplus
- extern "C" {
-#endif
-	 
-void SetTimeout(uint8_t timeout_channel, uint32_t timeout_us, void (*TimeoutCallback)(void* callback_params), void* callback_params);
-void ResetTimeout(uint8_t timeout_channel);
-void USARTx_Timeout_IRQ_Process(void);
+#include "std_def.hpp"
 
+/*  Software one-shot timeouts on TIM14, one channel per USART line  */
+class USARTx_TimeoutDriver{
+public:
+  static constexpr uint8_t CHANNELS_NUMBER = 6;
 
-#ifdef __cplusplus
-}
-#endif
+  void SetTimeout(uint8_t timeout_channel, uint32_t timeout_us, void (*TimeoutCallback)(void* callback_params), void* callback_params);
+  void ResetTimeout(uint8_t timeout_channel);
+  void TIM_IRQ_Process();
+
+private:
+  struct Timeout{
+    uint32_t period_counter;
+    void (*TimeoutCallback)(void* callback_params);
+    void* callback_params;
+  };
+
+  void TickChannels();
+
+  Timeout timeout_list[CHANNELS_NUMBER];
+  uint8_t working_flag;
+};
+
+extern USARTx_TimeoutDriver USARTx_Timeout;
 
 #endif 
 

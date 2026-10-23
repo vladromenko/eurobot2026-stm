@@ -20,36 +20,39 @@
 #ifndef __FIFO_ROUTINE_H
 #define __FIFO_ROUTINE_H
 
-#ifdef __cplusplus
- extern "C" {
-#endif
-	 
 #include "std_def.hpp"
 
-struct fifo_s{
-  void* fifo_bot_edge_ptr;
-  void* fifo_top_edge_ptr;
-  void* head_ptr;
-  void* tail_ptr;
+/**
+ * Ring buffer of fixed-size elements over external memory.
+ * The memory is not owned: USART lines hand a part of their DMA buffer to it.
+ * One slot is always kept free, so a FIFO of size N holds N-1 elements.
+ */
+class FIFO{
+public:
+  void Init(void* fifo_ptr, uint32_t fifo_size, uint32_t fifo_element_size);
+
+  /*  Return 0 on success, 1 if the FIFO is full / empty  */
+  uint8_t Add(const void* data_in_ptr);
+  uint8_t Remove(void* data_out_ptr);
+
+  uint32_t GetElementsCount() const { return elements_count; }
+  uint8_t IsFull() const { return (elements_count+1)==fifo_size; }
+  uint8_t IsNotFull() const { return !IsFull(); }
+  uint8_t IsEmpty() const { return elements_count==0; }
+  uint8_t IsNotEmpty() const { return !IsEmpty(); }
+
+private:
+  uint8_t* NextPtr(uint8_t* ptr) const;
+
+  uint8_t* fifo_bot_edge_ptr;
+  uint8_t* fifo_top_edge_ptr;
+  uint8_t* head_ptr;
+  uint8_t* tail_ptr;
   uint32_t fifo_size;
   uint32_t fifo_element_size;
   uint32_t elements_count;
 };
 
-
-void FIFO_StructInit(struct fifo_s* fifo, void* fifo_ptr, uint32_t fifo_size, uint32_t fifo_element_size);
-uint8_t FIFO_Add(struct fifo_s* fifo, void* data_in_ptr);
-uint8_t FIFO_Remove(struct fifo_s* fifo, void* data_out_ptr);
-uint32_t FIFO_GetElementsCount(struct fifo_s* fifo);
-uint8_t FIFO_IsFull(struct fifo_s* fifo);
-uint8_t FIFO_IsNotFull(struct fifo_s* fifo);
-uint8_t FIFO_IsEmpty(struct fifo_s* fifo);
-uint8_t FIFO_IsNotEmpty(struct fifo_s* fifo);
-
-#ifdef __cplusplus
-}
 #endif
-
-#endif 
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

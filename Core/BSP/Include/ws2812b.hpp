@@ -20,10 +20,6 @@
 #ifndef __WS2812B_H
 #define __WS2812B_H
 
-#ifdef __cplusplus
- extern "C" {
-#endif
-	 
 #include "std_def.hpp"
 
 struct rgb_color_s{
@@ -38,18 +34,17 @@ struct hsv_color_s{
   uint8_t v;
 };
 
-struct ws2812b_s{
-  void (*Set_RGB_Color)(struct rgb_color_s* leds, uint8_t leds_number);
-  void (*Set_HSV_Color)(struct hsv_color_s* leds, uint8_t leds_number);
+/*  LED strip on TIM8 CH3 (PC8), fed by DMA2 Stream1  */
+class WS2812B_Driver{
+public:
+  static constexpr uint32_t MAX_LEDS_NUMBER = 60;
+
+  void Set_RGB_Color(const rgb_color_s* leds, uint8_t leds_number);
+  void Set_HSV_Color(const hsv_color_s* leds, uint8_t leds_number);
+  void DMA_IRQ_Process();
 };
 
-extern const struct ws2812b_s WS2812B;
-
-void DMA_WS2812B_IRQ_Process(void);
-
-#ifdef __cplusplus
-}
-#endif
+extern WS2812B_Driver WS2812B;
 
 #endif 
 

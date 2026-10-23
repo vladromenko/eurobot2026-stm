@@ -80,7 +80,7 @@ static void Task(void *arg)
     xGameStartTime = xTaskGetTickCount();
 
     if (gripper_cmd == 0xFF) {
-      //SPI_GPO_SetOutputPin(SPI_POWER_OUTPUT_17 | SPI_POWER_OUTPUT_18);
+      //SPI_GPO.SetOutputPin(SPI_POWER_OUTPUT_17 | SPI_POWER_OUTPUT_18);
       /*gripper_id = 1;
       grips_cmd = 0;
       gripper_cmd = 1;

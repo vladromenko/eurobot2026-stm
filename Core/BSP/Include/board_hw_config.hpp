@@ -20,9 +20,6 @@
 #ifndef __BOARD_HW_CONFIG_H
 #define __BOARD_HW_CONFIG_H
 
-#ifdef __cplusplus
- extern "C" {
-#endif
 
 #include "std_def.hpp"
 
@@ -50,9 +47,6 @@ void TIM8_WS2812B_Init(void);
 void TIM14_USARTx_TimeoutInit(void);
 
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif
 

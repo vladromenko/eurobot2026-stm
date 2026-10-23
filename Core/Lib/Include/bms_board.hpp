@@ -20,10 +20,6 @@
 #ifndef __BMS_BOARD_H
 #define __BMS_BOARD_H
 
-#ifdef __cplusplus
- extern "C" {
-#endif
-
 #include "stdint.h"
 #include "stm32f4xx_ll_usart.h"
 
@@ -57,24 +53,23 @@ struct bms_battery_state_s{
   uint8_t cells_number;
 };
 
-struct bms_board_s{
-    uint8_t (*Ping)(USART_TypeDef* usart, uint8_t board_id);
-    void (*Set_ID)(USART_TypeDef* usart, uint8_t current_id, uint8_t new_id);
-    uint8_t (*GetBatteryState)(USART_TypeDef* usart, uint8_t board_id, struct bms_battery_state_s* battery_state);
-    uint8_t (*GetBatteryCellsVoltage)(USART_TypeDef* usart, uint8_t board_id, uint16_t* cells_voltage_mv);
-    uint8_t (*GetBatteryVoltage)(USART_TypeDef* usart, uint8_t board_id, uint16_t* battery_voltage_mv);
-    uint8_t (*GetBatteryCurrent)(USART_TypeDef* usart, uint8_t board_id, uint16_t* battery_current_ma);
-    uint8_t (*GetPowerConsumption)(USART_TypeDef* usart, uint8_t board_id, uint32_t* power_consumption_mw);
-    uint8_t (*GetBattery_SOC)(USART_TypeDef* usart, uint8_t board_id, uint8_t* battery_soc);
-    uint8_t (*GetBatteryCellsNumber)(USART_TypeDef* usart, uint8_t board_id, uint8_t* cells_number);
-    uint8_t (*SetCalibrationValue)(USART_TypeDef* usart, uint8_t board_id, uint8_t calibration_register_address, uint16_t calibration_value);
+/*  Battery management board, Dynamixel protocol  */
+class BMS_Driver{
+public:
+    uint8_t Ping(USART_TypeDef* usart, uint8_t board_id);
+    void Set_ID(USART_TypeDef* usart, uint8_t current_id, uint8_t new_id);
+    uint8_t GetBatteryState(USART_TypeDef* usart, uint8_t board_id, bms_battery_state_s* battery_state);
+    uint8_t GetBatteryCellsVoltage(USART_TypeDef* usart, uint8_t board_id, uint16_t* cells_voltage_mv);
+    uint8_t GetBatteryVoltage(USART_TypeDef* usart, uint8_t board_id, uint16_t* battery_voltage_mv);
+    uint8_t GetBatteryCurrent(USART_TypeDef* usart, uint8_t board_id, uint16_t* battery_current_ma);
+    uint8_t GetPowerConsumption(USART_TypeDef* usart, uint8_t board_id, uint32_t* power_consumption_mw);
+    uint8_t GetBattery_SOC(USART_TypeDef* usart, uint8_t board_id, uint8_t* battery_soc);
+    uint8_t GetBatteryCellsNumber(USART_TypeDef* usart, uint8_t board_id, uint8_t* cells_number);
+    uint8_t SetCalibrationValue(USART_TypeDef* usart, uint8_t board_id, uint8_t calibration_register_address, uint16_t calibration_value);
 };
 
-extern const struct bms_board_s BMS;
+extern BMS_Driver BMS;
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif 
 

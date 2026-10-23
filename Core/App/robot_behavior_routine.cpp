@@ -77,7 +77,7 @@ void MaxonsStop(void)
 void StopAllActuators(void)
 {
 	MaxonsDisable();
-	SPI_GPO_ResetOutputPin(SPI_GPO_ALL);
+	SPI_GPO.ResetOutputPin(SPI_GPO_ALL);
 	Stepper.StopMotor(STEPPER_MOTOR_1);
 }
 

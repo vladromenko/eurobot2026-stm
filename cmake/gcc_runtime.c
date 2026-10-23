@@ -4,3 +4,8 @@
  */
 void _init(void) {}
 void _fini(void) {}
+
+/* Called if a pure virtual method is ever reached through a vtable.
+ * Defined here so the linker does not pull std::terminate from libsupc++.
+ */
+void __cxa_pure_virtual(void) { while (1) {} }

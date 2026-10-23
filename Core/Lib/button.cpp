@@ -24,32 +24,25 @@
 #include "stm32f4xx_ll_gpio.h"
 
 
+namespace {
 
-#define PRESSED_TIME_ms     8
-#define HOLD_TIME_ms        500
+constexpr uint32_t PRESSED_TIME_ms = 8;
+constexpr uint32_t HOLD_TIME_ms = 500;
 
+/*  Last PRESSED_TIME_ms samples of the debounce shift register  */
+constexpr uint32_t PRESSED_MASK = 0xFFFFFFFF>>(32-PRESSED_TIME_ms);
 
-struct button_params_s{
-    GPIO_TypeDef* gpio;
-    uint32_t pin;
-    enum button_polarity_e polarity;
-    void (*ButtonCallback)(enum buttons_e button_id, enum button_callback_type_s callback_type, enum button_action_e button_action, enum button_state_e button_state);
-    enum button_state_e state;
-    uint32_t is_init_state_changed;
-    uint32_t shift_reg;
-    uint32_t press_counter_ms;
-};
+}
 
-struct button_params_s buttons[BUTTONS_NUMBER];
+constinit ButtonDriver Button;
 
 
-static enum button_state_e GetState(enum buttons_e button_id)
+button_state_e ButtonDriver::GetState(buttons_e button_id)
 {
     return buttons[button_id].state;
 }
 
-static void AddButton(enum buttons_e button_id, GPIO_TypeDef* button_gpio, uint32_t button_pin, enum button_polarity_e button_polarity, 
-                        void (*ButtonCallback)(enum buttons_e button_id, enum button_callback_type_s callback_type, enum button_action_e button_action, enum button_state_e button_state))
+void ButtonDriver::AddButton(buttons_e button_id, GPIO_TypeDef* button_gpio, uint32_t button_pin, button_polarity_e button_polarity, ButtonCallback_t ButtonCallback)
 {
     buttons[button_id].gpio = button_gpio;
     buttons[button_id].pin = button_pin;
@@ -61,89 +54,84 @@ static void AddButton(enum buttons_e button_id, GPIO_TypeDef* button_gpio, uint3
     buttons[button_id].shift_reg = 0x55;
 }
 
-static void PollButtons(void)
+void ButtonDriver::Notify(uint8_t button_id, button_callback_type_s callback_type, button_action_e button_action, button_state_e button_state)
+{
+    if(buttons[button_id].ButtonCallback != nullptr)
+        buttons[button_id].ButtonCallback((buttons_e)button_id, callback_type, button_action, button_state);
+}
+
+void ButtonDriver::PollButtons()
 {
     for(uint8_t ik=0; ik<BUTTONS_NUMBER; ik++)
     {
-        uint32_t pin_state = LL_GPIO_IsInputPinSet(buttons[ik].gpio, buttons[ik].pin)^buttons[ik].polarity;
+        ButtonParams& button = buttons[ik];
+
+        uint32_t pin_state = LL_GPIO_IsInputPinSet(button.gpio, button.pin)^button.polarity;
 
         /*  BUTTON BOUNCING FILTER  */
-        buttons[ik].shift_reg = (buttons[ik].shift_reg<<1)|pin_state;
+        button.shift_reg = (button.shift_reg<<1)|pin_state;
+
+        bool is_stable_released = (button.shift_reg&PRESSED_MASK) == 0;
+        bool is_stable_pressed = (button.shift_reg&PRESSED_MASK) == PRESSED_MASK;
 
         /*  DETERMINE STATE    */
-        switch (buttons[ik].state)
+        switch (button.state)
         {
-            case (uint32_t)BUTTON_STATE_PRESSED:
-                if((buttons[ik].shift_reg&(0xFFFFFFFF>>(32-PRESSED_TIME_ms))) == 0)
+            case BUTTON_STATE_PRESSED:
+                if(is_stable_released)
                 {
-                    buttons[ik].state = BUTTON_STATE_RELEASED;
-                    buttons[ik].is_init_state_changed = 1;
-                    if(buttons[ik].ButtonCallback != NULL)
-                        buttons[ik].ButtonCallback((enum buttons_e)ik, STATE_CHANGED_CALLBACK, BUTTON_NO_ACTION, BUTTON_STATE_RELEASED);
+                    button.state = BUTTON_STATE_RELEASED;
+                    button.is_init_state_changed = 1;
+                    Notify(ik, STATE_CHANGED_CALLBACK, BUTTON_NO_ACTION, BUTTON_STATE_RELEASED);
                 }
                 break;
-            case (uint32_t)BUTTON_STATE_RELEASED:
-                if((buttons[ik].shift_reg&(0xFFFFFFFF>>(32-PRESSED_TIME_ms))) == (uint32_t)(0xFFFFFFFF>>(32-PRESSED_TIME_ms)))
+            case BUTTON_STATE_RELEASED:
+                if(is_stable_pressed)
                 {
-                    buttons[ik].state = BUTTON_STATE_PRESSED;
-                    buttons[ik].is_init_state_changed = 1;
-                    if(buttons[ik].ButtonCallback != NULL)
-                        buttons[ik].ButtonCallback((enum buttons_e)ik, STATE_CHANGED_CALLBACK, BUTTON_NO_ACTION, BUTTON_STATE_PRESSED);
+                    button.state = BUTTON_STATE_PRESSED;
+                    button.is_init_state_changed = 1;
+                    Notify(ik, STATE_CHANGED_CALLBACK, BUTTON_NO_ACTION, BUTTON_STATE_PRESSED);
                 }
                 break;
             default:
-                if((buttons[ik].shift_reg&(0xFFFFFFFF>>(32-PRESSED_TIME_ms))) == 0)
+                if(is_stable_released)
                 {
-                    buttons[ik].state = BUTTON_STATE_RELEASED;
-                    if(buttons[ik].ButtonCallback != NULL)
-                        buttons[ik].ButtonCallback((enum buttons_e)ik, INIT_COMPLETE_CALLBACK, BUTTON_NO_ACTION, BUTTON_STATE_RELEASED);
-                    break;
+                    button.state = BUTTON_STATE_RELEASED;
+                    Notify(ik, INIT_COMPLETE_CALLBACK, BUTTON_NO_ACTION, BUTTON_STATE_RELEASED);
                 }
-                if((buttons[ik].shift_reg&(0xFFFFFFFF>>(32-PRESSED_TIME_ms))) == (uint32_t)(0xFFFFFFFF>>(32-PRESSED_TIME_ms)))
+                else if(is_stable_pressed)
                 {
-                    buttons[ik].state = BUTTON_STATE_PRESSED;
-                    if(buttons[ik].ButtonCallback != NULL)
-                        buttons[ik].ButtonCallback((enum buttons_e)ik, INIT_COMPLETE_CALLBACK, BUTTON_NO_ACTION, BUTTON_STATE_PRESSED);
-                    break;
+                    button.state = BUTTON_STATE_PRESSED;
+                    Notify(ik, INIT_COMPLETE_CALLBACK, BUTTON_NO_ACTION, BUTTON_STATE_PRESSED);
                 }
                 break;
         }
 
         /*  Prevent action detection on buttons init state  */
-        if(buttons[ik].is_init_state_changed==0)
+        if(button.is_init_state_changed==0)
             continue;
 
         /*  ACTION DETECTION    */
-        switch(buttons[ik].state)
+        switch(button.state)
         {
             case BUTTON_STATE_PRESSED:
-                if(buttons[ik].press_counter_ms==HOLD_TIME_ms)
-                {
-                    if(buttons[ik].ButtonCallback != NULL)
-                        buttons[ik].ButtonCallback((enum buttons_e)ik, ACTION_CALLBACK, BUTTON_ACTION_HOLD, BUTTON_STATE_PRESSED);
-                }
-                if(buttons[ik].press_counter_ms<=HOLD_TIME_ms)
-                    buttons[ik].press_counter_ms++;
+                if(button.press_counter_ms==HOLD_TIME_ms)
+                    Notify(ik, ACTION_CALLBACK, BUTTON_ACTION_HOLD, BUTTON_STATE_PRESSED);
+                if(button.press_counter_ms<=HOLD_TIME_ms)
+                    button.press_counter_ms++;
                 break;
 
             case BUTTON_STATE_RELEASED:
-                if((buttons[ik].press_counter_ms)&&(buttons[ik].press_counter_ms<=HOLD_TIME_ms))
-                {
-                    if(buttons[ik].ButtonCallback != NULL)
-                        buttons[ik].ButtonCallback((enum buttons_e)ik, ACTION_CALLBACK, BUTTON_ACTION_CLICK, BUTTON_STATE_RELEASED);
-                }
-                buttons[ik].press_counter_ms = 0;
+                if((button.press_counter_ms)&&(button.press_counter_ms<=HOLD_TIME_ms))
+                    Notify(ik, ACTION_CALLBACK, BUTTON_ACTION_CLICK, BUTTON_STATE_RELEASED);
+                button.press_counter_ms = 0;
                 break;
 
             default:
-                buttons[ik].press_counter_ms = 0;
+                button.press_counter_ms = 0;
                 break;
         }
     }
 }
-
-struct button_s Button = {.AddButton = AddButton,
-                            .GetState = GetState,
-                            .PollButtons = PollButtons};
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

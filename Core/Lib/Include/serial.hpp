@@ -20,28 +20,30 @@
 #ifndef __SERIAL_H
 #define __SERIAL_H
 
-#ifdef __cplusplus
- extern "C" {
-#endif
-	 
 #include "std_def.hpp"
 #include "stm32f4xx_ll_usart.h"
 #include "usartx_communication.hpp"
 
 #define SERIAL_MAX_BYTES_NUMBER    64
 
-struct serial_s{
-    void (*WriteBytes)(USART_TypeDef* usart, uint8_t* bytes, uint8_t bytes_number);
-    uint32_t (*ReadBytes)(USART_TypeDef* usart, uint8_t* bytes, uint32_t timeout_ms);
-    struct usartx_protocol_s* (*GetProtocol)(void);
+/*  Raw full-duplex byte stream; every IDLE-terminated chunk is one rx FIFO element  */
+class SerialDriver : public USARTx_Protocol{
+public:
+    void WriteBytes(USART_TypeDef* usart, uint8_t* bytes, uint8_t bytes_number);
+    /*  timeout_ms == 0: do not wait. Returns the number of bytes read  */
+    uint32_t ReadBytes(USART_TypeDef* usart, uint8_t* bytes, uint32_t timeout_ms);
+
+private:
+    void InitLine(USARTx_Line* line) override;
+    void TxCompleteCallback(USARTx_Line* line) override;
+    void RxCompleteCallback(USARTx_Line* line, uint32_t data_length) override;
+    void RxTimeoutCallback(USARTx_Line* line) override;
+
+    volatile uint8_t is_timeout_expired = 0;
 };
 
-extern const struct serial_s Serial;
+extern SerialDriver Serial;
 
-#ifdef __cplusplus
-}
 #endif
-
-#endif 
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

@@ -30,48 +30,33 @@
 #include "task.h"
 
 
-uint32_t SPI_GPO_REG = 0x0;
+constinit SPI_GPO_Driver SPI_GPO;
 
-void SPI_GPO_SetOutputPin(uint32_t SPI_GPO_PIN)
+void SPI_GPO_Driver::SetOutputPin(uint32_t spi_gpo_pin)
 {
-	uint8_t temp;
-	
-	SPI_GPO_REG |= SPI_GPO_PIN;
-
-	vTaskSuspendAll();
-	
-	LL_GPIO_ResetOutputPin(GPIOA, STCP_PA4);
-	
-	LL_SPI_TransmitData8(SPI1, SPI_GPO_REG&0xFF);
-	temp = (SPI_GPO_REG>>8)&0xFF;
-	while(LL_SPI_IsActiveFlag_TXE(SPI1)==0);
-	LL_SPI_TransmitData8(SPI1, temp);
-	temp = (SPI_GPO_REG>>16)&0xFF;
-	while(LL_SPI_IsActiveFlag_TXE(SPI1)==0);
-	LL_SPI_TransmitData8(SPI1, temp);
-	while(LL_SPI_IsActiveFlag_TXE(SPI1)==0);
-	while(LL_SPI_IsActiveFlag_BSY(SPI1)!=0);
-	
-	LL_GPIO_SetOutputPin(GPIOA, STCP_PA4);
-
-	xTaskResumeAll();
+	spi_gpo_reg |= spi_gpo_pin;
+	Update();
 }
 
-void SPI_GPO_ResetOutputPin(uint32_t SPI_GPO_PIN)
+void SPI_GPO_Driver::ResetOutputPin(uint32_t spi_gpo_pin)
+{
+	spi_gpo_reg &= ~spi_gpo_pin;
+	Update();
+}
+
+void SPI_GPO_Driver::Update()
 {
 	uint8_t temp;
-	
-	SPI_GPO_REG &= ~SPI_GPO_PIN;
 
 	vTaskSuspendAll();
 	
 	LL_GPIO_ResetOutputPin(GPIOA, STCP_PA4);
 	
-	LL_SPI_TransmitData8(SPI1, SPI_GPO_REG&0xFF);
-	temp = (SPI_GPO_REG>>8)&0xFF;
+	LL_SPI_TransmitData8(SPI1, spi_gpo_reg&0xFF);
+	temp = (spi_gpo_reg>>8)&0xFF;
 	while(LL_SPI_IsActiveFlag_TXE(SPI1)==0);
 	LL_SPI_TransmitData8(SPI1, temp);
-	temp = (SPI_GPO_REG>>16)&0xFF;
+	temp = (spi_gpo_reg>>16)&0xFF;
 	while(LL_SPI_IsActiveFlag_TXE(SPI1)==0);
 	LL_SPI_TransmitData8(SPI1, temp);
 	while(LL_SPI_IsActiveFlag_TXE(SPI1)==0);

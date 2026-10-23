@@ -20,9 +20,6 @@
 #ifndef __BUTTONS_ENUM_H
 #define __BUTTONS_ENUM_H
 
-#ifdef __cplusplus
- extern "C" {
-#endif
 	 
 #include "std_def.hpp"
 
@@ -45,9 +42,6 @@ enum buttons_e{
 };
 
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif 
 

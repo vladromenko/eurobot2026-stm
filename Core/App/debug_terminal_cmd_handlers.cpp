@@ -221,16 +221,16 @@ static void DebugTogglePump(uint8_t* data, uint8_t data_length)
   switch (pump_state)
     {
       case 0: //open grab plank 1
-				SPI_GPO_ResetOutputPin(SPI_POWER_OUTPUT_1);
+				SPI_GPO.ResetOutputPin(SPI_POWER_OUTPUT_1);
         break;
       case 1: //close grab plank 1
-				SPI_GPO_SetOutputPin(SPI_POWER_OUTPUT_1);
+				SPI_GPO.SetOutputPin(SPI_POWER_OUTPUT_1);
 				break;
 			case 2:
-				SPI_GPO_ResetOutputPin(SPI_POWER_OUTPUT_2);
+				SPI_GPO.ResetOutputPin(SPI_POWER_OUTPUT_2);
 				break;
 			case 3:
-				SPI_GPO_SetOutputPin(SPI_POWER_OUTPUT_2);
+				SPI_GPO.SetOutputPin(SPI_POWER_OUTPUT_2);
 				break;
 			default:
 				break;

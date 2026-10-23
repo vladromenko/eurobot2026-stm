@@ -20,17 +20,11 @@
 #ifndef __HL_RTU_H
 #define __HL_RTU_H
 
-#ifdef __cplusplus
- extern "C" {
-#endif
-	 
 #include "std_def.hpp"
 #include "stm32f4xx_ll_usart.h"
 #include "usartx_communication.hpp"
 
-
 #define HL_RTU_MAX_DATA_LENGTH     32
-
 
 struct hl_rtu_request_s{
     uint8_t cmd;
@@ -44,18 +38,21 @@ struct hl_rtu_response_s{
     uint8_t data[HL_RTU_MAX_DATA_LENGTH];
 };
 
-struct hl_rtu_s{
-    void (*SendResponse)(USART_TypeDef*, struct hl_rtu_response_s*);
-    uint8_t (*GetRequest)(USART_TypeDef*, struct hl_rtu_request_s*);
-    struct usartx_protocol_s* (*GetProtocol)(void);
+/*  Request/response protocol of the high level (Raspberry Pi) link: 0xFF 0xFF | length | cmd | data | crc  */
+class HL_RTU_Driver : public USARTx_Protocol{
+public:
+    void SendResponse(USART_TypeDef* usart, hl_rtu_response_s* response);
+    /*  Returns 1 if a request was taken from the queue  */
+    uint8_t GetRequest(USART_TypeDef* usart, hl_rtu_request_s* request);
+
+private:
+    void InitLine(USARTx_Line* line) override;
+    void TxCompleteCallback(USARTx_Line* line) override;
+    void RxCompleteCallback(USARTx_Line* line, uint32_t data_length) override;
 };
 
-extern const struct hl_rtu_s HL_RTU;
+extern HL_RTU_Driver HL_RTU;
 
-#ifdef __cplusplus
-}
 #endif
-
-#endif 
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

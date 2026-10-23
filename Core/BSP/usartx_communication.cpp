@@ -107,22 +107,125 @@
 
 #endif
 
-struct usartx_line_s{
-  struct usartx_line_resources_s resources;
-  struct usartx_line_config_s config;
-  USART_TypeDef* usart;
-  DMA_TypeDef* tx_dma;
-  DMA_TypeDef* rx_dma;
-  uint32_t tx_dma_stream;
-	uint32_t rx_dma_stream;
-  GPIO_TypeDef* de_gpio;
-	uint32_t de_pin;
-  uint8_t timeout_channel;
-};
+constinit USARTx_Driver USARTx;
 
-static struct usartx_line_s lines[6];
 
-static struct usartx_line_s* GetLine(USART_TypeDef* usart)
+namespace {
+
+void (* const LL_DMA_ClearFlag_TCx[8])(DMA_TypeDef* dma) = {LL_DMA_ClearFlag_TC0,
+                                                            LL_DMA_ClearFlag_TC1,
+                                                            LL_DMA_ClearFlag_TC2,
+                                                            LL_DMA_ClearFlag_TC3,
+                                                            LL_DMA_ClearFlag_TC4,
+                                                            LL_DMA_ClearFlag_TC5,
+                                                            LL_DMA_ClearFlag_TC6,
+                                                            LL_DMA_ClearFlag_TC7};
+
+inline void LL_DMA_ClearFlag_TC(DMA_TypeDef* dma, uint32_t dma_stream)
+{
+  LL_DMA_ClearFlag_TCx[dma_stream](dma);
+}
+
+inline void StartDMA(DMA_TypeDef* dma, uint32_t dma_stream, uint8_t* data, uint32_t length)
+{
+  LL_DMA_ClearFlag_TC(dma, dma_stream);
+  LL_DMA_SetMemoryAddress(dma, dma_stream, (uint32_t)data);
+	LL_DMA_SetDataLength(dma, dma_stream, length);
+  LL_DMA_EnableStream(dma, dma_stream);
+}
+
+inline void StopDMA(DMA_TypeDef* dma, uint32_t dma_stream)
+{
+  LL_DMA_DisableStream(dma, dma_stream);
+  LL_DMA_ClearFlag_TC(dma, dma_stream);
+}
+
+}
+
+
+void USARTx_Line::StartTx(uint32_t data_length)
+{
+  /**  __disable_irq() is necessary because of connection issues
+    * if some inetrrupt occurs between the LL_USART_EnableDirectionTx()
+    * and something other before __enable_irq(). Did not figure out
+    * what exectly it is, do not have time now. Maybe will do it later.
+    * Anywhere it works fine now. I did the same for other functions here.
+  */
+  __disable_irq();
+  if(is_line_half_duplex)
+    LL_GPIO_SetOutputPin(de_gpio, de_pin);
+
+  LL_USART_EnableDirectionTx(usart);
+
+  LL_USART_ClearFlag_TC(usart);
+  StartDMA(tx_dma, tx_dma_stream, tx_buffer, data_length);
+  /** 
+    *  You have to wait until dma feeds data to the TX buffer
+    *  otherwise TC flag may rise immedietely after EnableIT_TC
+    */
+  while(LL_USART_IsActiveFlag_TXE(usart));
+  LL_USART_EnableIT_TC(usart);
+  __enable_irq();
+}
+
+void USARTx_Line::StopTx()
+{
+  __disable_irq();
+  LL_USART_DisableDirectionTx(usart);
+
+  if(is_line_half_duplex)
+    LL_GPIO_ResetOutputPin(de_gpio, de_pin);
+
+  StopDMA(tx_dma, tx_dma_stream);
+  LL_USART_DisableIT_TC(usart);
+  __enable_irq();
+}
+
+void USARTx_Line::StartRx()
+{
+  __disable_irq();
+  if(is_line_half_duplex)
+    LL_GPIO_ResetOutputPin(de_gpio, de_pin);
+  
+  LL_USART_EnableDirectionRx(usart);
+
+  LL_USART_ClearFlag_ORE(usart);
+  LL_USART_ClearFlag_RXNE(usart);
+  LL_USART_ClearFlag_IDLE(usart);
+  
+  StartDMA(rx_dma, rx_dma_stream, rx_buffer, rx_buffer_size);
+  LL_USART_EnableIT_IDLE(usart);
+  __enable_irq();
+}
+
+void USARTx_Line::StopRx()
+{
+  __disable_irq();
+  LL_USART_DisableDirectionRx(usart);
+
+  StopDMA(rx_dma, rx_dma_stream);
+  LL_USART_DisableIT_IDLE(usart);
+  __enable_irq();
+}
+
+void USARTx_Line::SetRxTimeout(uint32_t timeout_us)
+{
+  USARTx_Timeout.SetTimeout(timeout_channel, timeout_us, RxTimeoutHandler, this);
+}
+
+void USARTx_Line::ResetRxTimeout()
+{
+  USARTx_Timeout.ResetTimeout(timeout_channel);
+}
+
+void USARTx_Line::RxTimeoutHandler(void* line)
+{
+  USARTx_Line* self = static_cast<USARTx_Line*>(line);
+  self->protocol->RxTimeoutCallback(self);
+}
+
+
+USARTx_Line* USARTx_Driver::GetLine(USART_TypeDef* usart)
 {
   switch((uint32_t)usart)
 	{
@@ -132,141 +235,13 @@ static struct usartx_line_s* GetLine(USART_TypeDef* usart)
 		case UART4_BASE: return &lines[3];
 		case UART5_BASE: return &lines[4];
 		case USART6_BASE: return &lines[5];
-    default: return NULL;
+    default: return nullptr;
 	}
 }
 
-static struct usartx_line_resources_s* GetLineResources(USART_TypeDef* usart)
+void USARTx_Driver::IRQ_Process(USART_TypeDef* usart)
 {
-  return &GetLine(usart)->resources;
-}
-
-static void (*LL_DMA_ClearFlag_TCx[8])(DMA_TypeDef* dma) = {LL_DMA_ClearFlag_TC0,
-                                                            LL_DMA_ClearFlag_TC1,
-                                                            LL_DMA_ClearFlag_TC2,
-                                                            LL_DMA_ClearFlag_TC3,
-                                                            LL_DMA_ClearFlag_TC4,
-                                                            LL_DMA_ClearFlag_TC5,
-                                                            LL_DMA_ClearFlag_TC6,
-                                                            LL_DMA_ClearFlag_TC7};
-
-static inline void LL_DMA_ClearFlag_TC(DMA_TypeDef* dma, uint32_t dma_stream)
-{
-  LL_DMA_ClearFlag_TCx[dma_stream](dma);
-}
-
-static inline void StartDMA(DMA_TypeDef* dma, uint32_t dma_stream, uint8_t* data, uint32_t length)
-{
-  LL_DMA_ClearFlag_TC(dma, dma_stream);
-  LL_DMA_SetMemoryAddress(dma, dma_stream, (uint32_t)data);
-	LL_DMA_SetDataLength(dma, dma_stream, length);
-  LL_DMA_EnableStream(dma, dma_stream);
-}
-
-static inline void StopDMA(DMA_TypeDef* dma, uint32_t dma_stream)
-{
-  LL_DMA_DisableStream(dma, dma_stream);
-  LL_DMA_ClearFlag_TC(dma, dma_stream);
-}
-
-static void StartTx(struct usartx_line_resources_s* line_resources, uint32_t data_length)
-{
-  struct usartx_line_s* line = (struct usartx_line_s*)line_resources;
-  
-  /**  __disable_irq() is necessary because of connection issues
-    * if some inetrrupt occurs between the LL_USART_EnableDirectionTx()
-    * and something other before __enable_irq(). Did not figure out
-    * what exectly it is, do not have time now. Maybe will do it later.
-    * Anywhere it works fine now. I did the same for other functions here.
-  */
-  __disable_irq();
-  if(line->config.is_line_half_duplex)
-    LL_GPIO_SetOutputPin(line->de_gpio, line->de_pin);
-
-  LL_USART_EnableDirectionTx(line->usart);
-
-  LL_USART_ClearFlag_TC(line->usart);
-  StartDMA(line->tx_dma, line->tx_dma_stream, line->resources.tx_buffer, data_length);
-  /** 
-    *  You have to wait until dma feeds data to the TX buffer
-    *  otherwise TC flag may rise immedietely after EnableIT_TC
-    */
-  while(LL_USART_IsActiveFlag_TXE(line->usart));
-  LL_USART_EnableIT_TC(line->usart);
-  __enable_irq();
-}
-
-static void StopTx(struct usartx_line_resources_s* line_resources)
-{
-  struct usartx_line_s* line = (struct usartx_line_s*)line_resources;
-
-  __disable_irq();
-  LL_USART_DisableDirectionTx(line->usart);
-
-  if(line->config.is_line_half_duplex)
-    LL_GPIO_ResetOutputPin(line->de_gpio, line->de_pin);
-
-  StopDMA(line->tx_dma, line->tx_dma_stream);
-  LL_USART_DisableIT_TC(line->usart);
-  __enable_irq();
-}
-
-static void StartRx(struct usartx_line_resources_s* line_resources)
-{
-  struct usartx_line_s* line = (struct usartx_line_s*)line_resources;
-
-  __disable_irq();
-  if(line->config.is_line_half_duplex)
-    LL_GPIO_ResetOutputPin(line->de_gpio, line->de_pin);
-  
-  LL_USART_EnableDirectionRx(line->usart);
-
-  LL_USART_ClearFlag_ORE(line->usart);
-  LL_USART_ClearFlag_RXNE(line->usart);
-  LL_USART_ClearFlag_IDLE(line->usart);
-  
-  StartDMA(line->rx_dma, line->rx_dma_stream, line->resources.rx_buffer, line->resources.rx_buffer_size);
-  LL_USART_EnableIT_IDLE(line->usart);
-  __enable_irq();
-}
-
-static void StopRx(struct usartx_line_resources_s* line_resources)
-{
-  struct usartx_line_s* line = (struct usartx_line_s*)line_resources;
-  
-  __disable_irq();
-  LL_USART_DisableDirectionRx(line->usart);
-
-  StopDMA(line->rx_dma, line->rx_dma_stream);
-  LL_USART_DisableIT_IDLE(line->usart);
-  __enable_irq();
-}
-
-static void SetRxTimeout(struct usartx_line_resources_s* line_resources, uint32_t timeout_us)
-{
-  struct usartx_line_s* line = (struct usartx_line_s*)line_resources;
-
-  SetTimeout(line->timeout_channel, timeout_us, (void (*)(void*))line->config.RxTimeoutCallback, line_resources);
-}
-
-static void ResetRxTimeout(struct usartx_line_resources_s* line_resources)
-{
-  struct usartx_line_s* line = (struct usartx_line_s*)line_resources;
-
-  ResetTimeout(line->timeout_channel);
-}
-
-static struct usartx_control_s usartx_control = {.GetLineResources = GetLineResources,
-                                                  .StartTx = StartTx,
-                                                  .StopTx = StopTx,
-                                                  .StartRx = StartRx,
-                                                  .StopRx = StopRx,
-                                                  .SetRxTimeout = SetRxTimeout,
-                                                  .ResetRxTimeout = ResetRxTimeout};
-
-void USARTx_IRQ_Process(USART_TypeDef* usart)
-{
-  struct usartx_line_s* line = GetLine(usart);
+  USARTx_Line* line = GetLine(usart);
 
   /*	LL_USART_IsActiveFlag_TC	*/
 	if(LL_USART_IsActiveFlag_TC(usart))
@@ -274,7 +249,7 @@ void USARTx_IRQ_Process(USART_TypeDef* usart)
 		LL_USART_ClearFlag_TC(usart);
 
 		if(LL_USART_IsEnabledIT_TC(usart)){
-      line->config.TxCompleteCallback(&line->resources);
+      line->protocol->TxCompleteCallback(line);
     }
 	}
 
@@ -284,21 +259,16 @@ void USARTx_IRQ_Process(USART_TypeDef* usart)
 		LL_USART_ClearFlag_IDLE(usart);
 
 		if(LL_USART_IsEnabledIT_IDLE(usart)){
-      uint32_t data_length = line->resources.rx_buffer_size - LL_DMA_GetDataLength(line->rx_dma, line->rx_dma_stream);
-      line->config.RxCompleteCallback(&line->resources, data_length);
+      uint32_t data_length = line->rx_buffer_size - LL_DMA_GetDataLength(line->rx_dma, line->rx_dma_stream);
+      line->protocol->RxCompleteCallback(line, data_length);
 		}
 	}
 }
 
-static void BindProtocol(USART_TypeDef* usart, struct usartx_protocol_s* protocol)
+void USARTx_Driver::BindProtocol(USART_TypeDef* usart, USARTx_Protocol& protocol)
 {
-  struct usartx_line_s* line = GetLine(usart);
-  struct usartx_line_init_params_s line_init_params;
+  USARTx_Line* line = GetLine(usart);
 
-  line_init_params.line_resources = &line->resources;
-  line_init_params.line_config = &line->config;
-  line_init_params.usartx_control = &usartx_control;
-  
   switch ((uint32_t)usart)
   {
     #if defined (USART1_USED)
@@ -308,10 +278,10 @@ static void BindProtocol(USART_TypeDef* usart, struct usartx_protocol_s* protoco
         line->tx_dma_stream = LL_DMA_STREAM_7;
         line->rx_dma = DMA2;
         line->rx_dma_stream = LL_DMA_STREAM_5;
-        line->resources.tx_buffer_size = USART1_TX_BUFFER_SIZE;
-        line->resources.rx_buffer_size = USART1_RX_BUFFER_SIZE;
-        line->resources.tx_buffer = usart1_tx_buffer;
-        line->resources.rx_buffer = usart1_rx_buffer;
+        line->tx_buffer_size = USART1_TX_BUFFER_SIZE;
+        line->rx_buffer_size = USART1_RX_BUFFER_SIZE;
+        line->tx_buffer = usart1_tx_buffer;
+        line->rx_buffer = usart1_rx_buffer;
         line->timeout_channel = 0;
       break;
     #endif
@@ -327,10 +297,10 @@ static void BindProtocol(USART_TypeDef* usart, struct usartx_protocol_s* protoco
         line->tx_dma_stream = LL_DMA_STREAM_3;
         line->rx_dma = DMA1;
         line->rx_dma_stream = LL_DMA_STREAM_1;
-        line->resources.tx_buffer_size = USART3_TX_BUFFER_SIZE;
-        line->resources.rx_buffer_size = USART3_RX_BUFFER_SIZE;
-        line->resources.tx_buffer = usart3_tx_buffer;
-        line->resources.rx_buffer = usart3_rx_buffer;
+        line->tx_buffer_size = USART3_TX_BUFFER_SIZE;
+        line->rx_buffer_size = USART3_RX_BUFFER_SIZE;
+        line->tx_buffer = usart3_tx_buffer;
+        line->rx_buffer = usart3_rx_buffer;
         line->timeout_channel = 2;
         line->de_gpio = GPIOD;
         line->de_pin = UART3DE_PD9;
@@ -344,10 +314,10 @@ static void BindProtocol(USART_TypeDef* usart, struct usartx_protocol_s* protoco
         line->tx_dma_stream = LL_DMA_STREAM_4;
         line->rx_dma = DMA1;
         line->rx_dma_stream = LL_DMA_STREAM_2;
-        line->resources.tx_buffer_size = UART4_TX_BUFFER_SIZE;
-        line->resources.rx_buffer_size = UART4_RX_BUFFER_SIZE;
-        line->resources.tx_buffer = uart4_tx_buffer;
-        line->resources.rx_buffer = uart4_rx_buffer;
+        line->tx_buffer_size = UART4_TX_BUFFER_SIZE;
+        line->rx_buffer_size = UART4_RX_BUFFER_SIZE;
+        line->tx_buffer = uart4_tx_buffer;
+        line->rx_buffer = uart4_rx_buffer;
         line->timeout_channel = 3;
         line->de_gpio = GPIOA;
         line->de_pin = UART4DE_PA15;
@@ -361,10 +331,10 @@ static void BindProtocol(USART_TypeDef* usart, struct usartx_protocol_s* protoco
         line->tx_dma_stream = LL_DMA_STREAM_7;
         line->rx_dma = DMA1;
         line->rx_dma_stream = LL_DMA_STREAM_0;
-        line->resources.tx_buffer_size = UART5_TX_BUFFER_SIZE;
-        line->resources.rx_buffer_size = UART5_RX_BUFFER_SIZE;
-        line->resources.tx_buffer = uart5_tx_buffer;
-        line->resources.rx_buffer = uart5_rx_buffer;
+        line->tx_buffer_size = UART5_TX_BUFFER_SIZE;
+        line->rx_buffer_size = UART5_RX_BUFFER_SIZE;
+        line->tx_buffer = uart5_tx_buffer;
+        line->rx_buffer = uart5_rx_buffer;
         line->timeout_channel = 4;
         break;
     #endif
@@ -376,10 +346,10 @@ static void BindProtocol(USART_TypeDef* usart, struct usartx_protocol_s* protoco
         line->tx_dma_stream = LL_DMA_STREAM_6;
         line->rx_dma = DMA2;
         line->rx_dma_stream = LL_DMA_STREAM_2;
-        line->resources.tx_buffer_size = USART6_TX_BUFFER_SIZE;
-        line->resources.rx_buffer_size = USART6_RX_BUFFER_SIZE;
-        line->resources.tx_buffer = usart6_tx_buffer;
-        line->resources.rx_buffer = usart6_rx_buffer;
+        line->tx_buffer_size = USART6_TX_BUFFER_SIZE;
+        line->rx_buffer_size = USART6_RX_BUFFER_SIZE;
+        line->tx_buffer = usart6_tx_buffer;
+        line->rx_buffer = usart6_rx_buffer;
         line->timeout_channel = 5;
         line->de_gpio = GPIOC;
         line->de_pin = UART6DE_PC7;
@@ -391,9 +361,8 @@ static void BindProtocol(USART_TypeDef* usart, struct usartx_protocol_s* protoco
       break;
   }
 
-  protocol->InitLine(&line_init_params);
+  line->protocol = &protocol;
+  protocol.InitLine(line);
 }
-
-const struct usartx_s USARTx = {.BindProtocol = BindProtocol};
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

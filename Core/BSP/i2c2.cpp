@@ -7,11 +7,13 @@
   */
 /* USER CODE END Header */
 
-#include "pca9685.hpp"
+#include "i2c2.hpp"
 #include "stm32f4xx_ll_i2c.h"
 
-#define PCA9685_I2C_TIMEOUT_MS       20U
-#define PCA9685_I2C_MAX_POLL_COUNT   5000000U
+namespace {
+
+constexpr uint32_t PCA9685_I2C_TIMEOUT_MS = 20U;
+constexpr uint32_t PCA9685_I2C_MAX_POLL_COUNT = 5000000U;
 
 enum
 {
@@ -24,14 +26,14 @@ enum
   PCA9685_I2C_ERROR_OVERRUN = -6
 };
 
-static uint32_t I2C2_TimeoutStart(void)
+uint32_t I2C2_TimeoutStart(void)
 {
   CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
   DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
   return DWT->CYCCNT;
 }
 
-static int I2C2_CheckError(void)
+int I2C2_CheckError(void)
 {
   if (LL_I2C_IsActiveFlag_AF(I2C2))
   {
@@ -56,7 +58,7 @@ static int I2C2_CheckError(void)
   return PCA9685_I2C_OK;
 }
 
-static int I2C2_WaitSR1Set(uint32_t flag)
+int I2C2_WaitSR1Set(uint32_t flag)
 {
   const uint32_t start = I2C2_TimeoutStart();
   const uint32_t timeout_cycles = SystemCoreClock / (1000U / PCA9685_I2C_TIMEOUT_MS);
@@ -78,7 +80,7 @@ static int I2C2_WaitSR1Set(uint32_t flag)
   return PCA9685_I2C_OK;
 }
 
-static int I2C2_WaitBusFree(void)
+int I2C2_WaitBusFree(void)
 {
   const uint32_t start = I2C2_TimeoutStart();
   const uint32_t timeout_cycles = SystemCoreClock / (1000U / PCA9685_I2C_TIMEOUT_MS);
@@ -100,7 +102,7 @@ static int I2C2_WaitBusFree(void)
   return PCA9685_I2C_OK;
 }
 
-static void I2C2_FinishTransaction(void)
+void I2C2_FinishTransaction(void)
 {
   if (LL_I2C_IsActiveFlag_MSL(I2C2))
   {
@@ -110,7 +112,7 @@ static void I2C2_FinishTransaction(void)
   LL_I2C_DisableBitPOS(I2C2);
 }
 
-static int I2C2_StartAndAddress(uint8_t address_byte)
+int I2C2_StartAndAddress(uint8_t address_byte)
 {
   int status;
 
@@ -122,12 +124,16 @@ static int I2C2_StartAndAddress(uint8_t address_byte)
   return I2C2_WaitSR1Set(I2C_SR1_ADDR);
 }
 
-int PCA9685_I2C_Write(uint8_t dev_addr_7bit, uint8_t reg,
-                      const uint8_t *data, uint16_t size)
+}
+
+constinit I2C2_Driver I2C2_Bus;
+
+int I2C2_Driver::Write(uint8_t dev_addr_7bit, uint8_t reg,
+                       const uint8_t *data, uint16_t size)
 {
   int status;
 
-  if (((data == 0) && (size != 0U)) || (dev_addr_7bit > 0x7FU))
+  if (((data == nullptr) && (size != 0U)) || (dev_addr_7bit > 0x7FU))
   {
     return PCA9685_I2C_ERROR_PARAM;
   }
@@ -161,12 +167,12 @@ fail:
   return status;
 }
 
-int PCA9685_I2C_Read(uint8_t dev_addr_7bit, uint8_t reg,
-                     uint8_t *data, uint16_t size)
+int I2C2_Driver::Read(uint8_t dev_addr_7bit, uint8_t reg,
+                      uint8_t *data, uint16_t size)
 {
   int status;
 
-  if ((data == 0) || (size == 0U) || (dev_addr_7bit > 0x7FU))
+  if ((data == nullptr) || (size == 0U) || (dev_addr_7bit > 0x7FU))
   {
     return PCA9685_I2C_ERROR_PARAM;
   }

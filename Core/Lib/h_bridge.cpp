@@ -26,17 +26,15 @@
 #include "board_gpio_defines.hpp"
 
 
-#define H_BRIDGE1_P1  PWM_OUTPUT_1
-#define H_BRIDGE1_P2  PWM_OUTPUT_2
+namespace {
 
-#define H_BRIDGE2_P1  PWM_OUTPUT_3
-#define H_BRIDGE2_P2  PWM_OUTPUT_4
+/*  H_BRIDGE1: PWM 1/2, H_BRIDGE2: PWM 3/4  */
+constexpr pwm_output_e H_BRIDGE_P1[] = {PWM_OUTPUT_1, PWM_OUTPUT_3};
+constexpr pwm_output_e H_BRIDGE_P2[] = {PWM_OUTPUT_2, PWM_OUTPUT_4};
 
+}
 
-enum pwm_output_e H_BRIDGE_P1[] = {H_BRIDGE1_P1, H_BRIDGE2_P1};
-enum pwm_output_e H_BRIDGE_P2[] = {H_BRIDGE1_P2, H_BRIDGE2_P2};
-
-static void SetMotorSpeed(enum h_bridge_e h_bridge, int32_t speed)
+void H_BridgeDriver::SetMotorSpeed(h_bridge_e h_bridge, int32_t speed)
 {
   uint32_t duty_cycle_p1, duty_cycle_p2;
 
@@ -55,13 +53,13 @@ static void SetMotorSpeed(enum h_bridge_e h_bridge, int32_t speed)
   PWM.SetOutputDutyCycle(H_BRIDGE_P2[h_bridge], duty_cycle_p2);
 }
 
-static void Enable(enum h_bridge_e h_bridge)
+void H_BridgeDriver::Enable(h_bridge_e h_bridge)
 {
   PWM.Enable(H_BRIDGE_P1[h_bridge]);
   PWM.Enable(H_BRIDGE_P2[h_bridge]);
 }
 
-static void Disable(enum h_bridge_e h_bridge)
+void H_BridgeDriver::Disable(h_bridge_e h_bridge)
 {
   PWM.Disable(H_BRIDGE_P1[h_bridge]);
   PWM.Disable(H_BRIDGE_P2[h_bridge]);
@@ -69,8 +67,6 @@ static void Disable(enum h_bridge_e h_bridge)
 
 
 
-const struct h_bridge_s H_Bridge = {.SetMotorSpeed = SetMotorSpeed,
-                                    .Enable = Enable,
-                                    .Disable = Disable};
+constinit H_BridgeDriver H_Bridge;
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

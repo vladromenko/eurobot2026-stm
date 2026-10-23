@@ -20,15 +20,9 @@
 #ifndef __BOARD_GPIO_CONFIG_H
 #define __BOARD_GPIO_CONFIG_H
 
-#ifdef __cplusplus
- extern "C" {
-#endif
 
 void Board_GPIO_Config(void);
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif
 

@@ -20,9 +20,6 @@
 #ifndef __L6474_DRVR_H
 #define __L6474_DRVR_H
 
-#ifdef __cplusplus
- extern "C" {
-#endif
 	 
 #include "std_def.hpp"
 
@@ -163,24 +160,22 @@ enum l6474h_motor_dir_s{
 
 
 
-struct l6474h_s{
-  void (*SetParam)(enum l6474h_motor_s motor, uint8_t address, uint32_t data, uint8_t length);
-  uint32_t (*GetParam)(enum l6474h_motor_s motor, uint8_t address, uint8_t length);
-  uint32_t (*GetStatus)(enum l6474h_motor_s motor);
-  void (*Enable)(enum l6474h_motor_s motor);
-  void (*Disable)(enum l6474h_motor_s motor);
-  void (*SetStepMode)(enum l6474h_motor_s motor, uint32_t step_mode);
-  void (*SetCurrentLimit)(enum l6474h_motor_s motor, uint32_t current_limit);
-  void (*SetCurrentLimit_mA)(enum l6474h_motor_s motor, float current_limit_mA);
-  void (*SetDirection)(enum l6474h_motor_s motor, enum l6474h_motor_dir_s direction);
-  void (*HardReset)(enum l6474h_motor_s motor);
+class L6474H_Driver{
+public:
+  void SetParam(l6474h_motor_s motor, uint8_t address, uint32_t data, uint8_t length);
+  uint32_t GetParam(l6474h_motor_s motor, uint8_t address, uint8_t length);
+  uint32_t GetStatus(l6474h_motor_s motor);
+  void Enable(l6474h_motor_s motor);
+  void Disable(l6474h_motor_s motor);
+  void SetStepMode(l6474h_motor_s motor, uint32_t step_mode);
+  void SetCurrentLimit(l6474h_motor_s motor, uint32_t current_limit);
+  void SetCurrentLimit_mA(l6474h_motor_s motor, float current_limit_mA);
+  void SetDirection(l6474h_motor_s motor, l6474h_motor_dir_s direction);
+  void HardReset(l6474h_motor_s motor);
 };
 
-extern const struct l6474h_s L6474H;
+extern L6474H_Driver L6474H;
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif 
 

@@ -434,22 +434,22 @@ static void RotateTwoDynamixels(USART_TypeDef* usart, uint8_t id_1, uint8_t id_2
 
 static void Gripper_SetPumps(const GripperHardware_t* hw, uint8_t mask) {
     // turn on all pumps
-    SPI_GPO_SetOutputPin(hw->pumps_all_mask);
+    SPI_GPO.SetOutputPin(hw->pumps_all_mask);
     
     // turn off pumps according to the mask (0 - turn off, 1 - keep on)
     for (int i = 0; i < 4; i++) {
         if ((mask & (1 << i)) == 0) {
-            SPI_GPO_ResetOutputPin(hw->pumps_pins[i]);
+            SPI_GPO.ResetOutputPin(hw->pumps_pins[i]);
             vTaskDelay(10);
         }
     }
 }
 
 static void Gripper_SetValves(const GripperHardware_t* hw, uint8_t mask) {
-    SPI_GPO_SetOutputPin(hw->valves_all_mask);
+    SPI_GPO.SetOutputPin(hw->valves_all_mask);
     for (int i = 0; i < 4; i++) {
         if ((mask & (1 << i)) == 0) {
-            SPI_GPO_ResetOutputPin(hw->valves_pins[i]);
+            SPI_GPO.ResetOutputPin(hw->valves_pins[i]);
             vTaskDelay(10);
         }
     }
@@ -647,7 +647,7 @@ static void Task(void *arg)
             vTaskDelay(200);
 
             // Выключаем все насосы и клапаны этого гриппера
-            SPI_GPO_ResetOutputPin(hw->pumps_all_mask | hw->valves_all_mask);
+            SPI_GPO.ResetOutputPin(hw->pumps_all_mask | hw->valves_all_mask);
             vTaskDelay(100);
 
             // Поднимаем основной механизм в стартовое положение
@@ -661,7 +661,7 @@ static void Task(void *arg)
         Dynamixel_AX.SetAngle(USART3, pinion_dyn_id, pinion_start_angle);
 		vTaskDelay(100);
 
-        //SPI_GPO_SetOutputPin(SPI_POWER_OUTPUT_17 | SPI_POWER_OUTPUT_18);
+        //SPI_GPO.SetOutputPin(SPI_POWER_OUTPUT_17 | SPI_POWER_OUTPUT_18);
     #endif
 
 	while(1)

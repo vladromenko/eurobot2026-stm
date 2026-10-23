@@ -20,10 +20,6 @@
 #ifndef __H_BRIDGE_H
 #define __H_BRIDGE_H
 
-#ifdef __cplusplus
- extern "C" {
-#endif
-	 
 #include "std_def.hpp"
 
 
@@ -32,17 +28,16 @@ enum h_bridge_e{
   H_BRIDGE2
 };
 
-struct h_bridge_s{
-  void (*SetMotorSpeed)(enum h_bridge_e h_bridge, int32_t speed);
-  void (*Enable)(enum h_bridge_e h_bridge);
-  void (*Disable)(enum h_bridge_e h_bridge);
+/*  DC motor H-bridges on PWM outputs 1..4; speed -100..100 %  */
+class H_BridgeDriver{
+public:
+    void SetMotorSpeed(h_bridge_e h_bridge, int32_t speed);
+    void Enable(h_bridge_e h_bridge);
+    void Disable(h_bridge_e h_bridge);
 };
 
-extern const struct h_bridge_s H_Bridge;
+extern H_BridgeDriver H_Bridge;
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif 
 

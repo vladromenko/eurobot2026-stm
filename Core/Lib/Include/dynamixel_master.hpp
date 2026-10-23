@@ -20,10 +20,6 @@
 #ifndef __DYNAMIXEL_MASTER_H
 #define __DYNAMIXEL_MASTER_H
 
-#ifdef __cplusplus
- extern "C" {
-#endif
-	 
 #include "std_def.hpp"
 #include "stm32f4xx_ll_usart.h"
 #include "usartx_communication.hpp"
@@ -67,24 +63,28 @@ struct dynamixel_master_response_s{
 };
 
 
-struct dynamixel_master_s{
-    void (*Ping)(USART_TypeDef* usart, uint8_t device_id, struct dynamixel_master_response_s* response);
-    void (*Read)(USART_TypeDef* usart, uint8_t device_id, uint8_t starting_address, uint8_t data_length, struct dynamixel_master_response_s* response);
-    void (*Write)(USART_TypeDef* usart, uint8_t device_id, uint8_t starting_address, uint8_t* data, uint8_t data_length, struct dynamixel_master_response_s* response);
-    void (*RegWrite)(USART_TypeDef* usart, uint8_t device_id, uint8_t starting_address, uint8_t* data, uint8_t data_length, uint8_t* response);
-    void (*Action)(USART_TypeDef* usart, uint8_t device_id, uint8_t* response);
-    void (*FactoryReset)(USART_TypeDef* usart, uint8_t device_id, uint8_t* response);
-    void (*Reboot)(USART_TypeDef* usart, uint8_t device_id, uint8_t* response);
-    void (*SyncWrite)(USART_TypeDef* usart, uint8_t* device_id_array, uint8_t boards_number, uint8_t starting_address, uint8_t* data_array, uint8_t data_length, struct dynamixel_master_response_s* response_array);
-    void (*BulkRead)(USART_TypeDef* usart, uint8_t* device_id_array, uint8_t* starting_address_array, uint8_t* data_length, struct dynamixel_master_response_s* response_array);
-    struct usartx_protocol_s* (*GetProtocol)(void);
+/**
+ * Dynamixel Protocol 1.0 master. One object serves all half-duplex lines
+ * it is bound to; per-line state lives in the line buffers.
+ * Requests are queued and the call returns at once: wait for
+ * response->is_data_ready before reading the response.
+ */
+class DynamixelMasterDriver : public USARTx_Protocol{
+public:
+    void Ping(USART_TypeDef* usart, uint8_t device_id, dynamixel_master_response_s* response);
+    void Read(USART_TypeDef* usart, uint8_t device_id, uint8_t starting_address, uint8_t data_length, dynamixel_master_response_s* response);
+    void Write(USART_TypeDef* usart, uint8_t device_id, uint8_t starting_address, uint8_t* data, uint8_t data_length, dynamixel_master_response_s* response);
+    void SyncWrite(USART_TypeDef* usart, uint8_t* device_id_array, uint8_t boards_number, uint8_t starting_address, uint8_t* data_array, uint8_t data_length, dynamixel_master_response_s* response_array);
+
+private:
+    void InitLine(USARTx_Line* line) override;
+    void TxCompleteCallback(USARTx_Line* line) override;
+    void RxCompleteCallback(USARTx_Line* line, uint32_t data_length) override;
+    void RxTimeoutCallback(USARTx_Line* line) override;
 };
 
-extern const struct dynamixel_master_s DynamixelMaster;
+extern DynamixelMasterDriver DynamixelMaster;
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif 
 

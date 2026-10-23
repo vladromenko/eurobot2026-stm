@@ -73,7 +73,7 @@ int main(void)
 	PCA9685_InitStatus = PCA9685.Init(0x40, 50.0f, 500, 2500, 180);  /* Плата 1 */
 
 	SPI1_Board_HW_Init();
-	SPI_GPO_ResetOutputPin(SPI_GPO_ALL);
+	SPI_GPO.ResetOutputPin(SPI_GPO_ALL);
 
 	
 
@@ -112,11 +112,11 @@ int main(void)
 
   
   /*  Binding USART ports with protocols  */
-  USARTx.BindProtocol(USART3, DynamixelMaster.GetProtocol());
-  USARTx.BindProtocol(USART6, DynamixelMaster.GetProtocol());
-  USARTx.BindProtocol(UART4, DynamixelMaster.GetProtocol());
-  USARTx.BindProtocol(UART5, Serial.GetProtocol());
-  USARTx.BindProtocol(USART1, HL_RTU.GetProtocol());
+  USARTx.BindProtocol(USART3, DynamixelMaster);
+  USARTx.BindProtocol(USART6, DynamixelMaster);
+  USARTx.BindProtocol(UART4, DynamixelMaster);
+  USARTx.BindProtocol(UART5, Serial);
+  USARTx.BindProtocol(USART1, HL_RTU);
 	
 	//IWDG_Init();
 	

@@ -20,10 +20,6 @@
 #ifndef __MAXON_H
 #define __MAXON_H
 
-#ifdef __cplusplus
- extern "C" {
-#endif
-
 #include "stdint.h"
 #include "stm32f4xx_ll_usart.h"
 
@@ -39,24 +35,23 @@
 
 
 
-struct maxon_s{
-    uint8_t (*Ping)(USART_TypeDef* usart, uint8_t maxon_id);
-    void (*Set_ID)(USART_TypeDef* usart, uint8_t current_id, uint8_t new_id);
-    void (*SetRange_TPM)(USART_TypeDef* usart, uint8_t maxon_id, uint32_t tpm_bottom, uint32_t tpm_top);
-    uint8_t (*GetRange_TPM)(USART_TypeDef* usart, uint8_t maxon_id, uint32_t* tpm_bottom, uint32_t* tpm_top);
-    void (*Set_TPM)(USART_TypeDef* usart, uint8_t maxon_id, int32_t tpm);
-    uint8_t (*Get_TPM)(USART_TypeDef* usart, uint8_t maxon_id, int32_t* tpm);
-    void (*SetTotalTicks)(USART_TypeDef* usart, uint8_t maxon_id, int32_t ticks);
-    uint8_t (*GetTotalTicks)(USART_TypeDef* usart, uint8_t maxon_id, int32_t* ticks);
-    void (*Enable)(USART_TypeDef* usart, uint8_t maxon_id);
-    void (*Disable)(USART_TypeDef* usart, uint8_t maxon_id);
+/*  Maxon motor controller board, Dynamixel protocol  */
+class MaxonDriver{
+public:
+    uint8_t Ping(USART_TypeDef* usart, uint8_t maxon_id);
+    void Set_ID(USART_TypeDef* usart, uint8_t current_id, uint8_t new_id);
+    void SetRange_TPM(USART_TypeDef* usart, uint8_t maxon_id, uint32_t tpm_bottom, uint32_t tpm_top);
+    uint8_t GetRange_TPM(USART_TypeDef* usart, uint8_t maxon_id, uint32_t* tpm_bottom, uint32_t* tpm_top);
+    void Set_TPM(USART_TypeDef* usart, uint8_t maxon_id, int32_t tpm);
+    uint8_t Get_TPM(USART_TypeDef* usart, uint8_t maxon_id, int32_t* tpm);
+    void SetTotalTicks(USART_TypeDef* usart, uint8_t maxon_id, int32_t ticks);
+    uint8_t GetTotalTicks(USART_TypeDef* usart, uint8_t maxon_id, int32_t* ticks);
+    void Enable(USART_TypeDef* usart, uint8_t maxon_id);
+    void Disable(USART_TypeDef* usart, uint8_t maxon_id);
 };
 
-extern const struct maxon_s Maxon;
+extern MaxonDriver Maxon;
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif 
 

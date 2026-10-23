@@ -26,55 +26,61 @@
 #include "board_gpio_defines.hpp"
 
 
-static TIM_TypeDef* tim_group[] = {TIM4,TIM5};
-static TIM_TypeDef* tim_output[] = {TIM4,TIM4,TIM4,TIM4,TIM5,TIM5,TIM5,TIM5};
+namespace {
 
-static uint32_t tim_channel[] = {LL_TIM_CHANNEL_CH4,LL_TIM_CHANNEL_CH3,LL_TIM_CHANNEL_CH2,LL_TIM_CHANNEL_CH1,
+TIM_TypeDef* const tim_group[] = {TIM4,TIM5};
+TIM_TypeDef* const tim_output[] = {TIM4,TIM4,TIM4,TIM4,TIM5,TIM5,TIM5,TIM5};
+
+constexpr uint32_t tim_channel[] = {LL_TIM_CHANNEL_CH4,LL_TIM_CHANNEL_CH3,LL_TIM_CHANNEL_CH2,LL_TIM_CHANNEL_CH1,
                                   LL_TIM_CHANNEL_CH1,LL_TIM_CHANNEL_CH2,LL_TIM_CHANNEL_CH3,LL_TIM_CHANNEL_CH4};
 
-static volatile uint32_t* tim_ccr[] = {&TIM4->CCR4,&TIM4->CCR3,&TIM4->CCR2,&TIM4->CCR1,&TIM5->CCR1,&TIM5->CCR2,&TIM5->CCR3,&TIM5->CCR4};
-static volatile uint32_t* tim_ccer[] = {&TIM4->CCER,&TIM4->CCER,&TIM4->CCER,&TIM4->CCER,&TIM5->CCER,&TIM5->CCER,&TIM5->CCER,&TIM5->CCER};
+volatile uint32_t* const tim_ccr[] = {&TIM4->CCR4,&TIM4->CCR3,&TIM4->CCR2,&TIM4->CCR1,&TIM5->CCR1,&TIM5->CCR2,&TIM5->CCR3,&TIM5->CCR4};
+volatile uint32_t* const tim_ccer[] = {&TIM4->CCER,&TIM4->CCER,&TIM4->CCER,&TIM4->CCER,&TIM5->CCER,&TIM5->CCER,&TIM5->CCER,&TIM5->CCER};
 
-static GPIO_TypeDef* pwm_gpio[] = {GPIOD,GPIOD,GPIOD,GPIOD,GPIOA,GPIOA,GPIOA,GPIOA};
-static uint32_t pwm_pin[] = {PWM1_PD15,PWM2_PD14,PWM3_PD13,PWM4_PD12,
+GPIO_TypeDef* const pwm_gpio[] = {GPIOD,GPIOD,GPIOD,GPIOD,GPIOA,GPIOA,GPIOA,GPIOA};
+constexpr uint32_t pwm_pin[] = {PWM1_PD15,PWM2_PD14,PWM3_PD13,PWM4_PD12,
                               PWM5_PA0,PWM6_PA1,PWM7_PA2,PWM8_PA3};
 
 
 
-static void TIM_OC_SetCompareCH(uint32_t pwm_output, uint32_t cc_value)
+void TIM_OC_SetCompareCH(uint32_t pwm_output, uint32_t cc_value)
 {
   WRITE_REG(*tim_ccr[pwm_output], cc_value);
 }
 
-static void TIM_CC_EnableChannel(uint32_t pwm_output)
+void TIM_CC_EnableChannel(uint32_t pwm_output)
 {
   SET_BIT(*tim_ccer[pwm_output], tim_channel[pwm_output]);
 }
 
-static void TIM_CC_DisableChannel(uint32_t pwm_output)
+void TIM_CC_DisableChannel(uint32_t pwm_output)
 {
   CLEAR_BIT(*tim_ccer[pwm_output], tim_channel[pwm_output]);
 }
 
+}
+
+PWM_Driver PWM;
 
 
-static uint32_t GetGroupTimAutoreload(enum pwm_group_e pwm_group)
+
+uint32_t PWM_Driver::GetGroupTimAutoreload(pwm_group_e pwm_group)
 {
   return LL_TIM_GetAutoReload(tim_group[pwm_group]);
 }
 
-static void SetOutput_CC(enum pwm_output_e pwm_output, uint32_t cc_value)
+void PWM_Driver::SetOutput_CC(pwm_output_e pwm_output, uint32_t cc_value)
 {
   TIM_OC_SetCompareCH(pwm_output, cc_value);
 }
 
-static void SetGroupFrequency(enum pwm_group_e pwm_group, uint32_t frequency_hz)
+void PWM_Driver::SetGroupFrequency(pwm_group_e pwm_group, uint32_t frequency_hz)
 { 
   uint32_t prescaler = LL_TIM_GetPrescaler(tim_group[pwm_group]);
   LL_TIM_SetAutoReload(tim_group[pwm_group], (84000000/(prescaler+1)/frequency_hz - 1));
 }
 
-static void SetOutputDutyCycle(enum pwm_output_e pwm_output, uint32_t duty_cycle)
+void PWM_Driver::SetOutputDutyCycle(pwm_output_e pwm_output, uint32_t duty_cycle)
 {
   if(duty_cycle>100)
     return;
@@ -84,7 +90,7 @@ static void SetOutputDutyCycle(enum pwm_output_e pwm_output, uint32_t duty_cycle
   TIM_OC_SetCompareCH(pwm_output, cc_value);
 }
 
-static void Enable(enum pwm_output_e pwm_output)
+void PWM_Driver::Enable(pwm_output_e pwm_output)
 {
   LL_GPIO_InitTypeDef GPIO_Struct;
 
@@ -101,7 +107,7 @@ static void Enable(enum pwm_output_e pwm_output)
   LL_TIM_GenerateEvent_UPDATE(tim_output[pwm_output]);
 }
 
-static void Disable(enum pwm_output_e pwm_output)
+void PWM_Driver::Disable(pwm_output_e pwm_output)
 {
   LL_GPIO_InitTypeDef GPIO_Struct;
 
@@ -116,12 +122,5 @@ static void Disable(enum pwm_output_e pwm_output)
   TIM_CC_DisableChannel(pwm_output);
   LL_TIM_GenerateEvent_UPDATE(tim_output[pwm_output]);
 }
-
-const struct pwm_s PWM = {.GetGroupTimAutoreload = GetGroupTimAutoreload,
-                          .SetOutput_CC = SetOutput_CC,
-                          .SetGroupFrequency = SetGroupFrequency,
-                          .SetOutputDutyCycle = SetOutputDutyCycle,
-                          .Enable = Enable,
-                          .Disable = Disable};
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

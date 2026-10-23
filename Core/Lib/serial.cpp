@@ -23,19 +23,11 @@
 #include "serial.hpp"
 #include "fifo_routine.hpp" 
 
-#include "board_gpio_defines.hpp"
-#include "stm32f4xx_ll_gpio.h"
-
-
 #include "FreeRTOS.h"
 #include "task.h"
-#include "timers.h"
-#include "queue.h"
-#include "semphr.h"
-#include "event_groups.h"
 
-#include "usartx_timeout.hpp" 
 
+namespace {
 
 struct tx_fifo_element_s{
     uint8_t bytes[SERIAL_MAX_BYTES_NUMBER];
@@ -47,44 +39,69 @@ struct rx_fifo_element_s{
     uint8_t bytes_number;
 };
 
-static struct usartx_control_s* usartx_control;
-static uint8_t is_timeout_expired;
+void TransmitNextQueueElement(USARTx_Line* line)
+{
+    line->tx_fifo.Remove(line->tx_buffer);
+    line->StartTx(reinterpret_cast<tx_fifo_element_s*>(line->tx_buffer)->bytes_number);
+}
+
+void TransmitBytes(USARTx_Line* line, tx_fifo_element_s* tx_fifo_data_unit)
+{
+    while(1)
+    {
+        vTaskSuspendAll();
+
+        if(line->tx_fifo.IsNotFull())
+            break;
+
+        xTaskResumeAll();
+        taskYIELD();
+    }
+    
+    line->tx_fifo.Add(tx_fifo_data_unit);
+
+    if(line->is_line_busy==0){
+        line->is_line_busy = 1;
+        TransmitNextQueueElement(line);
+    }
+
+    xTaskResumeAll();
+}
+
+}
+
+constinit SerialDriver Serial;
 
 
-static void TransmitBytes(struct usartx_line_resources_s* line_resources, struct tx_fifo_element_s* tx_fifo_data_unit);
-
-
-static void WriteBytes(USART_TypeDef* usart, uint8_t* bytes, uint8_t bytes_number)
+void SerialDriver::WriteBytes(USART_TypeDef* usart, uint8_t* bytes, uint8_t bytes_number)
 {
     if(bytes_number>SERIAL_MAX_BYTES_NUMBER)
         return;
     
-    struct usartx_line_resources_s* line_resources = usartx_control->GetLineResources(usart);
-
-    struct tx_fifo_element_s tx_fifo_data_unit;
+    tx_fifo_element_s tx_fifo_data_unit;
 
     memcpy(tx_fifo_data_unit.bytes, bytes, bytes_number);
     tx_fifo_data_unit.bytes_number = bytes_number;
 
-    TransmitBytes(line_resources, &tx_fifo_data_unit);
+    TransmitBytes(USARTx.GetLine(usart), &tx_fifo_data_unit);
 }
 
-static uint32_t ReadBytes(USART_TypeDef* usart, uint8_t* bytes, uint32_t timeout_ms)
+uint32_t SerialDriver::ReadBytes(USART_TypeDef* usart, uint8_t* bytes, uint32_t timeout_ms)
 {
-    struct usartx_line_resources_s* line_resources = usartx_control->GetLineResources(usart);
+    USARTx_Line* line = USARTx.GetLine(usart);
 
     if(timeout_ms){
         is_timeout_expired = 0;
-        usartx_control->SetRxTimeout(line_resources, timeout_ms*1000);
+        line->SetRxTimeout(timeout_ms*1000);
     }
     
     while(1)
     {
-        if(FIFO_IsNotEmpty(&(line_resources->rx_fifo))){
-            struct rx_fifo_element_s rx_fifo_data_unit;
-            FIFO_Remove(&(line_resources->rx_fifo), &rx_fifo_data_unit);
+        if(line->rx_fifo.IsNotEmpty()){
+            rx_fifo_element_s rx_fifo_data_unit;
+            line->rx_fifo.Remove(&rx_fifo_data_unit);
             if(timeout_ms)
-                usartx_control->ResetRxTimeout(line_resources);
+                line->ResetRxTimeout();
             memcpy(bytes, rx_fifo_data_unit.bytes, rx_fifo_data_unit.bytes_number);
             return rx_fifo_data_unit.bytes_number;
         }
@@ -97,104 +114,53 @@ static uint32_t ReadBytes(USART_TypeDef* usart, uint8_t* bytes, uint32_t timeout
     }
 }
 
-static void TransmitNextQueueElement(struct usartx_line_resources_s* line_resources)
+void SerialDriver::RxTimeoutCallback(USARTx_Line* line)
 {
-    FIFO_Remove(&(line_resources->tx_fifo), line_resources->tx_buffer);
-    usartx_control->StartTx(line_resources, ((struct tx_fifo_element_s*)(line_resources->tx_buffer))->bytes_number);
-}
-
-static void TransmitBytes(struct usartx_line_resources_s* line_resources, struct tx_fifo_element_s* tx_fifo_data_unit)
-{
-    while(1)
-    {
-        vTaskSuspendAll();
-
-        if(FIFO_IsNotFull(&(line_resources->tx_fifo)))
-            break;
-
-        xTaskResumeAll();
-        taskYIELD();
-    }
-    
-    FIFO_Add(&(line_resources->tx_fifo), tx_fifo_data_unit);
-
-    if(line_resources->is_line_busy==0){
-        line_resources->is_line_busy = 1;
-        TransmitNextQueueElement(line_resources);
-    }
-
-    xTaskResumeAll();
-}
-
-static void RxTimeoutCallback(struct usartx_line_resources_s* line_resources)
-{
+    (void)line;
     is_timeout_expired = 1;
 }
 
-static void TxCompleteCallback(struct usartx_line_resources_s* line_resources)
+void SerialDriver::TxCompleteCallback(USARTx_Line* line)
 {
-   usartx_control->StopTx(line_resources);
+    line->StopTx();
     
-    if(FIFO_IsNotEmpty(&(line_resources->tx_fifo)))
-        TransmitNextQueueElement(line_resources);
+    if(line->tx_fifo.IsNotEmpty())
+        TransmitNextQueueElement(line);
     else
-        line_resources->is_line_busy = 0;
-
-    
+        line->is_line_busy = 0;
 }
 
-static void RxCompleteCallback(struct usartx_line_resources_s* line_resources, uint32_t data_length)
+void SerialDriver::RxCompleteCallback(USARTx_Line* line, uint32_t data_length)
 {
-    usartx_control->StopRx(line_resources);
+    line->StopRx();
 
-    if(FIFO_IsNotFull(&(line_resources->rx_fifo))){
-        ((struct rx_fifo_element_s*)(line_resources->rx_buffer))->bytes_number = data_length;
-        FIFO_Add(&(line_resources->rx_fifo), line_resources->rx_buffer);
+    if(line->rx_fifo.IsNotFull()){
+        reinterpret_cast<rx_fifo_element_s*>(line->rx_buffer)->bytes_number = data_length;
+        line->rx_fifo.Add(line->rx_buffer);
     }
-	    
-    usartx_control->StartRx(line_resources);
+        
+    line->StartRx();
 }
 
-
-
-static void InitLine(struct usartx_line_init_params_s* usartx_line_init_params)
+void SerialDriver::InitLine(USARTx_Line* line)
 {
-    struct usartx_line_resources_s* line_resources = usartx_line_init_params->line_resources;
-    struct usartx_line_config_s* line_config = usartx_line_init_params->line_config;
-    usartx_control = usartx_line_init_params->usartx_control;
-
-    if((line_resources->tx_buffer_size < 2*sizeof(struct tx_fifo_element_s))||
-        (line_resources->rx_buffer_size < 2*sizeof(struct rx_fifo_element_s)))
+    if((line->tx_buffer_size < 2*sizeof(tx_fifo_element_s))||
+        (line->rx_buffer_size < 2*sizeof(rx_fifo_element_s)))
         return;
 
-    uint8_t* tx_fifo = (uint8_t*)((uint32_t)line_resources->tx_buffer + sizeof(struct tx_fifo_element_s));
-    uint8_t* rx_fifo = (uint8_t*)((uint32_t)line_resources->rx_buffer + sizeof(struct rx_fifo_element_s));
+    uint8_t* tx_fifo = line->tx_buffer + sizeof(tx_fifo_element_s);
+    uint8_t* rx_fifo = line->rx_buffer + sizeof(rx_fifo_element_s);
 
-    uint32_t tx_fifo_size = line_resources->tx_buffer_size/sizeof(struct tx_fifo_element_s) - 1;
-    uint32_t rx_fifo_size = line_resources->rx_buffer_size/sizeof(struct rx_fifo_element_s) - 1;
+    uint32_t tx_fifo_size = line->tx_buffer_size/sizeof(tx_fifo_element_s) - 1;
+    uint32_t rx_fifo_size = line->rx_buffer_size/sizeof(rx_fifo_element_s) - 1;
 
-    FIFO_StructInit(&line_resources->tx_fifo, tx_fifo, tx_fifo_size, sizeof(struct tx_fifo_element_s));
-    FIFO_StructInit(&line_resources->rx_fifo, rx_fifo, rx_fifo_size, sizeof(struct rx_fifo_element_s));
+    line->tx_fifo.Init(tx_fifo, tx_fifo_size, sizeof(tx_fifo_element_s));
+    line->rx_fifo.Init(rx_fifo, rx_fifo_size, sizeof(rx_fifo_element_s));
 
-    line_resources->is_line_busy = 0;
-    
-    line_config->TxCompleteCallback = TxCompleteCallback;
-    line_config->RxCompleteCallback = RxCompleteCallback;
-    line_config->RxTimeoutCallback = RxTimeoutCallback;
-    line_config->is_line_half_duplex = 0;
+    line->is_line_busy = 0;
+    line->is_line_half_duplex = 0;
 
-    usartx_control->StartRx(line_resources);
+    line->StartRx();
 }
-
-static struct usartx_protocol_s protocol = {.InitLine = InitLine};
-
-static struct usartx_protocol_s* GetProtocol(void)
-{
-    return &protocol;
-}
-
-const struct serial_s Serial = {.WriteBytes = WriteBytes,
-                                .ReadBytes = ReadBytes,
-                                .GetProtocol = GetProtocol};
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

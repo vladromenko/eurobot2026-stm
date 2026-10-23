@@ -9,9 +9,6 @@
 #ifndef __SPI_GPIO_DEFINES_H
 #define __SPI_GPIO_DEFINES_H
 
-#ifdef __cplusplus
- extern "C" {
-#endif
 
 #include "std_def.hpp"
 
@@ -44,9 +41,6 @@
 #define	SPI_GPO_ALL						    (uint32_t)0xFFFFFF
 
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* __STM32F0xx_HAL_CONF_H */
 

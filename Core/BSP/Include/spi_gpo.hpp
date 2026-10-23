@@ -20,18 +20,21 @@
 #ifndef __SPI_GPO_H
 #define __SPI_GPO_H
 
-#ifdef __cplusplus
- extern "C" {
-#endif
-	 
 #include "std_def.hpp"
 
-void SPI_GPO_SetOutputPin(uint32_t SPI_GPO_PIN);
-void SPI_GPO_ResetOutputPin(uint32_t SPI_GPO_PIN);
+/*  24 outputs of the shift registers on SPI1, latched by STCP (PA4)  */
+class SPI_GPO_Driver{
+public:
+  void SetOutputPin(uint32_t spi_gpo_pin);
+  void ResetOutputPin(uint32_t spi_gpo_pin);
 
-#ifdef __cplusplus
-}
-#endif
+private:
+  void Update();
+
+  uint32_t spi_gpo_reg = 0;
+};
+
+extern SPI_GPO_Driver SPI_GPO;
 
 #endif 
 

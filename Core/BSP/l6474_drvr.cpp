@@ -34,14 +34,20 @@
 #include "semphr.h"
 #include "event_groups.h"
 
-uint32_t spi_nrst_gpio[] = {SPI_L6474_NRST1,SPI_L6474_NRST2,SPI_L6474_NRST3,SPI_L6474_NRST4};
-GPIO_TypeDef* spi_ncs_gpio[] = {GPIOE,GPIOD,GPIOD,GPIOC};
-uint32_t spi_ncs_pin[] = {NCS1_PE7,NCS2_PD10,NCS3_PD11,NCS4_PC9};
-GPIO_TypeDef* dir_gpio[] = {GPIOE,GPIOE,GPIOE,GPIOE};
-uint32_t dir_pin[] = {DIR1_PE8,DIR2_PE10,DIR3_PE12,DIR4_PE15};
+namespace {
+
+constexpr uint32_t spi_nrst_gpio[] = {SPI_L6474_NRST1,SPI_L6474_NRST2,SPI_L6474_NRST3,SPI_L6474_NRST4};
+GPIO_TypeDef* const spi_ncs_gpio[] = {GPIOE,GPIOD,GPIOD,GPIOC};
+constexpr uint32_t spi_ncs_pin[] = {NCS1_PE7,NCS2_PD10,NCS3_PD11,NCS4_PC9};
+GPIO_TypeDef* const dir_gpio[] = {GPIOE,GPIOE,GPIOE,GPIOE};
+constexpr uint32_t dir_pin[] = {DIR1_PE8,DIR2_PE10,DIR3_PE12,DIR4_PE15};
+
+}
+
+L6474H_Driver L6474H;
 
 
-static void SetParam(enum l6474h_motor_s motor, uint8_t address, uint32_t data, uint8_t length)
+void L6474H_Driver::SetParam(l6474h_motor_s motor, uint8_t address, uint32_t data, uint8_t length)
 {
 	vTaskSuspendAll();
 
@@ -67,7 +73,7 @@ static void SetParam(enum l6474h_motor_s motor, uint8_t address, uint32_t data, 
 	xTaskResumeAll();
 }
 
-static uint32_t GetParam(enum l6474h_motor_s motor, uint8_t address, uint8_t length)
+uint32_t L6474H_Driver::GetParam(l6474h_motor_s motor, uint8_t address, uint8_t length)
 {
 	volatile uint32_t temp;
 	
@@ -105,7 +111,7 @@ static uint32_t GetParam(enum l6474h_motor_s motor, uint8_t address, uint8_t len
 	return temp;
 }
 
-static uint32_t GetStatus(enum l6474h_motor_s motor)
+uint32_t L6474H_Driver::GetStatus(l6474h_motor_s motor)
 {
 	volatile uint32_t temp;
 
@@ -149,7 +155,7 @@ static uint32_t GetStatus(enum l6474h_motor_s motor)
 	return temp;
 }
 
-static void Enable(enum l6474h_motor_s motor)
+void L6474H_Driver::Enable(l6474h_motor_s motor)
 {
 	vTaskSuspendAll();
 
@@ -167,7 +173,7 @@ static void Enable(enum l6474h_motor_s motor)
 	xTaskResumeAll();
 }
 
-static void Disable(enum l6474h_motor_s motor)
+void L6474H_Driver::Disable(l6474h_motor_s motor)
 {
 	vTaskSuspendAll();
 
@@ -185,17 +191,17 @@ static void Disable(enum l6474h_motor_s motor)
 	xTaskResumeAll();
 }
 
-static void SetStepMode(enum l6474h_motor_s motor, uint32_t step_mode)
+void L6474H_Driver::SetStepMode(l6474h_motor_s motor, uint32_t step_mode)
 {
 	SetParam(motor, L6474_STEP_MODE, (step_mode&L6474_STEP_SEL_MASK)|0x88, L6474_STEP_MODE_LENGTH);
 }
 
-static void SetCurrentLimit(enum l6474h_motor_s motor, uint32_t current_limit)
+void L6474H_Driver::SetCurrentLimit(l6474h_motor_s motor, uint32_t current_limit)
 {
 	SetParam(motor, L6474_TVAL, current_limit&L6474_TVAL_MASK,1);
 }
 
-static void SetCurrentLimit_mA(enum l6474h_motor_s motor, float current_limit_mA)
+void L6474H_Driver::SetCurrentLimit_mA(l6474h_motor_s motor, float current_limit_mA)
 {
 	uint8_t temp;
 	if(current_limit_mA>=31.25f){
@@ -206,7 +212,7 @@ static void SetCurrentLimit_mA(enum l6474h_motor_s motor, float current_limit_mA
 	SetParam(motor, L6474_TVAL, temp&L6474_TVAL_MASK, L6474_TVAL_LENGTH);
 }
 
-static void SetDirection(enum l6474h_motor_s motor, enum l6474h_motor_dir_s direction)
+void L6474H_Driver::SetDirection(l6474h_motor_s motor, l6474h_motor_dir_s direction)
 {
 	if(direction)
 		LL_GPIO_SetOutputPin(dir_gpio[motor], dir_pin[motor]);
@@ -214,23 +220,12 @@ static void SetDirection(enum l6474h_motor_s motor, enum l6474h_motor_dir_s dire
 		LL_GPIO_ResetOutputPin(dir_gpio[motor], dir_pin[motor]);
 }
 
-static void HardReset(enum l6474h_motor_s motor)
+void L6474H_Driver::HardReset(l6474h_motor_s motor)
 {
-	SPI_GPO_ResetOutputPin(spi_nrst_gpio[motor]);
+	SPI_GPO.ResetOutputPin(spi_nrst_gpio[motor]);
 	vTaskDelay(10);
-	SPI_GPO_SetOutputPin(spi_nrst_gpio[motor]);
+	SPI_GPO.SetOutputPin(spi_nrst_gpio[motor]);
 	vTaskDelay(10);
 }
 
-const struct l6474h_s L6474H = {.SetParam = SetParam,
-								.GetParam = GetParam,
-								.GetStatus = GetStatus,
-								.Enable = Enable,
-								.Disable = Disable,
-								.SetStepMode = SetStepMode,
-								.SetCurrentLimit = SetCurrentLimit,
-								.SetCurrentLimit_mA = SetCurrentLimit_mA,
-								.SetDirection = SetDirection,
-								.HardReset = HardReset};
-							
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

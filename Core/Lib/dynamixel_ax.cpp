@@ -31,40 +31,40 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
-static uint8_t Ping(USART_TypeDef* usart, uint8_t servo_id)
+uint8_t Dynamixel_AX_Driver::Ping(USART_TypeDef* usart, uint8_t servo_id)
 {
-  struct dynamixel_master_response_s response;
+  dynamixel_master_response_s response;
   DynamixelMaster.Ping(usart,servo_id,&response);
   while(response.is_data_ready==0) taskYIELD();
   return response.bus_error;
 }
 
-static void Set_ID(USART_TypeDef* usart, uint8_t current_id, uint8_t new_id)
+void Dynamixel_AX_Driver::Set_ID(USART_TypeDef* usart, uint8_t current_id, uint8_t new_id)
 {
-  DynamixelMaster.Write(usart, current_id, AX_ID, &new_id, 1, NULL); 
+  DynamixelMaster.Write(usart, current_id, AX_ID, &new_id, 1, nullptr); 
 }
 
-static void TorqueEnable(USART_TypeDef* usart, uint8_t servo_id)
+void Dynamixel_AX_Driver::TorqueEnable(USART_TypeDef* usart, uint8_t servo_id)
 {
   uint8_t data = 1;
-  DynamixelMaster.Write(usart,servo_id,AX_TorqueEnable,&data,1,NULL); 
+  DynamixelMaster.Write(usart,servo_id,AX_TorqueEnable,&data,1,nullptr); 
 }
 
-static void TorqueDisable(USART_TypeDef* usart, uint8_t servo_id)
+void Dynamixel_AX_Driver::TorqueDisable(USART_TypeDef* usart, uint8_t servo_id)
 {
   uint8_t data = 0;
-  DynamixelMaster.Write(usart,servo_id,AX_TorqueEnable,&data,1,NULL); 
+  DynamixelMaster.Write(usart,servo_id,AX_TorqueEnable,&data,1,nullptr); 
 }
 
-static void SetAngle(USART_TypeDef* usart, uint8_t servo_id, uint16_t angle)
+void Dynamixel_AX_Driver::SetAngle(USART_TypeDef* usart, uint8_t servo_id, uint16_t angle)
 {
   uint16_t temp = ((uint32_t)angle*1023)/300;
-  DynamixelMaster.Write(usart,servo_id,AX_GoalPosition,(uint8_t*)&temp,2,NULL); 
+  DynamixelMaster.Write(usart,servo_id,AX_GoalPosition,(uint8_t*)&temp,2,nullptr); 
 }
 
-static uint8_t GetAngle(USART_TypeDef* usart, uint8_t servo_id, uint16_t* angle)
+uint8_t Dynamixel_AX_Driver::GetAngle(USART_TypeDef* usart, uint8_t servo_id, uint16_t* angle)
 {
-  struct dynamixel_master_response_s response = (struct dynamixel_master_response_s){0};
+  dynamixel_master_response_s response = {};
   uint32_t temp = 0;
   
   DynamixelMaster.Read(usart,servo_id,AX_PresentPosition,2,&response);
@@ -76,28 +76,28 @@ static uint8_t GetAngle(USART_TypeDef* usart, uint8_t servo_id, uint16_t* angle)
   return response.bus_error;
 }
 
-static void SetWheelMode(USART_TypeDef* usart, uint8_t servo_id)
+void Dynamixel_AX_Driver::SetWheelMode(USART_TypeDef* usart, uint8_t servo_id)
 {
   uint8_t data[4] = {0x00,0x00,0x00,0x00};
-  DynamixelMaster.Write(usart,servo_id,AX_CW_AngleLimit,data,4,NULL);
+  DynamixelMaster.Write(usart,servo_id,AX_CW_AngleLimit,data,4,nullptr);
 }
 
-static void SetJointMode(USART_TypeDef* usart, uint8_t servo_id)
+void Dynamixel_AX_Driver::SetJointMode(USART_TypeDef* usart, uint8_t servo_id)
 {
   uint8_t data[4] = {0x00,0x00,0xFF,0x03};
-  DynamixelMaster.Write(usart,servo_id,AX_CW_AngleLimit,data,4,NULL); 
+  DynamixelMaster.Write(usart,servo_id,AX_CW_AngleLimit,data,4,nullptr); 
 }
 
-static void SetMovingSpeed(USART_TypeDef* usart, uint8_t servo_id, int16_t speed)
+void Dynamixel_AX_Driver::SetMovingSpeed(USART_TypeDef* usart, uint8_t servo_id, int16_t speed)
 {
   if(speed<0) 
     speed = 1024 - speed;
-  DynamixelMaster.Write(usart,servo_id,AX_MovingSpeed,(uint8_t*)&speed,2,NULL); 
+  DynamixelMaster.Write(usart,servo_id,AX_MovingSpeed,(uint8_t*)&speed,2,nullptr); 
 }
 
-static uint8_t GetMovingSpeed(USART_TypeDef* usart, uint8_t servo_id, int16_t* speed)
+uint8_t Dynamixel_AX_Driver::GetMovingSpeed(USART_TypeDef* usart, uint8_t servo_id, int16_t* speed)
 {
-	struct dynamixel_master_response_s response;
+	dynamixel_master_response_s response;
   int16_t temp;
   
   DynamixelMaster.Read(usart,servo_id,AX_MovingSpeed,2,&response);
@@ -113,9 +113,9 @@ static uint8_t GetMovingSpeed(USART_TypeDef* usart, uint8_t servo_id, int16_t* s
   return response.bus_error;
 }
 
-static uint8_t GetPresentLoad(USART_TypeDef* usart, uint8_t servo_id, int16_t* load)
+uint8_t Dynamixel_AX_Driver::GetPresentLoad(USART_TypeDef* usart, uint8_t servo_id, int16_t* load)
 {
-  struct dynamixel_master_response_s response;
+  dynamixel_master_response_s response;
   int16_t temp;
   
   DynamixelMaster.Read(usart,servo_id,AX_PresentLoad,2,&response);
@@ -131,31 +131,19 @@ static uint8_t GetPresentLoad(USART_TypeDef* usart, uint8_t servo_id, int16_t* l
   return response.bus_error;
 }
 
-static void Enable_LED(USART_TypeDef* usart, uint8_t servo_id)
+void Dynamixel_AX_Driver::Enable_LED(USART_TypeDef* usart, uint8_t servo_id)
 {
   uint8_t data = 1;
-  DynamixelMaster.Write(usart,servo_id,AX_LED,&data,1,NULL); 
+  DynamixelMaster.Write(usart,servo_id,AX_LED,&data,1,nullptr); 
 }
 
-static void Disable_LED(USART_TypeDef* usart, uint8_t servo_id)
+void Dynamixel_AX_Driver::Disable_LED(USART_TypeDef* usart, uint8_t servo_id)
 {
   uint8_t data = 0;
-  DynamixelMaster.Write(usart,servo_id,AX_LED,&data,1,NULL);
+  DynamixelMaster.Write(usart,servo_id,AX_LED,&data,1,nullptr);
 }
 
-const struct dynamixel_ax_s Dynamixel_AX = {.Ping = Ping,
-                                            .Set_ID = Set_ID,
-                                            .TorqueEnable = TorqueEnable,
-                                            .TorqueDisable = TorqueDisable,
-                                            .SetAngle = SetAngle,
-                                            .GetAngle = GetAngle,
-                                            .SetWheelMode = SetWheelMode,
-                                            .SetJointMode = SetJointMode,
-                                            .SetMovingSpeed = SetMovingSpeed,
-																						.GetMovingSpeed = GetMovingSpeed,
-                                            .GetPresentLoad = GetPresentLoad,
-                                            .Enable_LED = Enable_LED,
-                                            .Disable_LED = Disable_LED};
+constinit Dynamixel_AX_Driver Dynamixel_AX;
 
 
 

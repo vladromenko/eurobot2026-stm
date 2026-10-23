@@ -37,42 +37,42 @@
 
 void USART1_IRQHandler()
 {
-  USARTx_IRQ_Process(USART1);
+  USARTx.IRQ_Process(USART1);
 }
 
 void USART3_IRQHandler()
 {
-  USARTx_IRQ_Process(USART3);
+  USARTx.IRQ_Process(USART3);
 }
 
 void UART4_IRQHandler()
 {
-  USARTx_IRQ_Process(UART4);
+  USARTx.IRQ_Process(UART4);
 }
 
 void UART5_IRQHandler()
 {
-  USARTx_IRQ_Process(UART5);
+  USARTx.IRQ_Process(UART5);
 }
 
 void USART6_IRQHandler()
 {
-  USARTx_IRQ_Process(USART6);
+  USARTx.IRQ_Process(USART6);
 }
 
 void TIM1_CC_IRQHandler()
 {
-	TIM1_Steppers_PWM_CC_IRQ_Process();
+	Stepper.TIM_IRQ_Process();
 }
 
 void TIM8_TRG_COM_TIM14_IRQHandler()
 {
-  USARTx_Timeout_IRQ_Process();
+  USARTx_Timeout.TIM_IRQ_Process();
 }
 
 void DMA2_Stream1_IRQHandler()
 {
-  DMA_WS2812B_IRQ_Process();
+  WS2812B.DMA_IRQ_Process();
 }
 
 

@@ -35,32 +35,31 @@
 #include "semphr.h"
 #include "event_groups.h"
 
-#define MAX_LEDS_NUMBER   60
+namespace {
 
-#define CCR_HIGH          142      
-#define CCR_LOW           68 
+constexpr uint16_t CCR_HIGH = 142;
+constexpr uint16_t CCR_LOW = 68;
+
+/*  One timer compare value per bit, 24 bits per LED. Kept outside the class
+    so the linker can drop it when the strip is not used  */
+uint16_t leds_dma_data[WS2812B_Driver::MAX_LEDS_NUMBER*24];
+
+}
+
+constinit WS2812B_Driver WS2812B;
 
 
-static uint16_t leds_dma_data[MAX_LEDS_NUMBER*24];
-
-
-static void Set_RGB_Color(struct rgb_color_s* leds, uint8_t leds_number)
+void WS2812B_Driver::Set_RGB_Color(const rgb_color_s* leds, uint8_t leds_number)
 {
   if(leds_number>MAX_LEDS_NUMBER)
     return;
 
+  /*  Colors go out byte by byte in memory order (G, R, B), MSB first  */
+  const uint8_t* color_bytes = reinterpret_cast<const uint8_t*>(leds);
   uint32_t dma_data_size = (uint32_t)leds_number*24;
-  uint32_t bit_number = 0;
 
-  while(bit_number!=dma_data_size)
-  {
-    for(uint8_t ik=0; ik<8; ik++){
-      leds_dma_data[bit_number] = ((*(uint8_t*)leds)&((0x80>>ik))) ? CCR_HIGH : CCR_LOW;
-      bit_number++;
-    }
-    
-		leds = (struct rgb_color_s*)(*(uint32_t*)&leds + 1);
-  }
+  for(uint32_t bit_number = 0; bit_number < dma_data_size; bit_number++)
+    leds_dma_data[bit_number] = (color_bytes[bit_number/8]&(0x80>>(bit_number%8))) ? CCR_HIGH : CCR_LOW;
 
   LL_DMA_SetMemoryAddress(DMA2,LL_DMA_STREAM_1,(uint32_t)leds_dma_data);
 	LL_DMA_SetDataLength(DMA2,LL_DMA_STREAM_1,dma_data_size);
@@ -76,14 +75,15 @@ static void Set_RGB_Color(struct rgb_color_s* leds, uint8_t leds_number)
   xTaskResumeAll();
 }
 
-static void Set_HSV_Color(struct hsv_color_s* leds, uint8_t leds_number)
+void WS2812B_Driver::Set_HSV_Color(const hsv_color_s* leds, uint8_t leds_number)
 {
+  (void)leds;
   if(leds_number>MAX_LEDS_NUMBER)
     return;
 
 }
 
-void DMA_WS2812B_IRQ_Process(void)
+void WS2812B_Driver::DMA_IRQ_Process()
 {
   if(LL_DMA_IsActiveFlag_TC1(DMA2))
   {
@@ -98,8 +98,5 @@ void DMA_WS2812B_IRQ_Process(void)
     }
   }
 }
-
-const struct ws2812b_s WS2812B = {.Set_RGB_Color = Set_RGB_Color,
-                                  .Set_HSV_Color = Set_HSV_Color};
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

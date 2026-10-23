@@ -29,23 +29,17 @@
 #include "board_gpio_defines.hpp"
 #include "stm32f4xx_ll_gpio.h"
 
-#define CHANNELS_NUMBER     6
-#define TIM_PERIOD_US       100
-#define TIMx                TIM14
+namespace {
+
+constexpr uint32_t TIM_PERIOD_US = 100;
+TIM_TypeDef* const TIMx = TIM14;
+
+}
+
+constinit USARTx_TimeoutDriver USARTx_Timeout;
 
 
-
-struct timeout_s{
-    uint32_t period_counter;
-    void (*TimeoutCallback)(void* callback_params);
-    void* callback_params;
-};
-
-struct timeout_s timeout_list[CHANNELS_NUMBER] = {0};
-uint8_t working_flag = 0;
-
-
-void SetTimeout(uint8_t timeout_channel, uint32_t timeout_us, void (*TimeoutCallback)(void* callback_params), void* callback_params)
+void USARTx_TimeoutDriver::SetTimeout(uint8_t timeout_channel, uint32_t timeout_us, void (*TimeoutCallback)(void* callback_params), void* callback_params)
 {
     timeout_list[timeout_channel].period_counter = timeout_us/TIM_PERIOD_US;
     timeout_list[timeout_channel].TimeoutCallback = TimeoutCallback;
@@ -58,12 +52,12 @@ void SetTimeout(uint8_t timeout_channel, uint32_t timeout_us, void (*TimeoutCall
     }
 }
 
-void ResetTimeout(uint8_t timeout_channel)
+void USARTx_TimeoutDriver::ResetTimeout(uint8_t timeout_channel)
 {
     timeout_list[timeout_channel].period_counter = 0;
 }
 
-static void IRQ_Process(void)
+void USARTx_TimeoutDriver::TickChannels()
 {
     uint8_t stop_flag = 1;
 
@@ -87,14 +81,14 @@ static void IRQ_Process(void)
     }
 }
 
-void USARTx_Timeout_IRQ_Process(void)
+void USARTx_TimeoutDriver::TIM_IRQ_Process()
 {
 	if(LL_TIM_IsActiveFlag_UPDATE(TIMx))
 	{
 		LL_TIM_ClearFlag_UPDATE(TIMx);
 
 		if(LL_TIM_IsEnabledIT_UPDATE(TIMx))
-            IRQ_Process();
+            TickChannels();
     }	
 }
 

@@ -31,30 +31,30 @@
 #include "task.h"
 
 
-static uint8_t Ping(USART_TypeDef* usart, uint8_t maxon_id)
+uint8_t MaxonDriver::Ping(USART_TypeDef* usart, uint8_t maxon_id)
 {
-  struct dynamixel_master_response_s response;
+  dynamixel_master_response_s response;
   DynamixelMaster.Ping(usart,maxon_id, &response);
   while(response.is_data_ready==0) taskYIELD();
   return response.bus_error;
 }
     
-static void Set_ID(USART_TypeDef* usart, uint8_t current_id, uint8_t new_id)
+void MaxonDriver::Set_ID(USART_TypeDef* usart, uint8_t current_id, uint8_t new_id)
 {
-  DynamixelMaster.Write(usart, current_id, MAXON_BOARD_ID, &new_id, 1, NULL); 
+  DynamixelMaster.Write(usart, current_id, MAXON_BOARD_ID, &new_id, 1, nullptr); 
 }
     
-static void SetRange_TPM(USART_TypeDef* usart, uint8_t maxon_id, uint32_t tpm_bottom, uint32_t tpm_top)
+void MaxonDriver::SetRange_TPM(USART_TypeDef* usart, uint8_t maxon_id, uint32_t tpm_bottom, uint32_t tpm_top)
 {
   uint8_t data[8];
   Word32_ToByte(&tpm_bottom,data);
   Word32_ToByte(&tpm_top,data+4);
-  DynamixelMaster.Write(usart,maxon_id,MAXON_RangeTPM,data,8,NULL);
+  DynamixelMaster.Write(usart,maxon_id,MAXON_RangeTPM,data,8,nullptr);
 }
 
-static uint8_t GetRange_TPM(USART_TypeDef* usart, uint8_t maxon_id, uint32_t* tpm_bottom, uint32_t* tpm_top)
+uint8_t MaxonDriver::GetRange_TPM(USART_TypeDef* usart, uint8_t maxon_id, uint32_t* tpm_bottom, uint32_t* tpm_top)
 {
-  struct dynamixel_master_response_s response;
+  dynamixel_master_response_s response;
   
   DynamixelMaster.Read(usart,maxon_id,MAXON_RangeTPM,8,&response);
 
@@ -69,16 +69,16 @@ static uint8_t GetRange_TPM(USART_TypeDef* usart, uint8_t maxon_id, uint32_t* tp
   return 0;
 }
 
-static void Set_TPM(USART_TypeDef* usart, uint8_t maxon_id, int32_t tpm)
+void MaxonDriver::Set_TPM(USART_TypeDef* usart, uint8_t maxon_id, int32_t tpm)
 {
   uint8_t data[4];
   Word32_ToByte(&tpm,data);
-  DynamixelMaster.Write(usart,maxon_id,MAXON_TPM,data,4,NULL); 
+  DynamixelMaster.Write(usart,maxon_id,MAXON_TPM,data,4,nullptr); 
 }
 
-static uint8_t Get_TPM(USART_TypeDef* usart, uint8_t maxon_id, int32_t* tpm)
+uint8_t MaxonDriver::Get_TPM(USART_TypeDef* usart, uint8_t maxon_id, int32_t* tpm)
 {
-  struct dynamixel_master_response_s response;
+  dynamixel_master_response_s response;
   
   DynamixelMaster.Read(usart,maxon_id,MAXON_TPM,4,&response);
   while(response.is_data_ready==0) taskYIELD();
@@ -91,16 +91,16 @@ static uint8_t Get_TPM(USART_TypeDef* usart, uint8_t maxon_id, int32_t* tpm)
   return 0;
 }
 
-static void SetTotalTicks(USART_TypeDef* usart, uint8_t maxon_id, int32_t ticks)
+void MaxonDriver::SetTotalTicks(USART_TypeDef* usart, uint8_t maxon_id, int32_t ticks)
 {
   uint8_t data[4];
   Word32_ToByte(&ticks,data);
-  DynamixelMaster.Write(usart,maxon_id,MAXON_TotalTicks,data,4,NULL); 
+  DynamixelMaster.Write(usart,maxon_id,MAXON_TotalTicks,data,4,nullptr); 
 }
 
-static uint8_t GetTotalTicks(USART_TypeDef* usart, uint8_t maxon_id, int32_t* ticks)
+uint8_t MaxonDriver::GetTotalTicks(USART_TypeDef* usart, uint8_t maxon_id, int32_t* ticks)
 {
-  struct dynamixel_master_response_s response;
+  dynamixel_master_response_s response;
   
   DynamixelMaster.Read(usart,maxon_id,MAXON_TotalTicks,4,&response);
   while(response.is_data_ready==0) taskYIELD();
@@ -113,27 +113,18 @@ static uint8_t GetTotalTicks(USART_TypeDef* usart, uint8_t maxon_id, int32_t* ti
   return 0;
 }
 
-static void Enable(USART_TypeDef* usart, uint8_t maxon_id)
+void MaxonDriver::Enable(USART_TypeDef* usart, uint8_t maxon_id)
 {
   uint8_t data = 1;
-  DynamixelMaster.Write(usart,maxon_id,MAXON_Enable,&data,1,NULL);
+  DynamixelMaster.Write(usart,maxon_id,MAXON_Enable,&data,1,nullptr);
 }
 
-static void Disable(USART_TypeDef* usart, uint8_t maxon_id)
+void MaxonDriver::Disable(USART_TypeDef* usart, uint8_t maxon_id)
 {
   uint8_t data = 0;
-  DynamixelMaster.Write(usart,maxon_id,MAXON_Enable,&data,1,NULL);
+  DynamixelMaster.Write(usart,maxon_id,MAXON_Enable,&data,1,nullptr);
 }
 
-const struct maxon_s Maxon = {.Ping = Ping,
-                              .Set_ID = Set_ID,
-                              .SetRange_TPM = SetRange_TPM,
-                              .GetRange_TPM = GetRange_TPM,
-                              .Set_TPM = Set_TPM,
-                              .Get_TPM = Get_TPM,
-                              .SetTotalTicks = SetTotalTicks,
-                              .GetTotalTicks = GetTotalTicks,
-                              .Enable = Enable,
-                              .Disable = Disable};
+constinit MaxonDriver Maxon;
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

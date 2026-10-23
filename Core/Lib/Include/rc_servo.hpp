@@ -20,10 +20,6 @@
 #ifndef __RC_SERVO_CONTROL_H
 #define __RC_SERVO_CONTROL_H
 
-#ifdef __cplusplus
- extern "C" {
-#endif
-	 
 #include "std_def.hpp"
 
 
@@ -38,17 +34,16 @@ enum rc_servo_e{
   RC_SERVO_8
 };
 
-struct rc_servo_s{
-  void (*SetServoAngle)(enum rc_servo_e servo, uint32_t pulse_min_us, uint32_t pulse_max_us, uint32_t angle_range, uint32_t angle);
-  void (*Enable)(enum rc_servo_e servo);
-  void (*Disable)(enum rc_servo_e servo);
+/*  Analog RC servos on PWM outputs 1..8, 50 Hz  */
+class RC_ServoDriver{
+public:
+    void SetServoAngle(rc_servo_e servo, uint32_t pulse_min_us, uint32_t pulse_max_us, uint32_t angle_range, uint32_t angle);
+    void Enable(rc_servo_e servo);
+    void Disable(rc_servo_e servo);
 };
 
-extern struct rc_servo_s RC_Servo;
+extern RC_ServoDriver RC_Servo;
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif 
 

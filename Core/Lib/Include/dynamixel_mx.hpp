@@ -20,10 +20,6 @@
 #ifndef __DYNAMIXEL_MX_H
 #define __DYNAMIXEL_MX_H
 
-#ifdef __cplusplus
- extern "C" {
-#endif
-	 
 #include "std_def.hpp"
 #include "stm32f4xx_ll_usart.h"
 
@@ -75,28 +71,27 @@
 
 
 
-struct dynamixel_mx_s{
-    uint8_t (*Ping)(USART_TypeDef* usart, uint8_t servo_id);
-    void (*Set_ID)(USART_TypeDef* usart, uint8_t current_id, uint8_t new_id);
-    void (*TorqueEnable)(USART_TypeDef* usart, uint8_t servo_id);
-    void (*TorqueDisable)(USART_TypeDef* usart, uint8_t servo_id);
-    void (*SetAngle)(USART_TypeDef* usart, uint8_t servo_id, uint16_t angle);
-    uint8_t (*GetAngle)(USART_TypeDef* usart, uint8_t servo_id, uint16_t* angle);
-    void (*SetWheelMode)(USART_TypeDef* usart, uint8_t servo_id);
-    void (*SetJointMode)(USART_TypeDef* usart, uint8_t servo_id);
-    void (*SetMovingSpeed)(USART_TypeDef* usart, uint8_t servo_id, int16_t speed);
-    uint8_t (*GetPresentLoad)(USART_TypeDef* usart, uint8_t servo_id, int16_t* load);
-    void (*Enable_LED)(USART_TypeDef* usart, uint8_t servo_id);
-    void (*Disable_LED)(USART_TypeDef* usart, uint8_t servo_id);
-}; 
+/*  MX-28/64 servo on a Dynamixel line; angle in degrees 0..360  */
+class Dynamixel_MX_Driver{
+public:
+    uint8_t Ping(USART_TypeDef* usart, uint8_t servo_id);
+    void Set_ID(USART_TypeDef* usart, uint8_t current_id, uint8_t new_id);
+    void TorqueEnable(USART_TypeDef* usart, uint8_t servo_id);
+    void TorqueDisable(USART_TypeDef* usart, uint8_t servo_id);
+    void SetAngle(USART_TypeDef* usart, uint8_t servo_id, uint16_t angle);
+    uint8_t GetAngle(USART_TypeDef* usart, uint8_t servo_id, uint16_t* angle);
+    void SetWheelMode(USART_TypeDef* usart, uint8_t servo_id);
+    void SetJointMode(USART_TypeDef* usart, uint8_t servo_id);
+    void SetMovingSpeed(USART_TypeDef* usart, uint8_t servo_id, int16_t speed);
+    uint8_t GetPresentLoad(USART_TypeDef* usart, uint8_t servo_id, int16_t* load);
+    void Enable_LED(USART_TypeDef* usart, uint8_t servo_id);
+    void Disable_LED(USART_TypeDef* usart, uint8_t servo_id);
+};
 
-extern const struct dynamixel_mx_s Dynamixel_MX;
+extern Dynamixel_MX_Driver Dynamixel_MX;
 
 
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif 
 

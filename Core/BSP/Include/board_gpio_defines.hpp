@@ -9,9 +9,6 @@
 #ifndef __BOARD_GPIO_DEFINES_H
 #define __BOARD_GPIO_DEFINES_H
 
-#ifdef __cplusplus
- extern "C" {
-#endif
 
 #include "stm32f4xx_ll_gpio.h"
 
@@ -147,9 +144,6 @@
 #define GPIO28_PC14               I2C1_6_GPIO_PC14 
 
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif
 

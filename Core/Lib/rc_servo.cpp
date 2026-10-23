@@ -26,36 +26,38 @@
 #include "stm32f4xx_ll_gpio.h"
 #include "board_gpio_defines.hpp"
 
-#define ANALOG_SERVO_FREQUENCY_HZ   50
-#define SERVO_SIGNAL_PERIOD_US      20000
+namespace {
 
-static enum pwm_group_e pwm_group[] = {PWM_GROUP_1234,PWM_GROUP_1234,PWM_GROUP_1234,PWM_GROUP_1234,
+constexpr uint32_t ANALOG_SERVO_FREQUENCY_HZ = 50;
+constexpr uint32_t SERVO_SIGNAL_PERIOD_US = 20000;
+
+constexpr pwm_group_e pwm_group[] = {PWM_GROUP_1234,PWM_GROUP_1234,PWM_GROUP_1234,PWM_GROUP_1234,
                                         PWM_GROUP_5678,PWM_GROUP_5678,PWM_GROUP_5678,PWM_GROUP_5678};
 
+}
 
 
-static void SetServoAngle(enum rc_servo_e servo, uint32_t pulse_min_us, uint32_t pulse_max_us, uint32_t angle_range, uint32_t angle)
+
+void RC_ServoDriver::SetServoAngle(rc_servo_e servo, uint32_t pulse_min_us, uint32_t pulse_max_us, uint32_t angle_range, uint32_t angle)
 {
   uint32_t pulse_us = pulse_min_us + (angle*(pulse_max_us-pulse_min_us))/angle_range;
   uint32_t arr_value = PWM.GetGroupTimAutoreload(pwm_group[servo]);
   uint32_t cc_value = (pulse_us*(arr_value + 1))/SERVO_SIGNAL_PERIOD_US;
 
-  PWM.SetOutput_CC((enum pwm_output_e)servo, cc_value);
+  PWM.SetOutput_CC((pwm_output_e)servo, cc_value);
 }
 
-static void Enable(enum rc_servo_e servo)
+void RC_ServoDriver::Enable(rc_servo_e servo)
 {
   PWM.SetGroupFrequency(pwm_group[servo], ANALOG_SERVO_FREQUENCY_HZ);
-  PWM.Enable((enum pwm_output_e)servo);
+  PWM.Enable((pwm_output_e)servo);
 }
 
-static void Disable(enum rc_servo_e servo)
+void RC_ServoDriver::Disable(rc_servo_e servo)
 {
-  PWM.Disable((enum pwm_output_e)servo);
+  PWM.Disable((pwm_output_e)servo);
 }
 
-struct rc_servo_s RC_Servo = {.SetServoAngle = SetServoAngle,
-                              .Enable = Enable,
-                              .Disable = Disable};
+constinit RC_ServoDriver RC_Servo;
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

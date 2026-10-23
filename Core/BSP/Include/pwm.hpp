@@ -20,10 +20,6 @@
 #ifndef __PWM_H
 #define __PWM_H
 
-#ifdef __cplusplus
- extern "C" {
-#endif
-	 
 #include "std_def.hpp"
 
 
@@ -43,20 +39,18 @@ enum pwm_group_e{
   PWM_GROUP_5678
 };
 
-struct pwm_s{
-  uint32_t (*GetGroupTimAutoreload)(enum pwm_group_e pwm_group);
-  void (*SetOutput_CC)(enum pwm_output_e pwm_output, uint32_t cc_value);
-  void (*SetGroupFrequency)(enum pwm_group_e pwm_group, uint32_t frequency_hz);
-  void (*SetOutputDutyCycle)(enum pwm_output_e pwm_output, uint32_t duty_cycle);
-  void (*Enable)(enum pwm_output_e pwm_output);
-  void (*Disable)(enum pwm_output_e pwm_output);
+/*  PWM1..4 on TIM4, PWM5..8 on TIM5  */
+class PWM_Driver{
+public:
+  uint32_t GetGroupTimAutoreload(pwm_group_e pwm_group);
+  void SetOutput_CC(pwm_output_e pwm_output, uint32_t cc_value);
+  void SetGroupFrequency(pwm_group_e pwm_group, uint32_t frequency_hz);
+  void SetOutputDutyCycle(pwm_output_e pwm_output, uint32_t duty_cycle);
+  void Enable(pwm_output_e pwm_output);
+  void Disable(pwm_output_e pwm_output);
 };
 
-extern const struct pwm_s PWM;
-
-#ifdef __cplusplus
-}
-#endif
+extern PWM_Driver PWM;
 
 #endif 
 

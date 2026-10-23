@@ -20,36 +20,30 @@
 #ifndef __BYTE_TO_WORD_H
 #define __BYTE_TO_WORD_H
 
-#ifdef __cplusplus
- extern "C" {
-#endif
 	 
 #include "string.h" 
 
 
-static inline void ByteTo_Word32(uint8_t* byte, void* var)
+inline void ByteTo_Word32(uint8_t* byte, void* var)
 {
   memcpy(var,byte,4);
 }
 
-static inline void Word32_ToByte(void* var, uint8_t* byte)
+inline void Word32_ToByte(void* var, uint8_t* byte)
 {
   memcpy(byte,var,4);
 }
 
-static inline void ByteTo_Word16(uint8_t* byte, void* var)
+inline void ByteTo_Word16(uint8_t* byte, void* var)
 {
   memcpy(var,byte,2);
 }
 
-static inline void Word16_ToByte(void* var, uint8_t* byte)
+inline void Word16_ToByte(void* var, uint8_t* byte)
 {
   memcpy(byte,var,2);
 }
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif 
 

@@ -9,11 +9,9 @@
 #ifndef __PCA9685_H
 #define __PCA9685_H
 
-#ifdef __cplusplus
- extern "C" {
-#endif
 
 #include "stdint.h"
+#include "i2c2.hpp"
 
 /* Стандартный 7‑битный базовый адрес PCA9685 (A5..A0 = 0) */
 #define PCA9685_I2C_BASE_ADDR          0x40U
@@ -74,25 +72,11 @@ enum pca9685_channel_e{
   PCA9685_CH15
 };
 
-/* Типы функций для низкоуровневого I2C ------------------------------------
- *
- * Ожидается, что вы реализуете эти функции где‑то в BSP (например, bsp_i2c.c)
- * с использованием HAL или LL:
- *
- * int PCA9685_I2C_Write(uint8_t dev_addr_7bit, uint8_t reg,
- *                       const uint8_t *data, uint16_t size);
- * int PCA9685_I2C_Read (uint8_t dev_addr_7bit, uint8_t reg,
- *                       uint8_t *data, uint16_t size);
- *
- * Функции должны вернуть 0 при успехе и ненулевое значение при ошибке.
+/* Высокоуровневый интерфейс (I2C2) ----------------------------------------
+ * Все функции возвращают 0 при успехе и ненулевое значение при ошибке.
  */
-int PCA9685_I2C_Write(uint8_t dev_addr_7bit, uint8_t reg,
-                      const uint8_t *data, uint16_t size);
-int PCA9685_I2C_Read (uint8_t dev_addr_7bit, uint8_t reg,
-                      uint8_t *data, uint16_t size);
-
-/* Высокоуровневый интерфейс -----------------------------------------------*/
-struct pca9685_s{
+class PCA9685_Driver{
+public:
   /* Инициализация:
    * - i2c_addr_7bit  – адрес PCA9685 (0x40..0x7F)
    * - pwm_freq_hz    – частота PWM (для серв обычно 50 Гц)
@@ -100,39 +84,45 @@ struct pca9685_s{
    * - pulse_max_us   – ширина импульса для max_angle_deg (обычно 2400 мкс)
    * - max_angle_deg  – полный ход сервопривода (обычно 180° или 270°)
    */
-  int  (*Init)(uint8_t i2c_addr_7bit,
-               float   pwm_freq_hz,
-               uint16_t pulse_min_us,
-               uint16_t pulse_max_us,
-               uint16_t max_angle_deg);
+  int Init(uint8_t i2c_addr_7bit,
+           float   pwm_freq_hz,
+           uint16_t pulse_min_us,
+           uint16_t pulse_max_us,
+           uint16_t max_angle_deg);
 
   /* Установка «сырых» значений ON/OFF (0..4095) для канала */
-  int  (*SetPWM)(enum pca9685_channel_e ch,
-                 uint16_t on,
-                 uint16_t off);
+  int SetPWM(pca9685_channel_e ch, uint16_t on, uint16_t off);
 
   /* Установка угла сервопривода (в градусах) на канале */
-  int  (*SetServoAngle)(enum pca9685_channel_e ch,
-                        uint16_t angle_deg);
+  int SetServoAngle(pca9685_channel_e ch, uint16_t angle_deg);
 
-  /* Установка угла сервопривода с указанием I2C адреса платы */
-  int  (*SetServoAngleWithAddr)(uint8_t i2c_addr_7bit,
-                                 enum pca9685_channel_e ch,
-                                 uint16_t angle_deg);
+  /* Установка угла сервопривода с указанием I2C адреса платы
+   * (параметры импульса и частоты берутся из Init) */
+  int SetServoAngleWithAddr(uint8_t i2c_addr_7bit, pca9685_channel_e ch, uint16_t angle_deg);
 
   /* Включить/выключить все каналы сразу (по ширине импульса в мкс) */
-  int  (*SetAllServoPulseUs)(uint16_t pulse_us);
+  int SetAllServoPulseUs(uint16_t pulse_us);
 
   /* Перевод микросхемы в сон и выход из сна */
-  int  (*Sleep)(void);
-  int  (*Wakeup)(void);
+  int Sleep();
+  int Wakeup();
+
+private:
+  int WriteReg(uint8_t reg, uint8_t value);
+  int ReadReg(uint8_t reg, uint8_t *value);
+  int SetChannelPWM(uint8_t i2c_addr_7bit, pca9685_channel_e ch, uint16_t on, uint16_t off);
+  uint16_t PulseUsToTicks(uint16_t pulse_us) const;
+  uint16_t AngleToTicks(uint16_t angle_deg) const;
+
+  uint8_t  i2c_addr      = PCA9685_I2C_BASE_ADDR;
+  float    pwm_freq_hz   = 50.0f;
+  uint16_t pulse_min_us  = 500U;
+  uint16_t pulse_max_us  = 2500U;
+  uint16_t max_angle_deg = 180U;
 };
 
-extern struct pca9685_s PCA9685;
+extern PCA9685_Driver PCA9685;
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* __PCA9685_H */
 

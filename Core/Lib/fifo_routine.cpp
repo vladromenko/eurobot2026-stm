@@ -22,76 +22,43 @@
 /* Includes ------------------------------------------------------------------*/
 #include "fifo_routine.hpp"
 
-/*  Error Codes */
-#define ERROR   1
-#define OK      0
 
-
-void FIFO_StructInit(struct fifo_s* fifo, void* fifo_ptr, uint32_t fifo_size, uint32_t fifo_element_size)
+void FIFO::Init(void* fifo_ptr, uint32_t fifo_size, uint32_t fifo_element_size)
 {
-  fifo->fifo_bot_edge_ptr = fifo_ptr;
-  fifo->fifo_top_edge_ptr = (void*)((uint32_t)fifo_ptr + (fifo_size-1) * fifo_element_size);
-  fifo->head_ptr = fifo_ptr;
-  fifo->tail_ptr = fifo_ptr;
-  fifo->fifo_size = fifo_size;
-  fifo->fifo_element_size = fifo_element_size;
-  fifo->elements_count = 0;
+  this->fifo_bot_edge_ptr = static_cast<uint8_t*>(fifo_ptr);
+  this->fifo_top_edge_ptr = fifo_bot_edge_ptr + (fifo_size-1) * fifo_element_size;
+  this->head_ptr = fifo_bot_edge_ptr;
+  this->tail_ptr = fifo_bot_edge_ptr;
+  this->fifo_size = fifo_size;
+  this->fifo_element_size = fifo_element_size;
+  this->elements_count = 0;
 }
 
-static void FIFO_MovePtr(void* ptr_to_ptr, void* fifo_bot_edge_ptr, void* fifo_top_edge_ptr, uint32_t fifo_element_size)
+uint8_t* FIFO::NextPtr(uint8_t* ptr) const
 {
-	if(*((uint32_t*)ptr_to_ptr) < (uint32_t)fifo_top_edge_ptr)
-		*((uint32_t*)ptr_to_ptr) += fifo_element_size;
-	else
-		*((uint32_t*)ptr_to_ptr) = (uint32_t)fifo_bot_edge_ptr;
+  return (ptr < fifo_top_edge_ptr) ? (ptr + fifo_element_size) : fifo_bot_edge_ptr;
 }
 
-uint8_t FIFO_Add(struct fifo_s* fifo, void* data_in_ptr)
+uint8_t FIFO::Add(const void* data_in_ptr)
 {
-  if((fifo->elements_count+1)==fifo->fifo_size)
-    return ERROR;
+  if(IsFull())
+    return 1;
 
-  memcpy(fifo->tail_ptr, data_in_ptr, fifo->fifo_element_size);
-  FIFO_MovePtr(&(fifo->tail_ptr), fifo->fifo_bot_edge_ptr, fifo->fifo_top_edge_ptr, fifo->fifo_element_size);
-  fifo->elements_count++;
-  return OK;
+  memcpy(tail_ptr, data_in_ptr, fifo_element_size);
+  tail_ptr = NextPtr(tail_ptr);
+  elements_count++;
+  return 0;
 }
 
-uint8_t FIFO_Remove(struct fifo_s* fifo, void* data_out_ptr)
+uint8_t FIFO::Remove(void* data_out_ptr)
 {
-  if(fifo->elements_count==0)
-    return ERROR;
+  if(IsEmpty())
+    return 1;
 
-  memcpy(data_out_ptr, fifo->head_ptr, fifo->fifo_element_size);
-  FIFO_MovePtr(&(fifo->head_ptr), fifo->fifo_bot_edge_ptr, fifo->fifo_top_edge_ptr, fifo->fifo_element_size);
-  fifo->elements_count--;
-  return OK;
+  memcpy(data_out_ptr, head_ptr, fifo_element_size);
+  head_ptr = NextPtr(head_ptr);
+  elements_count--;
+  return 0;
 }
-
-uint32_t FIFO_GetElementsCount(struct fifo_s* fifo)
-{
-  return fifo->elements_count;
-}
-
-uint8_t FIFO_IsFull(struct fifo_s* fifo)
-{
-  return ((fifo->elements_count+1)==fifo->fifo_size) ? 1 : 0;
-}
-
-uint8_t FIFO_IsNotFull(struct fifo_s* fifo)
-{
-  return ((fifo->elements_count+1)==fifo->fifo_size) ? 0 : 1;
-}
-
-uint8_t FIFO_IsEmpty(struct fifo_s* fifo)
-{
-  return (fifo->elements_count==0) ? 1 : 0;
-}
-
-uint8_t FIFO_IsNotEmpty(struct fifo_s* fifo)
-{
-  return (fifo->elements_count==0) ? 0 : 1;
-}
-
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
