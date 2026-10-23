@@ -1,5 +1,43 @@
 # Changelog
 
+## 2026-10-24
+
+### Переход на C++: драйверы BSP и Lib переведены на классы
+
+- Каждый драйвер теперь класс, а не структура с указателями на функции. Глобальный объект называется как раньше (`Stepper`, `PWM`, `L6474H`, `WS2812B`, `USARTx`, `Dynamixel_AX`, `Maxon`, `BMS`, `Button`, `PCA9685`, `Serial`, `HL_RTU` и др.), поэтому вызовы вида `Stepper.StepToPosisition(...)` не изменились.
+- Состояние, которое лежало в глобальных переменных файлов, перенесено в поля классов: позиции шаговых моторов, регистр SPI_GPO, таймауты USART, кнопки, FIFO, настройки PCA9685.
+- Без динамической памяти и рантайма C++: все объекты объявлены `constinit`, кода инициализации при старте нет; `malloc`, `new`, исключения и RTTI не используются. Для виртуальных функций в [cmake/gcc_runtime.c](cmake/gcc_runtime.c) добавлена заглушка `__cxa_pure_virtual`.
+- Из заголовков BSP и Lib убраны `extern "C"`: ни один C-файл их не подключает.
+- FLASH (Debug): 70108 → 62728 Б. RAM: 19656 → 19384 Б.
+
+### USART: новый интерфейс протоколов
+
+- Таблицы `usartx_protocol_s`, `usartx_control_s` и `usartx_line_config_s` заменены классами в [usartx_communication.hpp](Core/BSP/Include/usartx_communication.hpp):
+  - `USARTx_Line` — линия с буферами, FIFO и методами `StartTx`, `StopTx`, `StartRx`, `StopRx`, `SetRxTimeout`, `ResetRxTimeout`;
+  - `USARTx_Protocol` — базовый класс протокола с виртуальными `InitLine`, `TxCompleteCallback`, `RxCompleteCallback`, `RxTimeoutCallback`.
+- `DynamixelMaster`, `Serial` и `HL_RTU` наследуются от `USARTx_Protocol`. Привязка в [main.cpp](Core/App/main.cpp): `USARTx.BindProtocol(USART3, DynamixelMaster)`, без `.GetProtocol()`.
+- FIFO (`fifo_routine`) стал классом `FIFO` с методами `Init`, `Add`, `Remove`, `IsFull` и т.д.
+- Обработчики прерываний вызывают методы: `Stepper.TIM_IRQ_Process()`, `USARTx.IRQ_Process(...)`, `USARTx_Timeout.TIM_IRQ_Process()`, `WS2812B.DMA_IRQ_Process()`.
+
+### Другие изменения API
+
+- `SPI_GPO_SetOutputPin(x)` / `SPI_GPO_ResetOutputPin(x)` → `SPI_GPO.SetOutputPin(x)` / `SPI_GPO.ResetOutputPin(x)`.
+- `PCA9685_I2C_Write/Read` → `I2C2_Bus.Write/Read`, новый заголовок [i2c2.hpp](Core/BSP/Include/i2c2.hpp). Имя `I2C2` занято макросом CMSIS.
+- Удалены пустые заглушки `DynamixelMaster.RegWrite`, `Action`, `FactoryReset`, `Reboot`, `BulkRead`: они ничего не делали и нигде не вызывались.
+- Четыре функции `StepperMotor_N_Init` объединены в `Stepper.Init(motor)` с таблицей настроек; значения не изменились.
+
+### Исправлено
+
+- **`DynamixelMaster.SyncWrite` портил стек.** Цикл `do {…} while (boards_number--)` делал лишний проход с индексом 255. `memcpy` писал примерно на 768 байт за пределы локальной переменной, а при `response_array == NULL` запись шла ещё и по адресу `NULL + 9180`. Вызывается из `gripper_task`.
+- **`DynamixelMaster.Write` с `response = NULL` писал по адресу 0.** Так вызываются почти все команды AX (`SetAngle`, `TorqueEnable`, …).
+- **`BMS.GetPowerConsumption` отсутствовал в таблице функций**: поле было `NULL`, вызов уронил бы прошивку.
+- **`Dynamixel_MX.GetAngle`** читал 2 байта в неинициализированную 4-байтную переменную, поэтому угол мог получаться неверным.
+- `PCA9685.SetServoAngleWithAddr` больше не подменяет на время вызова адрес платы, сохранённый в `Init`.
+
+### Не проверено на железе
+
+Сборка Debug и Release и `make check` проходят. Запуск на плате не проводился: шаговые моторы, Dynamixel, BMS, Maxon, терминал (UART1), кнопки и светодиодная лента требуют проверки.
+
 ## 2026-10-23
 
 ### Сборка: только CMake, Keil удалён
