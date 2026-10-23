@@ -8,28 +8,47 @@
 - Состояние, которое лежало в глобальных переменных файлов, перенесено в поля классов: позиции шаговых моторов, регистр SPI_GPO, таймауты USART, кнопки, FIFO, настройки PCA9685.
 - Без динамической памяти и рантайма C++: все объекты объявлены `constinit`, кода инициализации при старте нет; `malloc`, `new`, исключения и RTTI не используются. Для виртуальных функций в [cmake/gcc_runtime.c](cmake/gcc_runtime.c) добавлена заглушка `__cxa_pure_virtual`.
 - Из заголовков BSP и Lib убраны `extern "C"`: ни один C-файл их не подключает.
-- FLASH (Debug): 70108 → 62728 Б. RAM: 19656 → 19384 Б.
+- FLASH (Debug): 70108 → 62548 Б. RAM: 19656 → 19416 Б.
 
 ### USART: новый интерфейс протоколов
 
 - Таблицы `usartx_protocol_s`, `usartx_control_s` и `usartx_line_config_s` заменены классами в [usartx_communication.hpp](Core/BSP/Include/usartx_communication.hpp):
   - `USARTx_Line` — линия с буферами, FIFO и методами `StartTx`, `StopTx`, `StartRx`, `StopRx`, `SetRxTimeout`, `ResetRxTimeout`;
-  - `USARTx_Protocol` — базовый класс протокола с виртуальными `InitLine`, `TxCompleteCallback`, `RxCompleteCallback`, `RxTimeoutCallback`.
-- `DynamixelMaster`, `Serial` и `HL_RTU` наследуются от `USARTx_Protocol`. Привязка в [main.cpp](Core/App/main.cpp): `USARTx.BindProtocol(USART3, DynamixelMaster)`, без `.GetProtocol()`.
+  - `USARTx_Protocol` — базовый класс протокола с виртуальными `InitLine`, `TxCompleteCallback`, `RxCompleteCallback`, `RxTimeoutCallback`. Протокол хранит свою линию: один объект — одна линия.
+- `DynamixelMaster`, `Serial` и `HL_RTU` наследуются от `USARTx_Protocol`. Вместо общего `DynamixelMaster` теперь по объекту на линию: `DynamixelBus3` (USART3, сервы AX), `DynamixelBus4` (UART4, BMS), `DynamixelBus6` (USART6, Maxon).
+- Привязка в [main.cpp](Core/App/main.cpp): `USARTx.BindProtocol(USART3, DynamixelBus3)`, `USARTx.BindProtocol(UART5, Serial)` и т.д., без `.GetProtocol()`.
 - FIFO (`fifo_routine`) стал классом `FIFO` с методами `Init`, `Add`, `Remove`, `IsFull` и т.д.
 - Обработчики прерываний вызывают методы: `Stepper.TIM_IRQ_Process()`, `USARTx.IRQ_Process(...)`, `USARTx_Timeout.TIM_IRQ_Process()`, `WS2812B.DMA_IRQ_Process()`.
+
+### Шина внутри объекта, а не параметром
+
+- Методы драйверов больше не принимают `USART_TypeDef* usart`: шина задаётся один раз при создании объекта. ID устройства остаётся параметром, так как ID серв вычисляются во время работы (сканирование, команды терминала).
+
+  | Было | Стало |
+  |---|---|
+  | `Dynamixel_AX.SetAngle(USART3, id, angle)` | `Dynamixel_AX.SetAngle(id, angle)` |
+  | `Maxon.Set_TPM(bus_devices[M].usart, bus_devices[M].id, tpm)` | `Maxon.Set_TPM(bus_devices[M].id, tpm)` |
+  | `BMS.GetBatteryState(bus_devices[B].usart, ...)` | `BMS.GetBatteryState(bus_devices[B].id, ...)` |
+  | `DynamixelMaster.SyncWrite(usart, ids, ...)` | `DynamixelBus3.SyncWrite(ids, ...)` |
+  | `Serial.WriteBytes(UART5, bytes, n)` | `Serial.WriteBytes(bytes, n)` |
+  | `HL_RTU.SendResponse(USART1, response)` | `HL_RTU.SendResponse(response)` |
+
+- Шины устройств: `Dynamixel_AX` и `Dynamixel_MX` — `DynamixelBus3`, `Maxon` — `DynamixelBus6`, `BMS` — `DynamixelBus4`. Шина передаётся в `constexpr`-конструктор, объекты по-прежнему `constinit`.
+- Из `bus_device_s` удалено поле `usart`: таблица [bus_device.cpp](Core/App/bus_device.cpp) хранит только ID.
+- `RotateTwoDynamixels` в `gripper_task` принимает шину (`DynamixelMasterDriver&`), а не `USART_TypeDef*`.
+- Индексы моторов и выходов (`Stepper`, `L6474H`, `PWM`, `RC_Servo`, `H_Bridge`, `Button`) и адрес платы PCA9685 остались параметрами методов по тому же принципу.
 
 ### Другие изменения API
 
 - `SPI_GPO_SetOutputPin(x)` / `SPI_GPO_ResetOutputPin(x)` → `SPI_GPO.SetOutputPin(x)` / `SPI_GPO.ResetOutputPin(x)`.
 - `PCA9685_I2C_Write/Read` → `I2C2_Bus.Write/Read`, новый заголовок [i2c2.hpp](Core/BSP/Include/i2c2.hpp). Имя `I2C2` занято макросом CMSIS.
-- Удалены пустые заглушки `DynamixelMaster.RegWrite`, `Action`, `FactoryReset`, `Reboot`, `BulkRead`: они ничего не делали и нигде не вызывались.
+- Удалены пустые заглушки Dynamixel `RegWrite`, `Action`, `FactoryReset`, `Reboot`, `BulkRead`: они ничего не делали и нигде не вызывались.
 - Четыре функции `StepperMotor_N_Init` объединены в `Stepper.Init(motor)` с таблицей настроек; значения не изменились.
 
 ### Исправлено
 
-- **`DynamixelMaster.SyncWrite` портил стек.** Цикл `do {…} while (boards_number--)` делал лишний проход с индексом 255. `memcpy` писал примерно на 768 байт за пределы локальной переменной, а при `response_array == NULL` запись шла ещё и по адресу `NULL + 9180`. Вызывается из `gripper_task`.
-- **`DynamixelMaster.Write` с `response = NULL` писал по адресу 0.** Так вызываются почти все команды AX (`SetAngle`, `TorqueEnable`, …).
+- **`SyncWrite` (Dynamixel) портил стек.** Цикл `do {…} while (boards_number--)` делал лишний проход с индексом 255. `memcpy` писал примерно на 768 байт за пределы локальной переменной, а при `response_array == NULL` запись шла ещё и по адресу `NULL + 9180`. Вызывается из `gripper_task`.
+- **`Write` (Dynamixel) с `response = NULL` писал по адресу 0.** Так вызываются почти все команды AX (`SetAngle`, `TorqueEnable`, …).
 - **`BMS.GetPowerConsumption` отсутствовал в таблице функций**: поле было `NULL`, вызов уронил бы прошивку.
 - **`Dynamixel_MX.GetAngle`** читал 2 байта в неинициализированную 4-байтную переменную, поэтому угол мог получаться неверным.
 - `PCA9685.SetServoAngleWithAddr` больше не подменяет на время вызова адрес платы, сохранённый в `Init`.

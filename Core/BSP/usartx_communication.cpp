@@ -220,8 +220,7 @@ void USARTx_Line::ResetRxTimeout()
 
 void USARTx_Line::RxTimeoutHandler(void* line)
 {
-  USARTx_Line* self = static_cast<USARTx_Line*>(line);
-  self->protocol->RxTimeoutCallback(self);
+  static_cast<USARTx_Line*>(line)->protocol->RxTimeoutCallback();
 }
 
 
@@ -249,7 +248,7 @@ void USARTx_Driver::IRQ_Process(USART_TypeDef* usart)
 		LL_USART_ClearFlag_TC(usart);
 
 		if(LL_USART_IsEnabledIT_TC(usart)){
-      line->protocol->TxCompleteCallback(line);
+      line->protocol->TxCompleteCallback();
     }
 	}
 
@@ -260,7 +259,7 @@ void USARTx_Driver::IRQ_Process(USART_TypeDef* usart)
 
 		if(LL_USART_IsEnabledIT_IDLE(usart)){
       uint32_t data_length = line->rx_buffer_size - LL_DMA_GetDataLength(line->rx_dma, line->rx_dma_stream);
-      line->protocol->RxCompleteCallback(line, data_length);
+      line->protocol->RxCompleteCallback(data_length);
 		}
 	}
 }
@@ -362,7 +361,8 @@ void USARTx_Driver::BindProtocol(USART_TypeDef* usart, USARTx_Protocol& protocol
   }
 
   line->protocol = &protocol;
-  protocol.InitLine(line);
+  protocol.line = line;
+  protocol.InitLine();
 }
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

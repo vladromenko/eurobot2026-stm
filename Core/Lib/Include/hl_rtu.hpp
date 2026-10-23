@@ -41,16 +41,17 @@ struct hl_rtu_response_s{
 /*  Request/response protocol of the high level (Raspberry Pi) link: 0xFF 0xFF | length | cmd | data | crc  */
 class HL_RTU_Driver : public USARTx_Protocol{
 public:
-    void SendResponse(USART_TypeDef* usart, hl_rtu_response_s* response);
+    void SendResponse(hl_rtu_response_s* response);
     /*  Returns 1 if a request was taken from the queue  */
-    uint8_t GetRequest(USART_TypeDef* usart, hl_rtu_request_s* request);
+    uint8_t GetRequest(hl_rtu_request_s* request);
 
 private:
-    void InitLine(USARTx_Line* line) override;
-    void TxCompleteCallback(USARTx_Line* line) override;
-    void RxCompleteCallback(USARTx_Line* line, uint32_t data_length) override;
+    void InitLine() override;
+    void TxCompleteCallback() override;
+    void RxCompleteCallback(uint32_t data_length) override;
 };
 
+/*  Raspberry Pi link, bound to USART1 in main()  */
 extern HL_RTU_Driver HL_RTU;
 
 #endif

@@ -52,25 +52,25 @@ void PrepareRobot(void)
 
 void MaxonsEnable(void)
 {
-	Maxon.Enable(bus_devices[MAXON_MOTOR_1].usart, bus_devices[MAXON_MOTOR_1].id);
-  	Maxon.Enable(bus_devices[MAXON_MOTOR_2].usart, bus_devices[MAXON_MOTOR_2].id);
-  	Maxon.Enable(bus_devices[MAXON_MOTOR_3].usart, bus_devices[MAXON_MOTOR_3].id);
+	Maxon.Enable(bus_devices[MAXON_MOTOR_1].id);
+  	Maxon.Enable(bus_devices[MAXON_MOTOR_2].id);
+  	Maxon.Enable(bus_devices[MAXON_MOTOR_3].id);
 	robot_ctrl.maxons_state = MAXONS_ENABLED;
 }
 
 void MaxonsDisable(void)
 {
-	Maxon.Disable(bus_devices[MAXON_MOTOR_1].usart, bus_devices[MAXON_MOTOR_1].id);
-  	Maxon.Disable(bus_devices[MAXON_MOTOR_2].usart, bus_devices[MAXON_MOTOR_2].id);
-  	Maxon.Disable(bus_devices[MAXON_MOTOR_3].usart, bus_devices[MAXON_MOTOR_3].id);
+	Maxon.Disable(bus_devices[MAXON_MOTOR_1].id);
+  	Maxon.Disable(bus_devices[MAXON_MOTOR_2].id);
+  	Maxon.Disable(bus_devices[MAXON_MOTOR_3].id);
 	robot_ctrl.maxons_state = MAXONS_DISABLED;
 }
 
 void MaxonsStop(void)
 {
-	Maxon.Set_TPM(bus_devices[MAXON_MOTOR_1].usart, bus_devices[MAXON_MOTOR_1].id, 0);
-  	Maxon.Set_TPM(bus_devices[MAXON_MOTOR_2].usart, bus_devices[MAXON_MOTOR_2].id, 0);
-  	Maxon.Set_TPM(bus_devices[MAXON_MOTOR_3].usart, bus_devices[MAXON_MOTOR_3].id, 0);
+	Maxon.Set_TPM(bus_devices[MAXON_MOTOR_1].id, 0);
+  	Maxon.Set_TPM(bus_devices[MAXON_MOTOR_2].id, 0);
+  	Maxon.Set_TPM(bus_devices[MAXON_MOTOR_3].id, 0);
 }
 
 

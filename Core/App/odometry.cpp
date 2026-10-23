@@ -40,9 +40,9 @@ static void SyncTicksReference(void)
 {
   uint8_t error = 0;
 
-  error |= Maxon.GetTotalTicks(bus_devices[MAXON_MOTOR_1].usart, bus_devices[MAXON_MOTOR_1].id, ticks_old);
-  error |= Maxon.GetTotalTicks(bus_devices[MAXON_MOTOR_2].usart, bus_devices[MAXON_MOTOR_2].id, ticks_old + 1);
-  error |= Maxon.GetTotalTicks(bus_devices[MAXON_MOTOR_3].usart, bus_devices[MAXON_MOTOR_3].id, ticks_old + 2);
+  error |= Maxon.GetTotalTicks(bus_devices[MAXON_MOTOR_1].id, ticks_old);
+  error |= Maxon.GetTotalTicks(bus_devices[MAXON_MOTOR_2].id, ticks_old + 1);
+  error |= Maxon.GetTotalTicks(bus_devices[MAXON_MOTOR_3].id, ticks_old + 2);
 
   if(error){
     ticks_old[0] = 0;
@@ -53,9 +53,9 @@ static void SyncTicksReference(void)
 
 static void Init(void)
 {
-  Maxon.SetTotalTicks(bus_devices[MAXON_MOTOR_1].usart, bus_devices[MAXON_MOTOR_1].id, 0);
-  Maxon.SetTotalTicks(bus_devices[MAXON_MOTOR_2].usart, bus_devices[MAXON_MOTOR_2].id, 0);
-  Maxon.SetTotalTicks(bus_devices[MAXON_MOTOR_3].usart, bus_devices[MAXON_MOTOR_3].id, 0);
+  Maxon.SetTotalTicks(bus_devices[MAXON_MOTOR_1].id, 0);
+  Maxon.SetTotalTicks(bus_devices[MAXON_MOTOR_2].id, 0);
+  Maxon.SetTotalTicks(bus_devices[MAXON_MOTOR_3].id, 0);
 
   path.x = 0; //0.25
   path.y = 0; //2.65
@@ -89,20 +89,20 @@ static void SetSpeed(struct speed_s* speed)
 
   Kinematics.SpeedTo_TPM(speed,tpm);
 
-  //Maxon.Set_TPM(bus_devices[MAXON_MOTOR_3].usart, bus_devices[MAXON_MOTOR_3].id, tpm[2]);
-  //Maxon.Set_TPM(bus_devices[MAXON_MOTOR_2].usart, bus_devices[MAXON_MOTOR_2].id, tpm[1]);
-  Maxon.Set_TPM(bus_devices[MAXON_MOTOR_1].usart, bus_devices[MAXON_MOTOR_1].id, tpm[0]);
-  Maxon.Set_TPM(bus_devices[MAXON_MOTOR_2].usart, bus_devices[MAXON_MOTOR_2].id, tpm[1]);
-  Maxon.Set_TPM(bus_devices[MAXON_MOTOR_3].usart, bus_devices[MAXON_MOTOR_3].id, tpm[2]);
+  //Maxon.Set_TPM(bus_devices[MAXON_MOTOR_3].id, tpm[2]);
+  //Maxon.Set_TPM(bus_devices[MAXON_MOTOR_2].id, tpm[1]);
+  Maxon.Set_TPM(bus_devices[MAXON_MOTOR_1].id, tpm[0]);
+  Maxon.Set_TPM(bus_devices[MAXON_MOTOR_2].id, tpm[1]);
+  Maxon.Set_TPM(bus_devices[MAXON_MOTOR_3].id, tpm[2]);
 }
 
 static void GetSpeed(struct speed_s* speed)
 {
   int32_t tpm[3];
 
-  Maxon.Get_TPM(bus_devices[MAXON_MOTOR_1].usart, bus_devices[MAXON_MOTOR_1].id, tpm);
-  Maxon.Get_TPM(bus_devices[MAXON_MOTOR_2].usart, bus_devices[MAXON_MOTOR_2].id, tpm+1);
-  Maxon.Get_TPM(bus_devices[MAXON_MOTOR_3].usart, bus_devices[MAXON_MOTOR_3].id, tpm+2);
+  Maxon.Get_TPM(bus_devices[MAXON_MOTOR_1].id, tpm);
+  Maxon.Get_TPM(bus_devices[MAXON_MOTOR_2].id, tpm+1);
+  Maxon.Get_TPM(bus_devices[MAXON_MOTOR_3].id, tpm+2);
 	//tpm[0] = tpm[0] * 0.86f;
 	//tpm[1] = tpm[1] * 0.86f;
 	//tpm[2] = tpm[2] * 0.86f;
@@ -116,9 +116,9 @@ static void UpdatePath(void)
   int32_t d_ticks[3];
   uint8_t error = 0;
 
-  error |= Maxon.GetTotalTicks(bus_devices[MAXON_MOTOR_1].usart, bus_devices[MAXON_MOTOR_1].id, ticks_new);
-  error |= Maxon.GetTotalTicks(bus_devices[MAXON_MOTOR_2].usart, bus_devices[MAXON_MOTOR_2].id, ticks_new+1);
-  error |= Maxon.GetTotalTicks(bus_devices[MAXON_MOTOR_3].usart, bus_devices[MAXON_MOTOR_3].id, ticks_new+2);
+  error |= Maxon.GetTotalTicks(bus_devices[MAXON_MOTOR_1].id, ticks_new);
+  error |= Maxon.GetTotalTicks(bus_devices[MAXON_MOTOR_2].id, ticks_new+1);
+  error |= Maxon.GetTotalTicks(bus_devices[MAXON_MOTOR_3].id, ticks_new+2);
 
   if(error)
     return;

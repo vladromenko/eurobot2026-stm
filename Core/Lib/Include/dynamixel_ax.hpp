@@ -21,7 +21,7 @@
 #define __DYNAMIXEL_AX_H
 
 #include "std_def.hpp"
-#include "stm32f4xx_ll_usart.h"
+#include "dynamixel_master.hpp"
 
 	 
 /*	AX EEPROM Area registers define ------------------------------------------------------------- */
@@ -66,19 +66,24 @@
 /*  AX-12 servo on a Dynamixel line; angle in degrees 0..300  */
 class Dynamixel_AX_Driver{
 public:
-    uint8_t Ping(USART_TypeDef* usart, uint8_t servo_id);
-    void Set_ID(USART_TypeDef* usart, uint8_t current_id, uint8_t new_id);
-    void TorqueEnable(USART_TypeDef* usart, uint8_t servo_id);
-    void TorqueDisable(USART_TypeDef* usart, uint8_t servo_id);
-    void SetAngle(USART_TypeDef* usart, uint8_t servo_id, uint16_t angle);
-    uint8_t GetAngle(USART_TypeDef* usart, uint8_t servo_id, uint16_t* angle);
-    void SetWheelMode(USART_TypeDef* usart, uint8_t servo_id);
-    void SetJointMode(USART_TypeDef* usart, uint8_t servo_id);
-    void SetMovingSpeed(USART_TypeDef* usart, uint8_t servo_id, int16_t speed);
-    uint8_t GetMovingSpeed(USART_TypeDef* usart, uint8_t servo_id, int16_t* speed);
-    uint8_t GetPresentLoad(USART_TypeDef* usart, uint8_t servo_id, int16_t* load);
-    void Enable_LED(USART_TypeDef* usart, uint8_t servo_id);
-    void Disable_LED(USART_TypeDef* usart, uint8_t servo_id);
+    constexpr explicit Dynamixel_AX_Driver(DynamixelMasterDriver& bus) : bus(bus) {}
+
+    uint8_t Ping(uint8_t servo_id);
+    void Set_ID(uint8_t current_id, uint8_t new_id);
+    void TorqueEnable(uint8_t servo_id);
+    void TorqueDisable(uint8_t servo_id);
+    void SetAngle(uint8_t servo_id, uint16_t angle);
+    uint8_t GetAngle(uint8_t servo_id, uint16_t* angle);
+    void SetWheelMode(uint8_t servo_id);
+    void SetJointMode(uint8_t servo_id);
+    void SetMovingSpeed(uint8_t servo_id, int16_t speed);
+    uint8_t GetMovingSpeed(uint8_t servo_id, int16_t* speed);
+    uint8_t GetPresentLoad(uint8_t servo_id, int16_t* load);
+    void Enable_LED(uint8_t servo_id);
+    void Disable_LED(uint8_t servo_id);
+
+private:
+    DynamixelMasterDriver& bus;
 };
 
 extern Dynamixel_AX_Driver Dynamixel_AX;

@@ -21,7 +21,7 @@
 #define __BMS_BOARD_H
 
 #include "stdint.h"
-#include "stm32f4xx_ll_usart.h"
+#include "dynamixel_master.hpp"
 
 	 
 /*	BMS Board FLASH MEMORY Area registers define ----------------------------------------------------------- */
@@ -56,16 +56,21 @@ struct bms_battery_state_s{
 /*  Battery management board, Dynamixel protocol  */
 class BMS_Driver{
 public:
-    uint8_t Ping(USART_TypeDef* usart, uint8_t board_id);
-    void Set_ID(USART_TypeDef* usart, uint8_t current_id, uint8_t new_id);
-    uint8_t GetBatteryState(USART_TypeDef* usart, uint8_t board_id, bms_battery_state_s* battery_state);
-    uint8_t GetBatteryCellsVoltage(USART_TypeDef* usart, uint8_t board_id, uint16_t* cells_voltage_mv);
-    uint8_t GetBatteryVoltage(USART_TypeDef* usart, uint8_t board_id, uint16_t* battery_voltage_mv);
-    uint8_t GetBatteryCurrent(USART_TypeDef* usart, uint8_t board_id, uint16_t* battery_current_ma);
-    uint8_t GetPowerConsumption(USART_TypeDef* usart, uint8_t board_id, uint32_t* power_consumption_mw);
-    uint8_t GetBattery_SOC(USART_TypeDef* usart, uint8_t board_id, uint8_t* battery_soc);
-    uint8_t GetBatteryCellsNumber(USART_TypeDef* usart, uint8_t board_id, uint8_t* cells_number);
-    uint8_t SetCalibrationValue(USART_TypeDef* usart, uint8_t board_id, uint8_t calibration_register_address, uint16_t calibration_value);
+    constexpr explicit BMS_Driver(DynamixelMasterDriver& bus) : bus(bus) {}
+
+    uint8_t Ping(uint8_t board_id);
+    void Set_ID(uint8_t current_id, uint8_t new_id);
+    uint8_t GetBatteryState(uint8_t board_id, bms_battery_state_s* battery_state);
+    uint8_t GetBatteryCellsVoltage(uint8_t board_id, uint16_t* cells_voltage_mv);
+    uint8_t GetBatteryVoltage(uint8_t board_id, uint16_t* battery_voltage_mv);
+    uint8_t GetBatteryCurrent(uint8_t board_id, uint16_t* battery_current_ma);
+    uint8_t GetPowerConsumption(uint8_t board_id, uint32_t* power_consumption_mw);
+    uint8_t GetBattery_SOC(uint8_t board_id, uint8_t* battery_soc);
+    uint8_t GetBatteryCellsNumber(uint8_t board_id, uint8_t* cells_number);
+    uint8_t SetCalibrationValue(uint8_t board_id, uint8_t calibration_register_address, uint16_t calibration_value);
+
+private:
+    DynamixelMasterDriver& bus;
 };
 
 extern BMS_Driver BMS;

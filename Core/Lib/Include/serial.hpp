@@ -29,19 +29,20 @@
 /*  Raw full-duplex byte stream; every IDLE-terminated chunk is one rx FIFO element  */
 class SerialDriver : public USARTx_Protocol{
 public:
-    void WriteBytes(USART_TypeDef* usart, uint8_t* bytes, uint8_t bytes_number);
+    void WriteBytes(uint8_t* bytes, uint8_t bytes_number);
     /*  timeout_ms == 0: do not wait. Returns the number of bytes read  */
-    uint32_t ReadBytes(USART_TypeDef* usart, uint8_t* bytes, uint32_t timeout_ms);
+    uint32_t ReadBytes(uint8_t* bytes, uint32_t timeout_ms);
 
 private:
-    void InitLine(USARTx_Line* line) override;
-    void TxCompleteCallback(USARTx_Line* line) override;
-    void RxCompleteCallback(USARTx_Line* line, uint32_t data_length) override;
-    void RxTimeoutCallback(USARTx_Line* line) override;
+    void InitLine() override;
+    void TxCompleteCallback() override;
+    void RxCompleteCallback(uint32_t data_length) override;
+    void RxTimeoutCallback() override;
 
     volatile uint8_t is_timeout_expired = 0;
 };
 
+/*  Debug terminal, bound to UART5 in main()  */
 extern SerialDriver Serial;
 
 #endif

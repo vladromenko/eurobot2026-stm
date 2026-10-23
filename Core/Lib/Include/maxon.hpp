@@ -21,7 +21,7 @@
 #define __MAXON_H
 
 #include "stdint.h"
-#include "stm32f4xx_ll_usart.h"
+#include "dynamixel_master.hpp"
 
 	 
 /*	MAXON FLASH MEMORY Area registers define ----------------------------------------------------------- */
@@ -38,16 +38,21 @@
 /*  Maxon motor controller board, Dynamixel protocol  */
 class MaxonDriver{
 public:
-    uint8_t Ping(USART_TypeDef* usart, uint8_t maxon_id);
-    void Set_ID(USART_TypeDef* usart, uint8_t current_id, uint8_t new_id);
-    void SetRange_TPM(USART_TypeDef* usart, uint8_t maxon_id, uint32_t tpm_bottom, uint32_t tpm_top);
-    uint8_t GetRange_TPM(USART_TypeDef* usart, uint8_t maxon_id, uint32_t* tpm_bottom, uint32_t* tpm_top);
-    void Set_TPM(USART_TypeDef* usart, uint8_t maxon_id, int32_t tpm);
-    uint8_t Get_TPM(USART_TypeDef* usart, uint8_t maxon_id, int32_t* tpm);
-    void SetTotalTicks(USART_TypeDef* usart, uint8_t maxon_id, int32_t ticks);
-    uint8_t GetTotalTicks(USART_TypeDef* usart, uint8_t maxon_id, int32_t* ticks);
-    void Enable(USART_TypeDef* usart, uint8_t maxon_id);
-    void Disable(USART_TypeDef* usart, uint8_t maxon_id);
+    constexpr explicit MaxonDriver(DynamixelMasterDriver& bus) : bus(bus) {}
+
+    uint8_t Ping(uint8_t maxon_id);
+    void Set_ID(uint8_t current_id, uint8_t new_id);
+    void SetRange_TPM(uint8_t maxon_id, uint32_t tpm_bottom, uint32_t tpm_top);
+    uint8_t GetRange_TPM(uint8_t maxon_id, uint32_t* tpm_bottom, uint32_t* tpm_top);
+    void Set_TPM(uint8_t maxon_id, int32_t tpm);
+    uint8_t Get_TPM(uint8_t maxon_id, int32_t* tpm);
+    void SetTotalTicks(uint8_t maxon_id, int32_t ticks);
+    uint8_t GetTotalTicks(uint8_t maxon_id, int32_t* ticks);
+    void Enable(uint8_t maxon_id);
+    void Disable(uint8_t maxon_id);
+
+private:
+    DynamixelMasterDriver& bus;
 };
 
 extern MaxonDriver Maxon;

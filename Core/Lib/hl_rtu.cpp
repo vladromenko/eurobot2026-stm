@@ -117,7 +117,7 @@ void TransmitCmd(USARTx_Line* line, tx_fifo_element_s* tx_fifo_data_unit)
 constinit HL_RTU_Driver HL_RTU;
 
 
-void HL_RTU_Driver::SendResponse(USART_TypeDef* usart, hl_rtu_response_s* response)
+void HL_RTU_Driver::SendResponse(hl_rtu_response_s* response)
 {
     tx_fifo_element_s tx_fifo_data_unit;
 
@@ -126,13 +126,11 @@ void HL_RTU_Driver::SendResponse(USART_TypeDef* usart, hl_rtu_response_s* respon
     memcpy(tx_fifo_data_unit.data_crc, response->data, response->data_length);
     tx_fifo_data_unit.data_crc[response->data_length] = Calc_CRC(&tx_fifo_data_unit);
 
-    TransmitCmd(USARTx.GetLine(usart), &tx_fifo_data_unit);
+    TransmitCmd(line, &tx_fifo_data_unit);
 }
 
-uint8_t HL_RTU_Driver::GetRequest(USART_TypeDef* usart, hl_rtu_request_s* request)
+uint8_t HL_RTU_Driver::GetRequest(hl_rtu_request_s* request)
 {
-    USARTx_Line* line = USARTx.GetLine(usart);
-
     if(line->rx_fifo.IsNotEmpty()){
         rx_fifo_element_s rx_fifo_data_unit;
         line->rx_fifo.Remove(&rx_fifo_data_unit);
@@ -145,7 +143,7 @@ uint8_t HL_RTU_Driver::GetRequest(USART_TypeDef* usart, hl_rtu_request_s* reques
     return 0;
 }
 
-void HL_RTU_Driver::TxCompleteCallback(USARTx_Line* line)
+void HL_RTU_Driver::TxCompleteCallback()
 {
     line->StopTx();
     
@@ -155,7 +153,7 @@ void HL_RTU_Driver::TxCompleteCallback(USARTx_Line* line)
         line->is_line_busy = 0;
 }
 
-void HL_RTU_Driver::RxCompleteCallback(USARTx_Line* line, uint32_t data_length)
+void HL_RTU_Driver::RxCompleteCallback(uint32_t data_length)
 {
     line->StopRx();
 
@@ -172,7 +170,7 @@ void HL_RTU_Driver::RxCompleteCallback(USARTx_Line* line, uint32_t data_length)
     line->StartRx();
 }
 
-void HL_RTU_Driver::InitLine(USARTx_Line* line)
+void HL_RTU_Driver::InitLine()
 {
     if((line->tx_buffer_size < (sizeof(tx_fifo_element_s)+sizeof(packet_s)))||
         (line->rx_buffer_size < (sizeof(rx_fifo_element_s)+sizeof(packet_s))))

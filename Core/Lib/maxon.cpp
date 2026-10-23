@@ -31,32 +31,32 @@
 #include "task.h"
 
 
-uint8_t MaxonDriver::Ping(USART_TypeDef* usart, uint8_t maxon_id)
+uint8_t MaxonDriver::Ping(uint8_t maxon_id)
 {
   dynamixel_master_response_s response;
-  DynamixelMaster.Ping(usart,maxon_id, &response);
+  bus.Ping(maxon_id, &response);
   while(response.is_data_ready==0) taskYIELD();
   return response.bus_error;
 }
     
-void MaxonDriver::Set_ID(USART_TypeDef* usart, uint8_t current_id, uint8_t new_id)
+void MaxonDriver::Set_ID(uint8_t current_id, uint8_t new_id)
 {
-  DynamixelMaster.Write(usart, current_id, MAXON_BOARD_ID, &new_id, 1, nullptr); 
+  bus.Write(current_id, MAXON_BOARD_ID, &new_id, 1, nullptr); 
 }
     
-void MaxonDriver::SetRange_TPM(USART_TypeDef* usart, uint8_t maxon_id, uint32_t tpm_bottom, uint32_t tpm_top)
+void MaxonDriver::SetRange_TPM(uint8_t maxon_id, uint32_t tpm_bottom, uint32_t tpm_top)
 {
   uint8_t data[8];
   Word32_ToByte(&tpm_bottom,data);
   Word32_ToByte(&tpm_top,data+4);
-  DynamixelMaster.Write(usart,maxon_id,MAXON_RangeTPM,data,8,nullptr);
+  bus.Write(maxon_id,MAXON_RangeTPM,data,8,nullptr);
 }
 
-uint8_t MaxonDriver::GetRange_TPM(USART_TypeDef* usart, uint8_t maxon_id, uint32_t* tpm_bottom, uint32_t* tpm_top)
+uint8_t MaxonDriver::GetRange_TPM(uint8_t maxon_id, uint32_t* tpm_bottom, uint32_t* tpm_top)
 {
   dynamixel_master_response_s response;
   
-  DynamixelMaster.Read(usart,maxon_id,MAXON_RangeTPM,8,&response);
+  bus.Read(maxon_id,MAXON_RangeTPM,8,&response);
 
   while(response.is_data_ready==0) taskYIELD();
 
@@ -69,18 +69,18 @@ uint8_t MaxonDriver::GetRange_TPM(USART_TypeDef* usart, uint8_t maxon_id, uint32
   return 0;
 }
 
-void MaxonDriver::Set_TPM(USART_TypeDef* usart, uint8_t maxon_id, int32_t tpm)
+void MaxonDriver::Set_TPM(uint8_t maxon_id, int32_t tpm)
 {
   uint8_t data[4];
   Word32_ToByte(&tpm,data);
-  DynamixelMaster.Write(usart,maxon_id,MAXON_TPM,data,4,nullptr); 
+  bus.Write(maxon_id,MAXON_TPM,data,4,nullptr); 
 }
 
-uint8_t MaxonDriver::Get_TPM(USART_TypeDef* usart, uint8_t maxon_id, int32_t* tpm)
+uint8_t MaxonDriver::Get_TPM(uint8_t maxon_id, int32_t* tpm)
 {
   dynamixel_master_response_s response;
   
-  DynamixelMaster.Read(usart,maxon_id,MAXON_TPM,4,&response);
+  bus.Read(maxon_id,MAXON_TPM,4,&response);
   while(response.is_data_ready==0) taskYIELD();
 
   if(response.bus_error || response.device_error)
@@ -91,18 +91,18 @@ uint8_t MaxonDriver::Get_TPM(USART_TypeDef* usart, uint8_t maxon_id, int32_t* tp
   return 0;
 }
 
-void MaxonDriver::SetTotalTicks(USART_TypeDef* usart, uint8_t maxon_id, int32_t ticks)
+void MaxonDriver::SetTotalTicks(uint8_t maxon_id, int32_t ticks)
 {
   uint8_t data[4];
   Word32_ToByte(&ticks,data);
-  DynamixelMaster.Write(usart,maxon_id,MAXON_TotalTicks,data,4,nullptr); 
+  bus.Write(maxon_id,MAXON_TotalTicks,data,4,nullptr); 
 }
 
-uint8_t MaxonDriver::GetTotalTicks(USART_TypeDef* usart, uint8_t maxon_id, int32_t* ticks)
+uint8_t MaxonDriver::GetTotalTicks(uint8_t maxon_id, int32_t* ticks)
 {
   dynamixel_master_response_s response;
   
-  DynamixelMaster.Read(usart,maxon_id,MAXON_TotalTicks,4,&response);
+  bus.Read(maxon_id,MAXON_TotalTicks,4,&response);
   while(response.is_data_ready==0) taskYIELD();
 
   if(response.bus_error || response.device_error)
@@ -113,18 +113,18 @@ uint8_t MaxonDriver::GetTotalTicks(USART_TypeDef* usart, uint8_t maxon_id, int32
   return 0;
 }
 
-void MaxonDriver::Enable(USART_TypeDef* usart, uint8_t maxon_id)
+void MaxonDriver::Enable(uint8_t maxon_id)
 {
   uint8_t data = 1;
-  DynamixelMaster.Write(usart,maxon_id,MAXON_Enable,&data,1,nullptr);
+  bus.Write(maxon_id,MAXON_Enable,&data,1,nullptr);
 }
 
-void MaxonDriver::Disable(USART_TypeDef* usart, uint8_t maxon_id)
+void MaxonDriver::Disable(uint8_t maxon_id)
 {
   uint8_t data = 0;
-  DynamixelMaster.Write(usart,maxon_id,MAXON_Enable,&data,1,nullptr);
+  bus.Write(maxon_id,MAXON_Enable,&data,1,nullptr);
 }
 
-constinit MaxonDriver Maxon;
+constinit MaxonDriver Maxon{DynamixelBus6};
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

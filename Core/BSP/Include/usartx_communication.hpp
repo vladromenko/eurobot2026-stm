@@ -66,25 +66,34 @@ private:
   uint8_t timeout_channel;
 };
 
-/*  Protocol (Dynamixel, Serial, HL_RTU, ...) driving one or more USART lines  */
+/**
+ * Protocol (Dynamixel, Serial, HL_RTU, ...) driving one USART line.
+ * USARTx.BindProtocol() sets "line" and calls InitLine(); after that
+ * the protocol works only with its own line, so one object serves one line.
+ */
 class USARTx_Protocol{
-public:
-  /*  Called once by USARTx.BindProtocol()  */
-  virtual void InitLine(USARTx_Line* line) = 0;
+protected:
+  friend class USARTx_Driver;
+  friend class USARTx_Line;
+
+  virtual void InitLine() = 0;
 
   /*  Called from the USART/TIM14 interrupts  */
-  virtual void TxCompleteCallback(USARTx_Line* line) = 0;
-  virtual void RxCompleteCallback(USARTx_Line* line, uint32_t data_length) = 0;
-  virtual void RxTimeoutCallback(USARTx_Line* line) { (void)line; }
+  virtual void TxCompleteCallback() = 0;
+  virtual void RxCompleteCallback(uint32_t data_length) = 0;
+  virtual void RxTimeoutCallback() {}
+
+  USARTx_Line* line = nullptr;
 };
 
 class USARTx_Driver{
 public:
   void BindProtocol(USART_TypeDef* usart, USARTx_Protocol& protocol);
-  USARTx_Line* GetLine(USART_TypeDef* usart);
   void IRQ_Process(USART_TypeDef* usart);
 
 private:
+  USARTx_Line* GetLine(USART_TypeDef* usart);
+
   USARTx_Line lines[6];
 };
 

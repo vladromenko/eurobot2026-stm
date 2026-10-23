@@ -112,9 +112,9 @@ int main(void)
 
   
   /*  Binding USART ports with protocols  */
-  USARTx.BindProtocol(USART3, DynamixelMaster);
-  USARTx.BindProtocol(USART6, DynamixelMaster);
-  USARTx.BindProtocol(UART4, DynamixelMaster);
+  USARTx.BindProtocol(USART3, DynamixelBus3);
+  USARTx.BindProtocol(USART6, DynamixelBus6);
+  USARTx.BindProtocol(UART4, DynamixelBus4);
   USARTx.BindProtocol(UART5, Serial);
   USARTx.BindProtocol(USART1, HL_RTU);
 	

@@ -396,13 +396,13 @@ static uint8_t MoveAxisByOdometryAsync(float target_m, float speed_mps, uint8_t 
 
 /**
  * @brief Rotate two Dynamixels by a given angle synchronously.
- * @param usart USART bus of the Dynamixels
+ * @param bus Dynamixel bus of the servos
  * @param id_1 Dynamixel ID 1
  * @param id_2 Dynamixel ID 2
  * @param angle_1 Goal angle in deg (0-300) for Dynamixel_1
  * @param angle_2 Goal angle in deg (0-300) for Dynamixel_2
  */
-static void RotateTwoDynamixels(USART_TypeDef* usart, uint8_t id_1, uint8_t id_2, uint16_t angle_1, uint16_t angle_2)
+static void RotateTwoDynamixels(DynamixelMasterDriver& bus, uint8_t id_1, uint8_t id_2, uint16_t angle_1, uint16_t angle_2)
 {
     // Dynamixels ID
     uint8_t device_ids[] = {id_1, id_2};
@@ -428,7 +428,7 @@ static void RotateTwoDynamixels(USART_TypeDef* usart, uint8_t id_1, uint8_t id_2
     data_to_write[3] = (uint8_t)(goal_position_value_2 >> 8);  // HB
 
     // Call the SyncWrite command
-    DynamixelMaster.SyncWrite(usart, device_ids, num_devices, AX_GoalPosition, data_to_write, 2, NULL);
+    bus.SyncWrite(device_ids, num_devices, AX_GoalPosition, data_to_write, 2, nullptr);
 }
 
 
@@ -468,7 +468,7 @@ static uint8_t WaitDynamixelAngle(uint8_t id, uint16_t target_angle, uint32_t ti
     uint32_t start_time = xTaskGetTickCount(); // Засекаем время старта (FreeRTOS)
     
     while (1) {
-        Dynamixel_AX.GetAngle(USART3, id, &current_angle);
+        Dynamixel_AX.GetAngle(id, &current_angle);
         diff = (int32_t)current_angle - (int32_t)target_angle;
         if (diff < 0) diff = -diff;
         
@@ -555,16 +555,16 @@ static void Task(void *arg)
 	while(dynamixel_id > 0)
 	{
 		dynamixel_id --;
-		if(Dynamixel_AX.Ping(USART3, dynamixel_id) == 0)
+		if(Dynamixel_AX.Ping(dynamixel_id) == 0)
 		{
-			Dynamixel_AX.Set_ID(USART3, dynamixel_id, dynamixel_new_id);
+			Dynamixel_AX.Set_ID(dynamixel_id, dynamixel_new_id);
 			break;
 		}
 	}
-	Dynamixel_AX.TorqueEnable(USART3, dynamixel_new_id);
-	Dynamixel_AX.SetAngle(USART3, dynamixel_new_id, 0);
+	Dynamixel_AX.TorqueEnable(dynamixel_new_id);
+	Dynamixel_AX.SetAngle(dynamixel_new_id, 0);
 	vTaskDelay(1000);
-	Dynamixel_AX.SetAngle(USART3, dynamixel_new_id, 180);
+	Dynamixel_AX.SetAngle(dynamixel_new_id, 180);
 	*/
 	
 
@@ -576,15 +576,15 @@ static void Task(void *arg)
 	while(maxon_id > 0)
 	{
 		maxon_id --;
-		if(Maxon.Ping(USART6, maxon_id) == 0)
+		if(Maxon.Ping(maxon_id) == 0)
 		{
-			Maxon.Set_ID(USART6, maxon_id, 0x22);
+			Maxon.Set_ID(maxon_id, 0x22);
 			break;
 		}
 	}
 	*/
 
-	//Maxon.Set_ID(USART6, 0x21, 0x22);
+	//Maxon.Set_ID(0x21, 0x22);
 
 	#ifdef GRIPPER_INIT
 	
@@ -605,9 +605,9 @@ static void Task(void *arg)
         vTaskDelay(50);
         
         // cursor init
-        Dynamixel_AX.SetMovingSpeed(USART3, dynamixel_cursor_id, cursor_speed);
-        Dynamixel_AX.TorqueEnable(USART3, dynamixel_cursor_id);
-        Dynamixel_AX.SetAngle(USART3, dynamixel_cursor_id, cursor_vert_angle);
+        Dynamixel_AX.SetMovingSpeed(dynamixel_cursor_id, cursor_speed);
+        Dynamixel_AX.TorqueEnable(dynamixel_cursor_id);
+        Dynamixel_AX.SetAngle(dynamixel_cursor_id, cursor_vert_angle);
         vTaskDelay(100);
 
         // TEMPORARY: height calibration disabled while the limit switch (28 GPIO pin 26, PC13) is disconnected.
@@ -620,19 +620,19 @@ static void Task(void *arg)
             const GripperHardware_t* hw = &grippers[i];
 
             // Настройка скоростей динамикселей
-            Dynamixel_AX.SetMovingSpeed(USART3, hw->dyn_main_1, hw->dyn_speed);
-            Dynamixel_AX.SetMovingSpeed(USART3, hw->dyn_main_2, hw->dyn_speed);
-            Dynamixel_AX.SetMovingSpeed(USART3, hw->dyn_side_1, hw->dyn_side_speed);
-            Dynamixel_AX.SetMovingSpeed(USART3, hw->dyn_side_2, hw->dyn_side_speed);
+            Dynamixel_AX.SetMovingSpeed(hw->dyn_main_1, hw->dyn_speed);
+            Dynamixel_AX.SetMovingSpeed(hw->dyn_main_2, hw->dyn_speed);
+            Dynamixel_AX.SetMovingSpeed(hw->dyn_side_1, hw->dyn_side_speed);
+            Dynamixel_AX.SetMovingSpeed(hw->dyn_side_2, hw->dyn_side_speed);
 
             // Включение удержания (Torque Enable)
-            Dynamixel_AX.TorqueEnable(USART3, hw->dyn_main_1);
-            Dynamixel_AX.TorqueEnable(USART3, hw->dyn_main_2);
-            Dynamixel_AX.TorqueEnable(USART3, hw->dyn_side_1);
-            Dynamixel_AX.TorqueEnable(USART3, hw->dyn_side_2);
+            Dynamixel_AX.TorqueEnable(hw->dyn_main_1);
+            Dynamixel_AX.TorqueEnable(hw->dyn_main_2);
+            Dynamixel_AX.TorqueEnable(hw->dyn_side_1);
+            Dynamixel_AX.TorqueEnable(hw->dyn_side_2);
 
             // Сводим боковые захваты в начальное положение
-            RotateTwoDynamixels(USART3, hw->dyn_side_1, hw->dyn_side_2, hw->side_on_angle_1, hw->side_on_angle_2);
+            RotateTwoDynamixels(DynamixelBus3, hw->dyn_side_1, hw->dyn_side_2, hw->side_on_angle_1, hw->side_on_angle_2);
             vTaskDelay(500);
 
             // Инициализация сервоприводов блоков (каналы 1-4 или 8-11)
@@ -651,14 +651,14 @@ static void Task(void *arg)
             vTaskDelay(100);
 
             // Поднимаем основной механизм в стартовое положение
-            //RotateTwoDynamixels(USART3, hw->dyn_main_1, hw->dyn_main_2, hw->end_angle, hw->end_angle);
-			RotateTwoDynamixels(USART3, hw->dyn_main_1, hw->dyn_main_2, 65, 65);
+            //RotateTwoDynamixels(DynamixelBus3, hw->dyn_main_1, hw->dyn_main_2, hw->end_angle, hw->end_angle);
+			RotateTwoDynamixels(DynamixelBus3, hw->dyn_main_1, hw->dyn_main_2, 65, 65);
             vTaskDelay(200);
         }
 
-        Dynamixel_AX.SetMovingSpeed(USART3, pinion_dyn_id, pinion_dyn_speed);
-        Dynamixel_AX.TorqueEnable(USART3, pinion_dyn_id);
-        Dynamixel_AX.SetAngle(USART3, pinion_dyn_id, pinion_start_angle);
+        Dynamixel_AX.SetMovingSpeed(pinion_dyn_id, pinion_dyn_speed);
+        Dynamixel_AX.TorqueEnable(pinion_dyn_id);
+        Dynamixel_AX.SetAngle(pinion_dyn_id, pinion_start_angle);
 		vTaskDelay(100);
 
         //SPI_GPO.SetOutputPin(SPI_POWER_OUTPUT_17 | SPI_POWER_OUTPUT_18);
@@ -687,13 +687,13 @@ static void Task(void *arg)
 			{
 				//cmd_isFinished = 0;
 				
-			  	Dynamixel_AX.SetMovingSpeed(USART3, dynamixel_cursor_id, cursor_speed);
-  				Dynamixel_AX.TorqueEnable(USART3, dynamixel_cursor_id);
+			  	Dynamixel_AX.SetMovingSpeed(dynamixel_cursor_id, cursor_speed);
+  				Dynamixel_AX.TorqueEnable(dynamixel_cursor_id);
 
 				// switch the state of the cursor
 				uint8_t cursor_target_angle = (cursor_cmd == 1)?cursor_hor_angle:cursor_vert_angle;
 
-				Dynamixel_AX.SetAngle(USART3, dynamixel_cursor_id, cursor_target_angle);
+				Dynamixel_AX.SetAngle(dynamixel_cursor_id, cursor_target_angle);
 				vTaskDelay(50);
 				
 				WaitDynamixelAngle(dynamixel_cursor_id, cursor_target_angle, angle_timeout_ms);
@@ -714,13 +714,13 @@ static void Task(void *arg)
                 uint16_t target_angle_2 = (grips_cmd == 1) ? active_hw->side_on_angle_2 : active_hw->side_off_angle_2;
 
                 // Настраиваем скорость и включаем удержание
-                Dynamixel_AX.SetMovingSpeed(USART3, active_hw->dyn_side_1, active_hw->dyn_side_speed);
-                Dynamixel_AX.SetMovingSpeed(USART3, active_hw->dyn_side_2, active_hw->dyn_side_speed);
-                Dynamixel_AX.TorqueEnable(USART3, active_hw->dyn_side_1);
-                Dynamixel_AX.TorqueEnable(USART3, active_hw->dyn_side_2);
+                Dynamixel_AX.SetMovingSpeed(active_hw->dyn_side_1, active_hw->dyn_side_speed);
+                Dynamixel_AX.SetMovingSpeed(active_hw->dyn_side_2, active_hw->dyn_side_speed);
+                Dynamixel_AX.TorqueEnable(active_hw->dyn_side_1);
+                Dynamixel_AX.TorqueEnable(active_hw->dyn_side_2);
 
                 // Запускаем синхронный поворот (обе створки получают одинаковый угол target_angle)
-                RotateTwoDynamixels(USART3, active_hw->dyn_side_1, active_hw->dyn_side_2, target_angle_1, target_angle_2);
+                RotateTwoDynamixels(DynamixelBus3, active_hw->dyn_side_1, active_hw->dyn_side_2, target_angle_1, target_angle_2);
                 
                 vTaskDelay(100); 
 
@@ -737,17 +737,17 @@ static void Task(void *arg)
                 uint16_t target_angle_1 = (grips_cmd == 1) ? active_hw->side_on_angle_1 : active_hw->side_off_angle_1;
                 uint16_t target_angle_2 = (grips_cmd == 1) ? active_hw->side_on_angle_2 : active_hw->side_off_angle_2;
 
-                Dynamixel_AX.SetMovingSpeed(USART3, active_hw->dyn_side_1, active_hw->dyn_side_speed);
-                Dynamixel_AX.SetMovingSpeed(USART3, active_hw->dyn_side_2, active_hw->dyn_side_speed);
-                Dynamixel_AX.TorqueEnable(USART3, active_hw->dyn_side_1);
-                Dynamixel_AX.TorqueEnable(USART3, active_hw->dyn_side_2);
+                Dynamixel_AX.SetMovingSpeed(active_hw->dyn_side_1, active_hw->dyn_side_speed);
+                Dynamixel_AX.SetMovingSpeed(active_hw->dyn_side_2, active_hw->dyn_side_speed);
+                Dynamixel_AX.TorqueEnable(active_hw->dyn_side_1);
+                Dynamixel_AX.TorqueEnable(active_hw->dyn_side_2);
 
                 if (grips_cmd == 1) 
                 {
                     // === УМНОЕ СЖАТИЕ С ЦЕНТРИРОВАНИЕМ ===
                     
                     // 1. Начинаем движение к центру
-                    RotateTwoDynamixels(USART3, active_hw->dyn_side_1, active_hw->dyn_side_2, target_angle_1, target_angle_2);
+                    RotateTwoDynamixels(DynamixelBus3, active_hw->dyn_side_1, active_hw->dyn_side_2, target_angle_1, target_angle_2);
                     
                     // Даем сервам время тронуться с места (чтобы пропустить пик пускового тока/момента)
                     vTaskDelay(150); 
@@ -770,11 +770,11 @@ static void Task(void *arg)
                         // Проверяем 1-й захват
                         if (!done_1) {
                             int16_t load_1 = 0;
-                            Dynamixel_AX.GetPresentLoad(USART3, active_hw->dyn_side_1, &load_1);
+                            Dynamixel_AX.GetPresentLoad(active_hw->dyn_side_1, &load_1);
                             if (load_1 < 0) load_1 = -load_1; // Берем момент по модулю
 
                             uint16_t cur_angle_1 = 0;
-                            Dynamixel_AX.GetAngle(USART3, active_hw->dyn_side_1, &cur_angle_1);
+                            Dynamixel_AX.GetAngle(active_hw->dyn_side_1, &cur_angle_1);
                             
                             int16_t diff_1 = (int16_t)cur_angle_1 - (int16_t)target_angle_1;
                             if (diff_1 < 0) diff_1 = -diff_1;
@@ -782,7 +782,7 @@ static void Task(void *arg)
                             // Если коснулись блока ИЛИ дошли до конца вхолостую
                             if (load_1 > LOAD_THRESHOLD || diff_1 < tol_window) {
                                 // Тормозим захват в текущей точке
-                                Dynamixel_AX.SetAngle(USART3, active_hw->dyn_side_1, cur_angle_1);
+                                Dynamixel_AX.SetAngle(active_hw->dyn_side_1, cur_angle_1);
                                 done_1 = 1;
                             }
                         }
@@ -790,11 +790,11 @@ static void Task(void *arg)
                         // Проверяем 2-й захват
                         if (!done_2) {
                             int16_t load_2 = 0;
-                            Dynamixel_AX.GetPresentLoad(USART3, active_hw->dyn_side_2, &load_2);
+                            Dynamixel_AX.GetPresentLoad(active_hw->dyn_side_2, &load_2);
                             if (load_2 < 0) load_2 = -load_2; // Берем момент по модулю
 
                             uint16_t cur_angle_2 = 0;
-                            Dynamixel_AX.GetAngle(USART3, active_hw->dyn_side_2, &cur_angle_2);
+                            Dynamixel_AX.GetAngle(active_hw->dyn_side_2, &cur_angle_2);
 
                             int16_t diff_2 = (int16_t)cur_angle_2 - (int16_t)target_angle_2;
                             if (diff_2 < 0) diff_2 = -diff_2;
@@ -802,7 +802,7 @@ static void Task(void *arg)
                             // Если коснулись блока ИЛИ дошли до конца вхолостую
                             if (load_2 > LOAD_THRESHOLD || diff_2 < tol_window) {
                                 // Тормозим захват в текущей точке
-                                Dynamixel_AX.SetAngle(USART3, active_hw->dyn_side_2, cur_angle_2);
+                                Dynamixel_AX.SetAngle(active_hw->dyn_side_2, cur_angle_2);
                                 done_2 = 1;
                             }
                         }
@@ -812,13 +812,13 @@ static void Task(void *arg)
 
                     // 3. Финальное дожатие и центрирование
                     // Оба коснулись (или вышли по таймауту). Теперь даем команду на полное сжатие
-                    RotateTwoDynamixels(USART3, active_hw->dyn_side_1, active_hw->dyn_side_2, target_angle_1, target_angle_2);
+                    RotateTwoDynamixels(DynamixelBus3, active_hw->dyn_side_1, active_hw->dyn_side_2, target_angle_1, target_angle_2);
                     vTaskDelay(300); // Даем время продавить блоки к центру
                 } 
                 else 
                 {
                     // === ОБЫЧНОЕ РАЗЖАТИЕ ===
-                    RotateTwoDynamixels(USART3, active_hw->dyn_side_1, active_hw->dyn_side_2, target_angle_1, target_angle_2);
+                    RotateTwoDynamixels(DynamixelBus3, active_hw->dyn_side_1, active_hw->dyn_side_2, target_angle_1, target_angle_2);
                     vTaskDelay(200);
                     
                     // Ждем достижения угла (при разжатии ничего не мешает)
@@ -850,15 +850,15 @@ static void Task(void *arg)
                 }
 
                 // Настраиваем основные динамиксели подъема
-                //Dynamixel_AX.SetMovingSpeed(USART3, active_hw->dyn_main_1, active_hw->dyn_speed);
-                //Dynamixel_AX.SetMovingSpeed(USART3, active_hw->dyn_main_2, active_hw->dyn_speed);
-                Dynamixel_AX.SetMovingSpeed(USART3, active_hw->dyn_main_1, dyn_speed);
-                Dynamixel_AX.SetMovingSpeed(USART3, active_hw->dyn_main_2, dyn_speed);
-                Dynamixel_AX.TorqueEnable(USART3, active_hw->dyn_main_1);
-                Dynamixel_AX.TorqueEnable(USART3, active_hw->dyn_main_2);
+                //Dynamixel_AX.SetMovingSpeed(active_hw->dyn_main_1, active_hw->dyn_speed);
+                //Dynamixel_AX.SetMovingSpeed(active_hw->dyn_main_2, active_hw->dyn_speed);
+                Dynamixel_AX.SetMovingSpeed(active_hw->dyn_main_1, dyn_speed);
+                Dynamixel_AX.SetMovingSpeed(active_hw->dyn_main_2, dyn_speed);
+                Dynamixel_AX.TorqueEnable(active_hw->dyn_main_1);
+                Dynamixel_AX.TorqueEnable(active_hw->dyn_main_2);
 
                 // Запускаем движение
-                RotateTwoDynamixels(USART3, active_hw->dyn_main_1, active_hw->dyn_main_2, gripper_target_angle, gripper_target_angle);
+                RotateTwoDynamixels(DynamixelBus3, active_hw->dyn_main_1, active_hw->dyn_main_2, gripper_target_angle, gripper_target_angle);
                 
                 vTaskDelay(200);
 
@@ -887,13 +887,13 @@ static void Task(void *arg)
                 }
 
                 // Настраиваем моторы
-                Dynamixel_AX.SetMovingSpeed(USART3, active_hw->dyn_main_1, active_hw->dyn_speed);
-                Dynamixel_AX.SetMovingSpeed(USART3, active_hw->dyn_main_2, active_hw->dyn_speed);
-                Dynamixel_AX.TorqueEnable(USART3, active_hw->dyn_main_1);
-                Dynamixel_AX.TorqueEnable(USART3, active_hw->dyn_main_2);
+                Dynamixel_AX.SetMovingSpeed(active_hw->dyn_main_1, active_hw->dyn_speed);
+                Dynamixel_AX.SetMovingSpeed(active_hw->dyn_main_2, active_hw->dyn_speed);
+                Dynamixel_AX.TorqueEnable(active_hw->dyn_main_1);
+                Dynamixel_AX.TorqueEnable(active_hw->dyn_main_2);
 
                 // Запускаем движение
-                RotateTwoDynamixels(USART3, active_hw->dyn_main_1, active_hw->dyn_main_2, gripper_target_angle, gripper_target_angle);
+                RotateTwoDynamixels(DynamixelBus3, active_hw->dyn_main_1, active_hw->dyn_main_2, gripper_target_angle, gripper_target_angle);
                 
                 // УВЕЛИЧЕННАЯ ЗАДЕРЖКА: даем механизму 250 мс на разгон, 
                 // чтобы полностью пропустить стартовый скачок тока
@@ -933,14 +933,14 @@ static void Task(void *arg)
                             lift_success = 0; 
                             
                             // Спасаем гриппер - отправляем наверх
-                            RotateTwoDynamixels(USART3, active_hw->dyn_main_1, active_hw->dyn_main_2, active_hw->end_angle, active_hw->end_angle);
+                            RotateTwoDynamixels(DynamixelBus3, active_hw->dyn_main_1, active_hw->dyn_main_2, active_hw->end_angle, active_hw->end_angle);
                             WaitDynamixelAngle(active_hw->dyn_main_1, active_hw->end_angle, 1500);
                             break;
                         }
 
                         // 4. Проверяем, достигли ли низа
                         uint16_t cur_angle = 0;
-                        Dynamixel_AX.GetAngle(USART3, active_hw->dyn_main_1, &cur_angle);
+                        Dynamixel_AX.GetAngle(active_hw->dyn_main_1, &cur_angle);
                         int16_t diff = (int16_t)cur_angle - (int16_t)gripper_target_angle;
                         if (diff < 0) diff = -diff;
                         
@@ -986,11 +986,11 @@ static void Task(void *arg)
 
 			case 5: // rotate
 			{
-				//Dynamixel_AX.SetMovingSpeed(USART3, active_hw->dyn_side_1, side_dynamixel_speed);
-				//Dynamixel_AX.SetMovingSpeed(USART3, active_hw->dyn_side_2, side_dynamixel_speed);
+				//Dynamixel_AX.SetMovingSpeed(active_hw->dyn_side_1, side_dynamixel_speed);
+				//Dynamixel_AX.SetMovingSpeed(active_hw->dyn_side_2, side_dynamixel_speed);
 
 				// Разводим боковые захваты
-				//RotateTwoDynamixels(USART3, active_hw->dyn_side_1, active_hw->dyn_side_2, active_hw->side_off_angle_1, active_hw->side_off_angle_2);
+				//RotateTwoDynamixels(DynamixelBus3, active_hw->dyn_side_1, active_hw->dyn_side_2, active_hw->side_off_angle_1, active_hw->side_off_angle_2);
 				//vTaskDelay(500);
 
 				PCA9685.SetServoAngleWithAddr(i2c_addr_1, active_hw->shift_servo_5, active_hw->shift_servo_5_end_angle);
@@ -1232,10 +1232,10 @@ static void Task(void *arg)
                 pinion_goal_angle = (uint16_t)pinion_goal_angle_i32;
                 last_cmd_status = 0;
 
-                Dynamixel_AX.SetMovingSpeed(USART3, pinion_dyn_id, pinion_dyn_speed);
-                Dynamixel_AX.TorqueEnable(USART3, pinion_dyn_id);
+                Dynamixel_AX.SetMovingSpeed(pinion_dyn_id, pinion_dyn_speed);
+                Dynamixel_AX.TorqueEnable(pinion_dyn_id);
 
-                Dynamixel_AX.SetAngle(USART3, pinion_dyn_id, pinion_goal_angle);
+                Dynamixel_AX.SetAngle(pinion_dyn_id, pinion_goal_angle);
 				vTaskDelay(50);
 
                 last_cmd_status = WaitDynamixelAngle(pinion_dyn_id, pinion_goal_angle, angle_timeout_ms);
@@ -1285,15 +1285,15 @@ static void Task(void *arg)
                 MaxonsStop();
                 vTaskDelay(pdMS_TO_TICKS(20));
 
-                Maxon.SetTotalTicks(bus_devices[wheel_device].usart, bus_devices[wheel_device].id, 0);
+                Maxon.SetTotalTicks(bus_devices[wheel_device].id, 0);
                 vTaskDelay(pdMS_TO_TICKS(20));
 
                 start_tick = xTaskGetTickCount();
-                Maxon.Set_TPM(bus_devices[wheel_device].usart, bus_devices[wheel_device].id, WHEEL_CALIBRATION_TPM);
+                Maxon.Set_TPM(bus_devices[wheel_device].id, WHEEL_CALIBRATION_TPM);
 
                 while((xTaskGetTickCount() - start_tick) < pdMS_TO_TICKS(WHEEL_CALIBRATION_TIMEOUT_MS))
                 {
-                    if(Maxon.GetTotalTicks(bus_devices[wheel_device].usart, bus_devices[wheel_device].id, &actual_ticks) == 0)
+                    if(Maxon.GetTotalTicks(bus_devices[wheel_device].id, &actual_ticks) == 0)
                     {
                         abs_ticks = (actual_ticks < 0) ? -actual_ticks : actual_ticks;
 
@@ -1307,9 +1307,9 @@ static void Task(void *arg)
                     vTaskDelay(pdMS_TO_TICKS(WHEEL_CALIBRATION_POLL_MS));
                 }
 
-                Maxon.Set_TPM(bus_devices[wheel_device].usart, bus_devices[wheel_device].id, 0);
+                Maxon.Set_TPM(bus_devices[wheel_device].id, 0);
                 vTaskDelay(pdMS_TO_TICKS(20));
-                (void)Maxon.GetTotalTicks(bus_devices[wheel_device].usart, bus_devices[wheel_device].id, &rotate_wheel_actual_ticks);
+                (void)Maxon.GetTotalTicks(bus_devices[wheel_device].id, &rotate_wheel_actual_ticks);
 
                 if(maxons_state_before_calibration == MAXONS_DISABLED)
                     MaxonsDisable();

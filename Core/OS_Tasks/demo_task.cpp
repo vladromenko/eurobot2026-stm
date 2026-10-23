@@ -73,17 +73,17 @@ static void Task(void *arg)
 
   #ifdef DYNAMIXEL_DEMO_1
     dynamixel_id = 4;
-    Dynamixel_AX.TorqueEnable(USART3, dynamixel_id);
+    Dynamixel_AX.TorqueEnable(dynamixel_id);
   #endif
 
   #ifdef DYNAMIXEL_DEMO_2
     dynamixel_id = 0xFE;
     while(dynamixel_id){
       dynamixel_id --;
-      if(Dynamixel_AX.Ping(USART3, dynamixel_id) == 0)
+      if(Dynamixel_AX.Ping(dynamixel_id) == 0)
         break;
     }
-    Dynamixel_AX.TorqueEnable(USART3, dynamixel_id);
+    Dynamixel_AX.TorqueEnable(dynamixel_id);
   #endif
 
   #ifdef MAXON_DEMO
@@ -147,12 +147,12 @@ static void Task(void *arg)
       uint16_t angle;
       uint8_t error_code;
 
-      error_code = Dynamixel_AX.GetAngle(USART3, dynamixel_id, &angle);
+      error_code = Dynamixel_AX.GetAngle(dynamixel_id, &angle);
 
       if(error_code == 0){
         angle += 10;
         if(angle > 300) angle = 0;
-        Dynamixel_AX.SetAngle(USART3, dynamixel_id, angle);
+        Dynamixel_AX.SetAngle(dynamixel_id, angle);
         LL_GPIO_ResetOutputPin(GPIOD, PWM1_PD15);
       }else
         LL_GPIO_SetOutputPin(GPIOD, PWM1_PD15);

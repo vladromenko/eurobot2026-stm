@@ -40,8 +40,8 @@ enum bus_devices_e{
   BUS_DEVICES_NUMBER
 };
 
+/*  Bus address of a device; the bus itself is fixed by the driver (Maxon -> DynamixelBus6, BMS -> DynamixelBus4, ...)  */
 struct bus_device_s{
-  USART_TypeDef* usart;
   uint8_t id;
 };
 

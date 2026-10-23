@@ -149,7 +149,7 @@ static void DebugGetBatteryState(uint8_t* data, uint8_t data_length)
   struct debug_terminal_response_s debug_terminal_response = {0};
 
   struct bms_battery_state_s battery_state;
-  BMS.GetBatteryState(bus_devices[BMS_BOARD].usart, bus_devices[BMS_BOARD].id, &battery_state);
+  BMS.GetBatteryState(bus_devices[BMS_BOARD].id, &battery_state);
   memcpy(debug_terminal_response.data, &battery_state, 18);
 
   debug_terminal_response.cmd = BOARD_GetBatteryState;
@@ -165,7 +165,7 @@ static void DebugSet_BMS_CalibrationValue(uint8_t* data, uint8_t data_length)
   uint16_t calibration_value;
   ByteTo_Word16(data+1, &calibration_value);
 
-  BMS.SetCalibrationValue(bus_devices[BMS_BOARD].usart, bus_devices[BMS_BOARD].id, data[0], calibration_value);
+  BMS.SetCalibrationValue(bus_devices[BMS_BOARD].id, data[0], calibration_value);
   
   debug_terminal_response.cmd = BOARD_Set_BMS_CalibrationValue;
   debug_terminal_response.data_length = 0;
@@ -179,7 +179,7 @@ static void DebugGetAxAngle(uint8_t* data, uint8_t data_length)
   struct debug_terminal_response_s debug_terminal_response = {0};
 
   debug_terminal_response.cmd = BOARD_GET_AX_ANGLE;
-  debug_terminal_response.data[0] = Dynamixel_AX.GetAngle(USART3, data[0], &angle);
+  debug_terminal_response.data[0] = Dynamixel_AX.GetAngle(data[0], &angle);
   Word16_ToByte(&angle, &debug_terminal_response.data[1]);
   debug_terminal_response.data_length = 3;
 
@@ -197,12 +197,12 @@ static void DebugSetAxAngle(uint8_t* data, uint8_t data_length)
 
 	int16_t curr_speed = -1;
 	while(curr_speed != speed){
-		Dynamixel_AX.SetMovingSpeed(USART3, id, speed);
-		Dynamixel_AX.GetMovingSpeed(USART3, id, &curr_speed);
+		Dynamixel_AX.SetMovingSpeed(id, speed);
+		Dynamixel_AX.GetMovingSpeed(id, &curr_speed);
 	}
 	
-  Dynamixel_AX.TorqueEnable(USART3,id);
-  Dynamixel_AX.SetAngle(USART3,id,angle);
+  Dynamixel_AX.TorqueEnable(id);
+  Dynamixel_AX.SetAngle(id,angle);
 }
   struct debug_terminal_response_s debug_terminal_response = {0};
 

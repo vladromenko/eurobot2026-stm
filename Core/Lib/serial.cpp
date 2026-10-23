@@ -73,7 +73,7 @@ void TransmitBytes(USARTx_Line* line, tx_fifo_element_s* tx_fifo_data_unit)
 constinit SerialDriver Serial;
 
 
-void SerialDriver::WriteBytes(USART_TypeDef* usart, uint8_t* bytes, uint8_t bytes_number)
+void SerialDriver::WriteBytes(uint8_t* bytes, uint8_t bytes_number)
 {
     if(bytes_number>SERIAL_MAX_BYTES_NUMBER)
         return;
@@ -83,13 +83,11 @@ void SerialDriver::WriteBytes(USART_TypeDef* usart, uint8_t* bytes, uint8_t byte
     memcpy(tx_fifo_data_unit.bytes, bytes, bytes_number);
     tx_fifo_data_unit.bytes_number = bytes_number;
 
-    TransmitBytes(USARTx.GetLine(usart), &tx_fifo_data_unit);
+    TransmitBytes(line, &tx_fifo_data_unit);
 }
 
-uint32_t SerialDriver::ReadBytes(USART_TypeDef* usart, uint8_t* bytes, uint32_t timeout_ms)
+uint32_t SerialDriver::ReadBytes(uint8_t* bytes, uint32_t timeout_ms)
 {
-    USARTx_Line* line = USARTx.GetLine(usart);
-
     if(timeout_ms){
         is_timeout_expired = 0;
         line->SetRxTimeout(timeout_ms*1000);
@@ -114,13 +112,12 @@ uint32_t SerialDriver::ReadBytes(USART_TypeDef* usart, uint8_t* bytes, uint32_t 
     }
 }
 
-void SerialDriver::RxTimeoutCallback(USARTx_Line* line)
+void SerialDriver::RxTimeoutCallback()
 {
-    (void)line;
     is_timeout_expired = 1;
 }
 
-void SerialDriver::TxCompleteCallback(USARTx_Line* line)
+void SerialDriver::TxCompleteCallback()
 {
     line->StopTx();
     
@@ -130,7 +127,7 @@ void SerialDriver::TxCompleteCallback(USARTx_Line* line)
         line->is_line_busy = 0;
 }
 
-void SerialDriver::RxCompleteCallback(USARTx_Line* line, uint32_t data_length)
+void SerialDriver::RxCompleteCallback(uint32_t data_length)
 {
     line->StopRx();
 
@@ -142,7 +139,7 @@ void SerialDriver::RxCompleteCallback(USARTx_Line* line, uint32_t data_length)
     line->StartRx();
 }
 
-void SerialDriver::InitLine(USARTx_Line* line)
+void SerialDriver::InitLine()
 {
     if((line->tx_buffer_size < 2*sizeof(tx_fifo_element_s))||
         (line->rx_buffer_size < 2*sizeof(rx_fifo_element_s)))

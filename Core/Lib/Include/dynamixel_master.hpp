@@ -64,26 +64,28 @@ struct dynamixel_master_response_s{
 
 
 /**
- * Dynamixel Protocol 1.0 master. One object serves all half-duplex lines
- * it is bound to; per-line state lives in the line buffers.
+ * Dynamixel Protocol 1.0 master on one half-duplex line.
  * Requests are queued and the call returns at once: wait for
  * response->is_data_ready before reading the response.
  */
 class DynamixelMasterDriver : public USARTx_Protocol{
 public:
-    void Ping(USART_TypeDef* usart, uint8_t device_id, dynamixel_master_response_s* response);
-    void Read(USART_TypeDef* usart, uint8_t device_id, uint8_t starting_address, uint8_t data_length, dynamixel_master_response_s* response);
-    void Write(USART_TypeDef* usart, uint8_t device_id, uint8_t starting_address, uint8_t* data, uint8_t data_length, dynamixel_master_response_s* response);
-    void SyncWrite(USART_TypeDef* usart, uint8_t* device_id_array, uint8_t boards_number, uint8_t starting_address, uint8_t* data_array, uint8_t data_length, dynamixel_master_response_s* response_array);
+    void Ping(uint8_t device_id, dynamixel_master_response_s* response);
+    void Read(uint8_t device_id, uint8_t starting_address, uint8_t data_length, dynamixel_master_response_s* response);
+    void Write(uint8_t device_id, uint8_t starting_address, uint8_t* data, uint8_t data_length, dynamixel_master_response_s* response);
+    void SyncWrite(uint8_t* device_id_array, uint8_t boards_number, uint8_t starting_address, uint8_t* data_array, uint8_t data_length, dynamixel_master_response_s* response_array);
 
 private:
-    void InitLine(USARTx_Line* line) override;
-    void TxCompleteCallback(USARTx_Line* line) override;
-    void RxCompleteCallback(USARTx_Line* line, uint32_t data_length) override;
-    void RxTimeoutCallback(USARTx_Line* line) override;
+    void InitLine() override;
+    void TxCompleteCallback() override;
+    void RxCompleteCallback(uint32_t data_length) override;
+    void RxTimeoutCallback() override;
 };
 
-extern DynamixelMasterDriver DynamixelMaster;
+/*  Dynamixel buses, bound to their USARTs in main()  */
+extern DynamixelMasterDriver DynamixelBus3;   /*  USART3: AX servos  */
+extern DynamixelMasterDriver DynamixelBus4;   /*  UART4: BMS board  */
+extern DynamixelMasterDriver DynamixelBus6;   /*  USART6: Maxon motors  */
 
 
 #endif 

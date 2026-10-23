@@ -144,21 +144,23 @@ void Check_TX_FIFO(USARTx_Line* line)
 }
 
 /*  Fill the packet header, append the CRC and queue the request  */
-void SendPacket(USART_TypeDef* usart, tx_fifo_element_s* tx_fifo_data)
+void SendPacket(USARTx_Line* line, tx_fifo_element_s* tx_fifo_data)
 {
     tx_fifo_data->packet.header1 = 0xFF;
     tx_fifo_data->packet.header2 = 0xFF;
     tx_fifo_data->packet.param_crc[tx_fifo_data->packet.length-2] = Calc_CRC(&(tx_fifo_data->packet));
 
-    TransmitCmd(USARTx.GetLine(usart), tx_fifo_data);
+    TransmitCmd(line, tx_fifo_data);
 }
 
 }
 
-constinit DynamixelMasterDriver DynamixelMaster;
+constinit DynamixelMasterDriver DynamixelBus3;
+constinit DynamixelMasterDriver DynamixelBus4;
+constinit DynamixelMasterDriver DynamixelBus6;
 
 
-void DynamixelMasterDriver::Ping(USART_TypeDef* usart, uint8_t device_id, dynamixel_master_response_s* response)
+void DynamixelMasterDriver::Ping(uint8_t device_id, dynamixel_master_response_s* response)
 {
     tx_fifo_element_s tx_fifo_data;
     
@@ -171,10 +173,10 @@ void DynamixelMasterDriver::Ping(USART_TypeDef* usart, uint8_t device_id, dynami
 
     response->is_data_ready = 0;
 
-    SendPacket(usart, &tx_fifo_data);
+    SendPacket(line, &tx_fifo_data);
 }
 
-void DynamixelMasterDriver::Read(USART_TypeDef* usart, uint8_t device_id, uint8_t starting_address, uint8_t data_length, dynamixel_master_response_s* response)
+void DynamixelMasterDriver::Read(uint8_t device_id, uint8_t starting_address, uint8_t data_length, dynamixel_master_response_s* response)
 {
     tx_fifo_element_s tx_fifo_data;
     
@@ -189,11 +191,11 @@ void DynamixelMasterDriver::Read(USART_TypeDef* usart, uint8_t device_id, uint8_
 
     response->is_data_ready = 0;
 
-    SendPacket(usart, &tx_fifo_data);
+    SendPacket(line, &tx_fifo_data);
 }
 
 /*  "response" may be nullptr when the answer is not needed  */
-void DynamixelMasterDriver::Write(USART_TypeDef* usart, uint8_t device_id, uint8_t starting_address, uint8_t* data, uint8_t data_length, dynamixel_master_response_s* response)
+void DynamixelMasterDriver::Write(uint8_t device_id, uint8_t starting_address, uint8_t* data, uint8_t data_length, dynamixel_master_response_s* response)
 {
     tx_fifo_element_s tx_fifo_data;
     
@@ -209,11 +211,11 @@ void DynamixelMasterDriver::Write(USART_TypeDef* usart, uint8_t device_id, uint8
     if(response != nullptr)
         response->is_data_ready = 0;
 
-    SendPacket(usart, &tx_fifo_data);
+    SendPacket(line, &tx_fifo_data);
 }
 
 /*  Devices do not answer a broadcast; "response_array" may be nullptr  */
-void DynamixelMasterDriver::SyncWrite(USART_TypeDef* usart, uint8_t* device_id_array, uint8_t boards_number, uint8_t starting_address, uint8_t* data_array, uint8_t data_length, dynamixel_master_response_s* response_array)
+void DynamixelMasterDriver::SyncWrite(uint8_t* device_id_array, uint8_t boards_number, uint8_t starting_address, uint8_t* data_array, uint8_t data_length, dynamixel_master_response_s* response_array)
 {
     tx_fifo_element_s tx_fifo_data;
     
@@ -236,11 +238,11 @@ void DynamixelMasterDriver::SyncWrite(USART_TypeDef* usart, uint8_t* device_id_a
     tx_fifo_data.response = response_array;
     tx_fifo_data.responses_number = 0;
 
-    SendPacket(usart, &tx_fifo_data);
+    SendPacket(line, &tx_fifo_data);
 }
 
 
-void DynamixelMasterDriver::RxTimeoutCallback(USARTx_Line* line)
+void DynamixelMasterDriver::RxTimeoutCallback()
 {
     line->StopRx();
 
@@ -259,7 +261,7 @@ void DynamixelMasterDriver::RxTimeoutCallback(USARTx_Line* line)
     Check_TX_FIFO(line);
 }
 
-void DynamixelMasterDriver::TxCompleteCallback(USARTx_Line* line)
+void DynamixelMasterDriver::TxCompleteCallback()
 {
     line->StopTx();
 
@@ -275,7 +277,7 @@ void DynamixelMasterDriver::TxCompleteCallback(USARTx_Line* line)
     Check_TX_FIFO(line);
 }
 
-void DynamixelMasterDriver::RxCompleteCallback(USARTx_Line* line, uint32_t data_length)
+void DynamixelMasterDriver::RxCompleteCallback(uint32_t data_length)
 {
     rx_fifo_element_s* rx_fifo_data = RxData(line);
     tx_fifo_element_s* tx_fifo_data = TxData(line);
@@ -324,7 +326,7 @@ void DynamixelMasterDriver::RxCompleteCallback(USARTx_Line* line, uint32_t data_
     Check_TX_FIFO(line);
 }
 
-void DynamixelMasterDriver::InitLine(USARTx_Line* line)
+void DynamixelMasterDriver::InitLine()
 {
     if((line->tx_buffer_size < 2*sizeof(tx_fifo_element_s))||
         (line->rx_buffer_size < 2*sizeof(rx_fifo_element_s)))
