@@ -20,29 +20,20 @@
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
-
 #include "odometry.hpp" 
-#include "stm32f4xx_ll_gpio.h"
-#include "board_gpio_defines.hpp"
-#include "byte2word.hpp" 
-#include "maxon.hpp" 
-
-#include "kinematics.hpp"
 #include "bus_device.hpp"
 
 
+constinit OdometryModule Odometry{Maxon, Kinematics};
 
 
-struct coord_s path;
-static int32_t ticks_old[3] = {0};
-
-static void SyncTicksReference(void)
+void OdometryModule::SyncTicksReference()
 {
   uint8_t error = 0;
 
-  error |= Maxon.GetTotalTicks(bus_devices[MAXON_MOTOR_1].id, ticks_old);
-  error |= Maxon.GetTotalTicks(bus_devices[MAXON_MOTOR_2].id, ticks_old + 1);
-  error |= Maxon.GetTotalTicks(bus_devices[MAXON_MOTOR_3].id, ticks_old + 2);
+  error |= maxon.GetTotalTicks(bus_devices[MAXON_MOTOR_1].id, ticks_old);
+  error |= maxon.GetTotalTicks(bus_devices[MAXON_MOTOR_2].id, ticks_old + 1);
+  error |= maxon.GetTotalTicks(bus_devices[MAXON_MOTOR_3].id, ticks_old + 2);
 
   if(error){
     ticks_old[0] = 0;
@@ -51,11 +42,11 @@ static void SyncTicksReference(void)
   }
 }
 
-static void Init(void)
+void OdometryModule::Init()
 {
-  Maxon.SetTotalTicks(bus_devices[MAXON_MOTOR_1].id, 0);
-  Maxon.SetTotalTicks(bus_devices[MAXON_MOTOR_2].id, 0);
-  Maxon.SetTotalTicks(bus_devices[MAXON_MOTOR_3].id, 0);
+  maxon.SetTotalTicks(bus_devices[MAXON_MOTOR_1].id, 0);
+  maxon.SetTotalTicks(bus_devices[MAXON_MOTOR_2].id, 0);
+  maxon.SetTotalTicks(bus_devices[MAXON_MOTOR_3].id, 0);
 
   path.x = 0; //0.25
   path.y = 0; //2.65
@@ -66,79 +57,62 @@ static void Init(void)
   ticks_old[2] = 0;
 }
 
-static void SetCoord(struct coord_s* coord)
+void OdometryModule::SetCoord(const coord_s* coord)
 {
-  path.x = coord->x;
-  path.y = coord->y;
-  path.phi = coord->phi;
+  path = *coord;
 
   // Start integrating the new pose from current encoder totals.
   SyncTicksReference();
 }
 
-static void GetCoord(struct coord_s* coord)
+void OdometryModule::GetCoord(coord_s* coord)
 {
-  coord->x = path.x;
-  coord->y = path.y;
-  coord->phi = path.phi;
+  *coord = path;
 }
 
-static void SetSpeed(struct speed_s* speed)
+void OdometryModule::SetSpeed(const speed_s* speed)
 {
   int32_t tpm[3];
 
-  Kinematics.SpeedTo_TPM(speed,tpm);
+  kinematics.SpeedTo_TPM(speed, tpm);
 
-  //Maxon.Set_TPM(bus_devices[MAXON_MOTOR_3].id, tpm[2]);
-  //Maxon.Set_TPM(bus_devices[MAXON_MOTOR_2].id, tpm[1]);
-  Maxon.Set_TPM(bus_devices[MAXON_MOTOR_1].id, tpm[0]);
-  Maxon.Set_TPM(bus_devices[MAXON_MOTOR_2].id, tpm[1]);
-  Maxon.Set_TPM(bus_devices[MAXON_MOTOR_3].id, tpm[2]);
+  maxon.Set_TPM(bus_devices[MAXON_MOTOR_1].id, tpm[0]);
+  maxon.Set_TPM(bus_devices[MAXON_MOTOR_2].id, tpm[1]);
+  maxon.Set_TPM(bus_devices[MAXON_MOTOR_3].id, tpm[2]);
 }
 
-static void GetSpeed(struct speed_s* speed)
+void OdometryModule::GetSpeed(speed_s* speed)
 {
-  int32_t tpm[3];
+  /*  Zero speed for a wheel that did not answer  */
+  int32_t tpm[3] = {};
 
-  Maxon.Get_TPM(bus_devices[MAXON_MOTOR_1].id, tpm);
-  Maxon.Get_TPM(bus_devices[MAXON_MOTOR_2].id, tpm+1);
-  Maxon.Get_TPM(bus_devices[MAXON_MOTOR_3].id, tpm+2);
-	//tpm[0] = tpm[0] * 0.86f;
-	//tpm[1] = tpm[1] * 0.86f;
-	//tpm[2] = tpm[2] * 0.86f;
-  Kinematics.TPM_ToSpeed(tpm,speed);
+  maxon.Get_TPM(bus_devices[MAXON_MOTOR_1].id, tpm);
+  maxon.Get_TPM(bus_devices[MAXON_MOTOR_2].id, tpm+1);
+  maxon.Get_TPM(bus_devices[MAXON_MOTOR_3].id, tpm+2);
+  kinematics.TPM_ToSpeed(tpm, speed);
 }
 
 // this update path will be called with frequency of 100 Hz
-static void UpdatePath(void)
+void OdometryModule::UpdatePath()
 {
   int32_t ticks_new[3];
   int32_t d_ticks[3];
   uint8_t error = 0;
 
-  error |= Maxon.GetTotalTicks(bus_devices[MAXON_MOTOR_1].id, ticks_new);
-  error |= Maxon.GetTotalTicks(bus_devices[MAXON_MOTOR_2].id, ticks_new+1);
-  error |= Maxon.GetTotalTicks(bus_devices[MAXON_MOTOR_3].id, ticks_new+2);
+  error |= maxon.GetTotalTicks(bus_devices[MAXON_MOTOR_1].id, ticks_new);
+  error |= maxon.GetTotalTicks(bus_devices[MAXON_MOTOR_2].id, ticks_new+1);
+  error |= maxon.GetTotalTicks(bus_devices[MAXON_MOTOR_3].id, ticks_new+2);
 
   if(error)
     return;
 
-  d_ticks[0] = ticks_new[0] - ticks_old[0];
-  d_ticks[1] = ticks_new[1] - ticks_old[1];
-  d_ticks[2] = ticks_new[2] - ticks_old[2];
+  for(uint8_t ik = 0; ik < 3; ik++){
+    d_ticks[ik] = ticks_new[ik] - ticks_old[ik];
+    ticks_old[ik] = ticks_new[ik];
+  }
 
   // d_ticks is in ticks per 10ms
-  Kinematics.UpdatePath(d_ticks,&path);
-
-  memcpy(ticks_old,ticks_new,12);
+  kinematics.UpdatePath(d_ticks, &path);
 }
-
-
-const struct odometry_s Odometry = {.Init = Init,
-                                    .SetCoord = SetCoord,
-                                    .GetCoord = GetCoord,
-                                    .SetSpeed = SetSpeed,
-                                    .GetSpeed = GetSpeed,
-                                    .UpdatePath = UpdatePath};
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

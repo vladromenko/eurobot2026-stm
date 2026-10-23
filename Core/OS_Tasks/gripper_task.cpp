@@ -252,7 +252,7 @@ static void StopBaseMotion(void)
 {
     struct speed_s stop_speed = {0};
     Odometry.SetSpeed(&stop_speed);
-    MaxonsStop();
+    Robot.MaxonsStop();
 }
 
 static void SetSpeedWithRampUpProfile(const struct speed_s* target_speed, uint32_t total_time_ms)
@@ -588,9 +588,8 @@ static void Task(void *arg)
 
 	#ifdef GRIPPER_INIT
 	
-        MaxonsDisable();
-        Kinematics.MatrixInit();
-        MaxonsEnable();
+        Robot.MaxonsDisable();
+        Robot.MaxonsEnable();
         vTaskDelay(100);
         
         /*
@@ -601,7 +600,7 @@ static void Task(void *arg)
         Odometry.SetSpeed(&speed);
         */
 
-        MaxonsStop();
+        Robot.MaxonsStop();
         vTaskDelay(50);
         
         // cursor init
@@ -1167,7 +1166,7 @@ static void Task(void *arg)
 
                 last_cmd_status = 0;
 
-                MaxonsEnable();
+                Robot.MaxonsEnable();
                 vTaskDelay(20);
 
                 if (max_speed_mps <= 0.0f)
@@ -1199,7 +1198,7 @@ static void Task(void *arg)
 
                 move_status_flag = 0;
 
-                MaxonsEnable();
+                Robot.MaxonsEnable();
                 vTaskDelay(20);
 
                 if (max_speed_mps > 0.0f)
@@ -1280,9 +1279,9 @@ static void Task(void *arg)
                     break;
 
                 if(maxons_state_before_calibration == MAXONS_DISABLED)
-                    MaxonsEnable();
+                    Robot.MaxonsEnable();
 
-                MaxonsStop();
+                Robot.MaxonsStop();
                 vTaskDelay(pdMS_TO_TICKS(20));
 
                 Maxon.SetTotalTicks(bus_devices[wheel_device].id, 0);
@@ -1312,7 +1311,7 @@ static void Task(void *arg)
                 (void)Maxon.GetTotalTicks(bus_devices[wheel_device].id, &rotate_wheel_actual_ticks);
 
                 if(maxons_state_before_calibration == MAXONS_DISABLED)
-                    MaxonsDisable();
+                    Robot.MaxonsDisable();
 
                 gripper_cmd = NO_CMD;
                 break;

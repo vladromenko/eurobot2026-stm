@@ -17,44 +17,34 @@
   */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __TERMINAL_H
-#define __TERMINAL_H
+#ifndef __DEBUG_TERMINAL_H
+#define __DEBUG_TERMINAL_H
 
-#ifdef __cplusplus
- extern "C" {
-#endif
-	 
 #include "std_def.hpp"
+#include "terminal.hpp"
 
-
-#define TERMINAL_MAX_DATA_LENGTH    32
-
-
-struct terminal_request_s{
+struct debug_terminal_request_s{
     uint8_t cmd;
     uint8_t data_length;
     uint8_t data[TERMINAL_MAX_DATA_LENGTH];
 };
 
-struct terminal_response_s{
+struct debug_terminal_response_s{
     uint8_t cmd;
     uint8_t data_length;
     uint8_t data[TERMINAL_MAX_DATA_LENGTH];
 };
 
-struct terminal_s{
-    void (*SendResponse)(struct terminal_response_s* terminal_response);
-    uint8_t (*GetRequest)(struct terminal_request_s* terminal_request);
+/*  Debug terminal: fixed-size packets over Serial on UART5  */
+class DebugTerminalModule{
+public:
+    void SendResponse(debug_terminal_response_s* debug_terminal_response);
+    /*  Waits up to 100 ms; returns 1 if a full request was received  */
+    uint8_t GetRequest(debug_terminal_request_s* debug_terminal_request);
 };
 
-extern const struct terminal_s Terminal;
+extern DebugTerminalModule Debug_Terminal;
 
-
-
-#ifdef __cplusplus
-}
 #endif
-
-#endif 
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

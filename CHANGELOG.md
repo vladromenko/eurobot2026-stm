@@ -10,6 +10,25 @@
 - Из заголовков BSP и Lib убраны `extern "C"`: ни один C-файл их не подключает.
 - FLASH (Debug): 70108 → 62548 Б. RAM: 19656 → 19416 Б.
 
+### Переход на C++: App
+
+| Было | Стало |
+|---|---|
+| `Kinematics` (таблица функций) + `Kinematics.MatrixInit()` при старте | `KinematicsModule Kinematics`: коэффициенты и матрицы считаются при компиляции, `MatrixInit()` удалён |
+| `Odometry` + глобальные `path`, `ticks_old` | `OdometryModule Odometry{Maxon, Kinematics}`, состояние внутри класса |
+| `MaxonsEnable()`, `MaxonsDisable()`, `MaxonsStop()`, `StopAllActuators()`, `ButtonsCallback()` | `RobotBehavior Robot`: `Robot.MaxonsEnable()` и т.д. |
+| `Terminal`, `Debug_Terminal` (таблицы функций) | `TerminalModule Terminal` (HL_RTU, USART1), `DebugTerminalModule Debug_Terminal` (Serial, UART5); у debug-терминала методы `SendResponse` / `GetRequest` без префикса `Debug` |
+| массивы `terminal_cmd_handlers[]` / `debug_terminal_cmd_handlers[]`, глобальные `COMM_ENABLE` / `DEBUG_COMM_ENABLE` | `TerminalCmd.Handle(&request)`, `DebugTerminalCmd.Handle(&request)`; обработчики стали методами, таблица методов лежит во FLASH; флаг связи — поле класса, `TerminalCmd.SetCommEnable(0)` в `game_task` |
+
+- Зависимости модулей App передаются в `constexpr`-конструктор (`Odometry{Maxon, Kinematics}`, `Robot{Maxon}`), объекты `constinit`.
+- `robot_ctrl`, `bus_devices`, `Robot_GPIO_Config()`, `main()` и обработчики прерываний остались как были.
+- У `debug_terminal.hpp` и `debug_terminal_cmd_handlers.hpp` теперь свои include guard'ы. Раньше они совпадали с `terminal*.hpp`, и `debug_terminal.hpp` фактически не подключался.
+- Удалены неиспользуемые `debug_terminal_cmd_table.hpp`, `PrepareRobot()`, `SpeedTo_TPM_2()` (было только объявление) и `GetWheelBusDevice()`.
+- Обработчики концевиков в `ButtonsCallback` сведены к общему помощнику, инверсия «нажат → `LINEAR_SWITCH_RELEASED`» сохранена.
+- Исправлено: `terminal_task` и `debug_task` читали `handlers[cmd]` до проверки `cmd < TERMINAL_CMD_TABLE_SIZE`, то есть за пределами таблицы при неизвестной команде. Теперь проверка в `Handle()` идёт первой.
+- Исправлено: `Odometry.GetSpeed` при ошибке связи с Maxon считал скорость из неинициализированных значений; теперь для неответившего колеса берётся 0.
+- FLASH (Debug): 62548 → 62792 Б. RAM: 19416 → 19208 Б.
+
 ### USART: новый интерфейс протоколов
 
 - Таблицы `usartx_protocol_s`, `usartx_control_s` и `usartx_line_config_s` заменены классами в [usartx_communication.hpp](Core/BSP/Include/usartx_communication.hpp):

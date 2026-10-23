@@ -17,31 +17,53 @@
   */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __TERMINAL_CMD_HANDLER_H
-#define __TERMINAL_CMD_HANDLER_H
+#ifndef __DEBUG_TERMINAL_CMD_HANDLER_H
+#define __DEBUG_TERMINAL_CMD_HANDLER_H
 
 #include <array>
-
-#ifdef __cplusplus
- extern "C" {
-#endif
-	 
 #include "std_def.hpp"
-#include "terminal_cmd_table.hpp" 
+#include "terminal_cmd_table.hpp"
+#include "debug_terminal.hpp"
 
-typedef void (*terminal_cmd_handler_t)(uint8_t* data, uint8_t data_length);
+/*  Commands of the debug terminal (Serial, UART5); codes from terminal_cmd_table.hpp  */
+class DebugTerminalCmdHandler{
+public:
+  /*  Run the handler of request->cmd; unknown commands are ignored  */
+  void Handle(debug_terminal_request_s* request);
 
+  /*  0 blocks the commands that move the robot (end of the match)  */
+  void SetCommEnable(uint8_t enable) { comm_enable = enable; }
 
+private:
+  using Handler = void (DebugTerminalCmdHandler::*)(uint8_t* data, uint8_t data_length);
+  static const std::array<Handler, TERMINAL_CMD_TABLE_SIZE> handlers;
 
-extern std::array<terminal_cmd_handler_t, TERMINAL_CMD_TABLE_SIZE> terminal_cmd_handlers;
+  void DebugPing(uint8_t* data, uint8_t data_length);
+  void DebugSetRobotSpeed(uint8_t* data, uint8_t data_length);
+  void DebugGetRobotSpeed(uint8_t* data, uint8_t data_length);
+  void DebugSetRobotCoord(uint8_t* data, uint8_t data_length);
+  void DebugGetRobotCoord(uint8_t* data, uint8_t data_length);
+  void DebugGetBatteryState(uint8_t* data, uint8_t data_length);
+  void DebugSet_BMS_CalibrationValue(uint8_t* data, uint8_t data_length);
+  void DebugGetAxAngle(uint8_t* data, uint8_t data_length);
+  void DebugSetAxAngle(uint8_t* data, uint8_t data_length);
+  void DebugTogglePump(uint8_t* data, uint8_t data_length);
+  void DebugGetKey(uint8_t* data, uint8_t data_length);
+  void DebugGetToggle(uint8_t* data, uint8_t data_length);
+  void DebugGetDebugMessage(uint8_t* data, uint8_t data_length);
+  void DebugGetSwitchesState(uint8_t* data, uint8_t data_length);
+  void DebugSetMaxonsState(uint8_t* data, uint8_t data_length);
+  void DebugSetCommState(uint8_t* data, uint8_t data_length);
+  void DebugBoardReset(uint8_t* data, uint8_t data_length);
+  void DebugBoardGetReset(uint8_t* data, uint8_t data_length);
+  void DebugBoardClearReset(uint8_t* data, uint8_t data_length);
+  void DebugPCA9685_SetServoAngle(uint8_t* data, uint8_t data_length);
 
+  volatile uint8_t comm_enable = 1;
+};
 
+extern DebugTerminalCmdHandler DebugTerminalCmd;
 
-
-#ifdef __cplusplus
-}
 #endif
-
-#endif 
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

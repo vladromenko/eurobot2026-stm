@@ -20,11 +20,9 @@
 #ifndef __ROBOT_BEHAVIOR_ROUTINE_H
 #define __ROBOT_BEHAVIOR_ROUTINE_H
 
-#ifdef __cplusplus
- extern "C" {
-#endif
 #include "std_def.hpp"
 #include "button.hpp"
+#include "maxon.hpp"
 
 #include "FreeRTOS.h"
 #include "task.h"
@@ -124,18 +122,24 @@ struct robot_ctrl_s{
 
 extern struct robot_ctrl_s robot_ctrl;
 
-void ButtonsCallback(enum buttons_e button_id, enum button_callback_type_s callback_type, enum button_action_e button_action, enum button_state_e button_state);
-// void ControlButtons_Callback(enum buttons_e button_id, enum button_event_e button_event);
-void MaxonsEnable(void);
-void MaxonsDisable(void);
-void MaxonsStop(void);
-void StopAllActuators(void);
-void PrepareRobot(void);
+/*  Robot level actions and reaction to the buttons; state is kept in robot_ctrl  */
+class RobotBehavior{
+public:
+  constexpr explicit RobotBehavior(MaxonDriver& maxon) : maxon(maxon) {}
 
-// void Starting_Cord_BTN_Callback(enum buttons_e button_id, enum button_event_e button_event);
-// void Playground_Side_BTN_Callback(enum buttons_e button_id, enum button_event_e button_event);
-// void Strategy_BTN_Callback(enum buttons_e button_id, enum button_event_e button_event);
-// void Maxon_Enable_BTN_Callback(enum buttons_e button_id, enum button_event_e button_event);
+  void MaxonsEnable();
+  void MaxonsDisable();
+  void MaxonsStop();
+  void StopAllActuators();
+
+  /*  Called from ButtonsCallbackTask for every button event  */
+  void ButtonsCallback(buttons_e button_id, button_callback_type_s callback_type, button_action_e button_action, button_state_e button_state);
+
+private:
+  MaxonDriver& maxon;
+};
+
+extern RobotBehavior Robot;
 
 #if defined (ROBOT_GUIDO)
 
@@ -150,9 +154,6 @@ void PrepareRobot(void);
 #endif
 
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif 
 

@@ -52,7 +52,6 @@ static void Task(void *arg)
 
   vTaskDelay(100);
 
-  Kinematics.MatrixInit();
   Odometry.Init();
   xLastWakeTime = xTaskGetTickCount();
   

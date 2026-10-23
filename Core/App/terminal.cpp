@@ -20,36 +20,24 @@
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
-
-
-
-#include "stm32f4xx_ll_gpio.h"
-#include "board_gpio_defines.hpp"
-#include "robot_gpio_defines.hpp"
-#include "byte2word.hpp" 
-#include "maxon.hpp" 
-#include "dynamixel_ax.hpp" 
-#include "hl_rtu.hpp" 
 #include "terminal.hpp" 
+#include "hl_rtu.hpp" 
+
+/*  Terminal packets are sent as HL_RTU PDUs as is  */
+static_assert(sizeof(terminal_request_s) == sizeof(hl_rtu_request_s));
+static_assert(sizeof(terminal_response_s) == sizeof(hl_rtu_response_s));
+
+constinit TerminalModule Terminal;
 
 
-
-
-static void SendResponse(struct terminal_response_s* terminal_response)
+void TerminalModule::SendResponse(terminal_response_s* terminal_response)
 {
-  HL_RTU.SendResponse((struct hl_rtu_response_s*)terminal_response);
+  HL_RTU.SendResponse(reinterpret_cast<hl_rtu_response_s*>(terminal_response));
 }
 
-static uint8_t GetRequest(struct terminal_request_s* terminal_request)
+uint8_t TerminalModule::GetRequest(terminal_request_s* terminal_request)
 {
-  return HL_RTU.GetRequest((struct hl_rtu_request_s*)terminal_request);
+  return HL_RTU.GetRequest(reinterpret_cast<hl_rtu_request_s*>(terminal_request));
 }
-
-
-const struct terminal_s Terminal = {.SendResponse = SendResponse,
-                                    .GetRequest = GetRequest};
-
-
-
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

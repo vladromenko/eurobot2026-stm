@@ -28,7 +28,6 @@
 #include "board_gpio_defines.hpp"
 #include "stm32f4xx_ll_gpio.h"
 #include "terminal.hpp"
-#include "debug_terminal.hpp"
 
 #include "dynamixel_ax.hpp" 
 #include "dynamixel_mx.hpp" 
@@ -97,7 +96,13 @@ extern uint8_t last_cmd_status;
 extern uint8_t stepper1_calibrate;
 extern int32_t stepper1_goal_position;
 
-uint8_t COMM_ENABLE = 1;
+constinit TerminalCmdHandler TerminalCmd;
+
+void TerminalCmdHandler::Handle(terminal_request_s* request)
+{
+  if((request->cmd < TERMINAL_CMD_TABLE_SIZE) && (handlers[request->cmd] != nullptr))
+    (this->*handlers[request->cmd])(request->data, request->data_length);
+}
 
 #define CALIBRATION_WHEEL_TICKS_PER_REV   ((int32_t)(28.0f * 4096.0f))
 #define CALIBRATION_WHEEL_TPM             ((int32_t)400000)
@@ -105,27 +110,6 @@ uint8_t COMM_ENABLE = 1;
 #define CALIBRATION_TIMEOUT_MS            15000U
 #define CALIBRATION_STOP_MARGIN_TICKS     ((int32_t)1750)
 #define LOCAL_PI                          3.14159265359f
-
-static uint8_t GetWheelBusDevice(uint8_t wheel_number, enum bus_devices_e* device)
-{
-  switch(wheel_number)
-  {
-    case 1:
-      *device = MAXON_MOTOR_1;
-      return 1;
-
-    case 2:
-      *device = MAXON_MOTOR_2;
-      return 1;
-
-    case 3:
-      *device = MAXON_MOTOR_3;
-      return 1;
-
-    default:
-      return 0;
-  }
-}
 
 static void WaitForGripperCompletion(void)
 {
@@ -140,7 +124,7 @@ static void WaitForGripperCompletion(void)
   // Как только мы здесь — значит задача гриппера выполнила работу.
 }
 
-static void Ping(uint8_t* data, uint8_t data_length)
+void TerminalCmdHandler::Ping([[maybe_unused]] uint8_t* data, [[maybe_unused]] uint8_t data_length)
 {
   LL_GPIO_TogglePin(GPIOD, PWM2_PD14);
 
@@ -152,10 +136,10 @@ static void Ping(uint8_t* data, uint8_t data_length)
   Terminal.SendResponse(&terminal_response);
 }
 
-static void SetRobotSpeed(uint8_t* data, uint8_t data_length)
+void TerminalCmdHandler::SetRobotSpeed([[maybe_unused]] uint8_t* data, [[maybe_unused]] uint8_t data_length)
 {
 	
-	if(COMM_ENABLE){
+	if(comm_enable){
 		struct speed_s speed;
   
   ByteTo_Word32(data,&speed.dx);
@@ -174,7 +158,7 @@ static void SetRobotSpeed(uint8_t* data, uint8_t data_length)
   Terminal.SendResponse(&terminal_response);
 }
 
-static void GetRobotSpeed(uint8_t* data, uint8_t data_length)
+void TerminalCmdHandler::GetRobotSpeed([[maybe_unused]] uint8_t* data, [[maybe_unused]] uint8_t data_length)
 {
 	
   struct terminal_response_s terminal_response;
@@ -193,9 +177,9 @@ static void GetRobotSpeed(uint8_t* data, uint8_t data_length)
   Terminal.SendResponse(&terminal_response);
 }
 
-static void SetRobotCoord(uint8_t* data, uint8_t data_length)
+void TerminalCmdHandler::SetRobotCoord([[maybe_unused]] uint8_t* data, [[maybe_unused]] uint8_t data_length)
 {
-	if(COMM_ENABLE){
+	if(comm_enable){
 		struct coord_s coord;
   
   ByteTo_Word32(data,&coord.x);
@@ -214,7 +198,7 @@ static void SetRobotCoord(uint8_t* data, uint8_t data_length)
   Terminal.SendResponse(&terminal_response);
 }
 
-static void GetRobotCoord(uint8_t* data, uint8_t data_length)
+void TerminalCmdHandler::GetRobotCoord([[maybe_unused]] uint8_t* data, [[maybe_unused]] uint8_t data_length)
 {
   struct terminal_response_s terminal_response;
 
@@ -232,7 +216,7 @@ static void GetRobotCoord(uint8_t* data, uint8_t data_length)
   Terminal.SendResponse(&terminal_response);
 }
 
-static void GetBatteryState(uint8_t* data, uint8_t data_length)
+void TerminalCmdHandler::GetBatteryState([[maybe_unused]] uint8_t* data, [[maybe_unused]] uint8_t data_length)
 {
   struct terminal_response_s terminal_response;
 
@@ -246,7 +230,7 @@ static void GetBatteryState(uint8_t* data, uint8_t data_length)
   Terminal.SendResponse(&terminal_response);
 }
 
-static void Set_BMS_CalibrationValue(uint8_t* data, uint8_t data_length)
+void TerminalCmdHandler::Set_BMS_CalibrationValue([[maybe_unused]] uint8_t* data, [[maybe_unused]] uint8_t data_length)
 {
   struct terminal_response_s terminal_response;
 
@@ -261,7 +245,7 @@ static void Set_BMS_CalibrationValue(uint8_t* data, uint8_t data_length)
   Terminal.SendResponse(&terminal_response);
 }
 
-static void GetAxAngle(uint8_t* data, uint8_t data_length)
+void TerminalCmdHandler::GetAxAngle([[maybe_unused]] uint8_t* data, [[maybe_unused]] uint8_t data_length)
 {
   uint16_t angle;
   struct terminal_response_s terminal_response;
@@ -274,9 +258,9 @@ static void GetAxAngle(uint8_t* data, uint8_t data_length)
   Terminal.SendResponse(&terminal_response);
 }
 
-static void SetAxAngle(uint8_t* data, uint8_t data_length)
+void TerminalCmdHandler::SetAxAngle([[maybe_unused]] uint8_t* data, [[maybe_unused]] uint8_t data_length)
 {
-	if(COMM_ENABLE){
+	if(comm_enable){
   uint8_t id = data[0];
   uint16_t angle;
   ByteTo_Word16(data+1,&angle);
@@ -300,7 +284,7 @@ static void SetAxAngle(uint8_t* data, uint8_t data_length)
   Terminal.SendResponse(&terminal_response);
 }
 /*
-static void GetKey(uint8_t* data, uint8_t data_length)
+void TerminalCmdHandler::GetKey([[maybe_unused]] uint8_t* data, [[maybe_unused]] uint8_t data_length)
 {
   uint8_t key_request = data[0];
   uint8_t key_response = (robot_ctrl.starting_cord == STARTING_CORD_ATTACHED) ? 1 : 0;
@@ -320,7 +304,7 @@ static void SetStepperZero(uint8_t* data, uint8_t data_length)
 {
 	
 	uint8_t id = data[0];
-  if(COMM_ENABLE){
+  if(comm_enable){
 	switch(id){
 		case 0:
 			stepper1_calibrate = 1;
@@ -373,7 +357,7 @@ static void GetStepperPosition(uint8_t* data, uint8_t data_length)
 /*
 static void SetStepperPosition(uint8_t* data, uint8_t data_length)
 {
-	if(COMM_ENABLE){
+	if(comm_enable){
     int16_t position;
     ByteTo_Word16(data,&position);
 
@@ -394,9 +378,9 @@ static void SetStepperPosition(uint8_t* data, uint8_t data_length)
 */
 
 
-static void GetToggle(uint8_t* data, uint8_t data_length)
+void TerminalCmdHandler::GetToggle([[maybe_unused]] uint8_t* data, [[maybe_unused]] uint8_t data_length)
 {
-  if(COMM_ENABLE){
+  if(comm_enable){
 	}
   struct terminal_response_s terminal_response;
 
@@ -407,9 +391,9 @@ static void GetToggle(uint8_t* data, uint8_t data_length)
   Terminal.SendResponse(&terminal_response);
 }
 
-static void GetDebugMessage(uint8_t* data, uint8_t data_length)
+void TerminalCmdHandler::GetDebugMessage([[maybe_unused]] uint8_t* data, [[maybe_unused]] uint8_t data_length)
 {
-	if(COMM_ENABLE){
+	if(comm_enable){
 	}
   struct terminal_response_s terminal_response;
 
@@ -425,9 +409,9 @@ static void GetDebugMessage(uint8_t* data, uint8_t data_length)
   Terminal.SendResponse(&terminal_response);
 }
 
-static void GetSwitchesState(uint8_t* data, uint8_t data_length)
+void TerminalCmdHandler::GetSwitchesState([[maybe_unused]] uint8_t* data, [[maybe_unused]] uint8_t data_length)
 {
-	if(COMM_ENABLE){
+	if(comm_enable){
 	}
 	
   struct terminal_response_s terminal_response;
@@ -445,14 +429,14 @@ static void GetSwitchesState(uint8_t* data, uint8_t data_length)
   Terminal.SendResponse(&terminal_response);
 }
 
-static void SetMaxonsState(uint8_t* data, uint8_t data_length){
-	if(COMM_ENABLE){
+void TerminalCmdHandler::SetMaxonsState([[maybe_unused]] uint8_t* data, [[maybe_unused]] uint8_t data_length){
+	if(comm_enable){
 	uint8_t state = data[0];
 	
 	if(state){
-		MaxonsEnable();
+		Robot.MaxonsEnable();
 	} else {
-		MaxonsDisable();
+		Robot.MaxonsDisable();
 	}
 }
 	struct terminal_response_s terminal_response;
@@ -461,13 +445,13 @@ static void SetMaxonsState(uint8_t* data, uint8_t data_length){
   Terminal.SendResponse(&terminal_response);
 }
 
-static void SetCommState(uint8_t* data, uint8_t data_length){
+void TerminalCmdHandler::SetCommState([[maybe_unused]] uint8_t* data, [[maybe_unused]] uint8_t data_length){
 	uint8_t state = data[0];
 	
 	if(state){
-		COMM_ENABLE = 1;
+		comm_enable = 1;
 	} else {
-		COMM_ENABLE = 0;
+		comm_enable = 0;
 	}
 	
 	struct terminal_response_s terminal_response;
@@ -477,20 +461,20 @@ static void SetCommState(uint8_t* data, uint8_t data_length){
 	
 }
 
-static void FreeWheels(uint8_t* data, uint8_t data_length)
+void TerminalCmdHandler::FreeWheels([[maybe_unused]] uint8_t* data, [[maybe_unused]] uint8_t data_length)
 {
-  struct terminal_response_s terminal_response = {0};
-  struct speed_s speed = {0};
+  struct terminal_response_s terminal_response = {};
+  struct speed_s speed = {};
   uint8_t status = 0;
 
   terminal_response.cmd = BOARD_FREE_WHEELS;
 
-  if(COMM_ENABLE){
+  if(comm_enable){
     Odometry.SetSpeed(&speed);
     vTaskDelay(pdMS_TO_TICKS(20));
-    MaxonsStop();
+    Robot.MaxonsStop();
     vTaskDelay(pdMS_TO_TICKS(20));
-    MaxonsDisable();
+    Robot.MaxonsDisable();
     status = 1;
   }
 
@@ -499,7 +483,7 @@ static void FreeWheels(uint8_t* data, uint8_t data_length)
   Terminal.SendResponse(&terminal_response);
 }
 
-static void BoardReset(uint8_t* data, uint8_t data_length){
+void TerminalCmdHandler::BoardReset([[maybe_unused]] uint8_t* data, [[maybe_unused]] uint8_t data_length){
 	struct terminal_response_s terminal_response;
 	terminal_response.cmd = BOARD_RESET;
   terminal_response.data_length = 0;
@@ -507,9 +491,9 @@ static void BoardReset(uint8_t* data, uint8_t data_length){
 	SCB->AIRCR = 0x05FA0004;
 }
 
-static void BoardGetReset(uint8_t* data, uint8_t data_length)
+void TerminalCmdHandler::BoardGetReset([[maybe_unused]] uint8_t* data, [[maybe_unused]] uint8_t data_length)
 {
-	if(COMM_ENABLE){
+	if(comm_enable){
 	}
 	
   struct terminal_response_s terminal_response;
@@ -521,9 +505,9 @@ static void BoardGetReset(uint8_t* data, uint8_t data_length)
   Terminal.SendResponse(&terminal_response);
 }
 
-static void BoardClearReset(uint8_t* data, uint8_t data_length)
+void TerminalCmdHandler::BoardClearReset([[maybe_unused]] uint8_t* data, [[maybe_unused]] uint8_t data_length)
 {
-	if(COMM_ENABLE){
+	if(comm_enable){
 	}
 	
   struct terminal_response_s terminal_response;
@@ -535,9 +519,9 @@ static void BoardClearReset(uint8_t* data, uint8_t data_length)
   Terminal.SendResponse(&terminal_response);
 }
 
-static void grab_rotate(uint8_t* data, uint8_t data_length)
+void TerminalCmdHandler::grab_rotate([[maybe_unused]] uint8_t* data, [[maybe_unused]] uint8_t data_length)
 {
-  if(COMM_ENABLE){
+  if(comm_enable){
     ulTaskNotifyTake(pdTRUE, 0); 
   
     gripper_id = data[0];
@@ -546,16 +530,16 @@ static void grab_rotate(uint8_t* data, uint8_t data_length)
     gripper_cmd = 5;
 	}
 
-  struct terminal_response_s terminal_response = {0};
+  struct terminal_response_s terminal_response = {};
   terminal_response.cmd = BOARD_GRAB_ROTATE;
   terminal_response.data[0] = 0x01;
   terminal_response.data_length = 1;
   Terminal.SendResponse(&terminal_response);
 }
 
-static void BlocksShift(uint8_t* data, uint8_t data_length)
+void TerminalCmdHandler::BlocksShift([[maybe_unused]] uint8_t* data, [[maybe_unused]] uint8_t data_length)
 {
-  if(COMM_ENABLE){
+  if(comm_enable){
     ulTaskNotifyTake(pdTRUE, 0);
 
     gripper_id = data[0];
@@ -563,16 +547,16 @@ static void BlocksShift(uint8_t* data, uint8_t data_length)
     gripper_cmd = 10;
   }
 
-  struct terminal_response_s terminal_response = {0};
+  struct terminal_response_s terminal_response = {};
   terminal_response.cmd = BOARD_BLOCKS_SHIFT;
   terminal_response.data[0] = 0x01;
   terminal_response.data_length = 1;
   Terminal.SendResponse(&terminal_response);
 }
 
-static void BlocksRotateMask(uint8_t* data, uint8_t data_length)
+void TerminalCmdHandler::BlocksRotateMask([[maybe_unused]] uint8_t* data, [[maybe_unused]] uint8_t data_length)
 {
-  if(COMM_ENABLE){
+  if(comm_enable){
     ulTaskNotifyTake(pdTRUE, 0);
 
     gripper_id = data[0];
@@ -580,16 +564,16 @@ static void BlocksRotateMask(uint8_t* data, uint8_t data_length)
     gripper_cmd = 11;
   }
 
-  struct terminal_response_s terminal_response = {0};
+  struct terminal_response_s terminal_response = {};
   terminal_response.cmd = BOARD_BLOCKS_ROTATE_MASK;
   terminal_response.data[0] = 0x01;
   terminal_response.data_length = 1;
   Terminal.SendResponse(&terminal_response);
 }
 
-static void ToggleCursor(uint8_t* data, uint8_t data_length)
+void TerminalCmdHandler::ToggleCursor([[maybe_unused]] uint8_t* data, [[maybe_unused]] uint8_t data_length)
 {
-  if(COMM_ENABLE){
+  if(comm_enable){
     // Clear old notify flags to prevent false execution
     ulTaskNotifyTake(pdTRUE, 0); 
     // Point this FreeRTOS task as a reciever
@@ -610,9 +594,9 @@ static void ToggleCursor(uint8_t* data, uint8_t data_length)
   
 }
 
-static void SideGrips(uint8_t* data, uint8_t data_length)
+void TerminalCmdHandler::SideGrips([[maybe_unused]] uint8_t* data, [[maybe_unused]] uint8_t data_length)
 {
-  if(COMM_ENABLE){
+  if(comm_enable){
     // Clear old notify flags to prevent false execution
     ulTaskNotifyTake(pdTRUE, 0); 
     // Point this FreeRTOS task as a reciever
@@ -633,9 +617,9 @@ static void SideGrips(uint8_t* data, uint8_t data_length)
   Terminal.SendResponse(&terminal_response);
 }
 
-static void GripperLift(uint8_t* data, uint8_t data_length)
+void TerminalCmdHandler::GripperLift([[maybe_unused]] uint8_t* data, [[maybe_unused]] uint8_t data_length)
 {
-  if(COMM_ENABLE){
+  if(comm_enable){
     // Clear old notify flags to prevent false execution
     ulTaskNotifyTake(pdTRUE, 0); 
     // Point this FreeRTOS task as a reciever
@@ -657,9 +641,9 @@ static void GripperLift(uint8_t* data, uint8_t data_length)
   Terminal.SendResponse(&terminal_response);
 }
 
-static void TogglePumps(uint8_t* data, uint8_t data_length)
+void TerminalCmdHandler::TogglePumps([[maybe_unused]] uint8_t* data, [[maybe_unused]] uint8_t data_length)
 {
-  if(COMM_ENABLE){
+  if(comm_enable){
     // Clear old notify flags to prevent false execution
     ulTaskNotifyTake(pdTRUE, 0); 
     // Point this FreeRTOS task as a reciever
@@ -679,9 +663,9 @@ static void TogglePumps(uint8_t* data, uint8_t data_length)
   Terminal.SendResponse(&terminal_response);
 }
 
-static void ToggleValves(uint8_t* data, uint8_t data_length)
+void TerminalCmdHandler::ToggleValves([[maybe_unused]] uint8_t* data, [[maybe_unused]] uint8_t data_length)
 {
-  if(COMM_ENABLE){
+  if(comm_enable){
     // Clear old notify flags to prevent false execution
     ulTaskNotifyTake(pdTRUE, 0); 
     // Point this FreeRTOS task as a reciever
@@ -703,7 +687,7 @@ static void ToggleValves(uint8_t* data, uint8_t data_length)
 }
 
 /* doesn't work response (need to check odometry or use FreeRTOS timer)
-static void SimpleMove(uint8_t* data, uint8_t data_length)
+void TerminalCmdHandler::SimpleMove([[maybe_unused]] uint8_t* data, [[maybe_unused]] uint8_t data_length)
 {
   // Clear old notify flags to prevent false execution
   ulTaskNotifyTake(pdTRUE, 0); 
@@ -725,7 +709,7 @@ static void SimpleMove(uint8_t* data, uint8_t data_length)
 */
 
 /*
-static void SimpleMove(uint8_t* data, uint8_t data_length)
+void TerminalCmdHandler::SimpleMove([[maybe_unused]] uint8_t* data, [[maybe_unused]] uint8_t data_length)
 {
   ulTaskNotifyTake(pdTRUE, 0); 
   
@@ -733,7 +717,7 @@ static void SimpleMove(uint8_t* data, uint8_t data_length)
   cmd_isFinished = 0; 
   gripper_cmd = 6;
 
-  struct terminal_response_s terminal_response = {0};
+  struct terminal_response_s terminal_response = {};
   terminal_response.cmd = BOARD_MOVE;
   terminal_response.data[0] = 0x01;
   terminal_response.data_length = 1;
@@ -741,9 +725,9 @@ static void SimpleMove(uint8_t* data, uint8_t data_length)
 }
 */
 
-static void SimpleMove(uint8_t* data, uint8_t data_length)
+void TerminalCmdHandler::SimpleMove([[maybe_unused]] uint8_t* data, [[maybe_unused]] uint8_t data_length)
 {
-  if(COMM_ENABLE){
+  if(comm_enable){
     ulTaskNotifyTake(pdTRUE, 0);
     
     gripper_id = data[0];
@@ -755,16 +739,16 @@ static void SimpleMove(uint8_t* data, uint8_t data_length)
     gripper_cmd = 6;
   }
 
-  struct terminal_response_s terminal_response = {0};
+  struct terminal_response_s terminal_response = {};
   terminal_response.cmd = BOARD_MOVE;
   terminal_response.data[0] = 0x01;
   terminal_response.data_length = 1;
   Terminal.SendResponse(&terminal_response);
 }
 
-static void RelativeMove(uint8_t* data, uint8_t data_length)
+void TerminalCmdHandler::RelativeMove([[maybe_unused]] uint8_t* data, [[maybe_unused]] uint8_t data_length)
 {
-  struct terminal_response_s terminal_response = {0};
+  struct terminal_response_s terminal_response = {};
   int32_t dx_mm;
   int32_t dy_mm;
   uint8_t speed_cm_s;
@@ -790,7 +774,7 @@ static void RelativeMove(uint8_t* data, uint8_t data_length)
    *   angle_kp         - how strongly X phase holds heading
    *   max_angular_speed- yaw rate clamp for both phases
    */
-  if(COMM_ENABLE && (data_length >= 9) && (gripper_cmd == 0xFF)){
+  if(comm_enable && (data_length >= 9) && (gripper_cmd == 0xFF)){
     ByteTo_Word32(data, &dx_mm);
     ByteTo_Word32(data + 4, &dy_mm);
     speed_cm_s = data[8];
@@ -807,7 +791,7 @@ static void RelativeMove(uint8_t* data, uint8_t data_length)
   Terminal.SendResponse(&terminal_response);
 }
 
-static void RelativeMovePoll(uint8_t* data, uint8_t data_length)
+void TerminalCmdHandler::RelativeMovePoll([[maybe_unused]] uint8_t* data, [[maybe_unused]] uint8_t data_length)
 {
   int32_t dx_mm;
   int32_t dy_mm;
@@ -818,7 +802,7 @@ static void RelativeMovePoll(uint8_t* data, uint8_t data_length)
    *  - this command starts motion and does not send an immediate response;
    *  - completion is exposed through BOARD_GET_MOVE_STATUS.
    */
-  if(COMM_ENABLE && (data_length >= 9) && (gripper_cmd == 0xFF)){
+  if(comm_enable && (data_length >= 9) && (gripper_cmd == 0xFF)){
     ByteTo_Word32(data, &dx_mm);
     ByteTo_Word32(data + 4, &dy_mm);
     speed_cm_s = data[8];
@@ -831,9 +815,9 @@ static void RelativeMovePoll(uint8_t* data, uint8_t data_length)
   }
 }
 
-static void GetMoveStatus(uint8_t* data, uint8_t data_length)
+void TerminalCmdHandler::GetMoveStatus([[maybe_unused]] uint8_t* data, [[maybe_unused]] uint8_t data_length)
 {
-  struct terminal_response_s terminal_response = {0};
+  struct terminal_response_s terminal_response = {};
 
   terminal_response.cmd = BOARD_GET_MOVE_STATUS;
   terminal_response.data[0] = move_status_flag;
@@ -842,9 +826,8 @@ static void GetMoveStatus(uint8_t* data, uint8_t data_length)
   Terminal.SendResponse(&terminal_response);
 }
 
-static void GetKey(uint8_t* data, uint8_t data_length)
+void TerminalCmdHandler::GetKey([[maybe_unused]] uint8_t* data, [[maybe_unused]] uint8_t data_length)
 {
-  uint8_t key_request = data[0];
   uint8_t key_response = (robot_ctrl.starting_cord == STARTING_CORD_ATTACHED) ? 1 : 0;
 
   struct terminal_response_s terminal_response;
@@ -856,9 +839,9 @@ static void GetKey(uint8_t* data, uint8_t data_length)
   Terminal.SendResponse(&terminal_response);
 }
 
-static void GripperVertical(uint8_t* data, uint8_t data_length)
+void TerminalCmdHandler::GripperVertical([[maybe_unused]] uint8_t* data, [[maybe_unused]] uint8_t data_length)
 {
-  if(COMM_ENABLE){
+  if(comm_enable){
     ulTaskNotifyTake(pdTRUE, 0); 
     xTerminalTaskHandle = xTaskGetCurrentTaskHandle();
     
@@ -880,15 +863,15 @@ static void GripperVertical(uint8_t* data, uint8_t data_length)
  * @brief Сбрасывает счетчик энкодера (TotalTicks) на заданном колесе в 0.
  * @param data[0] Номер колеса (1, 2 или 3)
  */
-static void ResetWheelTicks(uint8_t* data, uint8_t data_length)
+void TerminalCmdHandler::ResetWheelTicks([[maybe_unused]] uint8_t* data, [[maybe_unused]] uint8_t data_length)
 {
-  struct terminal_response_s terminal_response = {0};
+  struct terminal_response_s terminal_response = {};
   int32_t ticks[3] = {0};
   uint8_t status = 0;
 
   terminal_response.cmd = BOARD_RESET_WHEEL_TICKS;
 
-  if(COMM_ENABLE)
+  if(comm_enable)
   {
     Maxon.SetTotalTicks(bus_devices[MAXON_MOTOR_1].id, 0);
     Maxon.SetTotalTicks(bus_devices[MAXON_MOTOR_2].id, 0);
@@ -914,15 +897,15 @@ static void ResetWheelTicks(uint8_t* data, uint8_t data_length)
  * @brief Запрашивает текущее значение счетчика энкодера (TotalTicks) с заданного колеса.
  * @param data[0] Номер колеса (1, 2 или 3)
  */
-static void GetWheelTicks(uint8_t* data, uint8_t data_length)
+void TerminalCmdHandler::GetWheelTicks([[maybe_unused]] uint8_t* data, [[maybe_unused]] uint8_t data_length)
 {
-  struct terminal_response_s terminal_response = {0};
+  struct terminal_response_s terminal_response = {};
   int32_t ticks[3] = {0};
   uint8_t status = 0;
 
   terminal_response.cmd = BOARD_GET_WHEEL_TICKS;
 
-  if(COMM_ENABLE)
+  if(comm_enable)
   {
     if((Maxon.GetTotalTicks(bus_devices[MAXON_MOTOR_1].id, &ticks[0]) == 0) &&
        (Maxon.GetTotalTicks(bus_devices[MAXON_MOTOR_2].id, &ticks[1]) == 0) &&
@@ -944,27 +927,22 @@ static void GetWheelTicks(uint8_t* data, uint8_t data_length)
  * @brief Запрашивает пройденный путь для колеса в метрах.
  * @param data[0] Номер колеса (1, 2 или 3)
  */
-static void GetWheelPath(uint8_t* data, uint8_t data_length)
+void TerminalCmdHandler::GetWheelPath([[maybe_unused]] uint8_t* data, [[maybe_unused]] uint8_t data_length)
 {
-  struct terminal_response_s terminal_response = {0};
+  struct terminal_response_s terminal_response = {};
   int32_t ticks[3] = {0};
-  float wheel_path_m[3] = {0.0f};
+  float wheel_path_m[3] = {};
   uint8_t status = 0;
 
   terminal_response.cmd = BOARD_GET_WHEEL_PATH;
 
-  if(ticks_to_m == 0.0f)
-    Kinematics.MatrixInit();
-
-  if(COMM_ENABLE)
+  if(comm_enable)
   {
     if((Maxon.GetTotalTicks(bus_devices[MAXON_MOTOR_1].id, &ticks[0]) == 0) &&
        (Maxon.GetTotalTicks(bus_devices[MAXON_MOTOR_2].id, &ticks[1]) == 0) &&
        (Maxon.GetTotalTicks(bus_devices[MAXON_MOTOR_3].id, &ticks[2]) == 0))
     {
-      wheel_path_m[0] = ticks[0] * wheel_ticks_to_m[0];
-      wheel_path_m[1] = ticks[1] * wheel_ticks_to_m[1];
-      wheel_path_m[2] = ticks[2] * wheel_ticks_to_m[2];
+      Kinematics.WheelTicksTo_m(ticks, wheel_path_m);
       status = 1;
     }
   }
@@ -981,9 +959,9 @@ static void GetWheelPath(uint8_t* data, uint8_t data_length)
  * @brief Вращает выбранное колесо ровно на один оборот для калибровки.
  * @param data[0] Номер колеса (1, 2 или 3)
  */
-static void RotateWheelOnce(uint8_t* data, uint8_t data_length)
+void TerminalCmdHandler::RotateWheelOnce([[maybe_unused]] uint8_t* data, [[maybe_unused]] uint8_t data_length)
 {
-  struct terminal_response_s terminal_response = {0};
+  struct terminal_response_s terminal_response = {};
   int32_t theoretical_ticks = CALIBRATION_WHEEL_TICKS_PER_REV;
   uint8_t status = 0;
   uint8_t wheel_num = 0;
@@ -993,7 +971,7 @@ static void RotateWheelOnce(uint8_t* data, uint8_t data_length)
   if(data_length > 0)
     wheel_num = data[0];
 
-  if(COMM_ENABLE && (data_length > 0) && (gripper_cmd == 0xFF) &&
+  if(comm_enable && (data_length > 0) && (gripper_cmd == 0xFF) &&
      ((wheel_num == 1) || (wheel_num == 2) || (wheel_num == 3)))
   {
     rotate_wheel_num = wheel_num;
@@ -1011,12 +989,12 @@ static void RotateWheelOnce(uint8_t* data, uint8_t data_length)
   Terminal.SendResponse(&terminal_response);
 }
 
-static void SlideGripper(uint8_t* data, uint8_t data_length)
+void TerminalCmdHandler::SlideGripper([[maybe_unused]] uint8_t* data, [[maybe_unused]] uint8_t data_length)
 {
   int32_t gripper_distance_mm;
   uint8_t status = 0;
 
-  if(COMM_ENABLE && (data_length >= 4) && (gripper_cmd == 0xFF)){
+  if(comm_enable && (data_length >= 4) && (gripper_cmd == 0xFF)){
     ulTaskNotifyTake(pdTRUE, 0); 
     xTerminalTaskHandle = xTaskGetCurrentTaskHandle();
     
@@ -1039,47 +1017,45 @@ static void SlideGripper(uint8_t* data, uint8_t data_length)
 
 // C++ has no out-of-order array designators: the table is filled at compile time,
 // so it still lands in .data without any startup code.
-constinit std::array<terminal_cmd_handler_t, TERMINAL_CMD_TABLE_SIZE> terminal_cmd_handlers = [] {
-  std::array<terminal_cmd_handler_t, TERMINAL_CMD_TABLE_SIZE> t{};
-  t[BOARD_Ping] = Ping;
-  t[BOARD_SetSpeed] = SetRobotSpeed;
-  t[BOARD_GetSpeed] = GetRobotSpeed;
-  t[BOARD_SetCoord] = SetRobotCoord;
-  t[BOARD_GetCoord] = GetRobotCoord;
-  t[BOARD_GetBatteryState] = GetBatteryState;
-  t[BOARD_Set_BMS_CalibrationValue] = Set_BMS_CalibrationValue;
-  t[BOARD_GET_AX_ANGLE] = GetAxAngle;
-  t[BOARD_SET_AX_ANGLE] = SetAxAngle;
-  // t[BOARD_SET_STEPPER_POSITION] = SetStepperPosition;
-  t[BOARD_RESET_WHEEL_TICKS] = ResetWheelTicks;
-  t[BOARD_GET_WHEEL_TICKS] = GetWheelTicks;
-  // t[BOARD_GET_KEY] = GetKey;
-  t[BOARD_GET_TOGGLE] = GetToggle;
-  t[BOARD_GET_DEBUG_MESSAGE] = GetDebugMessage;
-  t[BOARD_GET_LINEAR_SWITCHES_STATE] = GetSwitchesState;
-  t[BOARD_SET_MAXONS_STATE] = SetMaxonsState;
-  t[BOARD_SET_COMM_STATE] = SetCommState;
-  t[BOARD_FREE_WHEELS] = FreeWheels;
-  t[BOARD_RESET] = BoardReset;
-  t[BOARD_GET_RESET] = BoardGetReset;
-  t[BOARD_CLEAR_RESET] = BoardClearReset;
-  t[BOARD_GRAB_ROTATE] = grab_rotate;
-  t[BOARD_BLOCKS_SHIFT] = BlocksShift;
-  t[BOARD_BLOCKS_ROTATE_MASK] = BlocksRotateMask;
-  t[BOARD_MOVE_RELATIVE_POLL] = RelativeMovePoll;
-  t[BOARD_GET_MOVE_STATUS] = GetMoveStatus;
-  t[BOARD_TOGGLE_CURSOR] = ToggleCursor;
-  t[BOARD_SIDE_GRIPS] = SideGrips;
-  t[BOARD_GRIPPER_LIFT] = GripperLift;
-  t[BOARD_TOGGLE_PUMPS] = TogglePumps;
-  t[BOARD_TOGGLE_VALVES] = ToggleValves;
-  t[BOARD_GET_WHEEL_PATH] = GetWheelPath;
-  t[BOARD_MOVE] = SimpleMove;
-  t[BOARD_MOVE_RELATIVE] = RelativeMove;
-  t[BOARD_GET_KEY] = GetKey;
-  t[BOARD_GRIPPER_VERTICAL] = GripperVertical;
-  t[BOARD_ROTATE_WHEEL_ONCE] = RotateWheelOnce;
-  t[BOARD_GRIPPER_SLIDE] = SlideGripper;
+constinit const std::array<TerminalCmdHandler::Handler, TERMINAL_CMD_TABLE_SIZE> TerminalCmdHandler::handlers = [] {
+  std::array<Handler, TERMINAL_CMD_TABLE_SIZE> t{};
+  t[BOARD_Ping] = &TerminalCmdHandler::Ping;
+  t[BOARD_SetSpeed] = &TerminalCmdHandler::SetRobotSpeed;
+  t[BOARD_GetSpeed] = &TerminalCmdHandler::GetRobotSpeed;
+  t[BOARD_SetCoord] = &TerminalCmdHandler::SetRobotCoord;
+  t[BOARD_GetCoord] = &TerminalCmdHandler::GetRobotCoord;
+  t[BOARD_GetBatteryState] = &TerminalCmdHandler::GetBatteryState;
+  t[BOARD_Set_BMS_CalibrationValue] = &TerminalCmdHandler::Set_BMS_CalibrationValue;
+  t[BOARD_GET_AX_ANGLE] = &TerminalCmdHandler::GetAxAngle;
+  t[BOARD_SET_AX_ANGLE] = &TerminalCmdHandler::SetAxAngle;
+  t[BOARD_RESET_WHEEL_TICKS] = &TerminalCmdHandler::ResetWheelTicks;
+  t[BOARD_GET_WHEEL_TICKS] = &TerminalCmdHandler::GetWheelTicks;
+  t[BOARD_GET_TOGGLE] = &TerminalCmdHandler::GetToggle;
+  t[BOARD_GET_DEBUG_MESSAGE] = &TerminalCmdHandler::GetDebugMessage;
+  t[BOARD_GET_LINEAR_SWITCHES_STATE] = &TerminalCmdHandler::GetSwitchesState;
+  t[BOARD_SET_MAXONS_STATE] = &TerminalCmdHandler::SetMaxonsState;
+  t[BOARD_SET_COMM_STATE] = &TerminalCmdHandler::SetCommState;
+  t[BOARD_FREE_WHEELS] = &TerminalCmdHandler::FreeWheels;
+  t[BOARD_RESET] = &TerminalCmdHandler::BoardReset;
+  t[BOARD_GET_RESET] = &TerminalCmdHandler::BoardGetReset;
+  t[BOARD_CLEAR_RESET] = &TerminalCmdHandler::BoardClearReset;
+  t[BOARD_GRAB_ROTATE] = &TerminalCmdHandler::grab_rotate;
+  t[BOARD_BLOCKS_SHIFT] = &TerminalCmdHandler::BlocksShift;
+  t[BOARD_BLOCKS_ROTATE_MASK] = &TerminalCmdHandler::BlocksRotateMask;
+  t[BOARD_MOVE_RELATIVE_POLL] = &TerminalCmdHandler::RelativeMovePoll;
+  t[BOARD_GET_MOVE_STATUS] = &TerminalCmdHandler::GetMoveStatus;
+  t[BOARD_TOGGLE_CURSOR] = &TerminalCmdHandler::ToggleCursor;
+  t[BOARD_SIDE_GRIPS] = &TerminalCmdHandler::SideGrips;
+  t[BOARD_GRIPPER_LIFT] = &TerminalCmdHandler::GripperLift;
+  t[BOARD_TOGGLE_PUMPS] = &TerminalCmdHandler::TogglePumps;
+  t[BOARD_TOGGLE_VALVES] = &TerminalCmdHandler::ToggleValves;
+  t[BOARD_GET_WHEEL_PATH] = &TerminalCmdHandler::GetWheelPath;
+  t[BOARD_MOVE] = &TerminalCmdHandler::SimpleMove;
+  t[BOARD_MOVE_RELATIVE] = &TerminalCmdHandler::RelativeMove;
+  t[BOARD_GET_KEY] = &TerminalCmdHandler::GetKey;
+  t[BOARD_GRIPPER_VERTICAL] = &TerminalCmdHandler::GripperVertical;
+  t[BOARD_ROTATE_WHEEL_ONCE] = &TerminalCmdHandler::RotateWheelOnce;
+  t[BOARD_GRIPPER_SLIDE] = &TerminalCmdHandler::SlideGripper;
   return t;
 }();
 

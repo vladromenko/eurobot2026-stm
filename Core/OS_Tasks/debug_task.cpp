@@ -1,7 +1,7 @@
 #include "os_tasks.hpp" 
 #include "stm32f4xx_ll_gpio.h"
 #include "board_gpio_defines.hpp"
-#include "terminal_cmd_handlers.hpp" 
+#include "debug_terminal_cmd_handlers.hpp" 
 #include "terminal.hpp" 
 
 
@@ -23,10 +23,9 @@ static void Task(void *arg)
     
 	while(1)
 	{
-        while(Debug_Terminal.DebugGetRequest(&debug_terminal_request))
+        while(Debug_Terminal.GetRequest(&debug_terminal_request))
         {
-            if((debug_terminal_cmd_handlers[debug_terminal_request.cmd]!=NULL)&&(debug_terminal_request.cmd<TERMINAL_CMD_TABLE_SIZE))
-                debug_terminal_cmd_handlers[debug_terminal_request.cmd](debug_terminal_request.data,debug_terminal_request.data_length);
+            DebugTerminalCmd.Handle(&debug_terminal_request);
         }
 
         taskYIELD();

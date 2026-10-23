@@ -20,39 +20,36 @@
 #ifndef __ODOMETRY_H
 #define __ODOMETRY_H
 
-#ifdef __cplusplus
- extern "C" {
-#endif
-	 
 #include "std_def.hpp"
-#include "FreeRTOS.h"
-#include "task.h"
-#include "timers.h"
-#include "queue.h"
-#include "semphr.h"
-#include "event_groups.h"
-
 #include "kinematics.hpp"
+#include "maxon.hpp"
 
+/*  Robot pose from the wheel encoders and robot speed through the wheels  */
+class OdometryModule{
+public:
+  constexpr OdometryModule(MaxonDriver& maxon, KinematicsModule& kinematics)
+    : maxon(maxon), kinematics(kinematics) {}
 
+  /*  Zero the encoders and the pose  */
+  void Init();
+  void SetCoord(const coord_s* coord);
+  void GetCoord(coord_s* coord);
+  void SetSpeed(const speed_s* speed);
+  void GetSpeed(speed_s* speed);
+  /*  Must be called at 100 Hz  */
+  void UpdatePath();
 
-struct odometry_s{
-  void (*Init)(void);
-  void (*SetCoord)(struct coord_s* coord);
-  void (*GetCoord)(struct coord_s* coord);
-  void (*SetSpeed)(struct speed_s* speed);
-  void (*GetSpeed)(struct speed_s* speed);
-  void (*UpdatePath)(void);
+private:
+  void SyncTicksReference();
+
+  MaxonDriver& maxon;
+  KinematicsModule& kinematics;
+  coord_s path = {};
+  int32_t ticks_old[3] = {};
 };
 
-extern const struct odometry_s Odometry;
+extern OdometryModule Odometry;
 
-
-
-#ifdef __cplusplus
-}
 #endif
-
-#endif 
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

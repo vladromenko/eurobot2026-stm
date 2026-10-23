@@ -20,9 +20,6 @@
 #ifndef __TERMINAL_CMD_TABLE_H
 #define __TERMINAL_CMD_TABLE_H
 
-#ifdef __cplusplus
- extern "C" {
-#endif
 	 
 
 
@@ -79,9 +76,6 @@
 #define TERMINAL_CMD_TABLE_SIZE             (BOARD_GRIPPER_SLIDE + 1)
 
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif 
 

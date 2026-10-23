@@ -22,30 +22,44 @@
 /* Includes ------------------------------------------------------------------*/
 #include "kinematics.hpp"
 #include "arm_math.h"
-#include "robot_behavior_routine.hpp"
-#include "stm32f4xx_ll_tim.h"
-#include "board_gpio_defines.hpp"
+
+
+namespace {
 
 // new robot params
-#define DIST_CENTER_TO_WHEEL_m             0.1217f  // [m]
-#define WHEEL_RADIUS_m                     0.0295f  // [m]
-#define GEAR_RATIO                         28.0f
-#define ENCODER_TICKS_PER_TURN             4096     // [ticks]
+constexpr float DIST_CENTER_TO_WHEEL_m = 0.1217f;  // [m]
+constexpr float WHEEL_RADIUS_m = 0.0295f;          // [m]
+constexpr float GEAR_RATIO = 28.0f;
+constexpr float ENCODER_TICKS_PER_TURN = 4096;     // [ticks]
 
 // Final low-speed odometry calibration.
-#define CMD_CALIBRATION_COEF               1.0f
-#define ODOMETRY_CALIBRATION_COEF          0.988f
-#define ODOMETRY_X_COEF                    0.988f
-#define ODOMETRY_Y_COEF                    1.0f
-#define ANGULAR_CMD_CALIBRATION_COEF       1.0f
-#define ANGULAR_ODOMETRY_CALIBRATION_COEF  0.988f
-#define WHEEL_1_ODOMETRY_COEF              1.003f
-#define WHEEL_2_ODOMETRY_COEF              0.984f
-#define WHEEL_3_ODOMETRY_COEF              0.997f
+constexpr float CMD_CALIBRATION_COEF = 1.0f;
+constexpr float ODOMETRY_CALIBRATION_COEF = 0.988f;
+constexpr float ODOMETRY_X_COEF = 0.988f;
+constexpr float ODOMETRY_Y_COEF = 1.0f;
+constexpr float ANGULAR_CMD_CALIBRATION_COEF = 1.0f;
+constexpr float ANGULAR_ODOMETRY_CALIBRATION_COEF = 0.988f;
+constexpr float WHEEL_ODOMETRY_COEF[3] = {1.003f, 0.984f, 0.997f};
 
-#define cos30  0.8660254f
-#define cos60  0.5f
+constexpr float cos30 = 0.8660254f;
+constexpr float cos60 = 0.5f;
 
+// wheel ticks_per_minute = wheel_linear_speed(m/s) * ms_to_tpm
+constexpr float ms_to_tpm = (60.0f * GEAR_RATIO * ENCODER_TICKS_PER_TURN) /
+                            (CMD_CALIBRATION_COEF * 2 * PI * WHEEL_RADIUS_m);
+
+constexpr float ticks_to_m = ODOMETRY_CALIBRATION_COEF * 2 * PI * WHEEL_RADIUS_m /
+                             (GEAR_RATIO * ENCODER_TICKS_PER_TURN);
+
+constexpr float wheel_ticks_to_m[3] = {ticks_to_m * WHEEL_ODOMETRY_COEF[0],
+                                       ticks_to_m * WHEEL_ODOMETRY_COEF[1],
+                                       ticks_to_m * WHEEL_ODOMETRY_COEF[2]};
+
+constexpr float wheel_tpm_to_ms[3] = {wheel_ticks_to_m[0] / 60.0f,
+                                      wheel_ticks_to_m[1] / 60.0f,
+                                      wheel_ticks_to_m[2] / 60.0f};
+
+/*  arm_math takes non-const matrices, so these stay in RAM; they are never written  */
 float inverse_matrix[9] = {
      cos30, -cos60, -DIST_CENTER_TO_WHEEL_m,
      0.0f,   1.0f,  -DIST_CENTER_TO_WHEEL_m,
@@ -60,40 +74,20 @@ float direct_matrix[9] = {
     -1.0f / 3.0f / DIST_CENTER_TO_WHEEL_m
 };
 
-arm_matrix_instance_f32 arm_direct_matrix;
-arm_matrix_instance_f32 arm_inverse_matrix;
+constinit arm_matrix_instance_f32 arm_direct_matrix = {3, 3, direct_matrix};
+constinit arm_matrix_instance_f32 arm_inverse_matrix = {3, 3, inverse_matrix};
 
-float ms_to_tpm, ticks_to_m, tpm_to_ms;
-float wheel_ticks_to_m[3], wheel_tpm_to_ms[3];
-
-static void MatrixInit(void)
-{
-    arm_mat_init_f32(&arm_direct_matrix, 3, 3, direct_matrix);
-    arm_mat_init_f32(&arm_inverse_matrix, 3, 3, inverse_matrix);
-
-    // wheel ticks_per_minute = wheel_linear_speed(m/s) * ms_to_tpm
-    ms_to_tpm = (60.0f * GEAR_RATIO * ENCODER_TICKS_PER_TURN) /
-                (CMD_CALIBRATION_COEF * 2 * PI * WHEEL_RADIUS_m);
-
-    ticks_to_m = ODOMETRY_CALIBRATION_COEF * 2 * PI * WHEEL_RADIUS_m /
-                 (GEAR_RATIO * ENCODER_TICKS_PER_TURN);
-    wheel_ticks_to_m[0] = ticks_to_m * WHEEL_1_ODOMETRY_COEF;
-    wheel_ticks_to_m[1] = ticks_to_m * WHEEL_2_ODOMETRY_COEF;
-    wheel_ticks_to_m[2] = ticks_to_m * WHEEL_3_ODOMETRY_COEF;
-
-    tpm_to_ms = ODOMETRY_CALIBRATION_COEF * 2 * PI * WHEEL_RADIUS_m /
-                (60.0f * GEAR_RATIO * ENCODER_TICKS_PER_TURN);
-    wheel_tpm_to_ms[0] = wheel_ticks_to_m[0] / 60.0f;
-    wheel_tpm_to_ms[1] = wheel_ticks_to_m[1] / 60.0f;
-    wheel_tpm_to_ms[2] = wheel_ticks_to_m[2] / 60.0f;
 }
 
+constinit KinematicsModule Kinematics;
+
+
 /* from body speed (m/s, m/s, rad/s) to wheel speeds (ticks per minute) */
-static void SpeedTo_TPM(struct speed_s* desired_body_speed, int32_t* tpm)
+void KinematicsModule::SpeedTo_TPM(const speed_s* desired_body_speed, int32_t* tpm)
 {
     arm_matrix_instance_f32 desired_body_speed_matrix;
     arm_matrix_instance_f32 rad_per_second;
-    struct speed_s calibrated_body_speed;
+    speed_s calibrated_body_speed;
     float ms[3];
 
     calibrated_body_speed = *desired_body_speed;
@@ -110,7 +104,7 @@ static void SpeedTo_TPM(struct speed_s* desired_body_speed, int32_t* tpm)
 }
 
 /* from wheel speeds (ticks per minute) to body speed (m/s, m/s, rad/s) */
-static void TPM_ToSpeed(int32_t* tpm, struct speed_s* real_body_speed)
+void KinematicsModule::TPM_ToSpeed(const int32_t* tpm, speed_s* real_body_speed)
 {
     arm_matrix_instance_f32 real_body_speed_matrix;
     arm_matrix_instance_f32 linear_wheel_speed_matrix;
@@ -130,18 +124,16 @@ static void TPM_ToSpeed(int32_t* tpm, struct speed_s* real_body_speed)
 }
 
 // d_ticks is in ticks per 10 ms
-static void UpdatePath(int32_t* d_ticks, struct coord_s* path)
+void KinematicsModule::UpdatePath(const int32_t* d_ticks, coord_s* path)
 {
     float d_m[3];
-    struct coord_s d_coord;
+    coord_s d_coord;
     float dphi;
     float phi_mid;
     arm_matrix_instance_f32 d_ms_matrix;
     arm_matrix_instance_f32 d_coord_matrix;
 
-    d_m[0] = d_ticks[0] * wheel_ticks_to_m[0];
-    d_m[1] = d_ticks[1] * wheel_ticks_to_m[1];
-    d_m[2] = d_ticks[2] * wheel_ticks_to_m[2];
+    WheelTicksTo_m(d_ticks, d_m);
 
     arm_mat_init_f32(&d_ms_matrix, 3, 1, d_m);
     arm_mat_init_f32(&d_coord_matrix, 3, 1, (float*)&d_coord);
@@ -164,11 +156,10 @@ static void UpdatePath(int32_t* d_ticks, struct coord_s* path)
     path->y += d_coord.x * arm_sin_f32(phi_mid) + d_coord.y * arm_cos_f32(phi_mid);
 }
 
-const struct kinematics_s Kinematics = {
-    .MatrixInit = MatrixInit,
-    .SpeedTo_TPM = SpeedTo_TPM,
-    .TPM_ToSpeed = TPM_ToSpeed,
-    .UpdatePath = UpdatePath
-};
+void KinematicsModule::WheelTicksTo_m(const int32_t* ticks, float* wheel_path_m)
+{
+    for(uint8_t ik = 0; ik < WHEELS_NUMBER; ik++)
+        wheel_path_m[ik] = ticks[ik] * wheel_ticks_to_m[ik];
+}
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

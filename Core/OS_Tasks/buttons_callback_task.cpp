@@ -46,7 +46,7 @@ static void Task(void *arg)
 	while(1)
 	{
         while(xQueueReceive(button_callbacks_queue_handle, (void*)(&button_callback_item), portMAX_DELAY) == pdFAIL);
-        ButtonsCallback(button_callback_item.button_id, button_callback_item.callback_type, button_callback_item.button_action, button_callback_item.button_state);
+        Robot.ButtonsCallback(button_callback_item.button_id, button_callback_item.callback_type, button_callback_item.button_action, button_callback_item.button_state);
 	}
 }
 

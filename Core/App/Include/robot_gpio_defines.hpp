@@ -9,9 +9,6 @@
 #ifndef __GPIO_ROBOT_DEFINES_H
 #define __GPIO_ROBOT_DEFINES_H
 
-#ifdef __cplusplus
- extern "C" {
-#endif
 
 #include "board_gpio_defines.hpp"
 
@@ -52,9 +49,6 @@
 #endif
 
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif
 

@@ -87,9 +87,8 @@ static void Task(void *arg)
   #endif
 
   #ifdef MAXON_DEMO
-		MaxonsDisable();
-    Kinematics.MatrixInit();
-    MaxonsEnable();
+		Robot.MaxonsDisable();
+    Robot.MaxonsEnable();
 		vTaskDelay(500);
   #endif
 

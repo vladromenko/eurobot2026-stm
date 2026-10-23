@@ -20,17 +20,11 @@
 #ifndef __STD_DEF_H
 #define __STD_DEF_H
 
-#ifdef __cplusplus
- extern "C" {
-#endif
 	 
 #include "stm32f4xx.h"
 #include "string.h"
 //#include "stdint.h"
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif 
 

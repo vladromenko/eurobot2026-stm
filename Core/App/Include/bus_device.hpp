@@ -20,9 +20,6 @@
 #ifndef __BUS_DEVICE_H
 #define __BUS_DEVICE_H
 
-#ifdef __cplusplus
- extern "C" {
-#endif
 	 
 #include "std_def.hpp"
 #include "stm32f4xx_ll_usart.h"
@@ -49,9 +46,6 @@ struct bus_device_s{
 extern const struct bus_device_s bus_devices[BUS_DEVICES_NUMBER];
 
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif 
 
