@@ -1,65 +1,64 @@
 # Eurobot 2026 — STM32F407 firmware
 
-Прошивка основной платы Eurobot 2026 для STM32F407VGTx. Проект сохраняет исходную структуру Keil MDK-ARM и дополнительно собирается на macOS/Linux через CMake, Ninja и `arm-none-eabi-gcc`.
+Прошивка основной платы Eurobot 2026 для STM32F407VGTx. Собирается через CMake, Ninja и `arm-none-eabi-gcc`, прошивается и отлаживается через OpenOCD + ST-LINK.
 
-Актуальная аппаратная конфигурация:
+- STM32F407VGTx, Cortex-M4F, hard float; Flash 1 МБ, SRAM 128 КБ, CCM 64 КБ;
+- FreeRTOS 10.4.3 LTS Patch 3 (только статическое выделение памяти);
+- STM32 LL-драйверы, CMSIS-DSP (матрицы, sin/cos);
+- PCA9685 `0x40` на I2C2: PB10/SCL, PB11/SDA, 100 кГц.
 
-- STM32F407VGTx, Cortex-M4F, hard float;
-- Flash 1 МБ, SRAM 128 КБ, CCM 64 КБ;
-- FreeRTOS 10.4.3 LTS Patch 3;
-- адрес PCA9685 `0x40`, I2C2: PB10/SCL и PB11/SDA, 100 кГц;
-- Debug включает `DemoTask`, который переключает `SPI_POWER_OUTPUT_1…4` каждые 250 мс.
+## Структура
 
-## Зачем понадобились изменения
+| Путь | Назначение |
+|---|---|
+| `Core/App` | `main`, кинематика, одометрия, поведение робота, терминал, прерывания, `SystemInit` |
+| `Core/BSP` | Периферия платы: GPIO, PWM, I2C2, SPI, USART, L6474, WS2812B |
+| `Core/Lib` | Драйверы устройств: Dynamixel, Maxon, H-мост, RC-серво, PCA9685, BMS, кнопки, FIFO |
+| `Core/OS_Tasks` | Задачи FreeRTOS (`template_task.c` — заготовка, не собирается) |
+| `Drivers` | CMSIS, LL-драйверы STM32F4, CMSIS-DSP — только используемые файлы |
+| `Middlewares/FreeRTOS-Kernel` | Ядро FreeRTOS, порт `GCC/ARM_CM4F`, `FreeRTOSConfig.h` в `include/` |
+| `cmake/sources.cmake` | Явный список исходников и include-путей |
+| `cmake/arm-none-eabi.cmake` | Toolchain-файл |
+| `cmake/STM32F407VG_FLASH.ld` | Linker script |
+| `cmake/openocd.cmake` | Цели `flash` и `reset` |
+| `cmake/check_firmware.py` | Проверка образа: векторы, ISR, память, HEX/BIN |
+| `tools/` | Мониторинг по SWD и проверка UART-терминала |
+| `.vscode/` | Задачи сборки/прошивки, конфигурация отладки Cortex-Debug |
 
-Исходный проект собирался только ARMCC 5 из Keil. Для GCC были добавлены CMake, linker script, GNU startup, GCC-порт FreeRTOS и минимальные runtime-функции. Список исходников, include-пути, defines, параметры Cortex-M4F и размещение памяти перенесены из единственной Keil-цели `Main_Board`.
+Новый `.c` файл нужно добавить в `EUROBOT_SOURCES` в [cmake/sources.cmake](cmake/sources.cmake).
 
-Первая записанная CMake-сборка не запускала FreeRTOS: процессор навсегда оставался в инициализации PCA9685. Модуль не подтвердил I2C-адрес, а драйвер бесконечно ожидал флаг `ADDR`. В драйвер добавлены тайм-ауты и обработка NACK/ошибок, поэтому отказ PCA9685 больше не блокирует запуск прошивки. Одновременно исправлена входная частота I2C с ошибочных 84 МГц на реальные 42 МГц APB1. Последняя версия успешно запустилась на плате по результату аппаратной проверки владельца.
+## Требования
 
-> **Уточнение о Keil → GCC:** смена компилятора не меняла физическое тактирование микроконтроллера. I2C2 и в Keil-, и в GCC-сборке получает 42 МГц от APB1; при переносе лишь обнаружили старое ошибочное значение 84 МГц в расчёте делителя I2C. Частоты UART уже соответствуют APB1/APB2 и из-за перехода на GCC не изменялись.
-
-Подробное описание ошибок, изменений, команд и оставшихся тестов: [docs/USAGE_RU.md](docs/USAGE_RU.md).
-
-## Быстрый старт
-
-Требуются CMake ≥ 3.24, Ninja и ARM GNU Toolchain. На проверенном Mac используется GCC 14.3.1 из STM32CubeIDE.
+CMake ≥ 3.24, Ninja, ARM GNU Toolchain (`arm-none-eabi-gcc`, `arm-none-eabi-gdb`), OpenOCD. На macOS:
 
 ```bash
-git clone https://github.com/vladromenko/eurobot2026-stm.git
-cd eurobot2026-stm
+brew install cmake ninja open-ocd
+```
 
-cmake --preset debug
+Тулчейн ищется в `PATH`, в `ARM_TOOLCHAIN_BIN` и в установленных STM32CubeIDE/CubeCLT.
+
+## Командная строка
+
+```bash
+cmake --preset debug                          # или release
 cmake --build --preset debug
-cmake --build --preset debug --target check
+cmake --build --preset debug --target check   # проверка образа
+cmake --build --preset debug --target flash   # сборка + прошивка + verify + reset
+cmake --build --preset debug --target reset
 ```
 
-Результаты находятся в `build/debug/`:
+Результаты — в `build/debug/` (`build/release/`): `firmware.elf`, `.bin`, `.hex`, `.map`.
 
-- `firmware.elf` — ELF с символами;
-- `firmware.bin` — образ для `st-flash`;
-- `firmware.hex` — Intel HEX;
-- `firmware.map` — карта размещения.
+Если подключено несколько ST-LINK: `cmake --preset debug -DOPENOCD_ADAPTER_SERIAL=<serial>`.
 
-Загрузка на проверенную плату:
+## VS Code
 
-```bash
-st-flash --serial 53004700090000393333574E \
-  --hot-plug --reset \
-  write "$PWD/build/debug/firmware.bin" 0x08000000
-```
+Рекомендуемые расширения (`.vscode/extensions.json`): Cortex-Debug и Task Buttons.
 
-Для другой платы удалите `--serial` или подставьте серийный номер своего ST-LINK. До первой записи сохраните Flash и проверьте карту загрузки своей платы.
+- **Кнопки в статус-баре** (Task Buttons): Debug, Release, Flash, Flash Release.
+- **Cmd+Shift+B** — сборка Debug; остальное — `Terminal → Run Task`.
+- **F5** — «Debug (OpenOCD)»: собирает Debug, прошивает, останавливается на `main`, показывает задачи FreeRTOS.
+- «Attach (OpenOCD)» — подключение к работающей плате без перепрошивки.
+- IntelliSense берёт флаги из `build/debug/compile_commands.json`, поэтому сначала соберите Debug.
 
-После загрузки:
-
-```bash
-python3 tools/monitor_stm32.py --project "$PWD"
-```
-
-Монитор только читает Flash/SRAM через SWD. Он проверяет совпадение образа, запуск FreeRTOS, число задач, tick, результат инициализации PCA9685 и переключение DemoTask.
-
-## Состояние проверки
-
-Debug и Release проходят встроенный аудит `check`. Debug был записан владельцем через `st-flash`; последние исправления PCA9685 позволили прошивке запуститься. Полный робот, механизмы, двигатели, UART/RS485, стек задач и Release-сборка ещё требуют стендовой проверки по [чек-листу](docs/USAGE_RU.md#что-еще-нужно-проверить).
-
-Подробности переноса сохранены в [MIGRATION_REPORT.md](MIGRATION_REPORT.md), расширенная инструкция — в [README_CMAKE.md](README_CMAKE.md).
+Подробности, история исправлений и чек-лист стендовых проверок: [docs/USAGE_RU.md](docs/USAGE_RU.md).

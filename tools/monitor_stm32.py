@@ -30,11 +30,13 @@ def get_symbols(nm, elf):
     return symbols
 
 
-def upload(programmer, serial, address, size, path):
-    command = [programmer, '-c', 'port=SWD', 'mode=HOTPLUG']
+def upload(serial, address, size, path):
+    # Plain init attaches without reset or halt; memory is read while the MCU runs.
+    command = ['openocd', '-f', 'interface/stlink.cfg']
     if serial:
-        command.append('sn=' + serial)
-    command += ['-u', hex(address), str(size), str(path)]
+        command += ['-c', 'adapter serial ' + serial]
+    command += ['-f', 'target/stm32f4x.cfg', '-c', 'init',
+                '-c', f'dump_image {path} {hex(address)} {size}', '-c', 'exit']
     result = subprocess.run(command, capture_output=True, text=True, timeout=30)
     if result.returncode:
         raise RuntimeError(result.stdout + result.stderr)
@@ -48,7 +50,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--project', type=Path, default=Path.cwd())
     parser.add_argument('--build', default='build/debug')
-    parser.add_argument('--serial', default='53004700090000393333574E')
+    parser.add_argument('--serial', default='', help='ST-LINK serial number')
     parser.add_argument('--samples', type=int, default=24)
     parser.add_argument('--interval', type=float, default=0.07)
     args = parser.parse_args()
@@ -69,15 +71,14 @@ def main():
     image = (build / 'firmware.bin').read_bytes()
     if not image or len(image) > 0x100000:
         raise RuntimeError('Неверный размер firmware.bin')
-    cli = cache['STM32_PROGRAMMER_CLI']
     with tempfile.TemporaryDirectory(prefix='eurobot-read-test-') as temporary:
         temp = Path(temporary)
-        stored = upload(cli, args.serial, 0x08000000, len(image), temp / 'image.bin')
+        stored = upload(args.serial, 0x08000000, len(image), temp / 'image.bin')
         if stored != image:
             raise RuntimeError('На плате другая прошивка. SRAM-тест не запускался: сначала flash и verify для этой сборки.')
         print('PASS: Flash совпадает с локальным firmware.bin, SHA256 ' + hashlib.sha256(image).hexdigest(), flush=True)
         clock_address = symbols['SystemCoreClock']
-        clock = struct.unpack('<I', upload(cli, args.serial, clock_address, 4, temp / 'clock.bin'))[0]
+        clock = struct.unpack('<I', upload(args.serial, clock_address, 4, temp / 'clock.bin'))[0]
         print(f'SystemCoreClock = {clock} (это переменная прошивки, не независимое измерение кварца)', flush=True)
         sample_names = [n for n in names if n != 'SystemCoreClock']
         low = min(symbols[n] for n in sample_names)
@@ -87,7 +88,7 @@ def main():
         print('sample   tick       tasks scheduler PCA9685 SPI_GPO_REG masked_1_4', flush=True)
         for index in range(args.samples):
             begin = time.monotonic()
-            contents = upload(cli, args.serial, low, high - low, temp / 'sram.bin')
+            contents = upload(args.serial, low, high - low, temp / 'sram.bin')
             end = time.monotonic()
             values = {name: struct.unpack_from('<I', contents, symbols[name] - low)[0] for name in sample_names}
             values['time'] = (begin + end) / 2

@@ -1,67 +1,33 @@
-# Прошивка Eurobot 2026: обоснование изменений и инструкция
+# Прошивка Eurobot 2026: инструкция и история изменений
 
-## Краткое обоснование
-
-Цель работы — запускать существующую прошивку Eurobot 2026 без Keil MDK-ARM, сохранив FreeRTOS, драйверы, протокол команд, распиновку и настройки робота. Для этого Keil-проект перенесён на CMake + ARM GNU Toolchain, добавлена воспроизводимая проверка ELF/BIN/HEX и исправлены две реальные ошибки I2C2, которые блокировали запуск платы.
-
-## Полный путь работы
+## Путь сборки
 
 ```text
-MDK-ARM/Main_Board.uvprojx
-        │ список исходников, defines, include-пути и параметры CPU
+cmake/sources.cmake + CMakeLists.txt
         ▼
-cmake/keil_sources.cmake + CMakeLists.txt
-        ▼
-CMake preset debug/release
-        ▼
-Ninja
-        ▼
-arm-none-eabi-gcc 14.3.1
+CMake preset debug/release → Ninja → arm-none-eabi-gcc
         │ Cortex-M4F, fpv4-sp-d16, hard float
         ▼
 GNU startup + GCC-порт FreeRTOS + STM32F407VG_FLASH.ld
         ▼
 firmware.elf → firmware.bin / firmware.hex / firmware.map
         ▼
-cmake/check_firmware.py
-        │ проверка векторов, ISR, памяти, CPU-флагов и образов
+cmake/check_firmware.py — векторы, ISR, память, CPU-флаги, образы
         ▼
-st-flash --hot-plug --reset
+OpenOCD → ST-LINK → SWD → STM32F407VGTx
         ▼
-ST-LINK → SWD → STM32F407VGTx
-        ▼
-tools/monitor_stm32.py
-        │ Flash, FreeRTOS, tick, DemoTask, PCA9685 status
+tools/monitor_stm32.py — Flash, FreeRTOS, tick, DemoTask, PCA9685
         ▼
 стендовые проверки робота
 ```
 
-Исходная рабочая папка на Mac:
-
-```text
-/Users/vladromenko/Desktop/Eurobot/02_FIRMWARE_2026/PROJECT/eurobot2026-stm
-```
-
-Папка `02_FIRMWARE_2026/SOURCE` является обзорной копией. Изменять и собирать нужно проект из `02_FIRMWARE_2026/PROJECT/eurobot2026-stm` либо новый Git-клон.
-
-## Что конкретно изменено
+## Что изменено
 
 ### Переход с Keil на CMake/GCC
 
-Добавлены:
+Изначально проект собирался ARMCC 5 в Keil MDK-ARM. Список исходников, defines, include-пути, CPU/ABI-флаги и раскладка памяти перенесены в CMake; ARMASM startup заменён GNU startup из CMSIS, RVDS-порт FreeRTOS — портом `GCC/ARM_CM4F`, добавлены linker script и `cmake/gcc_runtime.c` (`_init`/`_fini`). Файлы Keil и неиспользуемые части вендорских библиотек удалены; итоговый образ при этом побайтово не изменился.
 
-- `CMakeLists.txt` и `CMakePresets.json`;
-- явный список 82 компилируемых единиц из Keil в `cmake/keil_sources.cmake`;
-- toolchain-файл `cmake/arm-none-eabi.cmake`;
-- linker script для Flash/SRAM/CCMRAM и фиксированного MSP stack;
-- уже существовавший GNU startup STM32F407 вместо ARMASM startup;
-- существовавший GCC-порт FreeRTOS `portable/GCC/ARM_CM4F` вместо RVDS-порта;
-- `cmake/gcc_runtime.c` с `_init`/`_fini`, требуемыми GNU runtime;
-- генерация ELF, BIN, HEX и MAP;
-- `check`, который проверяет состав сборки, CPU-флаги, 98 векторов, 17 сильных ISR, границы SRAM/stack, Flash-only HEX и начальные значения `.data`;
-- цели `probe`, `backup`, `verify`, `flash`, `reset` для STM32CubeProgrammer.
-
-Сохранены параметры `cortex-m4`, Thumb, `fpv4-sp-d16`, hard float, short enums/wchar, unsigned char и оптимизация Debug `-O0`. Release использует `-Os`, кроме `l6474_drvr.c`, которому оставлен `-O0`.
+Сохранены `cortex-m4`, Thumb, `fpv4-sp-d16`, hard float, short enums/wchar, unsigned char и `-O0` в Debug. Release использует `-Os`, кроме `l6474_drvr.c`, которому оставлен `-O0` (bit-bang тайминги).
 
 ### Запуск DemoTask
 
@@ -94,9 +60,9 @@ tools/monitor_stm32.py
 
 ### Программирование платы
 
-STM32CubeProgrammer подключался и читал плату, но запись через NORMAL и under-reset завершалась `DEV_TARGET_RESET_ERR`: вывод NRST не подключён. Проверенная владельцем запись выполнена `st-flash --hot-plug --reset`; после записи `st-flash` подтвердил байтовую проверку и выполнил software reset через AIRCR.
+Вывод NRST к ST-LINK не подключён, поэтому reset выполняется программно (SYSRESETREQ через AIRCR). STM32CubeProgrammer на этой плате завершался `DEV_TARGET_RESET_ERR`; проверенная запись выполнялась `st-flash --hot-plug --reset`. OpenOCD по умолчанию тоже использует software reset (ST-LINK без `srst`); на самой плате прошивка через OpenOCD ещё не проверялась.
 
-Перед первой записью сохранён полный дамп Flash 1 МБ. Анализ не нашёл отдельного пользовательского bootloader: единственная таблица векторов начинается с `0x08000000`. Заводской ROM bootloader STM32 находится в system memory и этой записью не стирается.
+Перед первой записью был сохранён полный дамп Flash 1 МБ. Отдельного пользовательского bootloader нет: единственная таблица векторов начинается с `0x08000000`. Заводской ROM bootloader STM32 находится в system memory и записью не стирается.
 
 ## Ошибки исходной и первой собранной прошивки
 
@@ -108,59 +74,41 @@ STM32CubeProgrammer подключался и читал плату, но зап
 | Бесконечное ожидание I2C `ADDR` | CPU работал, но tick/tasks оставались нулевыми; FreeRTOS не запускался | Добавлены тайм-ауты, обработка NACK/ошибок и освобождение транзакции |
 | В `LL_I2C_ConfigSpeed` передавалось 84 МГц вместо PCLK1=42 МГц | I2C работал примерно на 50 кГц вместо заданных 100 кГц | Передаётся правильная частота 42 МГц |
 | Результат `PCA9685.Init()` игнорировался | Причину отказа нельзя было увидеть, а зависание происходило до задач | Результат хранится в `PCA9685_InitStatus`; запуск продолжается |
-| CubeProgrammer требовал reset, которого не было на ST-LINK | `DEV_TARGET_RESET_ERR` до записи | Для этой платы используется `st-flash --hot-plug --reset` с software reset |
+| CubeProgrammer требовал reset, которого не было на ST-LINK | `DEV_TARGET_RESET_ERR` до записи | Прошивка через OpenOCD с software reset |
 
 ## Сборка
 
 ```bash
-cd '/Users/vladromenko/Desktop/Eurobot/02_FIRMWARE_2026/PROJECT/eurobot2026-stm'
-
 cmake --preset debug
 cmake --build --preset debug
 cmake --build --preset debug --target check
 ```
 
-Повторная сборка после изменения `.c` или `.h`:
+Release — то же самое с `release`. Debug следует проверять первым. Успешный `check` подтверждает структуру образа, но не работу механизмов.
+
+## Загрузка
 
 ```bash
-cmake --build --preset debug
-cmake --build --preset debug --target check
+cmake --build --preset debug --target flash
 ```
 
-Release:
+Цель пересобирает прошивку, записывает `firmware.elf` через OpenOCD, сверяет записанное и делает reset. Ожидаемые строки: `** Verified OK **` и `** Resetting Target **`. В VS Code то же делает кнопка Flash.
+
+Перед записью другой платы сначала сохраните её Flash:
 
 ```bash
-cmake --preset release
-cmake --build --preset release
-cmake --build --preset release --target check
+openocd -f interface/stlink.cfg -f target/stm32f4x.cfg \
+  -c "init; dump_image backup-flash.bin 0x08000000 0x100000; exit"
 ```
 
-Debug следует проверять первым. Успешный `check` подтверждает структуру образа, но не работу механизмов.
+## Отладка
 
-## Резервная копия и загрузка
-
-Проверить ST-LINK:
-
-```bash
-st-info --probe
-```
-
-Для уже проверенной платы серийный номер — `53004700090000393333574E`. Перед записью другой платы сначала сохраните её Flash и уточните наличие bootloader/данных.
-
-Загрузка актуального Debug:
-
-```bash
-st-flash --serial 53004700090000393333574E \
-  --hot-plug --reset \
-  write "$PWD/build/debug/firmware.bin" 0x08000000
-```
-
-Успех подтверждается строкой `Flash written and verified!`.
+В VS Code: F5 → «Debug (OpenOCD)» (сборка, прошивка, остановка на `main`, список задач FreeRTOS) или «Attach (OpenOCD)» без перепрошивки. Нужно расширение Cortex-Debug и `arm-none-eabi-gdb` в `PATH`.
 
 ## Проверка после загрузки
 
 ```bash
-python3 tools/monitor_stm32.py --project "$PWD"
+python3 tools/monitor_stm32.py
 ```
 
 Ожидается:
@@ -197,13 +145,13 @@ python3 tools/serial_read_test.py --port /dev/cu.НУЖНЫЙ_ПОРТ --command
 6. Проверить аварийную остановку и `StopAllActuators` до испытаний автономного поведения.
 7. Измерить high-water mark стеков задач и MSP; проверить отсутствие HardFault, NaN и повреждения SRAM при длительной работе.
 8. Выполнить длительный Debug-прогон, затем отдельно повторить весь стендовый тест Release-сборки.
-9. Сравнить координаты, направления колёс и механику захватов с проверенной Keil-прошивкой.
+9. Сравнить координаты, направления колёс и механику захватов с прежней Keil-прошивкой.
 
 ## Известные нерешённые проблемы
 
 - В `robot_behavior_routine.c` выражение с `strategy++` изменяет и читает переменную без определённого порядка; компилятор предупреждает о неопределённом поведении.
 - В `gripper_task.c` переменная `move_speed` может остаться неинициализированной для неожиданного значения направления.
-- GCC собирает проект с `-fshort-wchar`, как Keil, но стандартные библиотеки GNU используют 32-битный `wchar_t`. В текущем коде wchar API не используется; это нужно помнить при будущих изменениях.
+- GCC собирает проект с `-fshort-wchar` (наследие Keil), но стандартные библиотеки GNU используют 32-битный `wchar_t`. В текущем коде wchar API не используется; это нужно помнить при будущих изменениях.
 - Аппаратно подтверждён запуск Debug после исправления I2C. Полное поведение робота и Release ещё не квалифицированы.
 
 Эти два предупреждения прикладного кода нужно исправить после согласования ожидаемого поведения, до допуска автономного движения.

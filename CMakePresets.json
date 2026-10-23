@@ -8,7 +8,7 @@
   "configurePresets": [
     {
       "name": "debug",
-      "displayName": "Eurobot 2026 Debug (Keil O0)",
+      "displayName": "Eurobot 2026 Debug (O0)",
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build/debug",
       "toolchainFile": "${sourceDir}/cmake/arm-none-eabi.cmake",
@@ -19,7 +19,7 @@
     {
       "name": "release",
       "inherits": "debug",
-      "displayName": "Eurobot 2026 Release (Os; requires hardware validation)",
+      "displayName": "Eurobot 2026 Release (Os)",
       "binaryDir": "${sourceDir}/build/release",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release"
