@@ -39,6 +39,21 @@ brew install cmake ninja open-ocd
 
 ## Командная строка
 
+Короткий вариант — [Makefile](Makefile) поверх CMake-пресетов:
+
+```bash
+make                # Debug
+make release
+make check          # check-release для Release
+make flash          # flash-release для Release
+make reset
+make monitor
+make clean
+make help
+```
+
+То же напрямую через CMake:
+
 ```bash
 cmake --preset debug                          # или release
 cmake --build --preset debug
