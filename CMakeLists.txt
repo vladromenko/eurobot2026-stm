@@ -36,7 +36,7 @@ add_custom_command(TARGET firmware POST_BUILD
   COMMAND "${CMAKE_OBJCOPY}" -O binary --gap-fill=0xFF "$<TARGET_FILE:firmware>" "${CMAKE_CURRENT_BINARY_DIR}/firmware.bin"
   COMMAND "${CMAKE_SIZE}" "$<TARGET_FILE:firmware>"
   VERBATIM)
-include(cmake/openocd.cmake)
+include(cmake/stflash.cmake)
 
 find_package(Python3 QUIET COMPONENTS Interpreter)
 if(Python3_Interpreter_FOUND)
