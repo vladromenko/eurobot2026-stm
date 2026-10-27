@@ -44,8 +44,8 @@
 #include "robot_behavior_routine.h"
 
 // #define WS2812B_DEMO
-// #define SPI_GPO_DEMO
-#define STEPPER_DEMO
+#define SPI_GPO_DEMO
+// #define STEPPER_DEMO
 // #define DYNAMIXEL_DEMO_1
 // #define DYNAMIXEL_DEMO_2
 // #define MAXON_DEMO
@@ -125,9 +125,9 @@ static void Task(void *arg)
 	while(1)
 	{
     #ifdef SPI_GPO_DEMO
-      SPI_GPO_SetOutputPin(SPI_POWER_OUTPUT_1|SPI_POWER_OUTPUT_3|SPI_POWER_OUTPUT_2);
+      SPI_GPO_SetOutputPin(SPI_POWER_OUTPUT_1|SPI_POWER_OUTPUT_2|SPI_POWER_OUTPUT_3|SPI_POWER_OUTPUT_4);
       vTaskDelay(250);
-      SPI_GPO_ResetOutputPin(SPI_POWER_OUTPUT_1|SPI_POWER_OUTPUT_3|SPI_POWER_OUTPUT_2);
+      SPI_GPO_ResetOutputPin(SPI_POWER_OUTPUT_1|SPI_POWER_OUTPUT_2|SPI_POWER_OUTPUT_3|SPI_POWER_OUTPUT_4);
       vTaskDelay(250);
     #endif
 
