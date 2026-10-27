@@ -83,4 +83,7 @@ void SPI_GPO_ResetOutputPin(uint32_t SPI_GPO_PIN)
 	xTaskResumeAll();
 }
 
+const struct spi_gpo_s SPI_GPO = {.SetOutputPin = SPI_GPO_SetOutputPin,
+                                  .ResetOutputPin = SPI_GPO_ResetOutputPin};
+
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

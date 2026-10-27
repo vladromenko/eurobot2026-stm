@@ -31,18 +31,21 @@
 #include "dynamixel_ax.h" 
 #include "hl_rtu.h" 
 #include "terminal.h" 
+#include "hw_instance.h"
 
 
 
 
 static void SendResponse(struct terminal_response_s* terminal_response)
 {
-  HL_RTU.SendResponse(USART1, (struct hl_rtu_response_s*)terminal_response);
+  const struct hw_instance_s* hw = GetHwInstance();
+  hw->hl_rtu->SendResponse(USART1, (struct hl_rtu_response_s*)terminal_response);
 }
 
 static uint8_t GetRequest(struct terminal_request_s* terminal_request)
 {
-  return HL_RTU.GetRequest(USART1, (struct hl_rtu_request_s*)terminal_request);
+  const struct hw_instance_s* hw = GetHwInstance();
+  return hw->hl_rtu->GetRequest(USART1, (struct hl_rtu_request_s*)terminal_request);
 }
 
 

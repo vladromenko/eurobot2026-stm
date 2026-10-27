@@ -45,6 +45,7 @@
 #include "os_tasks.h" 
 #include "hl_rtu.h"
 #include "serial.h"
+#include "hw_instance.h"
 
 
 
@@ -54,6 +55,7 @@
   */
 int main(void)
 {
+  const struct hw_instance_s* hw = GetHwInstance();
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
 	SYSCFG_PWR_Init();
 	SystemClockConfig();
@@ -66,7 +68,7 @@ int main(void)
 	Robot_GPIO_Config();
 
 	SPI1_Board_HW_Init();
-	SPI_GPO_ResetOutputPin(SPI_GPO_ALL);
+	hw->spi_gpo->ResetOutputPin(SPI_GPO_ALL);
 
 	
 
@@ -104,11 +106,11 @@ int main(void)
 
   
   /*  Binding USART ports with protocols  */
-  USARTx.BindProtocol(USART3, DynamixelMaster.GetProtocol());
-  USARTx.BindProtocol(USART6, DynamixelMaster.GetProtocol());
-  USARTx.BindProtocol(UART4, DynamixelMaster.GetProtocol());
-  USARTx.BindProtocol(UART5, Serial.GetProtocol());
-  USARTx.BindProtocol(USART1, HL_RTU.GetProtocol());
+  hw->usartx->BindProtocol(USART3, hw->dynamixel_master->GetProtocol());
+  hw->usartx->BindProtocol(USART6, hw->dynamixel_master->GetProtocol());
+  hw->usartx->BindProtocol(UART4, hw->dynamixel_master->GetProtocol());
+  hw->usartx->BindProtocol(UART5, hw->serial->GetProtocol());
+  hw->usartx->BindProtocol(USART1, hw->hl_rtu->GetProtocol());
 
   /*  Creating tasks  */
 	ButtonsPollTask.CreateTask(3);

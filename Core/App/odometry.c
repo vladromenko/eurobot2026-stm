@@ -29,6 +29,7 @@
 
 #include "kinematics.h"
 #include "bus_device.h"
+#include "hw_instance.h"
 
 
 
@@ -37,9 +38,10 @@ struct coord_s path;
 
 static void Init(void)
 {
-  Maxon.SetTotalTicks(bus_devices[MAXON_MOTOR_1].usart, bus_devices[MAXON_MOTOR_1].id, 0);
-  Maxon.SetTotalTicks(bus_devices[MAXON_MOTOR_2].usart, bus_devices[MAXON_MOTOR_2].id, 0);
-  Maxon.SetTotalTicks(bus_devices[MAXON_MOTOR_3].usart, bus_devices[MAXON_MOTOR_3].id, 0);
+  const struct hw_instance_s* hw = GetHwInstance();
+  hw->maxon->SetTotalTicks(hw->bus_devices[MAXON_MOTOR_1].usart, hw->bus_devices[MAXON_MOTOR_1].id, 0);
+  hw->maxon->SetTotalTicks(hw->bus_devices[MAXON_MOTOR_2].usart, hw->bus_devices[MAXON_MOTOR_2].id, 0);
+  hw->maxon->SetTotalTicks(hw->bus_devices[MAXON_MOTOR_3].usart, hw->bus_devices[MAXON_MOTOR_3].id, 0);
 
   path.x = 0;
   path.y = 0;
@@ -62,37 +64,40 @@ static void GetCoord(struct coord_s* coord)
 
 static void SetSpeed(struct speed_s* speed)
 {
+  const struct hw_instance_s* hw = GetHwInstance();
   int32_t tpm[3];
 
   Kinematics.SpeedTo_TPM(speed,tpm);
 
-  Maxon.Set_TPM(bus_devices[MAXON_MOTOR_1].usart, bus_devices[MAXON_MOTOR_1].id, tpm[0]);
-  Maxon.Set_TPM(bus_devices[MAXON_MOTOR_2].usart, bus_devices[MAXON_MOTOR_2].id, tpm[1]);
-  Maxon.Set_TPM(bus_devices[MAXON_MOTOR_3].usart, bus_devices[MAXON_MOTOR_3].id, tpm[2]);
+  hw->maxon->Set_TPM(hw->bus_devices[MAXON_MOTOR_1].usart, hw->bus_devices[MAXON_MOTOR_1].id, tpm[0]);
+  hw->maxon->Set_TPM(hw->bus_devices[MAXON_MOTOR_2].usart, hw->bus_devices[MAXON_MOTOR_2].id, tpm[1]);
+  hw->maxon->Set_TPM(hw->bus_devices[MAXON_MOTOR_3].usart, hw->bus_devices[MAXON_MOTOR_3].id, tpm[2]);
 }
 
 static void GetSpeed(struct speed_s* speed)
 {
+  const struct hw_instance_s* hw = GetHwInstance();
   int32_t tpm[3];
 
-  Maxon.Get_TPM(bus_devices[MAXON_MOTOR_1].usart, bus_devices[MAXON_MOTOR_1].id, tpm);
-  Maxon.Get_TPM(bus_devices[MAXON_MOTOR_2].usart, bus_devices[MAXON_MOTOR_2].id, tpm+1);
-  Maxon.Get_TPM(bus_devices[MAXON_MOTOR_3].usart, bus_devices[MAXON_MOTOR_3].id, tpm+2);
+  hw->maxon->Get_TPM(hw->bus_devices[MAXON_MOTOR_1].usart, hw->bus_devices[MAXON_MOTOR_1].id, tpm);
+  hw->maxon->Get_TPM(hw->bus_devices[MAXON_MOTOR_2].usart, hw->bus_devices[MAXON_MOTOR_2].id, tpm+1);
+  hw->maxon->Get_TPM(hw->bus_devices[MAXON_MOTOR_3].usart, hw->bus_devices[MAXON_MOTOR_3].id, tpm+2);
 
   Kinematics.TPM_ToSpeed(tpm,speed);
 }
 
 static void UpdatePath(void)
 {
+  const struct hw_instance_s* hw = GetHwInstance();
   static int32_t ticks_old[3] = {0};
 
   int32_t ticks_new[3];
   int32_t d_ticks[3];
   uint8_t error = 0;
 
-  error |= Maxon.GetTotalTicks(bus_devices[MAXON_MOTOR_1].usart, bus_devices[MAXON_MOTOR_1].id, ticks_new);
-  error |= Maxon.GetTotalTicks(bus_devices[MAXON_MOTOR_2].usart, bus_devices[MAXON_MOTOR_2].id, ticks_new+1);
-  error |= Maxon.GetTotalTicks(bus_devices[MAXON_MOTOR_3].usart, bus_devices[MAXON_MOTOR_3].id, ticks_new+2);
+  error |= hw->maxon->GetTotalTicks(hw->bus_devices[MAXON_MOTOR_1].usart, hw->bus_devices[MAXON_MOTOR_1].id, ticks_new);
+  error |= hw->maxon->GetTotalTicks(hw->bus_devices[MAXON_MOTOR_2].usart, hw->bus_devices[MAXON_MOTOR_2].id, ticks_new+1);
+  error |= hw->maxon->GetTotalTicks(hw->bus_devices[MAXON_MOTOR_3].usart, hw->bus_devices[MAXON_MOTOR_3].id, ticks_new+2);
 
   if(error)
     return;

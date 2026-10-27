@@ -25,6 +25,7 @@
 #include "bus_device.h"
 #include "maxon.h"
 #include "dynamixel_ax.h"
+#include "hw_instance.h"
 
 struct robot_ctrl_s robot_ctrl;
 QueueHandle_t button_callbacks_queue_handle = NULL;
@@ -44,8 +45,9 @@ QueueHandle_t button_callbacks_queue_handle = NULL;
 
 void PrepareRobot(void)
 {
-	Dynamixel_AX.TorqueEnable(bus_devices[GRIPPER_TOP].usart, bus_devices[GRIPPER_TOP].id);
-	Dynamixel_AX.TorqueEnable(bus_devices[GRIPPER_BOTTOM].usart, bus_devices[GRIPPER_BOTTOM].id);
+  const struct hw_instance_s* hw = GetHwInstance();
+	hw->dynamixel_ax->TorqueEnable(hw->bus_devices[GRIPPER_TOP].usart, hw->bus_devices[GRIPPER_TOP].id);
+	hw->dynamixel_ax->TorqueEnable(hw->bus_devices[GRIPPER_BOTTOM].usart, hw->bus_devices[GRIPPER_BOTTOM].id);
 	// Dynamixel_AX.TorqueEnable(bus_devices[GRIPPER_BOTTOM].usart, 1);
 	// Dynamixel_AX.Enable_LED(USART3, 1);
 	// Dynamixel_AX.SetAngle(USART3,1,300);
@@ -53,23 +55,26 @@ void PrepareRobot(void)
 
 void MaxonsEnable(void)
 {
-	Maxon.Enable(bus_devices[MAXON_MOTOR_1].usart, bus_devices[MAXON_MOTOR_1].id);
-  	Maxon.Enable(bus_devices[MAXON_MOTOR_2].usart, bus_devices[MAXON_MOTOR_2].id);
-  	Maxon.Enable(bus_devices[MAXON_MOTOR_3].usart, bus_devices[MAXON_MOTOR_3].id);
+  const struct hw_instance_s* hw = GetHwInstance();
+	hw->maxon->Enable(hw->bus_devices[MAXON_MOTOR_1].usart, hw->bus_devices[MAXON_MOTOR_1].id);
+  	hw->maxon->Enable(hw->bus_devices[MAXON_MOTOR_2].usart, hw->bus_devices[MAXON_MOTOR_2].id);
+  	hw->maxon->Enable(hw->bus_devices[MAXON_MOTOR_3].usart, hw->bus_devices[MAXON_MOTOR_3].id);
 }
 
 void MaxonsDisable(void)
 {
-	Maxon.Disable(bus_devices[MAXON_MOTOR_1].usart, bus_devices[MAXON_MOTOR_1].id);
-  	Maxon.Disable(bus_devices[MAXON_MOTOR_2].usart, bus_devices[MAXON_MOTOR_2].id);
-  	Maxon.Disable(bus_devices[MAXON_MOTOR_3].usart, bus_devices[MAXON_MOTOR_3].id);
+  const struct hw_instance_s* hw = GetHwInstance();
+	hw->maxon->Disable(hw->bus_devices[MAXON_MOTOR_1].usart, hw->bus_devices[MAXON_MOTOR_1].id);
+  	hw->maxon->Disable(hw->bus_devices[MAXON_MOTOR_2].usart, hw->bus_devices[MAXON_MOTOR_2].id);
+  	hw->maxon->Disable(hw->bus_devices[MAXON_MOTOR_3].usart, hw->bus_devices[MAXON_MOTOR_3].id);
 }
 
 void MaxonsStop(void)
 {
-	Maxon.Set_TPM(bus_devices[MAXON_MOTOR_1].usart, bus_devices[MAXON_MOTOR_1].id, 0);
-  	Maxon.Set_TPM(bus_devices[MAXON_MOTOR_2].usart, bus_devices[MAXON_MOTOR_2].id, 0);
-  	Maxon.Set_TPM(bus_devices[MAXON_MOTOR_3].usart, bus_devices[MAXON_MOTOR_3].id, 0);
+  const struct hw_instance_s* hw = GetHwInstance();
+	hw->maxon->Set_TPM(hw->bus_devices[MAXON_MOTOR_1].usart, hw->bus_devices[MAXON_MOTOR_1].id, 0);
+  	hw->maxon->Set_TPM(hw->bus_devices[MAXON_MOTOR_2].usart, hw->bus_devices[MAXON_MOTOR_2].id, 0);
+  	hw->maxon->Set_TPM(hw->bus_devices[MAXON_MOTOR_3].usart, hw->bus_devices[MAXON_MOTOR_3].id, 0);
 }
 
 

@@ -25,6 +25,7 @@
 
 #include "dynamixel_ax.h" 
 #include "bus_device.h"
+#include "hw_instance.h"
 
 uint8_t gripper_state;
 
@@ -38,10 +39,11 @@ static StaticTask_t task_buffer;
 
 static void Task(void *arg)
 {
+  const struct hw_instance_s* hw = GetHwInstance();
   vTaskDelay(50);
 
-  Dynamixel_AX.TorqueEnable(bus_devices[GRIPPER_TOP].usart, bus_devices[GRIPPER_TOP].id);
-	Dynamixel_AX.TorqueEnable(bus_devices[GRIPPER_BOTTOM].usart, bus_devices[GRIPPER_BOTTOM].id);
+  hw->dynamixel_ax->TorqueEnable(hw->bus_devices[GRIPPER_TOP].usart, hw->bus_devices[GRIPPER_TOP].id);
+	hw->dynamixel_ax->TorqueEnable(hw->bus_devices[GRIPPER_BOTTOM].usart, hw->bus_devices[GRIPPER_BOTTOM].id);
 
 	while(1)
 	{
@@ -50,18 +52,18 @@ static void Task(void *arg)
     switch (gripper_state)
     {
       case 0:
-        Dynamixel_AX.SetAngle(bus_devices[GRIPPER_TOP].usart, bus_devices[GRIPPER_TOP].id, 0);
-        Dynamixel_AX.SetAngle(bus_devices[GRIPPER_BOTTOM].usart, bus_devices[GRIPPER_BOTTOM].id, 0);
+        hw->dynamixel_ax->SetAngle(hw->bus_devices[GRIPPER_TOP].usart, hw->bus_devices[GRIPPER_TOP].id, 0);
+        hw->dynamixel_ax->SetAngle(hw->bus_devices[GRIPPER_BOTTOM].usart, hw->bus_devices[GRIPPER_BOTTOM].id, 0);
         break;
       case 1:
-        Dynamixel_AX.SetAngle(bus_devices[GRIPPER_TOP].usart, bus_devices[GRIPPER_TOP].id, 100);
-        Dynamixel_AX.SetAngle(bus_devices[GRIPPER_BOTTOM].usart, bus_devices[GRIPPER_BOTTOM].id, 100);
+        hw->dynamixel_ax->SetAngle(hw->bus_devices[GRIPPER_TOP].usart, hw->bus_devices[GRIPPER_TOP].id, 100);
+        hw->dynamixel_ax->SetAngle(hw->bus_devices[GRIPPER_BOTTOM].usart, hw->bus_devices[GRIPPER_BOTTOM].id, 100);
         vTaskDelay(1000);
-        Dynamixel_AX.SetAngle(bus_devices[GRIPPER_TOP].usart, bus_devices[GRIPPER_TOP].id, 50);
-        Dynamixel_AX.SetAngle(bus_devices[GRIPPER_BOTTOM].usart, bus_devices[GRIPPER_BOTTOM].id, 50);
+        hw->dynamixel_ax->SetAngle(hw->bus_devices[GRIPPER_TOP].usart, hw->bus_devices[GRIPPER_TOP].id, 50);
+        hw->dynamixel_ax->SetAngle(hw->bus_devices[GRIPPER_BOTTOM].usart, hw->bus_devices[GRIPPER_BOTTOM].id, 50);
         vTaskDelay(1000);
-        Dynamixel_AX.SetAngle(bus_devices[GRIPPER_TOP].usart, bus_devices[GRIPPER_TOP].id, 0);
-        Dynamixel_AX.SetAngle(bus_devices[GRIPPER_BOTTOM].usart, bus_devices[GRIPPER_BOTTOM].id, 0);
+        hw->dynamixel_ax->SetAngle(hw->bus_devices[GRIPPER_TOP].usart, hw->bus_devices[GRIPPER_TOP].id, 0);
+        hw->dynamixel_ax->SetAngle(hw->bus_devices[GRIPPER_BOTTOM].usart, hw->bus_devices[GRIPPER_BOTTOM].id, 0);
         break;
     }
 	}

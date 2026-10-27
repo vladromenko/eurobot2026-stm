@@ -28,6 +28,7 @@
 #include "robot_gpio_defines.h"
 #include "buttons_enum.h"
 #include "robot_behavior_routine.h" 
+#include "hw_instance.h"
 
 
 #define TASK_STACK_SIZE                   64
@@ -57,19 +58,20 @@ static void ButtonCallbackRedirect(enum buttons_e button_id, enum button_callbac
 
 static void Task(void *arg)
 {
+  const struct hw_instance_s* hw = GetHwInstance();
   TickType_t xLastWakeTime;
 
-  Button.AddButton(STARTING_CORD_BTN, GPIOC, STARTING_CORD_BTN_GPIO14_PC15, BUTTON_POLARITY_HI, ButtonCallbackRedirect);
-  Button.AddButton(PLAYGROUND_SIDE_BTN, GPIOE, PLAYGROUND_SIDE_BTN_GPIO13_PE6, BUTTON_POLARITY_HI, ButtonCallbackRedirect);
-  Button.AddButton(STRATEGY_BTN, GPIOE, STRATEGY_BTN_GPIO12_PE5, BUTTON_POLARITY_HI, ButtonCallbackRedirect);
-  Button.AddButton(MAXON_ENABLE_BTN, GPIOE, MAXON_ENABLE_BTN_GPIO11_PE2, BUTTON_POLARITY_HI, ButtonCallbackRedirect);
+  hw->button->AddButton(STARTING_CORD_BTN, GPIOC, STARTING_CORD_BTN_GPIO14_PC15, BUTTON_POLARITY_HI, ButtonCallbackRedirect);
+  hw->button->AddButton(PLAYGROUND_SIDE_BTN, GPIOE, PLAYGROUND_SIDE_BTN_GPIO13_PE6, BUTTON_POLARITY_HI, ButtonCallbackRedirect);
+  hw->button->AddButton(STRATEGY_BTN, GPIOE, STRATEGY_BTN_GPIO12_PE5, BUTTON_POLARITY_HI, ButtonCallbackRedirect);
+  hw->button->AddButton(MAXON_ENABLE_BTN, GPIOE, MAXON_ENABLE_BTN_GPIO11_PE2, BUTTON_POLARITY_HI, ButtonCallbackRedirect);
 
   button_callbacks_queue_handle = xQueueCreateStatic(BUTTON_CALLBACKS_QUEUE_LENGTH, BUTTON_CALLBACKS_QUEUE_ITEM_SIZE, ucQueueStorageBuffer, &xStaticQueue);
 
 	while(1)
 	{
     xLastWakeTime = xTaskGetTickCount();
-    Button.PollButtons();
+    hw->button->PollButtons();
     xTaskDelayUntil(&xLastWakeTime,1);
 	}
 }

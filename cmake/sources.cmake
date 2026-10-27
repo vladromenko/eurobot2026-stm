@@ -29,6 +29,7 @@ set(EUROBOT_SOURCES
   "Core/BSP/stepper.c"
   "Core/BSP/ws2812b.c"
   "Core/App/bus_device.c"
+  "Core/App/hw_instance.c"
   "Core/App/kinematics.c"
   "Core/App/main.c"
   "Core/App/odometry.c"

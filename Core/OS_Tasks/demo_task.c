@@ -42,6 +42,7 @@
 #include "odometry.h"
 #include "ws2812b.h" 
 #include "robot_behavior_routine.h"
+#include "hw_instance.h"
 
 // #define WS2812B_DEMO
 #define SPI_GPO_DEMO
@@ -65,6 +66,7 @@ static StaticTask_t TaskBuffer;
 
 static void Task(void *arg)
 {
+  const struct hw_instance_s* hw = GetHwInstance();
   #if defined(DYNAMIXEL_DEMO_1) || defined(DYNAMIXEL_DEMO_2)
     vTaskDelay(100);
     uint8_t dynamixel_id;
@@ -72,17 +74,17 @@ static void Task(void *arg)
 
   #ifdef DYNAMIXEL_DEMO_1
     dynamixel_id = 4;
-    Dynamixel_AX.TorqueEnable(USART3, dynamixel_id);
+    hw->dynamixel_ax->TorqueEnable(USART3, dynamixel_id);
   #endif
 
   #ifdef DYNAMIXEL_DEMO_2
     dynamixel_id = 0xFE;
     while(dynamixel_id){
       dynamixel_id --;
-      if(Dynamixel_AX.Ping(USART3, dynamixel_id) == 0)
+      if(hw->dynamixel_ax->Ping(USART3, dynamixel_id) == 0)
         break;
     }
-    Dynamixel_AX.TorqueEnable(USART3, dynamixel_id);
+    hw->dynamixel_ax->TorqueEnable(USART3, dynamixel_id);
   #endif
 
   #ifdef MAXON_DEMO
@@ -91,25 +93,25 @@ static void Task(void *arg)
   #endif
 
   #ifdef STEPPER_DEMO
-    Stepper.Init(STEPPER_MOTOR_1);
-    Stepper.Init(STEPPER_MOTOR_2);
-    Stepper.Init(STEPPER_MOTOR_3);
-    Stepper.Init(STEPPER_MOTOR_4);
+    hw->stepper->Init(STEPPER_MOTOR_1);
+    hw->stepper->Init(STEPPER_MOTOR_2);
+    hw->stepper->Init(STEPPER_MOTOR_3);
+    hw->stepper->Init(STEPPER_MOTOR_4);
 
-    Stepper.Enable(STEPPER_MOTOR_1);
-    Stepper.Enable(STEPPER_MOTOR_2);
-    Stepper.Enable(STEPPER_MOTOR_3);
-    Stepper.Enable(STEPPER_MOTOR_4);
+    hw->stepper->Enable(STEPPER_MOTOR_1);
+    hw->stepper->Enable(STEPPER_MOTOR_2);
+    hw->stepper->Enable(STEPPER_MOTOR_3);
+    hw->stepper->Enable(STEPPER_MOTOR_4);
 
-    Stepper.SetZeroPosisition(STEPPER_MOTOR_1);
-    Stepper.SetZeroPosisition(STEPPER_MOTOR_2);
-    Stepper.SetZeroPosisition(STEPPER_MOTOR_3);
-    Stepper.SetZeroPosisition(STEPPER_MOTOR_4);
+    hw->stepper->SetZeroPosisition(STEPPER_MOTOR_1);
+    hw->stepper->SetZeroPosisition(STEPPER_MOTOR_2);
+    hw->stepper->SetZeroPosisition(STEPPER_MOTOR_3);
+    hw->stepper->SetZeroPosisition(STEPPER_MOTOR_4);
   #endif
 
   #ifdef SERVO_DEMO
-    RC_Servo.Enable(RC_SERVO_1);
-    RC_Servo.Enable(RC_SERVO_2);
+    hw->rc_servo->Enable(RC_SERVO_1);
+    hw->rc_servo->Enable(RC_SERVO_2);
   #endif
 
   #ifdef WS2812B_DEMO
@@ -125,9 +127,9 @@ static void Task(void *arg)
 	while(1)
 	{
     #ifdef SPI_GPO_DEMO
-      SPI_GPO_SetOutputPin(SPI_POWER_OUTPUT_1|SPI_POWER_OUTPUT_2|SPI_POWER_OUTPUT_3|SPI_POWER_OUTPUT_4);
+      hw->spi_gpo->SetOutputPin(SPI_POWER_OUTPUT_1|SPI_POWER_OUTPUT_2|SPI_POWER_OUTPUT_3|SPI_POWER_OUTPUT_4);
       vTaskDelay(250);
-      SPI_GPO_ResetOutputPin(SPI_POWER_OUTPUT_1|SPI_POWER_OUTPUT_2|SPI_POWER_OUTPUT_3|SPI_POWER_OUTPUT_4);
+      hw->spi_gpo->ResetOutputPin(SPI_POWER_OUTPUT_1|SPI_POWER_OUTPUT_2|SPI_POWER_OUTPUT_3|SPI_POWER_OUTPUT_4);
       vTaskDelay(250);
     #endif
 
@@ -135,12 +137,12 @@ static void Task(void *arg)
       uint16_t angle;
       uint8_t error_code;
 
-      error_code = Dynamixel_AX.GetAngle(USART3, dynamixel_id, &angle);
+      error_code = hw->dynamixel_ax->GetAngle(USART3, dynamixel_id, &angle);
 
       if(error_code == 0){
         angle += 10;
         if(angle > 300) angle = 0;
-        Dynamixel_AX.SetAngle(USART3, dynamixel_id, angle);
+        hw->dynamixel_ax->SetAngle(USART3, dynamixel_id, angle);
         LL_GPIO_ResetOutputPin(GPIOD, PWM1_PD15);
       }else
         LL_GPIO_SetOutputPin(GPIOD, PWM1_PD15);
@@ -201,18 +203,18 @@ static void Task(void *arg)
       uint16_t servo_1_range = 120;
       uint16_t servo_2_range = 180;
 
-      RC_Servo.SetServoAngle(RC_SERVO_1, 1100, 1900, servo_1_range, 0);
-      RC_Servo.SetServoAngle(RC_SERVO_2, 500, 2500, servo_2_range, 0);
+      hw->rc_servo->SetServoAngle(RC_SERVO_1, 1100, 1900, servo_1_range, 0);
+      hw->rc_servo->SetServoAngle(RC_SERVO_2, 500, 2500, servo_2_range, 0);
 
       vTaskDelay(2000);
 
-      RC_Servo.SetServoAngle(RC_SERVO_1, 1100, 1900, servo_1_range, 90);
-      RC_Servo.SetServoAngle(RC_SERVO_2, 500, 2500, servo_2_range, 90);
+      hw->rc_servo->SetServoAngle(RC_SERVO_1, 1100, 1900, servo_1_range, 90);
+      hw->rc_servo->SetServoAngle(RC_SERVO_2, 500, 2500, servo_2_range, 90);
 
       vTaskDelay(1000);
 
-      RC_Servo.SetServoAngle(RC_SERVO_1, 1100, 1900, servo_1_range, servo_1_range);
-      RC_Servo.SetServoAngle(RC_SERVO_2, 500, 2500, servo_2_range, servo_2_range);
+      hw->rc_servo->SetServoAngle(RC_SERVO_1, 1100, 1900, servo_1_range, servo_1_range);
+      hw->rc_servo->SetServoAngle(RC_SERVO_2, 500, 2500, servo_2_range, servo_2_range);
 
       vTaskDelay(1000);
     #endif
@@ -223,24 +225,24 @@ static void Task(void *arg)
       uint32_t stpper3_goal_position = 20000;
       uint32_t stpper4_goal_position = 20000;
 
-      Stepper.StepToPosisition(STEPPER_MOTOR_1, stpper1_goal_position, 32, 6, 800);
-      Stepper.StepToPosisition(STEPPER_MOTOR_2, stpper2_goal_position, 32, 4, 800);
-      Stepper.StepToPosisition(STEPPER_MOTOR_3, stpper3_goal_position, 20, 1, 200);
-      Stepper.StepToPosisition(STEPPER_MOTOR_4, stpper4_goal_position, 2, 2, 0);
-      while((Stepper.GetPresentPosisition(STEPPER_MOTOR_1) != stpper1_goal_position)|
-            (Stepper.GetPresentPosisition(STEPPER_MOTOR_2) != stpper2_goal_position)|
-            (Stepper.GetPresentPosisition(STEPPER_MOTOR_3) != stpper3_goal_position)|
-            (Stepper.GetPresentPosisition(STEPPER_MOTOR_4) != stpper4_goal_position)) taskYIELD();
+      hw->stepper->StepToPosisition(STEPPER_MOTOR_1, stpper1_goal_position, 32, 6, 800);
+      hw->stepper->StepToPosisition(STEPPER_MOTOR_2, stpper2_goal_position, 32, 4, 800);
+      hw->stepper->StepToPosisition(STEPPER_MOTOR_3, stpper3_goal_position, 20, 1, 200);
+      hw->stepper->StepToPosisition(STEPPER_MOTOR_4, stpper4_goal_position, 2, 2, 0);
+      while((hw->stepper->GetPresentPosisition(STEPPER_MOTOR_1) != stpper1_goal_position)|
+            (hw->stepper->GetPresentPosisition(STEPPER_MOTOR_2) != stpper2_goal_position)|
+            (hw->stepper->GetPresentPosisition(STEPPER_MOTOR_3) != stpper3_goal_position)|
+            (hw->stepper->GetPresentPosisition(STEPPER_MOTOR_4) != stpper4_goal_position)) taskYIELD();
       vTaskDelay(500);
 
-      Stepper.StepToPosisition(STEPPER_MOTOR_1, 0, 32, 1, 800);
-      Stepper.StepToPosisition(STEPPER_MOTOR_2, 0, 32, 4, 800);
-      Stepper.StepToPosisition(STEPPER_MOTOR_3, 0, 20, 1, 200);
-      Stepper.StepToPosisition(STEPPER_MOTOR_4, 0, 2, 2, 0);
-      while((Stepper.GetPresentPosisition(STEPPER_MOTOR_1) != 0)|
-            (Stepper.GetPresentPosisition(STEPPER_MOTOR_2) != 0)|
-            (Stepper.GetPresentPosisition(STEPPER_MOTOR_3) != 0)|
-            (Stepper.GetPresentPosisition(STEPPER_MOTOR_4) != 0)) taskYIELD();
+      hw->stepper->StepToPosisition(STEPPER_MOTOR_1, 0, 32, 1, 800);
+      hw->stepper->StepToPosisition(STEPPER_MOTOR_2, 0, 32, 4, 800);
+      hw->stepper->StepToPosisition(STEPPER_MOTOR_3, 0, 20, 1, 200);
+      hw->stepper->StepToPosisition(STEPPER_MOTOR_4, 0, 2, 2, 0);
+      while((hw->stepper->GetPresentPosisition(STEPPER_MOTOR_1) != 0)|
+            (hw->stepper->GetPresentPosisition(STEPPER_MOTOR_2) != 0)|
+            (hw->stepper->GetPresentPosisition(STEPPER_MOTOR_3) != 0)|
+            (hw->stepper->GetPresentPosisition(STEPPER_MOTOR_4) != 0)) taskYIELD();
       vTaskDelay(500);
     #endif
 
@@ -251,7 +253,7 @@ static void Task(void *arg)
         ws_led[ik] = ws_led[ik - 1];
 
       ws_led[0] = temp_color;
-      WS2812B.Set_RGB_Color(ws_led, WS2812B_LEDS_NUMBER);
+      hw->ws2812b->Set_RGB_Color(ws_led, WS2812B_LEDS_NUMBER);
       vTaskDelay(50);
     #endif
 

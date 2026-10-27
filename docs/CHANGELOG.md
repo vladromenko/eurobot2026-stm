@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-27 — HwInstance: единая точка доступа к периферии
+
+- Добавлены `Core/App/Include/hw_instance.h` и `Core/App/hw_instance.c`: `struct hw_instance_s` хранит указатели на все драйверы периферии (Stepper, L6474H, PWM, SPI GPO, WS2812B, USARTx, DynamixelMaster, Serial, HL_RTU, Dynamixel AX/MX, Maxon, BMS, RC_Servo, H_Bridge, Button) и таблицу `bus_devices`. Экземпляр объявлен `static const` и лежит во Flash; доступ — только через `const struct hw_instance_s* GetHwInstance(void)`.
+- Код приложения (`Core/App`, `Core/OS_Tasks`) обращается к железу через `GetHwInstance()`: `hw->maxon->Set_TPM(hw->bus_devices[MAXON_MOTOR_1].usart, ...)`. Драйверы внутри BSP/Lib по-прежнему используют друг друга напрямую, чтобы нижние слои не зависели от App.
+- Для SPI GPO добавлен интерфейс `struct spi_gpo_s` / `SPI_GPO` (`SetOutputPin`, `ResetOutputPin`) в стиле остальных драйверов; функции `SPI_GPO_SetOutputPin/ResetOutputPin` и `SPI_GPO_REG` сохранены.
+- Сборка: 78 единиц компиляции, число предупреждений GCC не изменилось (141).
+
 ## 2026-10-27 — управление насосами только с телеоперации
 
 - `DemoTask` больше не создаётся в `main.c`: режим `SPI_GPO_DEMO` больше не включает выходы `SPI_POWER_OUTPUT_1`–`SPI_POWER_OUTPUT_4` сам по себе. Исходник `demo_task.c` оставлен для ручных проверок. `make monitor` теперь ожидает не менее 7 задач (6 прикладных + idle).

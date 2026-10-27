@@ -39,6 +39,7 @@
 #include "bus_device.h"
 #include "spi_gpo.h"
 #include "spi_gpo_defines.h"
+#include "hw_instance.h"
 
 
 static void Ping(uint8_t* data, uint8_t data_length)
@@ -55,11 +56,12 @@ static void Ping(uint8_t* data, uint8_t data_length)
 
 static void AX_GetAngle(uint8_t* data, uint8_t data_length)
 {
+  const struct hw_instance_s* hw = GetHwInstance();
   uint16_t angle;
   struct terminal_response_s terminal_response;
 
   terminal_response.cmd = BOARD_AX_GetAngle;
-  terminal_response.data[0] = Dynamixel_AX.GetAngle(USART3, data[0], &angle);
+  terminal_response.data[0] = hw->dynamixel_ax->GetAngle(USART3, data[0], &angle);
   Word16_ToByte(&angle, &terminal_response.data[1]);
   terminal_response.data_length = 3;
 
@@ -68,14 +70,15 @@ static void AX_GetAngle(uint8_t* data, uint8_t data_length)
 
 static void AX_SetAngle(uint8_t* data, uint8_t data_length)
 {
+  const struct hw_instance_s* hw = GetHwInstance();
 //  LL_GPIO_TogglePin(GPIOD, PWM1_PD15);
   uint8_t id = data[0];
   uint16_t angle;
   
   ByteTo_Word16(data+1,&angle);
 
-  Dynamixel_AX.TorqueEnable(USART3,id);
-  Dynamixel_AX.SetAngle(USART3,id,angle);
+  hw->dynamixel_ax->TorqueEnable(USART3,id);
+  hw->dynamixel_ax->SetAngle(USART3,id,angle);
 
   struct terminal_response_s terminal_response;
 
@@ -159,10 +162,11 @@ static void GetRobotCoord(uint8_t* data, uint8_t data_length)
 
 static void GetBatteryState(uint8_t* data, uint8_t data_length)
 {
+  const struct hw_instance_s* hw = GetHwInstance();
   struct terminal_response_s terminal_response;
 
   struct bms_battery_state_s battery_state;
-  BMS.GetBatteryState(bus_devices[BMS_BOARD].usart, bus_devices[BMS_BOARD].id, &battery_state);
+  hw->bms->GetBatteryState(hw->bus_devices[BMS_BOARD].usart, hw->bus_devices[BMS_BOARD].id, &battery_state);
   memcpy(terminal_response.data, &battery_state, 18);
 
   terminal_response.cmd = BOARD_GetBatteryState;
@@ -173,12 +177,13 @@ static void GetBatteryState(uint8_t* data, uint8_t data_length)
 
 static void Set_BMS_CalibrationValue(uint8_t* data, uint8_t data_length)
 {
+  const struct hw_instance_s* hw = GetHwInstance();
   struct terminal_response_s terminal_response;
 
   uint16_t calibration_value;
   ByteTo_Word16(data+1, &calibration_value);
 
-  BMS.SetCalibrationValue(bus_devices[BMS_BOARD].usart, bus_devices[BMS_BOARD].id, data[0], calibration_value);
+  hw->bms->SetCalibrationValue(hw->bus_devices[BMS_BOARD].usart, hw->bus_devices[BMS_BOARD].id, data[0], calibration_value);
   
   terminal_response.cmd = BOARD_Set_BMS_CalibrationValue;
   terminal_response.data_length = 0;
@@ -214,9 +219,10 @@ static void ToggleGripper(uint8_t* data, uint8_t data_length)
 
 static void PumpOn(uint8_t* data, uint8_t data_length)
 {
+  const struct hw_instance_s* hw = GetHwInstance();
   struct terminal_response_s terminal_response;
 
-  SPI_GPO_SetOutputPin(SPI_POWER_OUTPUT_1|SPI_POWER_OUTPUT_2|SPI_POWER_OUTPUT_3|SPI_POWER_OUTPUT_4);
+  hw->spi_gpo->SetOutputPin(SPI_POWER_OUTPUT_1|SPI_POWER_OUTPUT_2|SPI_POWER_OUTPUT_3|SPI_POWER_OUTPUT_4);
 
   terminal_response.cmd = BOARD_POWER_ON_PUMP;
   terminal_response.data_length = 0;
@@ -226,9 +232,10 @@ static void PumpOn(uint8_t* data, uint8_t data_length)
 
 static void PumpOff(uint8_t* data, uint8_t data_length)
 {
+  const struct hw_instance_s* hw = GetHwInstance();
   struct terminal_response_s terminal_response;
 
-  SPI_GPO_ResetOutputPin(SPI_POWER_OUTPUT_1|SPI_POWER_OUTPUT_2|SPI_POWER_OUTPUT_3|SPI_POWER_OUTPUT_4);
+  hw->spi_gpo->ResetOutputPin(SPI_POWER_OUTPUT_1|SPI_POWER_OUTPUT_2|SPI_POWER_OUTPUT_3|SPI_POWER_OUTPUT_4);
 
   terminal_response.cmd = BOARD_POWER_OFF_PUMP;
   terminal_response.data_length = 0;
