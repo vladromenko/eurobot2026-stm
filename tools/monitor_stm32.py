@@ -103,7 +103,7 @@ def main():
         checks = {
             'SystemCoreClock = 168000000': clock == 168000000,
             'FreeRTOS scheduler running': all(x['xSchedulerRunning'] == 1 for x in samples),
-            'At least 8 tasks (7 application + idle)': all(x['uxCurrentNumberOfTasks'] >= 8 for x in samples),
+            'At least 7 tasks (6 application + idle)': all(x['uxCurrentNumberOfTasks'] >= 7 for x in samples),
             'Tick progressing near 1000/s': 700 < rate < 1300,
         }
         print(f'Tick rate estimate: {rate:.1f}/s; SWD snapshots are not simultaneous across words.')

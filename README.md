@@ -53,4 +53,4 @@ cmake --build --preset debug --target flash
 
 В `.vscode/` находятся задачи сборки/прошивки и конфигурации Cortex-Debug. IntelliSense использует `build/debug/compile_commands.json`, поэтому сначала нужно собрать Debug.
 
-Подробности переноса, результаты проверок и известные ограничения описаны в [MIGRATION_REPORT.md](MIGRATION_REPORT.md), история изменений — в [CHANGELOG.md](CHANGELOG.md), краткая инструкция — в [docs/USAGE_RU.md](docs/USAGE_RU.md).
+История изменений, а также подробности переноса, результаты проверок и известные ограничения описаны в [docs/CHANGELOG.md](docs/CHANGELOG.md), краткая инструкция — в [docs/USAGE_RU.md](docs/USAGE_RU.md).

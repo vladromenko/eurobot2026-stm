@@ -228,7 +228,7 @@ static void PumpOff(uint8_t* data, uint8_t data_length)
 {
   struct terminal_response_s terminal_response;
 
-  SPI_GPO_SetOutputPin(SPI_POWER_OUTPUT_1|SPI_POWER_OUTPUT_2);
+  SPI_GPO_ResetOutputPin(SPI_POWER_OUTPUT_1|SPI_POWER_OUTPUT_2);
 
   terminal_response.cmd = BOARD_POWER_OFF_PUMP;
   terminal_response.data_length = 0;
