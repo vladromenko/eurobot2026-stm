@@ -1,10 +1,10 @@
 # Changelog
 
-## 2026-10-27 — управление насосом только с телеоперации
+## 2026-10-27 — управление насосами только с телеоперации
 
 - `DemoTask` больше не создаётся в `main.c`: режим `SPI_GPO_DEMO` больше не включает выходы `SPI_POWER_OUTPUT_1`–`SPI_POWER_OUTPUT_4` сам по себе. Исходник `demo_task.c` оставлен для ручных проверок. `make monitor` теперь ожидает не менее 7 задач (6 прикладных + idle).
-- Команда `BOARD_POWER_OFF_PUMP` (0x0C) теперь выключает выходы `SPI_POWER_OUTPUT_1`/`SPI_POWER_OUTPUT_2`; раньше она по ошибке их включала.
-- После старта все силовые выходы выключены (`SPI_GPO_ResetOutputPin(SPI_GPO_ALL)` в `main.c`), насос включается только командой `BOARD_POWER_ON_PUMP` (0x0B), например клавишей P в `tools/teleop.py`.
+- Команды `BOARD_POWER_ON_PUMP` (0x0B) и `BOARD_POWER_OFF_PUMP` (0x0C) теперь управляют всеми насосами на выходах `SPI_POWER_OUTPUT_1`–`SPI_POWER_OUTPUT_4`; раньше они затрагивали только выходы 1–2, а `BOARD_POWER_OFF_PUMP` по ошибке их включала.
+- После старта все силовые выходы выключены (`SPI_GPO_ResetOutputPin(SPI_GPO_ALL)` в `main.c`), насосы включаются только командой `BOARD_POWER_ON_PUMP` (0x0B), например клавишей P в `tools/teleop.py`.
 - Добавлены `tools/teleop.py` (управление с клавиатуры по USART1) и `start.sh` (запуск с автоматическим venv и поиском порта).
 
 ## 2026-10-27 — тест насосов Power Output 1–4

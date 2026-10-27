@@ -31,7 +31,7 @@ HELP = [
     'W/S, ↑/↓   вперёд / назад          A/D, ←/→  влево / вправо (боком)',
     'Q/E        поворот влево / вправо  Пробел    стоп',
     'M          моторы вкл/выкл (арм)   +/-       линейная скорость, [ ]  угловая',
-    'P / O      насос вкл / выкл        G / F     захват: цикл / закрыть (0)',
+    'P / O      насосы вкл / выкл       G / F     захват: цикл / закрыть (0)',
     'I          пинг                    B         батарея',
     'V          скорость с энкодеров    C / R     координаты / сброс в 0',
     'X, Esc     выход (с отправкой нулевой скорости)',
@@ -190,10 +190,10 @@ class Teleop:
         elif char == '[':
             self.angular = max(self.angular - self.args.angular_step, self.args.angular_step)
         elif char == 'p':
-            if self.call('насос вкл', lambda: self.robot.pump(True)):
+            if self.call('насосы вкл', lambda: self.robot.pump(True)):
                 self.pump = True
         elif char == 'o':
-            if self.call('насос выкл', lambda: self.robot.pump(False)):
+            if self.call('насосы выкл', lambda: self.robot.pump(False)):
                 self.pump = False
         elif char == 'g':
             self.call('захват цикл', lambda: self.robot.gripper(1))
@@ -218,7 +218,7 @@ class Teleop:
         pump = {None: '?', True: 'ВКЛ', False: 'выкл'}[self.pump]
         lines = [f'Eurobot teleop  {self.args.port}  ' + ('режим фиксации' if self.args.latch else 'режим удержания'), '']
         lines += HELP + ['']
-        lines.append(f'Моторы: {"ВКЛЮЧЕНЫ" if self.armed else "выключены"}   Насос: {pump}')
+        lines.append(f'Моторы: {"ВКЛЮЧЕНЫ" if self.armed else "выключены"}   Насосы: {pump}')
         lines.append(f'Лимиты: {self.linear:.2f} м/с, {self.angular:.2f} рад/с')
         lines.append(f'Отправлено: dx={speed[0]:+.2f} dy={speed[1]:+.2f} dphi={speed[2]:+.2f}')
         lines += [''] + self.log
