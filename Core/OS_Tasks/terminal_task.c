@@ -25,10 +25,7 @@
 #include "stm32f4xx_ll_gpio.h"
 #include "board_gpio_defines.h"
 #include "terminal_cmd_handlers.h" 
-#include "terminal.h"
-#include "debug_terminal.h"
-#include "robot_behavior_routine.h"
-#include "pca9685.h"
+#include "terminal.h" 
 
 
 
@@ -48,14 +45,11 @@ static void Task(void *arg)
     
 	while(1)
 	{
-		
         while(Terminal.GetRequest(&terminal_request))
         {
             if((terminal_cmd_handlers[terminal_request.cmd]!=NULL)&&(terminal_request.cmd<TERMINAL_CMD_TABLE_SIZE))
                 terminal_cmd_handlers[terminal_request.cmd](terminal_request.data,terminal_request.data_length);
         }
-
-				
 
         taskYIELD();
 	}

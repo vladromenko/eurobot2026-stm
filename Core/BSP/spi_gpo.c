@@ -29,6 +29,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
+// #pragma O0
 
 uint32_t SPI_GPO_REG = 0x0;
 

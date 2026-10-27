@@ -70,56 +70,12 @@ enum maxons_state_e{
   MAXONS_ENABLED
 };
 
-enum linear_switch_state_e{
-  LINEAR_SWITCH_PRESSED,
-  LINEAR_SWITCH_RELEASED
-};
-
-enum reset_state_e{
-	RESETED,
-	NOT_RESETED
-};
-
-enum valve_1_enable_e{
-	VALVE_1_DISABLED = 0,
-	VALVE_1_ENABLED = 1
-};
-
-enum valve_2_enable_e{
-	VALVE_2_DISABLED = 0,
-	VALVE_2_ENABLED = 1
-};
-
-enum valve_3_enable_e{
-	VALVE_3_DISABLED = 0,
-	VALVE_3_ENABLED = 1
-};
-
-enum valve_4_enable_e{
-	VALVE_4_DISABLED = 0,
-	VALVE_4_ENABLED = 1
-};
-
 struct robot_ctrl_s{
 	enum starting_cord_state_e starting_cord;
 	enum playground_side_e playground_side;
 	enum strategy_e strategy;
   enum maxons_state_e maxons_state;
   enum robot_mode_e robot_mode;
-  enum linear_switch_state_e linear_switch_1;
-  enum linear_switch_state_e linear_switch_2;
-	enum linear_switch_state_e linear_switch_3;
-	enum linear_switch_state_e linear_switch_4;
-	enum linear_switch_state_e linear_switch_5;
-	enum linear_switch_state_e linear_switch_6;
-	enum linear_switch_state_e linear_switch_7;
-	enum linear_switch_state_e linear_switch_8;
-	enum linear_switch_state_e linear_switch_9;
-	enum reset_state_e reset_state;
-	enum valve_1_enable_e valve_1_enable;
-	enum valve_2_enable_e valve_2_enable;
-	enum valve_2_enable_e valve_3_enable;
-	enum valve_2_enable_e valve_4_enable;
 };
 
 extern struct robot_ctrl_s robot_ctrl;

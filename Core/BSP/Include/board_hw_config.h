@@ -31,11 +31,7 @@ void SYSCFG_PWR_Init(void);
 void SystemClockConfig(void);
 void HW_ClockConfig(void);
 
-void IWDG_Init(void);
-
 void SPI1_Board_HW_Init(void);
-
-void I2C2_Init(void);
 
 void USART1_TerminalInit(void);
 void USART3_DynamixelInit(void);

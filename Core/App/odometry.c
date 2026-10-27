@@ -34,22 +34,6 @@
 
 
 struct coord_s path;
-static int32_t ticks_old[3] = {0};
-
-static void SyncTicksReference(void)
-{
-  uint8_t error = 0;
-
-  error |= Maxon.GetTotalTicks(bus_devices[MAXON_MOTOR_1].usart, bus_devices[MAXON_MOTOR_1].id, ticks_old);
-  error |= Maxon.GetTotalTicks(bus_devices[MAXON_MOTOR_2].usart, bus_devices[MAXON_MOTOR_2].id, ticks_old + 1);
-  error |= Maxon.GetTotalTicks(bus_devices[MAXON_MOTOR_3].usart, bus_devices[MAXON_MOTOR_3].id, ticks_old + 2);
-
-  if(error){
-    ticks_old[0] = 0;
-    ticks_old[1] = 0;
-    ticks_old[2] = 0;
-  }
-}
 
 static void Init(void)
 {
@@ -57,13 +41,9 @@ static void Init(void)
   Maxon.SetTotalTicks(bus_devices[MAXON_MOTOR_2].usart, bus_devices[MAXON_MOTOR_2].id, 0);
   Maxon.SetTotalTicks(bus_devices[MAXON_MOTOR_3].usart, bus_devices[MAXON_MOTOR_3].id, 0);
 
-  path.x = 0; //0.25
-  path.y = 0; //2.65
-  path.phi = 0; //-2.0944
-
-  ticks_old[0] = 0;
-  ticks_old[1] = 0;
-  ticks_old[2] = 0;
+  path.x = 0;
+  path.y = 0;
+  path.phi = 0;
 }
 
 static void SetCoord(struct coord_s* coord)
@@ -71,9 +51,6 @@ static void SetCoord(struct coord_s* coord)
   path.x = coord->x;
   path.y = coord->y;
   path.phi = coord->phi;
-
-  // Start integrating the new pose from current encoder totals.
-  SyncTicksReference();
 }
 
 static void GetCoord(struct coord_s* coord)
@@ -89,8 +66,6 @@ static void SetSpeed(struct speed_s* speed)
 
   Kinematics.SpeedTo_TPM(speed,tpm);
 
-  //Maxon.Set_TPM(bus_devices[MAXON_MOTOR_3].usart, bus_devices[MAXON_MOTOR_3].id, tpm[2]);
-  //Maxon.Set_TPM(bus_devices[MAXON_MOTOR_2].usart, bus_devices[MAXON_MOTOR_2].id, tpm[1]);
   Maxon.Set_TPM(bus_devices[MAXON_MOTOR_1].usart, bus_devices[MAXON_MOTOR_1].id, tpm[0]);
   Maxon.Set_TPM(bus_devices[MAXON_MOTOR_2].usart, bus_devices[MAXON_MOTOR_2].id, tpm[1]);
   Maxon.Set_TPM(bus_devices[MAXON_MOTOR_3].usart, bus_devices[MAXON_MOTOR_3].id, tpm[2]);
@@ -103,15 +78,14 @@ static void GetSpeed(struct speed_s* speed)
   Maxon.Get_TPM(bus_devices[MAXON_MOTOR_1].usart, bus_devices[MAXON_MOTOR_1].id, tpm);
   Maxon.Get_TPM(bus_devices[MAXON_MOTOR_2].usart, bus_devices[MAXON_MOTOR_2].id, tpm+1);
   Maxon.Get_TPM(bus_devices[MAXON_MOTOR_3].usart, bus_devices[MAXON_MOTOR_3].id, tpm+2);
-	//tpm[0] = tpm[0] * 0.86f;
-	//tpm[1] = tpm[1] * 0.86f;
-	//tpm[2] = tpm[2] * 0.86f;
+
   Kinematics.TPM_ToSpeed(tpm,speed);
 }
 
-// this update path will be called with frequency of 100 Hz
 static void UpdatePath(void)
 {
+  static int32_t ticks_old[3] = {0};
+
   int32_t ticks_new[3];
   int32_t d_ticks[3];
   uint8_t error = 0;
@@ -127,7 +101,6 @@ static void UpdatePath(void)
   d_ticks[1] = ticks_new[1] - ticks_old[1];
   d_ticks[2] = ticks_new[2] - ticks_old[2];
 
-  // d_ticks is in ticks per 10ms
   Kinematics.UpdatePath(d_ticks,&path);
 
   memcpy(ticks_old,ticks_new,12);

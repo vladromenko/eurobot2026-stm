@@ -25,9 +25,6 @@
 #include "bus_device.h"
 #include "maxon.h"
 #include "dynamixel_ax.h"
-#include "spi_gpo.h" 
-#include "spi_gpo_defines.h"
-#include "stepper.h"
 
 struct robot_ctrl_s robot_ctrl;
 QueueHandle_t button_callbacks_queue_handle = NULL;
@@ -47,7 +44,11 @@ QueueHandle_t button_callbacks_queue_handle = NULL;
 
 void PrepareRobot(void)
 {
-	
+	Dynamixel_AX.TorqueEnable(bus_devices[GRIPPER_TOP].usart, bus_devices[GRIPPER_TOP].id);
+	Dynamixel_AX.TorqueEnable(bus_devices[GRIPPER_BOTTOM].usart, bus_devices[GRIPPER_BOTTOM].id);
+	// Dynamixel_AX.TorqueEnable(bus_devices[GRIPPER_BOTTOM].usart, 1);
+	// Dynamixel_AX.Enable_LED(USART3, 1);
+	// Dynamixel_AX.SetAngle(USART3,1,300);
 }
 
 void MaxonsEnable(void)
@@ -55,7 +56,6 @@ void MaxonsEnable(void)
 	Maxon.Enable(bus_devices[MAXON_MOTOR_1].usart, bus_devices[MAXON_MOTOR_1].id);
   	Maxon.Enable(bus_devices[MAXON_MOTOR_2].usart, bus_devices[MAXON_MOTOR_2].id);
   	Maxon.Enable(bus_devices[MAXON_MOTOR_3].usart, bus_devices[MAXON_MOTOR_3].id);
-	robot_ctrl.maxons_state = MAXONS_ENABLED;
 }
 
 void MaxonsDisable(void)
@@ -63,7 +63,6 @@ void MaxonsDisable(void)
 	Maxon.Disable(bus_devices[MAXON_MOTOR_1].usart, bus_devices[MAXON_MOTOR_1].id);
   	Maxon.Disable(bus_devices[MAXON_MOTOR_2].usart, bus_devices[MAXON_MOTOR_2].id);
   	Maxon.Disable(bus_devices[MAXON_MOTOR_3].usart, bus_devices[MAXON_MOTOR_3].id);
-	robot_ctrl.maxons_state = MAXONS_DISABLED;
 }
 
 void MaxonsStop(void)
@@ -77,8 +76,6 @@ void MaxonsStop(void)
 void StopAllActuators(void)
 {
 	MaxonsDisable();
-	SPI_GPO_ResetOutputPin(SPI_GPO_ALL);
-	Stepper.StopMotor(STEPPER_MOTOR_1);
 }
 
 
@@ -96,7 +93,6 @@ void ButtonsCallback(enum buttons_e button_id, enum button_callback_type_s callb
 				if(button_state == BUTTON_STATE_RELEASED)
 					robot_ctrl.starting_cord = STARTING_CORD_RELEASED;
 			}
-			break;
 
 		case PLAYGROUND_SIDE_BTN:
 			if((callback_type == STATE_CHANGED_CALLBACK) || (callback_type == INIT_COMPLETE_CALLBACK))
@@ -106,7 +102,6 @@ void ButtonsCallback(enum buttons_e button_id, enum button_callback_type_s callb
 				if(button_state == BUTTON_STATE_RELEASED)
 					robot_ctrl.playground_side = LEFT_SIDE;
 			}
-			break;
 
 		case STRATEGY_BTN:
 			if(callback_type == ACTION_CALLBACK)
@@ -114,103 +109,95 @@ void ButtonsCallback(enum buttons_e button_id, enum button_callback_type_s callb
 				if(button_action == BUTTON_ACTION_CLICK)
 					robot_ctrl.strategy = (robot_ctrl.strategy < STRATEGIES_NUMBER) ? robot_ctrl.strategy++ : (enum strategy_e)0;
 			}
-			break;
 
 		case MAXON_ENABLE_BTN:
 			if((callback_type == STATE_CHANGED_CALLBACK) || (callback_type == INIT_COMPLETE_CALLBACK))
 			{
 				if(button_state == BUTTON_STATE_PRESSED){
 					robot_ctrl.maxons_state = MAXONS_ENABLED;
+					MaxonsEnable();
 				}
 				if(button_state == BUTTON_STATE_RELEASED){
 					robot_ctrl.maxons_state = MAXONS_DISABLED;
+					MaxonsDisable();
 				}
 			}
-			break;
-		case LINEAR_SWITCH_1_BTN:
-			if((callback_type == STATE_CHANGED_CALLBACK) || (callback_type == INIT_COMPLETE_CALLBACK))
-			{
-				if(button_state == BUTTON_STATE_PRESSED)
-					robot_ctrl.linear_switch_1= LINEAR_SWITCH_RELEASED;
-				if(button_state == BUTTON_STATE_RELEASED)
-					robot_ctrl.linear_switch_1 = LINEAR_SWITCH_PRESSED;
-			}
-			break;
-		case LINEAR_SWITCH_2_BTN:
-			if((callback_type == STATE_CHANGED_CALLBACK) || (callback_type == INIT_COMPLETE_CALLBACK))
-			{
-				if(button_state == BUTTON_STATE_PRESSED)
-					robot_ctrl.linear_switch_2 = LINEAR_SWITCH_RELEASED;
-				if(button_state == BUTTON_STATE_RELEASED)
-					robot_ctrl.linear_switch_2 = LINEAR_SWITCH_PRESSED;
-			}
-			break;
-		case LINEAR_SWITCH_3_BTN:
-			if((callback_type == STATE_CHANGED_CALLBACK) || (callback_type == INIT_COMPLETE_CALLBACK))
-			{
-				if(button_state == BUTTON_STATE_PRESSED)
-					robot_ctrl.linear_switch_3 = LINEAR_SWITCH_RELEASED;
-				if(button_state == BUTTON_STATE_RELEASED)
-					robot_ctrl.linear_switch_3 = LINEAR_SWITCH_PRESSED;
-			}
-			break;
-			case LINEAR_SWITCH_4_BTN:
-			if((callback_type == STATE_CHANGED_CALLBACK) || (callback_type == INIT_COMPLETE_CALLBACK))
-			{
-				if(button_state == BUTTON_STATE_PRESSED)
-					robot_ctrl.linear_switch_4 = LINEAR_SWITCH_RELEASED;
-				if(button_state == BUTTON_STATE_RELEASED)
-					robot_ctrl.linear_switch_4 = LINEAR_SWITCH_PRESSED;
-			}
-			break;
-			case LINEAR_SWITCH_5_BTN:
-			if((callback_type == STATE_CHANGED_CALLBACK) || (callback_type == INIT_COMPLETE_CALLBACK))
-			{
-				if(button_state == BUTTON_STATE_PRESSED)
-					robot_ctrl.linear_switch_5 = LINEAR_SWITCH_RELEASED;
-				if(button_state == BUTTON_STATE_RELEASED)
-					robot_ctrl.linear_switch_5 = LINEAR_SWITCH_PRESSED;
-			}
-			break;
-			case LINEAR_SWITCH_6_BTN:
-			if((callback_type == STATE_CHANGED_CALLBACK) || (callback_type == INIT_COMPLETE_CALLBACK))
-			{
-				if(button_state == BUTTON_STATE_PRESSED)
-					robot_ctrl.linear_switch_6 = LINEAR_SWITCH_RELEASED;
-				if(button_state == BUTTON_STATE_RELEASED)
-					robot_ctrl.linear_switch_6 = LINEAR_SWITCH_PRESSED;
-			}
-			break;
-			case LINEAR_SWITCH_7_BTN:
-			if((callback_type == STATE_CHANGED_CALLBACK) || (callback_type == INIT_COMPLETE_CALLBACK))
-			{
-				if(button_state == BUTTON_STATE_PRESSED)
-					robot_ctrl.linear_switch_7 = LINEAR_SWITCH_RELEASED;
-				if(button_state == BUTTON_STATE_RELEASED)
-					robot_ctrl.linear_switch_7 = LINEAR_SWITCH_PRESSED;
-			}
-			break;
-			case LINEAR_SWITCH_8_BTN:
-			if((callback_type == STATE_CHANGED_CALLBACK) || (callback_type == INIT_COMPLETE_CALLBACK))
-			{
-				if(button_state == BUTTON_STATE_PRESSED)
-					robot_ctrl.linear_switch_8 = LINEAR_SWITCH_RELEASED;
-				if(button_state == BUTTON_STATE_RELEASED)
-					robot_ctrl.linear_switch_8 = LINEAR_SWITCH_PRESSED;
-			}
-			break;
-			case LINEAR_SWITCH_9_BTN:
-			if((callback_type == STATE_CHANGED_CALLBACK) || (callback_type == INIT_COMPLETE_CALLBACK))
-			{
-				if(button_state == BUTTON_STATE_PRESSED)
-					robot_ctrl.linear_switch_9 = LINEAR_SWITCH_RELEASED;
-				if(button_state == BUTTON_STATE_RELEASED)
-					robot_ctrl.linear_switch_9 = LINEAR_SWITCH_PRESSED;
-			}
-			break;
+			
 		default:
 			break;
 	}
 }
+
+
+
+
+// void ControlButtons_Callback(enum buttons_e button_id, enum button_event_e button_event)
+// {
+// 	switch (button_id)
+// 	{
+// 		case STARTING_CORD_BTN:
+// 			if(button_event == BUTTON_EVENT_PRESSED)
+// 				robot_ctrl.starting_cord = STARTING_CORD_ATTACHED;
+// 			if(button_event == BUTTON_EVENT_RELEASED)
+// 				robot_ctrl.starting_cord = STARTING_CORD_RELEASED;
+// 			break;
+
+// 		case PLAYGROUND_SIDE_BTN:
+// 			if(button_event == BUTTON_EVENT_PRESSED)
+// 				robot_ctrl.playground_side = RIGHT_SIDE;
+// 			if(button_event == BUTTON_EVENT_RELEASED)
+// 				robot_ctrl.playground_side = LEFT_SIDE;
+// 			break;
+
+// 		case STRATEGY_BTN:
+// 			if(button_event == BUTTON_EVENT_CLICK)
+// 			{
+// 				if(robot_ctrl.strategy<STRATEGIES_NUMBER)
+// 					robot_ctrl.strategy++;
+// 				else
+// 					robot_ctrl.strategy = (enum strategy_e)0;
+// 			}
+// 			break;
+
+// 		case MAXON_ENABLE_BTN:
+// 			if(button_event == BUTTON_EVENT_PRESSED){
+// 				robot_ctrl.maxons_state = MAXONS_ENABLED;
+// 				MaxonsEnable();
+// 			}
+// 			if(button_event == BUTTON_EVENT_RELEASED){
+// 				robot_ctrl.maxons_state = MAXONS_DISABLED;
+// 				MaxonsDisable();
+// 			}
+// 			break;
+
+// 		default:
+// 			break;
+// 	}
+// 	// LL_GPIO_TogglePin(GPIOA, PWM8_PA3);
+// }
+
+
+// void Starting_Cord_BTN_Callback(enum buttons_e button_id, enum button_event_e button_event)
+// {
+
+// }
+
+// void Playground_Side_BTN_Callback(enum buttons_e button_id, enum button_event_e button_event)
+// {
+
+// }
+
+// void Strategy_BTN_Callback(enum buttons_e button_id, enum button_event_e button_event)
+// {
+	
+// }
+
+// void Maxon_Enable_BTN_Callback(enum buttons_e button_id, enum button_event_e button_event)
+// {
+// 	if(button_event == BUTTON_EVENT_PRESSED)
+// 		MaxonsEnable();
+// 	if(button_event == BUTTON_EVENT_RELEASED)
+// 		MaxonsDisable();
+// }
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

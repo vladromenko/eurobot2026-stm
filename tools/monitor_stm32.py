@@ -60,7 +60,7 @@ def main():
     build = root / args.build
     cache = cache_values(build / 'CMakeCache.txt')
     symbols = get_symbols(cache['CMAKE_NM'], build / 'firmware.elf')
-    names = ['SystemCoreClock', 'PCA9685_InitStatus', 'uxCurrentNumberOfTasks',
+    names = ['SystemCoreClock', 'uxCurrentNumberOfTasks',
              'xSchedulerRunning', 'xTickCount', 'SPI_GPO_REG']
     for name in names:
         if name not in symbols:
@@ -85,7 +85,7 @@ def main():
         high = max(symbols[n] for n in sample_names) + 4
         mask = 0x003c0000  # SPI_POWER_OUTPUT_1 | 2 | 3 | 4
         samples = []
-        print('sample   tick       tasks scheduler PCA9685 SPI_GPO_REG masked_1_4', flush=True)
+        print('sample   tick       tasks scheduler SPI_GPO_REG masked_1_4', flush=True)
         for index in range(args.samples):
             begin = time.monotonic()
             contents = upload(args.serial, low, high - low, temp / 'sram.bin')
@@ -93,8 +93,7 @@ def main():
             values = {name: struct.unpack_from('<I', contents, symbols[name] - low)[0] for name in sample_names}
             values['time'] = (begin + end) / 2
             samples.append(values)
-            pca_status = struct.unpack('<i', struct.pack('<I', values['PCA9685_InitStatus']))[0]
-            print(f"{index+1:2}  {values['xTickCount']:10}  {values['uxCurrentNumberOfTasks']:3}    {values['xSchedulerRunning']:3}      {pca_status:3}  "
+            print(f"{index+1:2}  {values['xTickCount']:10}  {values['uxCurrentNumberOfTasks']:3}    {values['xSchedulerRunning']:3}  "
                   f"0x{values['SPI_GPO_REG']:08x} 0x{values['SPI_GPO_REG'] & mask:08x}", flush=True)
             if index + 1 < args.samples:
                 time.sleep(args.interval)
@@ -103,7 +102,6 @@ def main():
         rate = ticks / dt if dt else 0
         checks = {
             'SystemCoreClock = 168000000': clock == 168000000,
-            'PCA9685 initialization succeeded': all(x['PCA9685_InitStatus'] == 0 for x in samples),
             'FreeRTOS scheduler running': all(x['xSchedulerRunning'] == 1 for x in samples),
             'At least 8 tasks (7 application + idle)': all(x['uxCurrentNumberOfTasks'] >= 8 for x in samples),
             'Tick progressing near 1000/s': 700 < rate < 1300,
@@ -111,7 +109,6 @@ def main():
         print(f'Tick rate estimate: {rate:.1f}/s; SWD snapshots are not simultaneous across words.')
         for title, ok in checks.items():
             print(('PASS: ' if ok else 'FAIL: ') + title)
-        print('PCA9685 status: 0=OK, -2=timeout, -3=no ACK, -4=bus error, -5=arbitration lost, -6=overrun.')
         print('SPI_GPO_REG is a software shadow. Confirm physical outputs with an oscilloscope/logic analyzer.')
         if not all(checks.values()):
             raise RuntimeError('Не все проверки прошли. Сохраните вывод; не запускайте дополнительные движения.')

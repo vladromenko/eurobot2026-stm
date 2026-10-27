@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.24)
-project(Eurobot2026 LANGUAGES C CXX ASM)
+project(Eurobot2025 LANGUAGES C CXX ASM)
 if(NOT CMAKE_C_COMPILER MATCHES "arm-none-eabi-gcc")
   message(FATAL_ERROR "Use --preset debug or -DCMAKE_TOOLCHAIN_FILE=cmake/arm-none-eabi.cmake")
 endif()

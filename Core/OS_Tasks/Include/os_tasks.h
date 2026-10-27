@@ -45,8 +45,6 @@ extern const struct os_task_base_s GameTask;
 extern const struct os_task_base_s OdometryTask;
 extern const struct os_task_base_s TerminalTask;
 extern const struct os_task_base_s GripperTask;
-extern const struct os_task_base_s StepperTask;
-extern const struct os_task_base_s DebugTerminalTask;
 
 #ifdef __cplusplus
 }
