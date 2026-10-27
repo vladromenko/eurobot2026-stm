@@ -11,5 +11,11 @@
     "C_Cpp.default.compilerPath": "",
     "python-envs.defaultEnvManager": "ms-python.python:system",
     "python-envs.defaultPackageManager": "ms-python.python:pip",
-    "python-envs.pythonProjects": []
+    "python-envs.pythonProjects": [],
+    "VsCodeTaskButtons.tasks": [
+        { "label": "$(tools) Debug", "task": "Build Debug", "tooltip": "Собрать Debug" },
+        { "label": "$(package) Release", "task": "Build Release", "tooltip": "Собрать Release" },
+        { "label": "$(zap) Flash", "task": "Flash Debug", "tooltip": "Собрать и прошить Debug через OpenOCD" },
+        { "label": "$(zap) Flash Release", "task": "Flash Release", "tooltip": "Собрать и прошить Release через OpenOCD" }
+    ]
 }

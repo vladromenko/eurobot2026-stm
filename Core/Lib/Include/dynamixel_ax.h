@@ -77,7 +77,6 @@ struct dynamixel_ax_s{
     void (*SetWheelMode)(USART_TypeDef* usart, uint8_t servo_id);
     void (*SetJointMode)(USART_TypeDef* usart, uint8_t servo_id);
     void (*SetMovingSpeed)(USART_TypeDef* usart, uint8_t servo_id, int16_t speed);
-		uint8_t (*GetMovingSpeed)(USART_TypeDef* usart, uint8_t servo_id, int16_t* speed);
     uint8_t (*GetPresentLoad)(USART_TypeDef* usart, uint8_t servo_id, int16_t* load);
     void (*Enable_LED)(USART_TypeDef* usart, uint8_t servo_id);
     void (*Disable_LED)(USART_TypeDef* usart, uint8_t servo_id);

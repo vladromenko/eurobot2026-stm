@@ -34,7 +34,6 @@
 #include "semphr.h"
 #include "event_groups.h"
 
-#pragma O0
 uint32_t spi_nrst_gpio[] = {SPI_L6474_NRST1,SPI_L6474_NRST2,SPI_L6474_NRST3,SPI_L6474_NRST4};
 GPIO_TypeDef* spi_ncs_gpio[] = {GPIOE,GPIOD,GPIOD,GPIOC};
 uint32_t spi_ncs_pin[] = {NCS1_PE7,NCS2_PD10,NCS3_PD11,NCS4_PC9};

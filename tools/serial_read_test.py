@@ -47,7 +47,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--list', action='store_true')
     parser.add_argument('--port')
-    parser.add_argument('--command', choices=['speed', 'coord', 'switches'], default='speed')
+    parser.add_argument('--command', choices=['speed', 'coord'], default='speed')
     parser.add_argument('--count', type=int, default=5)
     args = parser.parse_args()
     if args.count < 1:
@@ -66,7 +66,7 @@ def main():
         return
     if not args.port:
         parser.error('укажите --port из списка --list')
-    commands = {'speed': (0x05, 12), 'coord': (0x07, 12), 'switches': (0x14, 9)}
+    commands = {'speed': (0x05, 12), 'coord': (0x07, 12)}
     command, expected = commands[args.command]
     with serial.Serial(args.port, 921600, bytesize=8, parity='N', stopbits=1,
                        timeout=0.1, write_timeout=2, xonxoff=False, rtscts=False, dsrdtr=False) as port:
@@ -78,14 +78,9 @@ def main():
             payload, packet = receive(port, command, time.monotonic() + 3)
             if len(payload) != expected:
                 raise RuntimeError(f'Длина данных {len(payload)} вместо {expected}')
-            if args.command in ['speed', 'coord']:
-                result = struct.unpack('<fff', payload)
-                if not all(math.isfinite(x) for x in result):
-                    raise RuntimeError('NaN/Inf в ответе: ' + repr(result))
-            else:
-                result = list(payload)
-                if any(x not in [0, 1] for x in result):
-                    raise RuntimeError('Некорректное состояние концевика: ' + repr(result))
+            result = struct.unpack('<fff', payload)
+            if not all(math.isfinite(x) for x in result):
+                raise RuntimeError('NaN/Inf в ответе: ' + repr(result))
             print(f'PASS {index+1}: {args.command} = {result}; RX: {packet.hex(" ")}', flush=True)
             time.sleep(0.25)
 

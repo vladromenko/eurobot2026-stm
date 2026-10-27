@@ -45,9 +45,7 @@
 #include "os_tasks.h" 
 #include "hl_rtu.h"
 #include "serial.h"
-#include "pca9685.h"
 
-volatile int PCA9685_InitStatus;
 
 
 /**
@@ -67,11 +65,6 @@ int main(void)
 	Board_GPIO_Config();
 	Robot_GPIO_Config();
 
-	I2C2_Init();
-	/* Инициализация PCA9685 плат (I2C2, 50 Гц, стандартные параметры сервоприводов) */
-	/* Статус сохраняется для диагностики; ошибка не блокирует запуск FreeRTOS. */
-	PCA9685_InitStatus = PCA9685.Init(0x40, 50.0f, 500, 2500, 180);  /* Плата 1 */
-
 	SPI1_Board_HW_Init();
 	SPI_GPO_ResetOutputPin(SPI_GPO_ALL);
 
@@ -82,9 +75,8 @@ int main(void)
 	UART4_RS485_Init();
   UART5_SerialInit();
 	USART6_RS485_Init();
+
 	
-
-
 	
 	TIM1_Steppers_PWM_Init();
 	TIM4_PWM_Group1234_Init();
@@ -117,10 +109,7 @@ int main(void)
   USARTx.BindProtocol(UART4, DynamixelMaster.GetProtocol());
   USARTx.BindProtocol(UART5, Serial.GetProtocol());
   USARTx.BindProtocol(USART1, HL_RTU.GetProtocol());
-	
-	//IWDG_Init();
-	
-  
+
   /*  Creating tasks  */
 	ButtonsPollTask.CreateTask(3);
   ButtonsCallbackTask.CreateTask(2);
@@ -128,13 +117,14 @@ int main(void)
 	TerminalTask.CreateTask(1);
   GameTask.CreateTask(1);
 
-  DemoTask.CreateTask(4);
-	StepperTask.CreateTask(1);
-	GripperTask.CreateTask(1);
-  //DebugTerminalTask.CreateTask(1);
-	
+  DemoTask.CreateTask(1);
+  GripperTask.CreateTask(1);
+  // Experimental_Task_1.CreateTask(1);
+
+
   /*  Run scheduler  */
   vTaskStartScheduler();
+	
   while (1);
 }
 	
@@ -145,7 +135,6 @@ int main(void)
   * @brief  This function is executed in case of error occurrence.
   * @retval None
   */
-
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */

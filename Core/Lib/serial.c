@@ -89,7 +89,6 @@ static uint32_t ReadBytes(USART_TypeDef* usart, uint8_t* bytes, uint32_t timeout
             return rx_fifo_data_unit.bytes_number;
         }
 
-
         if((timeout_ms && is_timeout_expired)||(timeout_ms==0))
             return 0;
 

@@ -42,7 +42,6 @@
 #include "odometry.h"
 #include "ws2812b.h" 
 #include "robot_behavior_routine.h"
-#include "pca9685.h"
 
 // #define WS2812B_DEMO
 #define SPI_GPO_DEMO
@@ -51,7 +50,7 @@
 // #define DYNAMIXEL_DEMO_2
 // #define MAXON_DEMO
 // #define SERVO_DEMO
-//#define SERVO_PCA9685
+
 
 #define TASK_STACK_SIZE             512
 
@@ -87,10 +86,8 @@ static void Task(void *arg)
   #endif
 
   #ifdef MAXON_DEMO
-		MaxonsDisable();
     Kinematics.MatrixInit();
     MaxonsEnable();
-		vTaskDelay(500);
   #endif
 
   #ifdef STEPPER_DEMO
@@ -113,8 +110,6 @@ static void Task(void *arg)
   #ifdef SERVO_DEMO
     RC_Servo.Enable(RC_SERVO_1);
     RC_Servo.Enable(RC_SERVO_2);
-		RC_Servo.Enable(RC_SERVO_3);
-		RC_Servo.Enable(RC_SERVO_4);
   #endif
 
   #ifdef WS2812B_DEMO
@@ -129,18 +124,11 @@ static void Task(void *arg)
   
 	while(1)
 	{
-		
-		
-		
-		
-		
-		
     #ifdef SPI_GPO_DEMO
       SPI_GPO_SetOutputPin(SPI_POWER_OUTPUT_1|SPI_POWER_OUTPUT_2|SPI_POWER_OUTPUT_3|SPI_POWER_OUTPUT_4);
       vTaskDelay(250);
       SPI_GPO_ResetOutputPin(SPI_POWER_OUTPUT_1|SPI_POWER_OUTPUT_2|SPI_POWER_OUTPUT_3|SPI_POWER_OUTPUT_4);
       vTaskDelay(250);
-			// SPI_GPO_ResetOutputPin(SPI_GPO_ALL);
     #endif
 
     #if defined(DYNAMIXEL_DEMO_1) || defined(DYNAMIXEL_DEMO_2)
@@ -210,19 +198,23 @@ static void Task(void *arg)
     #endif
 
     #ifdef SERVO_DEMO
-			
-      
-			if(robot_ctrl.maxons_state == MAXONS_DISABLED){
-				RC_Servo.SetServoAngle(RC_SERVO_1, 700, 2300, 180, 0);
-				RC_Servo.SetServoAngle(RC_SERVO_2, 500, 2500, 180, 0);
-				RC_Servo.SetServoAngle(RC_SERVO_3, 700, 2300, 180, 0);
-				RC_Servo.SetServoAngle(RC_SERVO_4, 700, 2300, 180, 0);
-			} else {
-				RC_Servo.SetServoAngle(RC_SERVO_1, 700, 2300, 180, 135);
-				RC_Servo.SetServoAngle(RC_SERVO_2, 500, 2500, 180, 135);
-				RC_Servo.SetServoAngle(RC_SERVO_3, 700, 2300, 180, 135);
-				RC_Servo.SetServoAngle(RC_SERVO_4, 700, 2300, 180, 135);
-			}
+      uint16_t servo_1_range = 120;
+      uint16_t servo_2_range = 180;
+
+      RC_Servo.SetServoAngle(RC_SERVO_1, 1100, 1900, servo_1_range, 0);
+      RC_Servo.SetServoAngle(RC_SERVO_2, 500, 2500, servo_2_range, 0);
+
+      vTaskDelay(2000);
+
+      RC_Servo.SetServoAngle(RC_SERVO_1, 1100, 1900, servo_1_range, 90);
+      RC_Servo.SetServoAngle(RC_SERVO_2, 500, 2500, servo_2_range, 90);
+
+      vTaskDelay(1000);
+
+      RC_Servo.SetServoAngle(RC_SERVO_1, 1100, 1900, servo_1_range, servo_1_range);
+      RC_Servo.SetServoAngle(RC_SERVO_2, 500, 2500, servo_2_range, servo_2_range);
+
+      vTaskDelay(1000);
     #endif
 
     #ifdef STEPPER_DEMO
@@ -262,20 +254,7 @@ static void Task(void *arg)
       WS2812B.Set_RGB_Color(ws_led, WS2812B_LEDS_NUMBER);
       vTaskDelay(50);
     #endif
-		
-		#ifdef SERVO_PCA9685
-		enum pca9685_channel_e ch = PCA9685_CH0;
-		PCA9685.SetServoAngleWithAddr(0x40, ch, 0x00);
-		PCA9685.SetServoAngleWithAddr(0x40, PCA9685_CH4, 0x00);
-		vTaskDelay(2000);
-		PCA9685.SetServoAngleWithAddr(0x40, ch, 0xB4);
-		PCA9685.SetServoAngleWithAddr(0x40, PCA9685_CH4, 0xB4);
-		vTaskDelay(2000);
-		PCA9685.SetServoAngleWithAddr(0x40, PCA9685_CH8, 0x00);
-		vTaskDelay(2000);
-		PCA9685.SetServoAngleWithAddr(0x40, PCA9685_CH8, 0xB4);
-		vTaskDelay(2000);
-		#endif 
+
 	}
 }
 

@@ -1,0 +1,27 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug (OpenOCD)",
+            "type": "cortex-debug",
+            "request": "launch",
+            "servertype": "openocd",
+            "cwd": "${workspaceFolder}",
+            "executable": "${workspaceFolder}/build/debug/firmware.elf",
+            "configFiles": ["interface/stlink.cfg", "target/stm32f4x.cfg"],
+            "rtos": "FreeRTOS",
+            "runToEntryPoint": "main",
+            "preLaunchTask": "Build Debug"
+        },
+        {
+            "name": "Attach (OpenOCD)",
+            "type": "cortex-debug",
+            "request": "attach",
+            "servertype": "openocd",
+            "cwd": "${workspaceFolder}",
+            "executable": "${workspaceFolder}/build/debug/firmware.elf",
+            "configFiles": ["interface/stlink.cfg", "target/stm32f4x.cfg"],
+            "rtos": "FreeRTOS"
+        }
+    ]
+}

@@ -64,14 +64,14 @@ static void SetAngle(USART_TypeDef* usart, uint8_t servo_id, uint16_t angle)
 
 static uint8_t GetAngle(USART_TypeDef* usart, uint8_t servo_id, uint16_t* angle)
 {
-  struct dynamixel_master_response_s response = (struct dynamixel_master_response_s){0};
-  uint32_t temp = 0;
+  struct dynamixel_master_response_s response;
+  uint32_t temp;
   
   DynamixelMaster.Read(usart,servo_id,AX_PresentPosition,2,&response);
   while(response.is_data_ready==0) taskYIELD();
     
   ByteTo_Word16(response.data,&temp);
-  *angle = (uint16_t)((temp*300)/1023);
+  *angle = (temp*300)/1023;
 
   return response.bus_error;
 }
@@ -93,24 +93,6 @@ static void SetMovingSpeed(USART_TypeDef* usart, uint8_t servo_id, int16_t speed
   if(speed<0) 
     speed = 1024 - speed;
   DynamixelMaster.Write(usart,servo_id,AX_MovingSpeed,(uint8_t*)&speed,2,NULL); 
-}
-
-static uint8_t GetMovingSpeed(USART_TypeDef* usart, uint8_t servo_id, int16_t* speed)
-{
-	struct dynamixel_master_response_s response;
-  int16_t temp;
-  
-  DynamixelMaster.Read(usart,servo_id,AX_MovingSpeed,2,&response);
-  while(response.is_data_ready==0) taskYIELD();
-    
-  ByteTo_Word16(response.data,&temp);
-
-  if(temp>1023)
-    temp = 1024 - temp;
-
-  *speed = temp;
-
-  return response.bus_error;
 }
 
 static uint8_t GetPresentLoad(USART_TypeDef* usart, uint8_t servo_id, int16_t* load)
@@ -152,7 +134,6 @@ const struct dynamixel_ax_s Dynamixel_AX = {.Ping = Ping,
                                             .SetWheelMode = SetWheelMode,
                                             .SetJointMode = SetJointMode,
                                             .SetMovingSpeed = SetMovingSpeed,
-																						.GetMovingSpeed = GetMovingSpeed,
                                             .GetPresentLoad = GetPresentLoad,
                                             .Enable_LED = Enable_LED,
                                             .Disable_LED = Disable_LED};
