@@ -296,11 +296,11 @@ static void StepperTest(uint8_t* data, uint8_t data_length)
             }
 
             hw->stepper->StepToPosisition(
-                STEPPER_MOTOR_1, 32, 32, 32, 0
+                STEPPER_MOTOR_1, 20000, 32, 6, 800
             );
 
             hw->stepper->StepToPosisition(
-                STEPPER_MOTOR_2, 32, 32, 32, 0
+                STEPPER_MOTOR_2, 20000, 32, 6, 800
             );
             break;
         }

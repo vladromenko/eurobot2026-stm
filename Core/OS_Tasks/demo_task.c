@@ -45,7 +45,7 @@
 #include "hw_instance.h"
 
 // #define WS2812B_DEMO
-#define SPI_GPO_DEMO
+// #define SPI_GPO_DEMO
 // #define STEPPER_DEMO
 // #define DYNAMIXEL_DEMO_1
 // #define DYNAMIXEL_DEMO_2
