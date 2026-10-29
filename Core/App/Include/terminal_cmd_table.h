@@ -41,10 +41,11 @@
 #define BOARD_TOGGLE_GRIPPER                0X0A    /* Command Description  */
 #define BOARD_POWER_ON_PUMP                 0X0B    /* Command Description  */
 #define BOARD_POWER_OFF_PUMP                0X0C    /* Command Description  */
+#define BOARD_STEPPER_TEST                  0x0D
 
 
 /*  Do not forget to update the table size with the last one command! */
-#define TERMINAL_CMD_TABLE_SIZE             (BOARD_POWER_OFF_PUMP + 1)
+#define TERMINAL_CMD_TABLE_SIZE             (BOARD_STEPPER_TEST + 1)
 
 
 #ifdef __cplusplus

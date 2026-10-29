@@ -40,6 +40,7 @@
 #include "spi_gpo.h"
 #include "spi_gpo_defines.h"
 #include "hw_instance.h"
+#include "stepper.h"
 
 
 static void Ping(uint8_t* data, uint8_t data_length)
@@ -244,7 +245,142 @@ static void PumpOff(uint8_t* data, uint8_t data_length)
 }
 
 
+static uint8_t steppers_ready = 0;
 
+static void StepperTest(uint8_t* data, uint8_t data_length)
+{
+    const struct hw_instance_s* hw = GetHwInstance();
+
+    struct terminal_response_s response = {0};
+    response.cmd = BOARD_STEPPER_TEST;
+    response.data_length = 1;
+
+    // 0 — команда принята
+    // 1 — неверная команда
+    // 2 — двигатели не инициализированы
+    response.data[0] = 0;
+
+    if (data_length != 1)
+    {
+        response.data[0] = 1;
+        Terminal.SendResponse(&response);
+        return;
+    }
+
+    switch (data[0])
+    {
+        case 0: // INIT
+        {
+            if (!steppers_ready)
+            {
+                hw->stepper->Init(STEPPER_MOTOR_1);
+                hw->stepper->Init(STEPPER_MOTOR_2);
+
+                hw->stepper->SetZeroPosisition(STEPPER_MOTOR_1);
+                hw->stepper->SetZeroPosisition(STEPPER_MOTOR_2);
+
+                hw->stepper->Enable(STEPPER_MOTOR_1);
+                hw->stepper->Enable(STEPPER_MOTOR_2);
+
+                steppers_ready = 1;
+            }
+            break;
+        }
+
+        case 1: // FORWARD
+        {
+            if (!steppers_ready)
+            {
+                response.data[0] = 2;
+                break;
+            }
+
+            hw->stepper->StepToPosisition(
+                STEPPER_MOTOR_1, 32, 32, 32, 0
+            );
+
+            hw->stepper->StepToPosisition(
+                STEPPER_MOTOR_2, 32, 32, 32, 0
+            );
+            break;
+        }
+
+        case 2: // BACKWARD
+        {
+            if (!steppers_ready)
+            {
+                response.data[0] = 2;
+                break;
+            }
+
+            hw->stepper->StepToPosisition(
+                STEPPER_MOTOR_1, -32, 32, 32, 0
+            );
+
+            hw->stepper->StepToPosisition(
+                STEPPER_MOTOR_2, -32, 32, 32, 0
+            );
+            break;
+        }
+
+        case 3: // RETURN TO ZERO
+        {
+            if (!steppers_ready)
+            {
+                response.data[0] = 2;
+                break;
+            }
+
+            hw->stepper->StepToPosisition(
+                STEPPER_MOTOR_1, 0, 32, 32, 0
+            );
+
+            hw->stepper->StepToPosisition(
+                STEPPER_MOTOR_2, 0, 32, 32, 0
+            );
+            break;
+        }
+
+        case 4: // STOP
+        {
+            if (!steppers_ready)
+            {
+                response.data[0] = 2;
+                break;
+            }
+
+            hw->stepper->StopMotor(STEPPER_MOTOR_1);
+            hw->stepper->StopMotor(STEPPER_MOTOR_2);
+            break;
+        }
+
+        case 5: // DISABLE
+        {
+            if (!steppers_ready)
+            {
+                response.data[0] = 2;
+                break;
+            }
+
+            hw->stepper->StopMotor(STEPPER_MOTOR_1);
+            hw->stepper->StopMotor(STEPPER_MOTOR_2);
+
+            hw->stepper->Disable(STEPPER_MOTOR_1);
+            hw->stepper->Disable(STEPPER_MOTOR_2);
+
+            steppers_ready = 0;
+            break;
+        }
+
+        default:
+        {
+            response.data[0] = 1;
+            break;
+        }
+    }
+
+    Terminal.SendResponse(&response);
+}
 
 
 void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t data_length) = {[BOARD_Ping] = Ping,
@@ -258,7 +394,8 @@ void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t da
                                                                                               [BOARD_Set_BMS_CalibrationValue] = Set_BMS_CalibrationValue,
                                                                                               [BOARD_TOGGLE_GRIPPER] = ToggleGripper,
                                                                                               [BOARD_POWER_ON_PUMP] = PumpOn,
-                                                                                              [BOARD_POWER_OFF_PUMP] = PumpOff
+                                                                                              [BOARD_POWER_OFF_PUMP] = PumpOff,
+                                                                                              [BOARD_STEPPER_TEST] = StepperTest
                                                                                             };
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
