@@ -38,6 +38,10 @@
 
 #define TASK_STACK_SIZE             512
 
+/* Keep the match limit for builds that do not use CMake. */
+#ifndef EUROBOT_MATCH_TIMEOUT
+#define EUROBOT_MATCH_TIMEOUT 1
+#endif
 
 static TaskHandle_t TaskHandle;
 static StackType_t StackBuffer[TASK_STACK_SIZE];
@@ -54,7 +58,9 @@ extern uint8_t move_cmd_time;
 
 static void Task(void *arg)
 {
+#if EUROBOT_MATCH_TIMEOUT
   TickType_t xGameStartTime;
+#endif
 
   robot_ctrl.starting_cord = STARTING_CORD_ATTACHED;
   robot_ctrl.robot_mode = GAME_MODE; // [GAME_MODE, DEBUG_MODE]
@@ -76,8 +82,10 @@ static void Task(void *arg)
     {
       taskYIELD();
     }
-    /*  INITIALISE GAMING 100 SECONDS TIMEOUT  */
+#if EUROBOT_MATCH_TIMEOUT
+    /* Start the 99-second match timeout when the cord is released. */
     xGameStartTime = xTaskGetTickCount();
+#endif
 
     if (gripper_cmd == 0xFF) {
       //SPI_GPO_SetOutputPin(SPI_POWER_OUTPUT_17 | SPI_POWER_OUTPUT_18);
@@ -106,16 +114,18 @@ static void Task(void *arg)
       */
     }
 
-    /*  START THE GAME AND WAIT UNTIL 100 SECONDS ARE RUNNNING OUT OR THE STARTING CORD IS ATTACHED AGAIN  */
+    /* Bench builds keep control enabled regardless of time with the cord released. */
     while(robot_ctrl.starting_cord == STARTING_CORD_RELEASED)
     {
-      if(((xTaskGetTickCount() - xGameStartTime) >= 99000) && (robot_ctrl.robot_mode == GAME_MODE)){
+#if EUROBOT_MATCH_TIMEOUT
+      if(((xTaskGetTickCount() - xGameStartTime) >= pdMS_TO_TICKS(99000)) && (robot_ctrl.robot_mode == GAME_MODE)){
         /*  STOP THE GAME AND TURN OF ALL ACTUATORS ACCORDING TO THE EUROBOT RULES */
         MaxonsStop();
         StopAllActuators();
         COMM_ENABLE = 0; // disable communication with HL
         break;
       }
+#endif
         taskYIELD();
     }
 

@@ -17,6 +17,15 @@
       }
     },
     {
+      "name": "bench",
+      "inherits": "debug",
+      "displayName": "Eurobot 2026 Bench (no match timeout)",
+      "binaryDir": "${sourceDir}/build/bench",
+      "cacheVariables": {
+        "EUROBOT_MATCH_TIMEOUT": "OFF"
+      }
+    },
+    {
       "name": "release",
       "inherits": "debug",
       "displayName": "Eurobot 2026 Release (Os)",
@@ -30,6 +39,10 @@
     {
       "name": "debug",
       "configurePreset": "debug"
+    },
+    {
+      "name": "bench",
+      "configurePreset": "bench"
     },
     {
       "name": "release",
