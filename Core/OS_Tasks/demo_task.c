@@ -52,7 +52,7 @@
 // #define DYNAMIXEL_DEMO_2
 // #define MAXON_DEMO
 #define SERVO_DEMO
-#define DC_MOTOR_DEMO
+// #define DC_MOTOR_DEMO
 
 
 #define TASK_STACK_SIZE             512
