@@ -113,7 +113,6 @@ static void Task(void *arg)
 
   #ifdef SERVO_DEMO
     hw->rc_servo->Enable(RC_SERVO_1);
-    hw->rc_servo->Enable(RC_SERVO_2);
   #endif
 
   #ifdef DC_MOTOR_DEMO
@@ -214,22 +213,14 @@ static void Task(void *arg)
     #endif
 
     #ifdef SERVO_DEMO
-      uint16_t servo_1_range = 120;
-      uint16_t servo_2_range = 180;
+      /*  Серва 1 (PWM1 = PD15): мягкое качание 60<->120 град,
+          диапазон импульса 1000-2000 мкс. Расширишь после проверки.  */
+      uint16_t servo_range = 180;
 
-      hw->rc_servo->SetServoAngle(RC_SERVO_1, 1100, 1900, servo_1_range, 0);
-      hw->rc_servo->SetServoAngle(RC_SERVO_2, 500, 2500, servo_2_range, 0);
-
-      vTaskDelay(2000);
-
-      hw->rc_servo->SetServoAngle(RC_SERVO_1, 1100, 1900, servo_1_range, 90);
-      hw->rc_servo->SetServoAngle(RC_SERVO_2, 500, 2500, servo_2_range, 90);
-
+      hw->rc_servo->SetServoAngle(RC_SERVO_1, 1000, 2000, servo_range, 60);
       vTaskDelay(1000);
 
-      hw->rc_servo->SetServoAngle(RC_SERVO_1, 1100, 1900, servo_1_range, servo_1_range);
-      hw->rc_servo->SetServoAngle(RC_SERVO_2, 500, 2500, servo_2_range, servo_2_range);
-
+      hw->rc_servo->SetServoAngle(RC_SERVO_1, 1000, 2000, servo_range, 120);
       vTaskDelay(1000);
     #endif
 
