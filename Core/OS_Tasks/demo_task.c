@@ -263,14 +263,16 @@ static void Task(void *arg)
       for(uint8_t i = 0; i < sizeof(speeds)/sizeof(speeds[0]); i ++){
         PWM.SetOutputDutyCycle(PWM_OUTPUT_1, speeds[i]);
         PWM.SetOutputDutyCycle(PWM_OUTPUT_2, speeds[i]);
-        PWM.SetOutputDutyCycle(PWM_OUTPUT_6, speeds[i]);
+
+        /*  Качание сервы на PWM6: чередуем 0 и 90 град на каждой ступени  */
+        hw->rc_servo->SetServoAngle(RC_SERVO_6, 1000, 2000, 180, (i & 1) ? 90 : 0);
+
         vTaskDelay(1000);
       }
 
       /*  Выключение моторов (скважность 0%) и пауза  */
       PWM.SetOutputDutyCycle(PWM_OUTPUT_1, 0);
       PWM.SetOutputDutyCycle(PWM_OUTPUT_2, 0);
-      PWM.SetOutputDutyCycle(PWM_OUTPUT_6, 0);
       vTaskDelay(2000);
     #endif
 
