@@ -51,7 +51,7 @@
 // #define DYNAMIXEL_DEMO_1
 // #define DYNAMIXEL_DEMO_2
 // #define MAXON_DEMO
-// #define SERVO_DEMO
+#define SERVO_DEMO
 #define DC_MOTOR_DEMO
 
 
@@ -112,8 +112,8 @@ static void Task(void *arg)
   #endif
 
   #ifdef SERVO_DEMO
-    hw->rc_servo->Enable(RC_SERVO_1);
-    hw->rc_servo->Enable(RC_SERVO_2);
+    hw->rc_servo->Enable(RC_SERVO_6);
+    hw->rc_servo->Enable(RC_SERVO_7);
   #endif
 
   #ifdef DC_MOTOR_DEMO
@@ -217,18 +217,18 @@ static void Task(void *arg)
       uint16_t servo_1_range = 120;
       uint16_t servo_2_range = 180;
 
-      hw->rc_servo->SetServoAngle(RC_SERVO_1, 1100, 1900, servo_1_range, 0);
-      hw->rc_servo->SetServoAngle(RC_SERVO_2, 500, 2500, servo_2_range, 0);
+      hw->rc_servo->SetServoAngle(RC_SERVO_6, 1100, 1900, servo_1_range, 0);
+      hw->rc_servo->SetServoAngle(RC_SERVO_7, 500, 2500, servo_2_range, 0);
 
       vTaskDelay(2000);
 
-      hw->rc_servo->SetServoAngle(RC_SERVO_1, 1100, 1900, servo_1_range, 90);
-      hw->rc_servo->SetServoAngle(RC_SERVO_2, 500, 2500, servo_2_range, 90);
+      hw->rc_servo->SetServoAngle(RC_SERVO_6, 1100, 1900, servo_1_range, 90);
+      hw->rc_servo->SetServoAngle(RC_SERVO_7, 500, 2500, servo_2_range, 90);
 
       vTaskDelay(1000);
 
-      hw->rc_servo->SetServoAngle(RC_SERVO_1, 1100, 1900, servo_1_range, servo_1_range);
-      hw->rc_servo->SetServoAngle(RC_SERVO_2, 500, 2500, servo_2_range, servo_2_range);
+      hw->rc_servo->SetServoAngle(RC_SERVO_6, 1100, 1900, servo_1_range, servo_1_range);
+      hw->rc_servo->SetServoAngle(RC_SERVO_7, 500, 2500, servo_2_range, servo_2_range);
 
       vTaskDelay(1000);
     #endif
