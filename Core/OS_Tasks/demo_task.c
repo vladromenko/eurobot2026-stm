@@ -32,6 +32,7 @@
 #include "stepper.h" 
 #include "rc_servo.h" 
 #include "stm32f4xx_ll_tim.h"
+#include "pwm.h"
 #include "terminal.h"
 #include "h_bridge.h"
 #include "serial.h"
@@ -51,6 +52,7 @@
 // #define DYNAMIXEL_DEMO_2
 // #define MAXON_DEMO
 // #define SERVO_DEMO
+#define DC_MOTOR_DEMO
 
 
 #define TASK_STACK_SIZE             512
@@ -112,6 +114,21 @@ static void Task(void *arg)
   #ifdef SERVO_DEMO
     hw->rc_servo->Enable(RC_SERVO_1);
     hw->rc_servo->Enable(RC_SERVO_2);
+  #endif
+
+  #ifdef DC_MOTOR_DEMO
+    /*  PWM1 (PD15) и PWM2 (PD14) — управляющие пины DC-моторов  */
+    PWM.Enable(PWM_OUTPUT_1);
+    PWM.Enable(PWM_OUTPUT_2);
+    PWM.SetOutputDutyCycle(PWM_OUTPUT_1, 0);
+    PWM.SetOutputDutyCycle(PWM_OUTPUT_2, 0);
+    vTaskDelay(1000);
+    PWM.SetOutputDutyCycle(PWM_OUTPUT_1, 50);
+    PWM.SetOutputDutyCycle(PWM_OUTPUT_2, 50);
+    vTaskDelay(1000);
+    PWM.SetOutputDutyCycle(PWM_OUTPUT_1, 100);
+    PWM.SetOutputDutyCycle(PWM_OUTPUT_2, 100);
+    vTaskDelay(1000);
   #endif
 
   #ifdef WS2812B_DEMO
@@ -244,6 +261,22 @@ static void Task(void *arg)
             (hw->stepper->GetPresentPosisition(STEPPER_MOTOR_3) != 0)|
             (hw->stepper->GetPresentPosisition(STEPPER_MOTOR_4) != 0)) taskYIELD();
       vTaskDelay(500);
+    #endif
+
+    #ifdef DC_MOTOR_DEMO
+      /*  Разгон обоих моторов по ступеням скорости (скважность в %)  */
+      static const uint32_t speeds[] = {25, 50, 75, 100};
+
+      for(uint8_t i = 0; i < sizeof(speeds)/sizeof(speeds[0]); i ++){
+        PWM.SetOutputDutyCycle(PWM_OUTPUT_1, speeds[i]);
+        PWM.SetOutputDutyCycle(PWM_OUTPUT_2, speeds[i]);
+        vTaskDelay(1000);
+      }
+
+      /*  Выключение моторов (скважность 0%) и пауза  */
+      PWM.SetOutputDutyCycle(PWM_OUTPUT_1, 0);
+      PWM.SetOutputDutyCycle(PWM_OUTPUT_2, 0);
+      vTaskDelay(2000);
     #endif
 
     #ifdef WS2812B_DEMO
