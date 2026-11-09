@@ -51,7 +51,7 @@
 // #define DYNAMIXEL_DEMO_1
 // #define DYNAMIXEL_DEMO_2
 // #define MAXON_DEMO
-// #define SERVO_DEMO
+#define SERVO_DEMO
 #define DC_MOTOR_DEMO
 
 
