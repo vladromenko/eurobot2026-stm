@@ -120,14 +120,18 @@ static void Task(void *arg)
     /*  PWM1 (PD15) и PWM2 (PD14) — управляющие пины DC-моторов  */
     PWM.Enable(PWM_OUTPUT_1);
     PWM.Enable(PWM_OUTPUT_2);
+    PWM.Enable(PWM_OUTPUT_6);
     PWM.SetOutputDutyCycle(PWM_OUTPUT_1, 0);
     PWM.SetOutputDutyCycle(PWM_OUTPUT_2, 0);
+    PWM.SetOutputDutyCycle(PWM_OUTPUT_6, 0);
     vTaskDelay(1000);
     PWM.SetOutputDutyCycle(PWM_OUTPUT_1, 50);
     PWM.SetOutputDutyCycle(PWM_OUTPUT_2, 50);
+    PWM.SetOutputDutyCycle(PWM_OUTPUT_6, 50);
     vTaskDelay(1000);
     PWM.SetOutputDutyCycle(PWM_OUTPUT_1, 100);
     PWM.SetOutputDutyCycle(PWM_OUTPUT_2, 100);
+    PWM.SetOutputDutyCycle(PWM_OUTPUT_6, 100);
     vTaskDelay(1000);
   #endif
 
