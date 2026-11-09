@@ -117,22 +117,11 @@ static void Task(void *arg)
   #endif
 
   #ifdef DC_MOTOR_DEMO
-    /*  PWM1 (PD15) и PWM2 (PD14) — управляющие пины DC-моторов  */
     PWM.Enable(PWM_OUTPUT_1);
     PWM.Enable(PWM_OUTPUT_2);
-    PWM.Enable(PWM_OUTPUT_6);
-    PWM.SetOutputDutyCycle(PWM_OUTPUT_1, 0);
-    PWM.SetOutputDutyCycle(PWM_OUTPUT_2, 0);
-    PWM.SetOutputDutyCycle(PWM_OUTPUT_6, 0);
-    vTaskDelay(1000);
-    PWM.SetOutputDutyCycle(PWM_OUTPUT_1, 50);
-    PWM.SetOutputDutyCycle(PWM_OUTPUT_2, 50);
-    PWM.SetOutputDutyCycle(PWM_OUTPUT_6, 50);
-    vTaskDelay(1000);
-    PWM.SetOutputDutyCycle(PWM_OUTPUT_1, 100);
-    PWM.SetOutputDutyCycle(PWM_OUTPUT_2, 100);
-    PWM.SetOutputDutyCycle(PWM_OUTPUT_6, 100);
-    vTaskDelay(1000);
+
+    /*  Сервопривод на PWM6 (PA1): rc_servo сам ставит 50 Гц и импульс 1-2 мс  */
+    hw->rc_servo->Enable(RC_SERVO_6);
   #endif
 
   #ifdef WS2812B_DEMO
@@ -274,12 +263,14 @@ static void Task(void *arg)
       for(uint8_t i = 0; i < sizeof(speeds)/sizeof(speeds[0]); i ++){
         PWM.SetOutputDutyCycle(PWM_OUTPUT_1, speeds[i]);
         PWM.SetOutputDutyCycle(PWM_OUTPUT_2, speeds[i]);
+        PWM.SetOutputDutyCycle(PWM_OUTPUT_6, speeds[i]);
         vTaskDelay(1000);
       }
 
       /*  Выключение моторов (скважность 0%) и пауза  */
       PWM.SetOutputDutyCycle(PWM_OUTPUT_1, 0);
       PWM.SetOutputDutyCycle(PWM_OUTPUT_2, 0);
+      PWM.SetOutputDutyCycle(PWM_OUTPUT_6, 0);
       vTaskDelay(2000);
     #endif
 
