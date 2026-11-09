@@ -117,6 +117,10 @@ static void Task(void *arg)
   #endif
 
   #ifdef DC_MOTOR_DEMO
+    /*  ШИМ 20 кГц для JGB37-520 — выше порога слышимости, без писка драйвера.
+        Меняется вся группа 1234 (PWM1..PWM4). Серва на PWM6 — другая группа (5678).  */
+    PWM.SetGroupFrequency(PWM_GROUP_1234, 20000);
+
     PWM.Enable(PWM_OUTPUT_1);
     PWM.Enable(PWM_OUTPUT_2);
 
