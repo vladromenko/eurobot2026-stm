@@ -271,7 +271,7 @@ static void Task(void *arg)
         /*  Качание сервы на PWM6: чередуем 0 и 90 град на каждой ступени  */
         hw->rc_servo->SetServoAngle(RC_SERVO_6, 1000, 2000, 180, (i & 1) ? 90 : 0);
 
-        vTaskDelay(1000);
+        vTaskDelay(10000);
       }
 
       /*  Выключение моторов (скважность 0%) и пауза  */
