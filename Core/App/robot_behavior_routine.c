@@ -80,7 +80,7 @@ void MaxonsStop(void)
 
 void StopAllActuators(void)
 {
-	MaxonsDisable();
+					// MaxonsDisable(); // DBG off
 }
 
 
@@ -120,11 +120,11 @@ void ButtonsCallback(enum buttons_e button_id, enum button_callback_type_s callb
 			{
 				if(button_state == BUTTON_STATE_PRESSED){
 					robot_ctrl.maxons_state = MAXONS_ENABLED;
-					MaxonsEnable();
+					// MaxonsEnable(); // DBG off
 				}
 				if(button_state == BUTTON_STATE_RELEASED){
 					robot_ctrl.maxons_state = MAXONS_DISABLED;
-					MaxonsDisable();
+					// MaxonsDisable(); // DBG off
 				}
 			}
 			

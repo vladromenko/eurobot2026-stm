@@ -46,6 +46,8 @@ extern const struct os_task_base_s OdometryTask;
 extern const struct os_task_base_s TerminalTask;
 extern const struct os_task_base_s GripperTask;
 
+void Dbg(const char* s);
+
 #ifdef __cplusplus
 }
 #endif

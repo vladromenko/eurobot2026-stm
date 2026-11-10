@@ -132,7 +132,8 @@ static void WriteCmd(USART_TypeDef* usart, uint8_t device_id, uint8_t starting_a
     tx_fifo_data.response = response;
     tx_fifo_data.responses_number = 1;
 
-    response->is_data_ready = 0;
+    if(response != NULL)
+        response->is_data_ready = 0;
 
     TransmitCmd(line_resources, &tx_fifo_data);
 }
