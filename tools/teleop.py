@@ -17,6 +17,7 @@ BOARD_TOGGLE_GRIPPER = 0x0A
 BOARD_POWER_ON_PUMP = 0x0B
 BOARD_POWER_OFF_PUMP = 0x0C
 BOARD_STEPPER_TEST = 0x0D
+BOARD_BLOWER_MOTOR = 0x0E
 
 # key -> (stepper subcommand, title); codes match StepperTest in terminal_cmd_handlers.c
 STEPPER_KEYS = {
@@ -44,6 +45,7 @@ HELP = [
     'Q/E        поворот влево / вправо  Пробел    стоп',
     'M          моторы вкл/выкл (арм)   +/-       линейная скорость, [ ]  угловая',
     'P / O      насосы вкл / выкл       G / F     захват: цикл / закрыть (0)',
+    'T          воздуходувка вкл/выкл    (пин 28 / PC14)',
     'I          пинг                    B         батарея',
     'V          скорость с энкодеров    C / R     координаты / сброс в 0',
     'Z / N      шаговики init / выкл    U / J     шаговики вперёд / назад',
@@ -124,6 +126,13 @@ class Robot:
     def pump(self, on):
         self.request(BOARD_POWER_ON_PUMP if on else BOARD_POWER_OFF_PUMP)
 
+    def blower_motor(self, on):
+        data = self.request(BOARD_BLOWER_MOTOR, bytes([1 if on else 0]))
+        if len(data) != 1:
+            raise RuntimeError(f'длина ответа воздуходувки {len(data)} вместо 1')
+        if data[0]:
+            raise RuntimeError(f'код {data[0]}')
+
     def stepper(self, subcommand):
         data = self.request(BOARD_STEPPER_TEST, bytes([subcommand]))
         if len(data) != 1:
@@ -141,6 +150,7 @@ class Teleop:
         self.armed = False
         self.pump = None
         self.steppers = None
+        self.blower = None
         self.held_key = None
         self.held_deadline = 0.0
         self.sent_speed = None
@@ -217,6 +227,11 @@ class Teleop:
         elif char == 'o':
             if self.call('насосы выкл', lambda: self.robot.pump(False)):
                 self.pump = False
+        elif char == 't':
+            new_blower = not bool(self.blower)
+            if self.call('воздуходувка вкл' if new_blower else 'воздуходувка выкл',
+                         lambda: self.robot.blower_motor(new_blower)):
+                self.blower = new_blower
         elif char == 'g':
             self.call('захват цикл', lambda: self.robot.gripper(1))
         elif char == 'f':
@@ -243,9 +258,10 @@ class Teleop:
         speed = self.sent_speed or (0.0, 0.0, 0.0)
         pump = {None: '?', True: 'ВКЛ', False: 'выкл'}[self.pump]
         steppers = {None: '?', True: 'ВКЛ', False: 'выкл'}[self.steppers]
+        blower = {None: '?', True: 'ВКЛ', False: 'выкл'}[self.blower]
         lines = [f'Eurobot teleop  {self.args.port}  ' + ('режим фиксации' if self.args.latch else 'режим удержания'), '']
         lines += HELP + ['']
-        lines.append(f'Моторы: {"ВКЛЮЧЕНЫ" if self.armed else "выключены"}   Насосы: {pump}   Шаговики: {steppers}')
+        lines.append(f'Моторы: {"ВКЛЮЧЕНЫ" if self.armed else "выключены"}   Насосы: {pump}   Шаговики: {steppers}   Воздуходувка: {blower}')
         lines.append(f'Лимиты: {self.linear:.2f} м/с, {self.angular:.2f} рад/с')
         lines.append(f'Отправлено: dx={speed[0]:+.2f} dy={speed[1]:+.2f} dphi={speed[2]:+.2f}')
         lines += [''] + self.log

@@ -245,6 +245,30 @@ static void PumpOff(uint8_t* data, uint8_t data_length)
 }
 
 
+static void BlowerMotor(uint8_t* data, uint8_t data_length)
+{
+  /*  PC14 (GPIO28) настраивается как выход в Robot_GPIO_Config()  */
+  struct terminal_response_s terminal_response;
+
+  terminal_response.cmd = BOARD_BLOWER_MOTOR;
+  terminal_response.data_length = 1;
+
+  if(data_length != 1){
+    terminal_response.data[0] = 1;   /*  неверная команда  */
+    Terminal.SendResponse(&terminal_response);
+    return;
+  }
+
+  if(data[0])
+    LL_GPIO_SetOutputPin(GPIOC, GPIO28_PC14);    /*  воздуходувка вкл  */
+  else
+    LL_GPIO_ResetOutputPin(GPIOC, GPIO28_PC14);  /*  воздуходувка выкл  */
+
+  terminal_response.data[0] = 0;   /*  команда принята  */
+  Terminal.SendResponse(&terminal_response);
+}
+
+
 static uint8_t steppers_ready = 0;
 
 static void StepperTest(uint8_t* data, uint8_t data_length)
@@ -395,7 +419,8 @@ void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t da
                                                                                               [BOARD_TOGGLE_GRIPPER] = ToggleGripper,
                                                                                               [BOARD_POWER_ON_PUMP] = PumpOn,
                                                                                               [BOARD_POWER_OFF_PUMP] = PumpOff,
-                                                                                              [BOARD_STEPPER_TEST] = StepperTest
+                                                                                              [BOARD_STEPPER_TEST] = StepperTest,
+                                                                                              [BOARD_BLOWER_MOTOR] = BlowerMotor
                                                                                             };
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
