@@ -28,7 +28,7 @@
 #include "robot_behavior_routine.h" 
 
 
-#define TASK_STACK_SIZE             64
+#define TASK_STACK_SIZE             256
 
 
 static TaskHandle_t TaskHandle;
@@ -40,12 +40,15 @@ static void Task(void *arg)
 {
   struct button_callback_queue_item_s button_callback_item;
 
+  Dbg("[BCb] task enter\r\n");
+
   while(button_callbacks_queue_handle==NULL)
     taskYIELD();
 
 	while(1)
 	{
         while(xQueueReceive(button_callbacks_queue_handle, (void*)(&button_callback_item), portMAX_DELAY) == pdFAIL);
+        Dbg("[BCb] before callback\r\n");
         ButtonsCallback(button_callback_item.button_id, button_callback_item.callback_type, button_callback_item.button_action, button_callback_item.button_state);
 	}
 }

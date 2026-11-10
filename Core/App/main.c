@@ -46,6 +46,7 @@
 #include "hl_rtu.h"
 #include "serial.h"
 #include "hw_instance.h"
+#include "stm32f4xx_ll_usart.h"
 
 
 
@@ -53,6 +54,15 @@
   * @brief  The application entry point.
   * @retval int
   */
+void Dbg(const char* s)
+{
+  while(*s){
+    while(!LL_USART_IsActiveFlag_TXE(USART1));
+    LL_USART_TransmitData8(USART1, (uint8_t)(*s++));
+  }
+  while(!LL_USART_IsActiveFlag_TC(USART1));
+}
+
 int main(void)
 {
   const struct hw_instance_s* hw = GetHwInstance();
@@ -73,10 +83,12 @@ int main(void)
 	
 
 	USART1_TerminalInit();
+	Dbg("[init] USART1 ok\r\n");
 	USART3_DynamixelInit();
 	UART4_RS485_Init();
   UART5_SerialInit();
 	USART6_RS485_Init();
+	Dbg("[init] all USARTs ok\r\n");
 
 	
 	
@@ -85,6 +97,7 @@ int main(void)
 	TIM5_PWM_Group5678_Init();
 	TIM8_WS2812B_Init();
 	TIM14_USARTx_TimeoutInit();
+	Dbg("[init] timers ok\r\n");
 
 	#if defined (ROBOT_BIG)
 
@@ -111,6 +124,7 @@ int main(void)
   hw->usartx->BindProtocol(UART4, hw->dynamixel_master->GetProtocol());
   hw->usartx->BindProtocol(UART5, hw->serial->GetProtocol());
   hw->usartx->BindProtocol(USART1, hw->hl_rtu->GetProtocol());
+  Dbg("[init] protocols bound\r\n");
 
   /*  Creating tasks  */
 	ButtonsPollTask.CreateTask(3);
@@ -121,10 +135,12 @@ int main(void)
   // DemoTask.CreateTask(3);
 
   GripperTask.CreateTask(1);
+  Dbg("[init] tasks created\r\n");
   // Experimental_Task_1.CreateTask(1);
 
 
   /*  Run scheduler  */
+  Dbg("[init] starting scheduler\r\n");
   vTaskStartScheduler();
 	
   while (1);
