@@ -127,7 +127,7 @@ static uint8_t GetWheelBusDevice(uint8_t wheel_number, enum bus_devices_e* devic
   }
 }
 
-static void WaitForGripperCompletion(void)
+static uint32_t WaitForGripperCompletion(void)
 {
   // 1. Сохраняем handle текущей задачи (TerminalTask), чтобы Gripper знал, кому отвечать
   xTerminalTaskHandle = xTaskGetCurrentTaskHandle();
@@ -135,9 +135,7 @@ static void WaitForGripperCompletion(void)
   // 3. Ждем сигнала от gripper_task.
   // Задача переходит в состояние BLOCKED и не тратит CPU.
   // portMAX_DELAY - ждать вечно. Можно поставить таймаут (напр. 5000), если боишься зависания.
-  ulTaskNotifyTake(pdTRUE, 5000);
-  
-  // Как только мы здесь — значит задача гриппера выполнила работу.
+  return ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(5000));
 }
 
 static void Ping(uint8_t* data, uint8_t data_length)
@@ -858,20 +856,23 @@ static void GetKey(uint8_t* data, uint8_t data_length)
 
 static void GripperVertical(uint8_t* data, uint8_t data_length)
 {
-  if(COMM_ENABLE){
-    ulTaskNotifyTake(pdTRUE, 0); 
+  uint8_t status = 0;
+  if(COMM_ENABLE && data_length == 1 && gripper_cmd == 0xFF && !stepper1_calibrate){
+    ulTaskNotifyTake(pdTRUE, 0);
     xTerminalTaskHandle = xTaskGetCurrentTaskHandle();
-    
+    last_cmd_status = 0;
     gripper_height = data[0]; // height in mm
     gripper_cmd = 7;
 
-    WaitForGripperCompletion();
-	}
+    if(WaitForGripperCompletion()){
+      status = last_cmd_status;
+    }
+  }
 
   // terminal response
   struct terminal_response_s terminal_response;
   terminal_response.cmd = BOARD_GRIPPER_VERTICAL;
-  terminal_response.data[0] = 0x01;
+  terminal_response.data[0] = status;
   terminal_response.data_length = 1;
   Terminal.SendResponse(&terminal_response);
 }

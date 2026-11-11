@@ -141,7 +141,7 @@ struct speed_s{
 
 struct motor_s{
 	uint32_t ll_tim_channel;
-	int32_t present_position;
+	volatile int32_t present_position;
 	int32_t goal_position;
 	uint32_t acc_dwcntr;
 	uint32_t div_dwcntr;
@@ -217,17 +217,17 @@ void TIM1_Steppers_PWM_CC_IRQ_Process(void)
 				/*	Update Step Counter	*/
 				if(mode == LL_TIM_OCMODE_PWM1)
 				{
+					if(motor[m_index].present_position < motor[m_index].goal_position)
+						motor[m_index].present_position ++;
+					else
+						motor[m_index].present_position --;
+
+					/* Disable STEP at the compare event of the last pulse. */
 					if(motor[m_index].present_position == motor[m_index].goal_position){
 						TIM_CC_DisableChannel(TIM1, m_index);
 						TIM_DisableIT_CC(TIM1,m_index);
 						continue;
 					}
-
-					/* Just because "motor[m_index].present_position == motor[m_index].goal_position" case was addressed above	*/
-					if(motor[m_index].present_position < motor[m_index].goal_position)
-						motor[m_index].present_position ++;
-					else
-						motor[m_index].present_position --;
 
 					/*	Deceleration Start	*/
 					if(motor[m_index].present_position == motor[m_index].start_dec_point)

@@ -36,6 +36,8 @@ uint8_t stepper3_calibrate = 0;
 
 #define TASK_STACK_SIZE             512
 
+enum { STEPPER_CALIBRATE_SEEK = 1, STEPPER_CALIBRATE_BACKOFF };
+
 #define MM_TO_STEPS 	25
 
 
@@ -58,7 +60,7 @@ static void Task(void *arg)
     {
         vTaskDelay(50);
 
-        if (stepper1_calibrate == 1) {
+        if (stepper1_calibrate == STEPPER_CALIBRATE_SEEK) {
             
             // Во время калибровки мотор должен быть включен
             if (!stepper1_enabled) {
@@ -82,24 +84,13 @@ static void Task(void *arg)
                 stepper1_goal_position = 1000; 
                 Stepper.StepToPosisition(STEPPER_MOTOR_1, stepper1_goal_position, 32, 10, 300);
                 
-                stepper1_calibrate = 0; 
+                stepper1_calibrate = STEPPER_CALIBRATE_BACKOFF;
             }
-        }
-        else {
-            // Обычный режим работы
-            if(Stepper.GetPresentPosisition(STEPPER_MOTOR_1) != stepper1_goal_position) {
-                // Мы в пути -> Включаем драйвер (если еще не включен)
-                if (!stepper1_enabled) {
-                    Stepper.Enable(STEPPER_MOTOR_1);
-                    stepper1_enabled = 1;
-                }
-            } else {
-                // Стоим на цели -> Выключаем драйвер (если еще включен)
-                if (stepper1_enabled) {
-                    Stepper.Disable(STEPPER_MOTOR_1);
-                    stepper1_enabled = 0;
-                }
-            }
+        } else if (stepper1_calibrate == STEPPER_CALIBRATE_BACKOFF &&
+                   Stepper.GetPresentPosisition(STEPPER_MOTOR_1) == stepper1_goal_position) {
+            Stepper.Disable(STEPPER_MOTOR_1);
+            stepper1_enabled = 0;
+            stepper1_calibrate = 0;
         }
     }
 }

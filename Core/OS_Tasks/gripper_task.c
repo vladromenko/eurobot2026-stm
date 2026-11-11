@@ -230,7 +230,6 @@ uint16_t move_delay = 800;
 uint8_t last_cmd_status = 1; // 1 - успех, 0 - авария/отмена
 
 extern uint8_t stepper1_calibrate;
-extern int32_t stepper1_goal_position;
 
 static float ClampFloat(float value, float min_value, float max_value)
 {
@@ -485,33 +484,22 @@ static uint8_t WaitDynamixelAngle(uint8_t id, uint16_t target_angle, uint32_t ti
 }
 
 /**
- * @brief Ожидание достижения позиции stepper'а с защитой от зависания (тайм-аутом)
- * @param target_pos Целевая позиция
+ * @brief Ожидание выдачи всех импульсов STEP для заданной позиции
+ * @param target_pos Цель в отсчётах таймера, без обратной связи с кареткой
  * @param timeout_ms Максимальное время ожидания в миллисекундах
  * @return 1 если позиция достигнута, 0 если сработал таймаут
  */
 static uint8_t WaitStepper1Angle(int32_t target_pos, uint32_t timeout_ms) {
-    int32_t current_pos = 0;
-    int32_t diff = 0;
-    int32_t pos_tol = 75;
-    uint32_t start_time = xTaskGetTickCount(); // Засекаем время старта (FreeRTOS)
-    
-    while (1) {
-        current_pos = Stepper.GetPresentPosisition(STEPPER_MOTOR_1);
-        diff = (int32_t)current_pos - (int32_t)target_pos;
-        if (diff < 0) diff = -diff;
-        
-        // Позиция достигнута
-        if (diff < pos_tol) {
-            return 1; 
+    TickType_t start_time = xTaskGetTickCount();
+    TickType_t timeout = pdMS_TO_TICKS(timeout_ms);
+
+    while (Stepper.GetPresentPosisition(STEPPER_MOTOR_1) != target_pos) {
+        if (xTaskGetTickCount() - start_time >= timeout) {
+            return 0;
         }
-        // Проверка таймаута
-        if ((xTaskGetTickCount() - start_time) * portTICK_PERIOD_MS >= timeout_ms) {
-            return 0; // Механизм заклинило или он не успел, выходим из цикла
-        }
-        
-        vTaskDelay(20);
+        vTaskDelay(pdMS_TO_TICKS(20));
     }
+    return 1;
 }
 
 static void SetBlocksShiftState(const GripperHardware_t* hw, uint8_t spread)
@@ -1125,34 +1113,28 @@ static void Task(void *arg)
                 
             case 7: // gripper_vertical
 			{	
-                stepper1_goal_position = (int32_t)gripper_height * (int32_t)MM_TO_STEPS;
+                int32_t target_position = (int32_t)gripper_height * MM_TO_STEPS;
                 int32_t current_position = Stepper.GetPresentPosisition(STEPPER_MOTOR_1);
 
-                if (stepper1_goal_position < current_position) {
-                    L6474H.SetCurrentLimit_mA(STEPPER_MOTOR_1, GRIPPER_STEPPER_DOWN_CURRENT_MA);
-                } else {
+                last_cmd_status = 1;
+                if (target_position != current_position) {
+                    float current_limit = target_position < current_position
+                        ? GRIPPER_STEPPER_DOWN_CURRENT_MA : GRIPPER_STEPPER_NORMAL_CURRENT_MA;
+                    L6474H.SetCurrentLimit_mA(STEPPER_MOTOR_1, current_limit);
+                    Stepper.Enable(STEPPER_MOTOR_1);
+                    vTaskDelay(pdMS_TO_TICKS(10));
+                    Stepper.StepToPosisition(STEPPER_MOTOR_1, target_position, 64, 10, 200);
+
+                    last_cmd_status = WaitStepper1Angle(target_position, 4000);
+                    Stepper.StopMotor(STEPPER_MOTOR_1);
+                    Stepper.Disable(STEPPER_MOTOR_1);
                     L6474H.SetCurrentLimit_mA(STEPPER_MOTOR_1, GRIPPER_STEPPER_NORMAL_CURRENT_MA);
                 }
 
-                Stepper.Enable(STEPPER_MOTOR_1);
-                // Даем 10 мс на то, чтобы драйвер L6474 подал ток и жестко зафиксировал вал
-                vTaskDelay(10);
-                Stepper.StepToPosisition(STEPPER_MOTOR_1, stepper1_goal_position, 64, 10, 200);
-                
-                WaitStepper1Angle(stepper1_goal_position, 4000); 
-                Stepper.Disable(STEPPER_MOTOR_1);
-                L6474H.SetCurrentLimit_mA(STEPPER_MOTOR_1, GRIPPER_STEPPER_NORMAL_CURRENT_MA);
-                vTaskDelay(10);
-                
-                // (Альтернатива для п.5: если без питания гриппер падает вниз под своим весом, 
-                // закомментируй Disable и вместо него аппаратно снизь ток:
-                // L6474H.SetCurrentLimit_mA(STEPPER_MOTOR_1, 300); )
-
-                // Будим терминал и отправляем ответ на HL
+                gripper_cmd = NO_CMD;
                 if (xTerminalTaskHandle != NULL) {
                     xTaskNotifyGive(xTerminalTaskHandle);
                 }
-                gripper_cmd = NO_CMD;
                 break;
 			}
             
