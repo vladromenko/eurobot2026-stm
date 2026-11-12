@@ -25,6 +25,8 @@
 #include "robot_behavior_routine.h" 
 #include "stm32f4xx_ll_tim.h"
 #include "board_gpio_defines.h"
+#include "FreeRTOS.h"
+#include "task.h"
 
 
 
@@ -32,6 +34,17 @@
 #define WHEEL_RADIUS_m					0.03f   // [m]
 #define	GEAR_RATIO						21.0f
 #define ENCODER_TICKS_PER_TURN			4096	// [ticks]
+
+// Odometry calibration, measured with tools/odom_calibrate.py
+#define WHEEL_1_ODOMETRY_COEF			1.0f
+#define WHEEL_2_ODOMETRY_COEF			1.0f
+#define WHEEL_3_ODOMETRY_COEF			1.0f
+#define ODOMETRY_X_COEF					1.0f
+#define ODOMETRY_Y_COEF					1.0f
+#define ODOMETRY_PHI_COEF				1.0f
+
+#define CALIBRATION_COEF_MIN			0.5f
+#define CALIBRATION_COEF_MAX			1.5f
 
 
 
@@ -55,6 +68,11 @@ arm_matrix_instance_f32 arm_inverse_matrix;
 
 
 float ms_to_tpm, ticks_to_m;
+
+static struct odometry_calibration_s calibration = {.wheel_coef = {WHEEL_1_ODOMETRY_COEF, WHEEL_2_ODOMETRY_COEF, WHEEL_3_ODOMETRY_COEF},
+													.x_coef = ODOMETRY_X_COEF,
+													.y_coef = ODOMETRY_Y_COEF,
+													.phi_coef = ODOMETRY_PHI_COEF};
 
 													
 static void MatrixInit(void)
@@ -92,16 +110,22 @@ static void SpeedTo_TPM(struct speed_s* speed, int32_t* tpm)
 {
 	arm_matrix_instance_f32 speed_matrix;
 	arm_matrix_instance_f32 ms_matrix;
+	struct speed_s nominal_speed;
 	float ms[3];
+
+	// Coefs scale nominal motion into real motion, so commands are divided by them
+	nominal_speed.dx = speed->dx/calibration.x_coef;
+	nominal_speed.dy = speed->dy/calibration.y_coef;
+	nominal_speed.dphi = speed->dphi/calibration.phi_coef;
 	
-	arm_mat_init_f32(&speed_matrix, 3, 1, (float*)speed);
+	arm_mat_init_f32(&speed_matrix, 3, 1, (float*)&nominal_speed);
 	arm_mat_init_f32(&ms_matrix, 3, 1, ms);
 											
 	arm_mat_mult_f32(&arm_direct_matrix, &speed_matrix, &ms_matrix);
 
-	tpm[0] = ms[0]*ms_to_tpm;
-	tpm[1] = ms[1]*ms_to_tpm;
-	tpm[2] = ms[2]*ms_to_tpm;
+	tpm[0] = ms[0]/calibration.wheel_coef[0]*ms_to_tpm;
+	tpm[1] = ms[1]/calibration.wheel_coef[1]*ms_to_tpm;
+	tpm[2] = ms[2]/calibration.wheel_coef[2]*ms_to_tpm;
 }
 
 static void TPM_ToSpeed(int32_t* tpm, struct speed_s* speed)
@@ -110,14 +134,18 @@ static void TPM_ToSpeed(int32_t* tpm, struct speed_s* speed)
 	arm_matrix_instance_f32 ms_matrix;
 	float ms[3];
 
-	ms[0] = tpm[0]/ms_to_tpm;
-	ms[1] = tpm[1]/ms_to_tpm;
-	ms[2] = tpm[2]/ms_to_tpm;
+	ms[0] = tpm[0]/ms_to_tpm*calibration.wheel_coef[0];
+	ms[1] = tpm[1]/ms_to_tpm*calibration.wheel_coef[1];
+	ms[2] = tpm[2]/ms_to_tpm*calibration.wheel_coef[2];
 	
 	arm_mat_init_f32(&speed_matrix, 3, 1, (float*)speed);
 	arm_mat_init_f32(&ms_matrix, 3, 1, ms);
 											
 	arm_mat_mult_f32(&arm_inverse_matrix, &ms_matrix, &speed_matrix);
+
+	speed->dx *= calibration.x_coef;
+	speed->dy *= calibration.y_coef;
+	speed->dphi *= calibration.phi_coef;
 }
 
 static void UpdatePath(int32_t* d_ticks, struct coord_s* path)
@@ -125,9 +153,9 @@ static void UpdatePath(int32_t* d_ticks, struct coord_s* path)
 	float d_m[3];
 	struct coord_s d_coord;
 
-	d_m[0] = d_ticks[0]*ticks_to_m;
-	d_m[1] = d_ticks[1]*ticks_to_m;
-	d_m[2] = d_ticks[2]*ticks_to_m;
+	d_m[0] = d_ticks[0]*ticks_to_m*calibration.wheel_coef[0];
+	d_m[1] = d_ticks[1]*ticks_to_m*calibration.wheel_coef[1];
+	d_m[2] = d_ticks[2]*ticks_to_m*calibration.wheel_coef[2];
 
 	arm_matrix_instance_f32 d_ms_matrix;
 	arm_matrix_instance_f32 d_coord_matrix;
@@ -136,6 +164,10 @@ static void UpdatePath(int32_t* d_ticks, struct coord_s* path)
 	arm_mat_init_f32(&d_coord_matrix, 3, 1, (float*)&d_coord);
 											
 	arm_mat_mult_f32(&arm_inverse_matrix, &d_ms_matrix, &d_coord_matrix);
+
+	d_coord.x *= calibration.x_coef;
+	d_coord.y *= calibration.y_coef;
+	d_coord.phi *= calibration.phi_coef;
 
 	path->phi += d_coord.phi;
 
@@ -166,9 +198,49 @@ LL_GPIO_SetOutputPin(GPIOA, PWM7_PA2);
 	
 }
 
+static void GetGeometry(struct odometry_geometry_s* geometry)
+{
+	geometry->wheel_radius_m = WHEEL_RADIUS_m;
+	geometry->dist_center_to_wheel_m = DIST_CENTER_TO_WHEEL_m;
+	geometry->gear_ratio = GEAR_RATIO;
+	geometry->encoder_ticks_per_turn = ENCODER_TICKS_PER_TURN;
+}
+
+static uint8_t IsCoefValid(float coef)
+{
+	// Written so that NaN is rejected too
+	return (coef >= CALIBRATION_COEF_MIN) && (coef <= CALIBRATION_COEF_MAX);
+}
+
+// Coefs live in RAM until reboot; bake the final ones into the defines above
+static uint8_t SetCalibration(const struct odometry_calibration_s* new_calibration)
+{
+	if(!IsCoefValid(new_calibration->wheel_coef[0]) || !IsCoefValid(new_calibration->wheel_coef[1]) ||
+	   !IsCoefValid(new_calibration->wheel_coef[2]) || !IsCoefValid(new_calibration->x_coef) ||
+	   !IsCoefValid(new_calibration->y_coef) || !IsCoefValid(new_calibration->phi_coef))
+		return 0;
+
+	// Odometry task reads the coefs every 10 ms, so update them in one piece
+	taskENTER_CRITICAL();
+	calibration = *new_calibration;
+	taskEXIT_CRITICAL();
+
+	return 1;
+}
+
+static void GetCalibration(struct odometry_calibration_s* current_calibration)
+{
+	taskENTER_CRITICAL();
+	*current_calibration = calibration;
+	taskEXIT_CRITICAL();
+}
+
 const struct kinematics_s Kinematics = {.MatrixInit = MatrixInit,
 										.SpeedTo_TPM = SpeedTo_TPM,
 										.TPM_ToSpeed = TPM_ToSpeed,
-										.UpdatePath = UpdatePath};
+										.UpdatePath = UpdatePath,
+										.GetGeometry = GetGeometry,
+										.SetCalibration = SetCalibration,
+										.GetCalibration = GetCalibration};
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

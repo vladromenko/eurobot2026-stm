@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Start keyboard teleoperation (tools/teleop.py) over USART1.
-# Usage: ./start.sh [/dev/cu.PORT] [teleop.py options...]
+# Start keyboard teleoperation (tools/teleop.py) or odometry calibration (tools/odom_calibrate.py) over USART1.
+# Usage: ./start.sh [calibrate] [/dev/cu.PORT] [script options...]
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -17,6 +17,12 @@ if ! "$PYTHON" -c 'import serial' 2>/dev/null; then
     "$PYTHON" -m pip install --quiet --disable-pip-version-check pyserial
 fi
 
+SCRIPT="$ROOT/tools/teleop.py"
+if [[ $# -gt 0 && "$1" == calibrate ]]; then
+    SCRIPT="$ROOT/tools/odom_calibrate.py"
+    shift
+fi
+
 if [[ $# -gt 0 && "$1" == /dev/* ]]; then
     PORT="$1"
     shift
@@ -28,7 +34,7 @@ else
     done
     if [[ ${#PORTS[@]} -eq 0 ]]; then
         echo "USB-UART адаптер не найден. Доступные порты:" >&2
-        "$PYTHON" "$ROOT/tools/teleop.py" --list >&2
+        "$PYTHON" "$SCRIPT" --list >&2
         echo "Укажите порт явно: ./start.sh /dev/cu.PORT" >&2
         exit 1
     fi
@@ -41,4 +47,4 @@ else
 fi
 
 echo "Порт: $PORT"
-exec "$PYTHON" "$ROOT/tools/teleop.py" --port "$PORT" "$@"
+exec "$PYTHON" "$SCRIPT" --port "$PORT" "$@"

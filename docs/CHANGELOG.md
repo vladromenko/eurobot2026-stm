@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-11-12 — команды и скрипт калибровки одометрии
+
+- В `kinematics.c` добавлены коэффициенты `WHEEL_1..3_ODOMETRY_COEF`, `ODOMETRY_X/Y/PHI_COEF` (по умолчанию 1.0). Они применяются в одометрии, в `GetSpeed` и обратно в командах скорости. Во время работы их можно менять без перепрошивки.
+- Новые команды терминала 0x0E–0x14: отключение моторов, чтение тиков, поворот одного колеса на заданное число тиков, чтение геометрии, запись и чтение коэффициентов. Описание — в разделе 8 [ODOMETRY_NOTES_RU.md](ODOMETRY_NOTES_RU.md).
+- `tools/odom_calibrate.py` проводит калибровку по шагам и записывает итоговые `#define` в `kinematics.c`. Запуск: `./start.sh calibrate`.
+- `terminal_task.c`: номер команды теперь сначала сравнивается с размером таблицы, и только потом таблица читается. Раньше неизвестный код ≥ размера таблицы читал память за её пределами.
+
 ## 2026-10-27 — HwInstance: единая точка доступа к периферии
 
 - Добавлены `Core/App/Include/hw_instance.h` и `Core/App/hw_instance.c`: `struct hw_instance_s` хранит указатели на все драйверы периферии (Stepper, L6474H, PWM, SPI GPO, WS2812B, USARTx, DynamixelMaster, Serial, HL_RTU, Dynamixel AX/MX, Maxon, BMS, RC_Servo, H_Bridge, Button) и таблицу `bus_devices`. Экземпляр объявлен `static const` и лежит во Flash; доступ — только через `const struct hw_instance_s* GetHwInstance(void)`.

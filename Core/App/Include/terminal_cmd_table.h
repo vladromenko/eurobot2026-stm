@@ -43,9 +43,18 @@
 #define BOARD_POWER_OFF_PUMP                0X0C    /* Command Description  */
 #define BOARD_STEPPER_TEST                  0x0D
 
+/* Odometry calibration, used by tools/odom_calibrate.py */
+#define BOARD_SET_MAXONS_STATE              0x0E    /* [state]: 0 - stop and free wheels, 1 - enable -> [status] */
+#define BOARD_GET_WHEEL_TICKS               0x0F    /* -> [status, int32 ticks1, ticks2, ticks3] */
+#define BOARD_ROTATE_WHEEL                  0x10    /* [wheel 1..3, int32 ticks, int32 tpm] -> [status] */
+#define BOARD_GET_WHEEL_ROTATION            0x11    /* -> [enum wheel_rotation_state_e, int32 ticks done] */
+#define BOARD_GET_ODOMETRY_GEOMETRY         0x12    /* -> [float radius, center_to_wheel, gear_ratio, ticks_per_turn] */
+#define BOARD_SET_ODOMETRY_CALIBRATION      0x13    /* [float wheel1, wheel2, wheel3, x, y, phi] -> [status] */
+#define BOARD_GET_ODOMETRY_CALIBRATION      0x14    /* -> [float wheel1, wheel2, wheel3, x, y, phi] */
+
 
 /*  Do not forget to update the table size with the last one command! */
-#define TERMINAL_CMD_TABLE_SIZE             (BOARD_STEPPER_TEST + 1)
+#define TERMINAL_CMD_TABLE_SIZE             (BOARD_GET_ODOMETRY_CALIBRATION + 1)
 
 
 #ifdef __cplusplus

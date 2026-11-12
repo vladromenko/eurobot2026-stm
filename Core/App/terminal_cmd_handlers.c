@@ -41,6 +41,7 @@
 #include "spi_gpo_defines.h"
 #include "hw_instance.h"
 #include "stepper.h"
+#include "robot_behavior_routine.h"
 
 
 static void Ping(uint8_t* data, uint8_t data_length)
@@ -382,6 +383,138 @@ static void StepperTest(uint8_t* data, uint8_t data_length)
     Terminal.SendResponse(&response);
 }
 
+static void SetMaxonsState(uint8_t* data, uint8_t data_length)
+{
+  struct terminal_response_s terminal_response;
+  struct speed_s speed = {0};
+
+  terminal_response.cmd = BOARD_SET_MAXONS_STATE;
+  terminal_response.data[0] = 0;
+  terminal_response.data_length = 1;
+
+  if(data_length == 1){
+    // Zero setpoint first, so enabled motors do not resume an old speed
+    Odometry.SetSpeed(&speed);
+
+    if(data[0])
+      MaxonsEnable();
+    else
+      MaxonsDisable();
+
+    terminal_response.data[0] = 1;
+  }
+
+  Terminal.SendResponse(&terminal_response);
+}
+
+static void GetWheelTicks(uint8_t* data, uint8_t data_length)
+{
+  struct terminal_response_s terminal_response;
+  int32_t ticks[3] = {0};
+
+  terminal_response.cmd = BOARD_GET_WHEEL_TICKS;
+  terminal_response.data[0] = (Odometry.GetWheelTicks(ticks) == 0) ? 1 : 0;
+  Word32_ToByte(&ticks[0], &terminal_response.data[1]);
+  Word32_ToByte(&ticks[1], &terminal_response.data[5]);
+  Word32_ToByte(&ticks[2], &terminal_response.data[9]);
+  terminal_response.data_length = 13;
+
+  Terminal.SendResponse(&terminal_response);
+}
+
+static void RotateWheel(uint8_t* data, uint8_t data_length)
+{
+  struct terminal_response_s terminal_response;
+  int32_t ticks;
+  int32_t tpm;
+
+  terminal_response.cmd = BOARD_ROTATE_WHEEL;
+  terminal_response.data[0] = 0;
+  terminal_response.data_length = 1;
+
+  if(data_length == 9){
+    ByteTo_Word32(data+1, &ticks);
+    ByteTo_Word32(data+5, &tpm);
+    terminal_response.data[0] = Odometry.StartWheelRotation(data[0], ticks, tpm);
+  }
+
+  Terminal.SendResponse(&terminal_response);
+}
+
+static void GetWheelRotation(uint8_t* data, uint8_t data_length)
+{
+  struct terminal_response_s terminal_response;
+  enum wheel_rotation_state_e state;
+  int32_t ticks;
+
+  Odometry.GetWheelRotation(&state, &ticks);
+
+  terminal_response.cmd = BOARD_GET_WHEEL_ROTATION;
+  terminal_response.data[0] = (uint8_t)state;
+  Word32_ToByte(&ticks, &terminal_response.data[1]);
+  terminal_response.data_length = 5;
+
+  Terminal.SendResponse(&terminal_response);
+}
+
+static void GetOdometryGeometry(uint8_t* data, uint8_t data_length)
+{
+  struct terminal_response_s terminal_response;
+  struct odometry_geometry_s geometry;
+
+  Kinematics.GetGeometry(&geometry);
+
+  terminal_response.cmd = BOARD_GET_ODOMETRY_GEOMETRY;
+  Word32_ToByte(&geometry.wheel_radius_m, &terminal_response.data[0]);
+  Word32_ToByte(&geometry.dist_center_to_wheel_m, &terminal_response.data[4]);
+  Word32_ToByte(&geometry.gear_ratio, &terminal_response.data[8]);
+  Word32_ToByte(&geometry.encoder_ticks_per_turn, &terminal_response.data[12]);
+  terminal_response.data_length = 16;
+
+  Terminal.SendResponse(&terminal_response);
+}
+
+static void SetOdometryCalibration(uint8_t* data, uint8_t data_length)
+{
+  struct terminal_response_s terminal_response;
+  struct odometry_calibration_s calibration;
+
+  terminal_response.cmd = BOARD_SET_ODOMETRY_CALIBRATION;
+  terminal_response.data[0] = 0;
+  terminal_response.data_length = 1;
+
+  if(data_length == 24){
+    ByteTo_Word32(data, &calibration.wheel_coef[0]);
+    ByteTo_Word32(data+4, &calibration.wheel_coef[1]);
+    ByteTo_Word32(data+8, &calibration.wheel_coef[2]);
+    ByteTo_Word32(data+12, &calibration.x_coef);
+    ByteTo_Word32(data+16, &calibration.y_coef);
+    ByteTo_Word32(data+20, &calibration.phi_coef);
+    terminal_response.data[0] = Kinematics.SetCalibration(&calibration);
+  }
+
+  Terminal.SendResponse(&terminal_response);
+}
+
+static void GetOdometryCalibration(uint8_t* data, uint8_t data_length)
+{
+  struct terminal_response_s terminal_response;
+  struct odometry_calibration_s calibration;
+
+  Kinematics.GetCalibration(&calibration);
+
+  terminal_response.cmd = BOARD_GET_ODOMETRY_CALIBRATION;
+  Word32_ToByte(&calibration.wheel_coef[0], &terminal_response.data[0]);
+  Word32_ToByte(&calibration.wheel_coef[1], &terminal_response.data[4]);
+  Word32_ToByte(&calibration.wheel_coef[2], &terminal_response.data[8]);
+  Word32_ToByte(&calibration.x_coef, &terminal_response.data[12]);
+  Word32_ToByte(&calibration.y_coef, &terminal_response.data[16]);
+  Word32_ToByte(&calibration.phi_coef, &terminal_response.data[20]);
+  terminal_response.data_length = 24;
+
+  Terminal.SendResponse(&terminal_response);
+}
+
 
 void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t data_length) = {[BOARD_Ping] = Ping,
                                                                                               [BOARD_AX_GetAngle] = AX_GetAngle,
@@ -395,7 +528,14 @@ void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t da
                                                                                               [BOARD_TOGGLE_GRIPPER] = ToggleGripper,
                                                                                               [BOARD_POWER_ON_PUMP] = PumpOn,
                                                                                               [BOARD_POWER_OFF_PUMP] = PumpOff,
-                                                                                              [BOARD_STEPPER_TEST] = StepperTest
+                                                                                              [BOARD_STEPPER_TEST] = StepperTest,
+                                                                                              [BOARD_SET_MAXONS_STATE] = SetMaxonsState,
+                                                                                              [BOARD_GET_WHEEL_TICKS] = GetWheelTicks,
+                                                                                              [BOARD_ROTATE_WHEEL] = RotateWheel,
+                                                                                              [BOARD_GET_WHEEL_ROTATION] = GetWheelRotation,
+                                                                                              [BOARD_GET_ODOMETRY_GEOMETRY] = GetOdometryGeometry,
+                                                                                              [BOARD_SET_ODOMETRY_CALIBRATION] = SetOdometryCalibration,
+                                                                                              [BOARD_GET_ODOMETRY_CALIBRATION] = GetOdometryCalibration
                                                                                             };
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

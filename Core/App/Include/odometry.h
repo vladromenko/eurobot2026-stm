@@ -36,6 +36,14 @@
 
 
 
+enum wheel_rotation_state_e{
+  WHEEL_ROTATION_IDLE,
+  WHEEL_ROTATION_RUNNING,
+  WHEEL_ROTATION_DONE,
+  WHEEL_ROTATION_TIMEOUT,
+  WHEEL_ROTATION_ABORTED
+};
+
 struct odometry_s{
   void (*Init)(void);
   void (*SetCoord)(struct coord_s* coord);
@@ -43,6 +51,9 @@ struct odometry_s{
   void (*SetSpeed)(struct speed_s* speed);
   void (*GetSpeed)(struct speed_s* speed);
   void (*UpdatePath)(void);
+  uint8_t (*GetWheelTicks)(int32_t* ticks);
+  uint8_t (*StartWheelRotation)(uint8_t wheel_number, int32_t ticks, int32_t tpm);
+  void (*GetWheelRotation)(enum wheel_rotation_state_e* state, int32_t* ticks);
 };
 
 extern const struct odometry_s Odometry;
