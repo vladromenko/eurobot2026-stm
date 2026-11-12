@@ -42,7 +42,7 @@
 #define BOARD_POWER_ON_PUMP                 0X0B    /* Command Description  */
 #define BOARD_POWER_OFF_PUMP                0X0C    /* Command Description  */
 #define BOARD_STEPPER_TEST                  0x0D
-#define BOARD_BLOWER_MOTOR                   0x0E    /*  Blower motor на GPIO28/PC14: data[0] 1=вкл 0=выкл  */
+#define BOARD_BLOWER_MOTOR                   0x0E    /*  Blower motor на Power Output 5: data[0] 1=вкл 0=выкл  */
 
 
 /*  Do not forget to update the table size with the last one command! */

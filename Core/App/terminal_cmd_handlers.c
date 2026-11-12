@@ -247,7 +247,8 @@ static void PumpOff(uint8_t* data, uint8_t data_length)
 
 static void BlowerMotor(uint8_t* data, uint8_t data_length)
 {
-  /*  PC14 (GPIO28) настраивается как выход в Robot_GPIO_Config()  */
+  /*  Воздуходувка на Power Output 5 (через SPI GPO)  */
+  const struct hw_instance_s* hw = GetHwInstance();
   struct terminal_response_s terminal_response;
 
   terminal_response.cmd = BOARD_BLOWER_MOTOR;
@@ -260,9 +261,9 @@ static void BlowerMotor(uint8_t* data, uint8_t data_length)
   }
 
   if(data[0])
-    LL_GPIO_SetOutputPin(GPIOC, GPIO28_PC14);    /*  воздуходувка вкл  */
+    hw->spi_gpo->SetOutputPin(SPI_POWER_OUTPUT_5);     /*  воздуходувка вкл  */
   else
-    LL_GPIO_ResetOutputPin(GPIOC, GPIO28_PC14);  /*  воздуходувка выкл  */
+    hw->spi_gpo->ResetOutputPin(SPI_POWER_OUTPUT_5);   /*  воздуходувка выкл  */
 
   terminal_response.data[0] = 0;   /*  команда принята  */
   Terminal.SendResponse(&terminal_response);

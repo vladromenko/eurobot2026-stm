@@ -135,16 +135,6 @@ void Robot_GPIO_Config(void)
 
 	#endif
 
-	/*	BLOWER_MOTOR на GPIO28 / PC14 (выход, изначально выключен)	*/
-	GPIO_Struct.Pin = GPIO28_PC14;
-	GPIO_Struct.Mode = LL_GPIO_MODE_OUTPUT;
-	GPIO_Struct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
-	GPIO_Struct.Pull = LL_GPIO_PULL_NO;
-	GPIO_Struct.Speed = LL_GPIO_SPEED_FREQ_HIGH;
-
-	LL_GPIO_Init(GPIOC, &GPIO_Struct);
-	LL_GPIO_ResetOutputPin(GPIOC, GPIO28_PC14);
-
 }
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
