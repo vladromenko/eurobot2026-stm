@@ -184,14 +184,14 @@ uint8_t i2c_addr_1 = 0x40;
 uint8_t servo_target_angle = 0;
 
 /* Cursor params */
-uint8_t dynamixel_cursor_id = 98; //15
+uint8_t dynamixel_cursor_id = 13;
 uint16_t cursor_speed = 600; //0-1024
 uint8_t cursor_hor_angle = 198; //0-300 60
 uint8_t cursor_vert_angle = 80; //0-300 150 82
 uint8_t cursor_cmd;
 
 /* Pinion params */
-uint8_t pinion_dyn_id = 13;
+uint8_t pinion_dyn_id = 106;
 uint16_t pinion_start_angle = 148;
 uint16_t pinion_dyn_speed = 800;
 uint16_t pinion_goal_angle = 0;
