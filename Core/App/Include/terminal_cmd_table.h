@@ -74,9 +74,11 @@
 #define BOARD_MOVE_RELATIVE_POLL            0x2D    /* [45] Start relative move without immediate response */
 #define BOARD_GET_MOVE_STATUS               0x2E    /* [46] Get completion flag of polled relative move */
 #define BOARD_GRIPPER_SLIDE                 0x2F    /* [47] Slide the gripper through the rack and pinion gear*/
+#define BOARD_IMPELLER_ON                   0x30    /* [48] Turn the impeller on (if off) and set its speed, % */
+#define BOARD_IMPELLER_OFF                  0x31    /* [49] Ramp the impeller down and turn it off */
 
 /*  Do not forget to update the table size with the last one command! */
-#define TERMINAL_CMD_TABLE_SIZE             (BOARD_GRIPPER_SLIDE + 1)
+#define TERMINAL_CMD_TABLE_SIZE             (BOARD_IMPELLER_OFF + 1)
 
 
 #ifdef __cplusplus

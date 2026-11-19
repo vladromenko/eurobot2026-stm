@@ -45,6 +45,7 @@
 #include "stepper.h"
 #include "pca9685.h"
 #include "maxon.h"
+#include "impeller.h"
 #include "math.h"
 
 #include "FreeRTOS.h"
@@ -1038,6 +1039,46 @@ static void SlideGripper(uint8_t* data, uint8_t data_length)
   Terminal.SendResponse(&terminal_response);
 }
 
+static void SendImpellerResponse(uint8_t cmd, uint8_t status)
+{
+  struct terminal_response_s terminal_response;
+
+  terminal_response.cmd = cmd;
+  terminal_response.data[0] = status;
+  terminal_response.data[1] = (uint8_t)Impeller.GetState();
+  terminal_response.data[2] = Impeller.GetSpeed();
+  terminal_response.data_length = 3;
+  Terminal.SendResponse(&terminal_response);
+}
+
+static void ImpellerOn(uint8_t* data, uint8_t data_length)
+{
+  /*
+   *  data[0] - speed, 0..100 % (limited by IMPELLER_MAX_SPEED_PCT).
+   *  Turns the impeller on if it is off, otherwise only changes the speed.
+   *  Response: [status, state, current speed %].
+   */
+  uint8_t status = 0;
+
+  if(COMM_ENABLE && (data_length >= 1) && (data[0] <= 100)){
+    Impeller.SetSpeed(data[0]);
+    Impeller.TurnOn();
+    status = 1;
+  }
+
+  SendImpellerResponse(BOARD_IMPELLER_ON, status);
+}
+
+static void ImpellerOff(uint8_t* data, uint8_t data_length)
+{
+  /*  Turning off is always accepted, also after the end of the match  */
+  (void)data;
+  (void)data_length;
+
+  Impeller.TurnOff();
+  SendImpellerResponse(BOARD_IMPELLER_OFF, 1);
+}
+
 void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t data_length) = {[BOARD_Ping] = Ping,
                                                                                               [BOARD_SetSpeed] = SetRobotSpeed,
                                                                                               [BOARD_GetSpeed] = GetRobotSpeed,
@@ -1078,7 +1119,9 @@ void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t da
                                                                                               [BOARD_GET_KEY] = GetKey,
                                                                                               [BOARD_GRIPPER_VERTICAL] = GripperVertical,
                                                                                               [BOARD_ROTATE_WHEEL_ONCE] = RotateWheelOnce,
-                                                                                              [BOARD_GRIPPER_SLIDE] = SlideGripper
+                                                                                              [BOARD_GRIPPER_SLIDE] = SlideGripper,
+                                                                                              [BOARD_IMPELLER_ON] = ImpellerOn,
+                                                                                              [BOARD_IMPELLER_OFF] = ImpellerOff
 };
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

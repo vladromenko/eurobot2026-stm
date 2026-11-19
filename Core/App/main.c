@@ -46,6 +46,7 @@
 #include "hl_rtu.h"
 #include "serial.h"
 #include "pca9685.h"
+#include "impeller.h"
 
 volatile int PCA9685_InitStatus;
 
@@ -89,6 +90,7 @@ int main(void)
 	TIM1_Steppers_PWM_Init();
 	TIM4_PWM_Group1234_Init();
 	TIM5_PWM_Group5678_Init();
+	Impeller.Init(); // TIM5 -> 20 kHz: PWM5..8 cannot drive RC servos
 	TIM8_WS2812B_Init();
 	TIM14_USARTx_TimeoutInit();
 
@@ -132,6 +134,7 @@ int main(void)
   //DemoTask.CreateTask(4);
 	StepperTask.CreateTask(1);
 	GripperTask.CreateTask(1);
+	ImpellerTask.CreateTask(1);
   //DebugTerminalTask.CreateTask(1);
 	
   /*  Run scheduler  */
