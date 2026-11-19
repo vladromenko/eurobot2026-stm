@@ -1079,6 +1079,70 @@ static void ImpellerOff(uint8_t* data, uint8_t data_length)
   SendImpellerResponse(BOARD_IMPELLER_OFF, 1);
 }
 
+static void ImpellerSetMv(uint8_t* data, uint8_t data_length)
+{
+  /*
+   *  data[0..1] - signal voltage while the impeller is on, mV (uint16), 0 = speed control.
+   *  Kept until changed or reset; not above the voltage of IMPELLER_MAX_SPEED_PCT.
+   *  Response: [status, state, current speed %, applied mV (uint16)].
+   */
+  struct terminal_response_s terminal_response;
+  uint16_t mv;
+  uint8_t status = 0;
+
+  if(COMM_ENABLE && (data_length >= 2)){
+    ByteTo_Word16(data, &mv);
+    status = Impeller.SetRawVolts_mV(mv);
+  }
+
+  mv = Impeller.GetRawVolts_mV();
+  terminal_response.cmd = BOARD_IMPELLER_SET_MV;
+  terminal_response.data[0] = status;
+  terminal_response.data[1] = (uint8_t)Impeller.GetState();
+  terminal_response.data[2] = Impeller.GetSpeed();
+  Word16_ToByte(&mv, &terminal_response.data[3]);
+  terminal_response.data_length = 5;
+  Terminal.SendResponse(&terminal_response);
+}
+
+static void ImpellerPress(uint8_t* data, uint8_t data_length)
+{
+  /*
+   *  data[0..1] - press length, ms (uint16), 1..IMPELLER_DEBUG_PRESS_MAX_MS.
+   *  Only toggles the impeller controller, the firmware state is not changed (see BOARD_IMPELLER_SYNC).
+   *  Response: [status, state, current speed %].
+   */
+  uint16_t ms;
+  uint8_t status = 0;
+
+  if(COMM_ENABLE && (data_length >= 2)){
+    ByteTo_Word16(data, &ms);
+    if((ms > 0) && (ms <= IMPELLER_DEBUG_PRESS_MAX_MS)){
+      Impeller.PressButton(ms);
+      status = 1;
+    }
+  }
+
+  SendImpellerResponse(BOARD_IMPELLER_PRESS, status);
+}
+
+static void ImpellerSync(uint8_t* data, uint8_t data_length)
+{
+  /*
+   *  data[0] - real impeller state: 0 off, 1 on. No button press.
+   *  "Off" is accepted also after the end of the match.
+   *  Response: [status, state, current speed %].
+   */
+  uint8_t status = 0;
+
+  if((data_length >= 1) && (data[0] <= 1) && (COMM_ENABLE || (data[0] == 0))){
+    Impeller.SyncState(data[0]);
+    status = 1;
+  }
+
+  SendImpellerResponse(BOARD_IMPELLER_SYNC, status);
+}
+
 void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t data_length) = {[BOARD_Ping] = Ping,
                                                                                               [BOARD_SetSpeed] = SetRobotSpeed,
                                                                                               [BOARD_GetSpeed] = GetRobotSpeed,
@@ -1121,7 +1185,10 @@ void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t da
                                                                                               [BOARD_ROTATE_WHEEL_ONCE] = RotateWheelOnce,
                                                                                               [BOARD_GRIPPER_SLIDE] = SlideGripper,
                                                                                               [BOARD_IMPELLER_ON] = ImpellerOn,
-                                                                                              [BOARD_IMPELLER_OFF] = ImpellerOff
+                                                                                              [BOARD_IMPELLER_OFF] = ImpellerOff,
+                                                                                              [BOARD_IMPELLER_SET_MV] = ImpellerSetMv,
+                                                                                              [BOARD_IMPELLER_PRESS] = ImpellerPress,
+                                                                                              [BOARD_IMPELLER_SYNC] = ImpellerSync
 };
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

@@ -23,11 +23,14 @@ enum impeller_cmd_e{
   IMPELLER_CMD_NONE,
   IMPELLER_CMD_ON,
   IMPELLER_CMD_OFF,
-  IMPELLER_CMD_PRESS
+  IMPELLER_CMD_PRESS,
+  IMPELLER_CMD_SYNC_ON,
+  IMPELLER_CMD_SYNC_OFF
 };
 
 enum impeller_phase_e{
   IMPELLER_PHASE_IDLE,
+  IMPELLER_PHASE_SIGNAL_SETTLE,
   IMPELLER_PHASE_PRESS,
   IMPELLER_PHASE_BOOT,
   IMPELLER_PHASE_RAMP_DOWN,
@@ -38,7 +41,8 @@ enum impeller_phase_e{
 static volatile uint8_t pending_cmd = IMPELLER_CMD_NONE;
 static volatile uint16_t pending_arg;
 static volatile uint8_t target_pct;
-static volatile int32_t raw_mv = -1;          /* -1: calibration voltage is not used */
+static volatile uint16_t calibration_mv = IMPELLER_CALIBRATION_MV;  /* signal while ON, 0: speed control */
+static volatile uint8_t calibration_any_state;  /* set by SetRawVolts_mV(), cleared by TurnOff() */
 
 /*  State, written by Update() only  */
 static volatile enum impeller_state_e state = IMPELLER_OFF;
@@ -160,9 +164,16 @@ static void Update(uint32_t dt_ms)
       cmd = TakeCmd(&arg);
       if((cmd == IMPELLER_CMD_ON) && (state == IMPELLER_OFF)){
         current_mpct = 0;
-        phase = IMPELLER_PHASE_PRESS;
-        phase_timer_ms = IMPELLER_PRESS_MS;
-        SetButton(1);
+        if(calibration_mv){
+          /*  Calibration voltage is applied below; press once the RC filter has settled  */
+          phase = IMPELLER_PHASE_SIGNAL_SETTLE;
+          phase_timer_ms = IMPELLER_SIGNAL_SETTLE_MS;
+        }
+        else{
+          phase = IMPELLER_PHASE_PRESS;
+          phase_timer_ms = IMPELLER_PRESS_MS;
+          SetButton(1);
+        }
         state = IMPELLER_STARTING;
       }
       else if((cmd == IMPELLER_CMD_OFF) && (state == IMPELLER_ON)){
@@ -173,12 +184,24 @@ static void Update(uint32_t dt_ms)
         debug_press_ms = arg;
         SetButton(1);
       }
+      /*  The real state is known only to the user: no press, the ramp starts from 0 or goes to 0  */
+      else if(cmd == IMPELLER_CMD_SYNC_ON){
+        state = IMPELLER_ON;
+      }
+      else if(cmd == IMPELLER_CMD_SYNC_OFF){
+        state = IMPELLER_OFF;
+      }
       break;
 
     case IMPELLER_STARTING:
       if(!TimerElapsed(&phase_timer_ms, dt_ms))
         break;
-      if(phase == IMPELLER_PHASE_PRESS){
+      if(phase == IMPELLER_PHASE_SIGNAL_SETTLE){
+        phase = IMPELLER_PHASE_PRESS;
+        phase_timer_ms = IMPELLER_PRESS_MS;
+        SetButton(1);
+      }
+      else if(phase == IMPELLER_PHASE_PRESS){
         SetButton(0);
         phase = IMPELLER_PHASE_BOOT;
         phase_timer_ms = IMPELLER_BOOT_DELAY_MS;
@@ -221,22 +244,22 @@ static void Update(uint32_t dt_ms)
   else
     current_mpct = ((current_mpct - goal_mpct) > step_mpct) ? (current_mpct - step_mpct) : goal_mpct;
 
-  int32_t calibration_mv = raw_mv;
-  if((calibration_mv >= 0) && ((state == IMPELLER_OFF) || (state == IMPELLER_ON)))
-    SetSignal_mV((uint32_t)calibration_mv);
+  uint16_t signal_mv = calibration_mv;
+  /*  A voltage set by command acts in any state (the impeller may be turned on by its own button)  */
+  if((signal_mv != 0) && (calibration_any_state || (state == IMPELLER_STARTING) || (state == IMPELLER_ON)))
+    SetSignal_mV(signal_mv);
   else
     SetSignal_mV(Speed_mV(current_mpct));
 }
 
 static void TurnOn(void)
 {
-  raw_mv = -1;
   PostCmd(IMPELLER_CMD_ON, 0);
 }
 
 static void TurnOff(void)
 {
-  raw_mv = -1;
+  calibration_any_state = 0;
   PostCmd(IMPELLER_CMD_OFF, 0);
 }
 
@@ -245,14 +268,21 @@ static void SetSpeed(uint8_t percent)
   if(percent > IMPELLER_MAX_SPEED_PCT)
     percent = IMPELLER_MAX_SPEED_PCT;
   target_pct = percent;
-  raw_mv = -1;
 }
 
-static void SetRawVolts_mV(uint16_t mv)
+static uint8_t SetRawVolts_mV(uint16_t mv)
 {
   /*  Same limit as the speed commands; raise IMPELLER_MAX_SPEED_PCT to calibrate V_MAX  */
-  uint32_t limit_mv = Speed_mV(IMPELLER_MAX_SPEED_PCT*MPCT_PER_PCT);
-  raw_mv = (mv > limit_mv) ? (int32_t)limit_mv : (int32_t)mv;
+  if(mv > Speed_mV(IMPELLER_MAX_SPEED_PCT*MPCT_PER_PCT))
+    return 0;
+  calibration_mv = mv;
+  calibration_any_state = (mv != 0);
+  return 1;
+}
+
+static uint16_t GetRawVolts_mV(void)
+{
+  return calibration_mv;
 }
 
 static void PressButton(uint16_t ms)
@@ -262,6 +292,11 @@ static void PressButton(uint16_t ms)
   if(ms > IMPELLER_DEBUG_PRESS_MAX_MS)
     ms = IMPELLER_DEBUG_PRESS_MAX_MS;
   PostCmd(IMPELLER_CMD_PRESS, ms);
+}
+
+static void SyncState(uint8_t on)
+{
+  PostCmd(on ? IMPELLER_CMD_SYNC_ON : IMPELLER_CMD_SYNC_OFF, 0);
 }
 
 static enum impeller_state_e GetState(void)
@@ -280,7 +315,9 @@ const struct impeller_s Impeller = {.Init = Init,
                                     .TurnOff = TurnOff,
                                     .SetSpeed = SetSpeed,
                                     .SetRawVolts_mV = SetRawVolts_mV,
+                                    .GetRawVolts_mV = GetRawVolts_mV,
                                     .PressButton = PressButton,
+                                    .SyncState = SyncState,
                                     .GetState = GetState,
                                     .GetSpeed = GetSpeed};
 

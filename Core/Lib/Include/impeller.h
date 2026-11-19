@@ -32,9 +32,22 @@
 #define IMPELLER_INVERT               0       /* 1 if the controller treats 0 V as maximum */
 #define IMPELLER_PRESS_MS             200     /* button press length */
 
+/*  Calibration voltage after reset, changed at run time by Impeller.SetRawVolts_mV()
+ *  (terminal BOARD_IMPELLER_SET_MV). TurnOn first applies it and waits
+ *  IMPELLER_SIGNAL_SETTLE_MS, then presses the button; while ON the signal stays
+ *  exactly at this voltage and the speed command is ignored.
+ *  A value set by SetRawVolts_mV() acts at once in any state (as the ESP32 "v" command),
+ *  TurnOff() and the end of the match return the signal to 0 V outside ON.
+ *  OFF after reset, TurnOff and the end of the match work as usual (0 V).
+ *  0 = normal speed control: the button is pressed at 0 V, then the speed is ramped.  */
+#ifndef IMPELLER_CALIBRATION_MV
+#define IMPELLER_CALIBRATION_MV       3300
+#endif
+
+#define IMPELLER_SIGNAL_SETTLE_MS     500     /* calibration voltage settles before the press: 5 x 10 kOhm x 10 uF */
 #define IMPELLER_BOOT_DELAY_MS        1000    /* pause after the press before the speed is applied */
 #define IMPELLER_STOP_DELAY_MS        300     /* pause at 0 % before the press that turns it off */
-#define IMPELLER_MAX_SPEED_PCT        30      /* limits every speed command; 30 for the first tests */
+#define IMPELLER_MAX_SPEED_PCT        100     /* limits every speed command; was 30 for the first tests */
 #define IMPELLER_RAMP_PCT_PER_S       40      /* acceleration/deceleration */
 #define IMPELLER_PWM_FREQ_HZ          20000
 #define IMPELLER_PWM_VREF_MV          3300    /* PWM high level = 100 % duty */
@@ -53,8 +66,11 @@ struct impeller_s{
   void (*TurnOn)(void);                     // request: press the button, then apply the speed
   void (*TurnOff)(void);                    // request: ramp to 0, then press the button
   void (*SetSpeed)(uint8_t percent);        // 0..100, limited by IMPELLER_MAX_SPEED_PCT
-  void (*SetRawVolts_mV)(uint16_t mv);      // calibration: direct signal voltage, in OFF/ON only
+  uint8_t (*SetRawVolts_mV)(uint16_t mv);   // calibration voltage, at once in any state until TurnOff(), then while ON;
+                                            // 0 = speed control; returns 0 if above the limit
+  uint16_t (*GetRawVolts_mV)(void);
   void (*PressButton)(uint16_t ms);         // debug: single press, does not change the state
+  void (*SyncState)(uint8_t on);            // set the believed state to the real one, no press (in OFF/ON)
   enum impeller_state_e (*GetState)(void);
   uint8_t (*GetSpeed)(void);                // current speed after the ramp, %
 };

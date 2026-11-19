@@ -15,10 +15,18 @@ BOARD_GET_COORD = 0x07
 BOARD_GET_BATTERY_STATE = 0x08
 BOARD_IMPELLER_ON = 0x30
 BOARD_IMPELLER_OFF = 0x31
+BOARD_IMPELLER_SET_MV = 0x32
+BOARD_IMPELLER_PRESS = 0x33
+BOARD_IMPELLER_SYNC = 0x34
 
 # enum impeller_state_e in impeller.h
 IMPELLER_STATES = {0: 'выкл', 1: 'включается', 2: 'ВКЛ', 3: 'выключается'}
 IMPELLER_SPEED_STEP = 5
+IMPELLER_MV_MAX = 3300
+IMPELLER_MV_DEFAULT = 3300  # IMPELLER_CALIBRATION_MV after reset
+IMPELLER_PRESS_MAX_MS = 2000  # IMPELLER_DEBUG_PRESS_MAX_MS
+# The firmware keeps one pending impeller request and takes it every 10 ms.
+IMPELLER_CMD_GAP = 0.05
 
 # key -> (dx, dy, dphi) direction; x forward, y left, phi counter-clockwise
 MOTION_KEYS = {
@@ -35,6 +43,8 @@ HELP = [
     'Q/E        поворот влево / вправо  Пробел    стоп',
     'M          моторы вкл/выкл (арм)   +/-       линейная скорость, [ ]  угловая',
     'T / Y      импеллер вкл / выкл     < / >     скорость импеллера -/+ 5 %',
+    'J / K      опорное напряжение -/+  H         опорное 0 (управление скоростью)',
+    'P          нажать кнопку импеллера U / N     считать импеллер вкл / выкл (без нажатия)',
     'I          пинг                    B         батарея',
     'V          скорость с энкодеров    C / R     координаты / сброс в 0',
     'X, Esc     выход (нулевая скорость и выключение импеллера)',
@@ -119,6 +129,33 @@ class Robot:
             raise RuntimeError('команда отклонена (COMM_ENABLE = 0: конец матча?)')
         return data[1], data[2]
 
+    def impeller_answer(self, command, payload, title):
+        data = self.request(command, payload)
+        if len(data) != 3:
+            raise RuntimeError(f'длина ответа импеллера {len(data)} вместо 3')
+        if not data[0]:
+            raise RuntimeError(f'{title} отклонено (неверный параметр или COMM_ENABLE = 0)')
+        return data[1], data[2]
+
+    def impeller_press(self, ms):
+        """Button press only, the firmware state is unchanged; returns (state, speed %)."""
+        return self.impeller_answer(BOARD_IMPELLER_PRESS, struct.pack('<H', ms), 'нажатие')
+
+    def impeller_sync(self, on):
+        """Set the firmware state to the real one without a press; returns (state, speed %)."""
+        return self.impeller_answer(BOARD_IMPELLER_SYNC, bytes([1 if on else 0]), 'синхронизация')
+
+    def impeller_mv(self, mv):
+        """Signal voltage while on, mV (0 = speed control); returns (state, speed %, applied mV)."""
+        data = self.request(BOARD_IMPELLER_SET_MV, struct.pack('<H', mv))
+        if len(data) != 5:
+            raise RuntimeError(f'длина ответа импеллера {len(data)} вместо 5')
+        state, speed, applied = data[1], data[2], struct.unpack('<H', data[3:5])[0]
+        if not data[0]:
+            raise RuntimeError(f'напряжение отклонено (выше предела IMPELLER_MAX_SPEED_PCT или COMM_ENABLE = 0), '
+                               f'осталось {applied} мВ')
+        return state, speed, applied
+
 
 class Teleop:
     def __init__(self, robot, args):
@@ -130,6 +167,7 @@ class Teleop:
         self.impeller_speed = args.impeller_speed
         self.impeller_state = None
         self.impeller_current = None
+        self.impeller_mv = None  # unknown until the first BOARD_IMPELLER_SET_MV answer
         self.held_key = None
         self.held_deadline = 0.0
         self.sent_speed = None
@@ -154,6 +192,19 @@ class Teleop:
             self.impeller_state, self.impeller_current = self.robot.impeller(on, self.impeller_speed)
             return f'{IMPELLER_STATES.get(self.impeller_state, self.impeller_state)}, сейчас {self.impeller_current}%'
         self.call(f'импеллер вкл {self.impeller_speed}%' if on else 'импеллер выкл', action)
+
+    def set_impeller_mv(self, mv):
+        mv = min(max(mv, 0), IMPELLER_MV_MAX)
+        def action():
+            self.impeller_state, self.impeller_current, self.impeller_mv = self.robot.impeller_mv(mv)
+            return f'{self.impeller_mv} мВ' + (' (управление скоростью)' if not self.impeller_mv else '')
+        self.call(f'опорное {mv} мВ', action)
+
+    def impeller_state_call(self, title, action):
+        def run():
+            self.impeller_state, self.impeller_current = action()
+            return IMPELLER_STATES.get(self.impeller_state, self.impeller_state)
+        self.call(title, run)
 
     def target_speed(self, now):
         if not self.armed or self.held_key is None or now > self.held_deadline:
@@ -216,6 +267,18 @@ class Teleop:
             # Repeated BOARD_IMPELLER_ON on a running impeller only changes its speed.
             if self.impeller_state in (1, 2):
                 self.impeller(True)
+        elif char in 'jk':
+            base = IMPELLER_MV_DEFAULT if self.impeller_mv is None else self.impeller_mv
+            self.set_impeller_mv(base + (self.args.impeller_mv_step if char == 'k' else -self.args.impeller_mv_step))
+        elif char == 'h':
+            self.set_impeller_mv(0)
+        elif char == 'p':
+            ms = self.args.impeller_press or 200
+            self.impeller_state_call(f'нажатие {ms} мс', lambda: self.robot.impeller_press(ms))
+        elif char in 'un':
+            on = char == 'u'
+            self.impeller_state_call('считать ' + ('включённым' if on else 'выключенным'),
+                                     lambda: self.robot.impeller_sync(on))
         elif char == 'i':
             self.call('пинг', lambda: f'{self.robot.ping():.1f} мс')
         elif char == 'b':
@@ -233,10 +296,14 @@ class Teleop:
         height, width = screen.getmaxyx()
         speed = self.sent_speed or (0.0, 0.0, 0.0)
         impeller = IMPELLER_STATES.get(self.impeller_state, '?')
+        if self.impeller_mv is None:
+            reference = f'? (после сброса {IMPELLER_MV_DEFAULT} мВ)'
+        else:
+            reference = f'{self.impeller_mv} мВ' if self.impeller_mv else '0 — управление скоростью'
         lines = [f'Eurobot teleop  {self.args.port}  ' + ('режим фиксации' if self.args.latch else 'режим удержания'), '']
         lines += HELP + ['']
         lines.append(f'Моторы: {"ВКЛЮЧЕНЫ" if self.armed else "выключены"}   '
-                     f'Импеллер: {impeller}, задано {self.impeller_speed}% (прошивка ограничивает)')
+                     f'Импеллер: {impeller}, задано {self.impeller_speed}%, опорное {reference}')
         lines.append(f'Лимиты: {self.linear:.2f} м/с, {self.angular:.2f} рад/с')
         lines.append(f'Отправлено: dx={speed[0]:+.2f} dy={speed[1]:+.2f} dphi={speed[2]:+.2f}')
         lines += [''] + self.log
@@ -277,6 +344,22 @@ class Teleop:
 
 def impeller_once(robot, args):
     """One impeller command without the keyboard UI, e.g. over ssh."""
+    if args.impeller_mv is not None:
+        # Sent before 'on': the firmware applies it before pressing the button.
+        state, current, applied = robot.impeller_mv(args.impeller_mv)
+        print(f'OK: опорное напряжение {applied} мВ' + (' (управление скоростью)' if not applied else '')
+              + f'; состояние {IMPELLER_STATES.get(state, state)}, текущая скорость {current}%')
+        time.sleep(IMPELLER_CMD_GAP)
+    if args.impeller_sync:
+        state, current = robot.impeller_sync(args.impeller_sync == 'on')
+        print(f'OK: прошивка считает импеллер {IMPELLER_STATES.get(state, state)} (без нажатия)')
+        time.sleep(IMPELLER_CMD_GAP)
+    if args.impeller_press:
+        robot.impeller_press(args.impeller_press)
+        print(f'OK: нажатие кнопки {args.impeller_press} мс')
+        time.sleep(args.impeller_press / 1000 + IMPELLER_CMD_GAP)
+    if not args.impeller:
+        return
     on = args.impeller == 'on'
     state, current = robot.impeller(on, args.impeller_speed)
     print(f'OK: импеллер {"вкл " + str(args.impeller_speed) + "%" if on else "выкл"}; '
@@ -304,7 +387,17 @@ def main():
                         help='клавиша движения задаёт скорость до пробела (без удержания)')
     parser.add_argument('--impeller', choices=('on', 'off'),
                         help='отправить одну команду импеллеру и выйти, без клавиатурного управления')
-    parser.add_argument('--impeller-speed', type=int, default=20,
+    parser.add_argument('--impeller-mv', type=int,
+                        help='опорное напряжение сигнала при включённом импеллере, мВ (0..3300, 0 = управление '
+                             'скоростью); сохраняется до сброса платы, с --impeller on отправляется первым')
+    parser.add_argument('--impeller-press', type=int, metavar='MS',
+                        help='нажать кнопку импеллера на MS мс (1..2000), состояние в прошивке не меняется; '
+                             'в клавиатурном режиме — длина нажатия для P (по умолчанию 200)')
+    parser.add_argument('--impeller-sync', choices=('on', 'off'),
+                        help='сказать прошивке реальное состояние импеллера, без нажатия кнопки')
+    parser.add_argument('--impeller-mv-step', type=int, default=100,
+                        help='шаг опорного напряжения для клавиш J / K, мВ')
+    parser.add_argument('--impeller-speed', type=int, default=100,
                         help='скорость импеллера, %% (0..100, прошивка ограничивает IMPELLER_MAX_SPEED_PCT)')
     args = parser.parse_args()
     try:
@@ -323,6 +416,12 @@ def main():
         parser.error('укажите --port из списка --list')
     if not 0 <= args.impeller_speed <= 100:
         parser.error('--impeller-speed должна быть 0..100')
+    if args.impeller_press is not None and not 0 < args.impeller_press <= IMPELLER_PRESS_MAX_MS:
+        parser.error('--impeller-press должно быть 1..2000 мс')
+    if not 0 < args.impeller_mv_step <= IMPELLER_MV_MAX:
+        parser.error('--impeller-mv-step должен быть 1..3300')
+    if args.impeller_mv is not None and not 0 <= args.impeller_mv <= IMPELLER_MV_MAX:
+        parser.error('--impeller-mv должно быть 0..3300')
     if min(args.linear, args.angular, args.linear_step, args.angular_step, args.timeout) <= 0:
         parser.error('скорости, шаги и таймаут должны быть > 0')
     args.linear = min(args.linear, args.max_linear)
@@ -330,7 +429,7 @@ def main():
     with serial.Serial(args.port, args.baudrate, bytesize=8, parity='N', stopbits=1,
                        timeout=0.01, write_timeout=1, xonxoff=False, rtscts=False, dsrdtr=False) as port:
         port.reset_input_buffer()
-        if args.impeller:
+        if args.impeller or args.impeller_mv is not None or args.impeller_sync or args.impeller_press:
             impeller_once(Robot(port, args.timeout), args)
             return
         curses.wrapper(Teleop(Robot(port, args.timeout), args).run)

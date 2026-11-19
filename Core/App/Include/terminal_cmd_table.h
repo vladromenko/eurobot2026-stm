@@ -76,9 +76,12 @@
 #define BOARD_GRIPPER_SLIDE                 0x2F    /* [47] Slide the gripper through the rack and pinion gear*/
 #define BOARD_IMPELLER_ON                   0x30    /* [48] Turn the impeller on (if off) and set its speed, % */
 #define BOARD_IMPELLER_OFF                  0x31    /* [49] Ramp the impeller down and turn it off */
+#define BOARD_IMPELLER_SET_MV               0x32    /* [50] Impeller signal voltage while on, mV (0 = speed control) */
+#define BOARD_IMPELLER_PRESS                0x33    /* [51] Press the impeller button for N ms, state unchanged */
+#define BOARD_IMPELLER_SYNC                 0x34    /* [52] Tell the firmware the real impeller state, no press */
 
 /*  Do not forget to update the table size with the last one command! */
-#define TERMINAL_CMD_TABLE_SIZE             (BOARD_IMPELLER_OFF + 1)
+#define TERMINAL_CMD_TABLE_SIZE             (BOARD_IMPELLER_SYNC + 1)
 
 
 #ifdef __cplusplus

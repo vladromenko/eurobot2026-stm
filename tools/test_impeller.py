@@ -100,7 +100,8 @@ static void run(uint32_t duration_ms) {
         if (button) button_ms += DT;
         assert(primask == 0);
         /* The speed signal never exceeds the voltage of IMPELLER_MAX_SPEED_PCT. */
-        assert(cc_max <= Speed_mV(IMPELLER_MAX_SPEED_PCT * MPCT_PER_PCT) * (arr + 1) / IMPELLER_PWM_VREF_MV);
+        if (!IMPELLER_CALIBRATION_MV)
+            assert(cc_max <= Speed_mV(IMPELLER_MAX_SPEED_PCT * MPCT_PER_PCT) * (arr + 1) / IMPELLER_PWM_VREF_MV);
     }
 }
 
@@ -121,6 +122,40 @@ int main(void) {
         + (IMPELLER_V_MAX_MV - IMPELLER_V_MIN_MV) * IMPELLER_MAX_SPEED_PCT / 100;
     const uint32_t ramp_ms = IMPELLER_MAX_SPEED_PCT * 1000 / IMPELLER_RAMP_PCT_PER_S;
     uint32_t t;
+
+#if IMPELLER_CALIBRATION_MV
+    /* Calibration mode: V_STOP outside ON, exactly IMPELLER_CALIBRATION_MV while ON. */
+    Impeller.Init();
+    run(1000);
+    assert(Impeller.GetState() == IMPELLER_OFF && cc == expected_cc(IMPELLER_V_STOP_MV));
+    Impeller.SetSpeed(10);
+    Impeller.TurnOn();
+    /* The voltage is applied first, the button is pressed only after it has settled. */
+    t = ms;
+    button_ms = 0;
+    while (!button) {
+        run(DT);
+        assert(ms - t <= IMPELLER_SIGNAL_SETTLE_MS + DT);
+        assert(Impeller.GetState() == IMPELLER_STARTING && cc == expected_cc(IMPELLER_CALIBRATION_MV));
+    }
+    assert(ms - t == IMPELLER_SIGNAL_SETTLE_MS + DT);
+    while (Impeller.GetState() == IMPELLER_STARTING) {
+        assert(cc == expected_cc(IMPELLER_CALIBRATION_MV));
+        run(DT);
+    }
+    assert(Impeller.GetState() == IMPELLER_ON && button_ms == IMPELLER_PRESS_MS);
+    assert(ms - t == IMPELLER_SIGNAL_SETTLE_MS + IMPELLER_PRESS_MS + IMPELLER_BOOT_DELAY_MS + DT);
+    assert(cc == expected_cc(IMPELLER_CALIBRATION_MV) && presses == 1);
+    run(5000);
+    assert(cc == expected_cc(IMPELLER_CALIBRATION_MV));
+    Impeller.TurnOff();
+    run_until(IMPELLER_OFF, 5000);
+    assert(cc == expected_cc(IMPELLER_V_STOP_MV) && presses == 2 && !button);
+    printf("PASS: calibration mode, %u mV (CCR %u of %u) %u ms before the press and while ON, OFF -> %u mV\n",
+        IMPELLER_CALIBRATION_MV, expected_cc(IMPELLER_CALIBRATION_MV), arr + 1,
+        IMPELLER_SIGNAL_SETTLE_MS, IMPELLER_V_STOP_MV);
+    return 0;
+#endif
 
     /* Reset: button released before the pin becomes an output, signal at V_STOP. */
     Impeller.Init();
@@ -149,7 +184,7 @@ int main(void) {
     /* Repeated TurnOn in ON and a speed change do not press the button. */
     Impeller.TurnOn();
     Impeller.SetSpeed(10);
-    run(2000);
+    run((IMPELLER_MAX_SPEED_PCT - 10) * 1000 / IMPELLER_RAMP_PCT_PER_S + 500);
     assert(presses == 1 && Impeller.GetState() == IMPELLER_ON && Impeller.GetSpeed() == 10);
     assert(cc == expected_cc(IMPELLER_V_MIN_MV + (IMPELLER_V_MAX_MV - IMPELLER_V_MIN_MV) / 10));
     printf("PASS: TurnOn in ON ignored, speed 10%%\n");
@@ -180,24 +215,58 @@ int main(void) {
     assert(presses == 4);
     printf("PASS: debug press 150 ms, limited to %u ms, state unchanged\n", IMPELLER_DEBUG_PRESS_MAX_MS);
 
-    /* Calibration voltage: limited by IMPELLER_MAX_SPEED_PCT, cleared by TurnOn. */
-    Impeller.SetRawVolts_mV(1000);
+    /* Sync: the believed state changes without a press, ramp from/to 0. */
+    Impeller.SetSpeed(20);
+    Impeller.SyncState(1);
     run(DT);
-    assert(cc == expected_cc(1000 < max_mv ? 1000 : max_mv));
-    Impeller.SetRawVolts_mV(5000);
+    assert(Impeller.GetState() == IMPELLER_ON && presses == 4);
+    run(ramp_ms + 1000);
+    assert(Impeller.GetSpeed() == 20);
+    Impeller.SyncState(0);
     run(DT);
-    assert(cc == expected_cc(max_mv));
+    assert(Impeller.GetState() == IMPELLER_OFF && presses == 4);
+    run(ramp_ms + 1000);
+    assert(Impeller.GetSpeed() == 0 && cc == expected_cc(IMPELLER_V_STOP_MV));
+    printf("PASS: sync ON / OFF without a press\n");
+
+    /* Calibration voltage: applied only while ON, kept across on/off, 0 = speed control. */
+    /* Set by command: at once even in OFF (impeller turned on by its own button), TurnOff returns 0 V. */
+    assert(Impeller.SetRawVolts_mV(1000) == 1 && Impeller.GetRawVolts_mV() == 1000);
+    assert(Impeller.SetRawVolts_mV(max_mv + 1) == 0 && Impeller.GetRawVolts_mV() == 1000);
+    run(DT);
+    assert(Impeller.GetState() == IMPELLER_OFF && cc == expected_cc(1000));
+    Impeller.TurnOff();
+    run(1000);
+    assert(Impeller.GetState() == IMPELLER_OFF && cc == expected_cc(IMPELLER_V_STOP_MV));
+    assert(Impeller.GetRawVolts_mV() == 1000 && presses == 4);
     Impeller.SetSpeed(20);
     Impeller.TurnOn();
-    run(DT);
-    assert(Impeller.GetState() == IMPELLER_STARTING && cc == expected_cc(IMPELLER_V_STOP_MV));
-    printf("PASS: raw mV limited to %u mV, cleared by TurnOn\n", max_mv);
+    run_until(IMPELLER_STARTING, 100);
+    assert(cc == expected_cc(1000) && !button);
+    run_until(IMPELLER_ON, 5000);
+    assert(cc == expected_cc(1000));
+    Impeller.TurnOff();
+    run_until(IMPELLER_OFF, 5000);
+    assert(cc == expected_cc(IMPELLER_V_STOP_MV));
+    Impeller.TurnOn();
+    run_until(IMPELLER_ON, 5000);
+    assert(cc == expected_cc(1000) && Impeller.GetRawVolts_mV() == 1000);
+    assert(Impeller.SetRawVolts_mV(0) == 1);
+    run(ramp_ms + 1000);
+    assert(Impeller.GetSpeed() == 20 && cc == expected_cc(IMPELLER_V_MIN_MV + (IMPELLER_V_MAX_MV - IMPELLER_V_MIN_MV) / 5));
+    Impeller.TurnOff();
+    run_until(IMPELLER_OFF, 5000);
+    assert(presses == 8);
+    printf("PASS: calibration 1000 mV at once in OFF, 0 V after TurnOff, then only in ON, %u+1 mV rejected, 0 -> speed\n", max_mv);
 
     /* TurnOff during start: the start finishes, then the impeller is stopped. */
+    Impeller.TurnOn();
+    run(DT);
+    assert(Impeller.GetState() == IMPELLER_STARTING);
     Impeller.TurnOff();
     run_until(IMPELLER_ON, 5000);
     run_until(IMPELLER_OFF, 5000);
-    assert(presses == 6 && !button && Impeller.GetSpeed() == 0);
+    assert(presses == 10 && !button && Impeller.GetSpeed() == 0);
     printf("PASS: TurnOff during STARTING -> ON -> OFF, 2 presses\n");
 
     /* TurnOn during stop: the stop finishes, then the impeller starts again. */
@@ -209,7 +278,7 @@ int main(void) {
     Impeller.TurnOn();
     run_until(IMPELLER_OFF, 5000);
     run_until(IMPELLER_ON, 5000);
-    assert(presses == 9);
+    assert(presses == 13);
     printf("PASS: TurnOn during STOPPING -> OFF -> ON, presses=%u\n", presses);
     assert(irq_disabled > 0);
     return 0;
@@ -226,14 +295,16 @@ def main():
                 (folder / header).write_text('#include "test_stubs.h"\n')
         (folder / "test_stubs.h").write_text(STUBS)
         (folder / "test.c").write_text(HARNESS)
-        binary = folder / "test"
-        subprocess.run([
-            *shlex.split(os.environ.get("CC", "cc")), "-std=c99", "-O0",
-            "-Wall", "-Wextra", "-I", str(folder), "-I", str(ROOT / "Core/Lib/Include"),
-            f'-DIMPELLER_SOURCE="{SOURCE}"',
-            str(folder / "test.c"), "-o", str(binary),
-        ], check=True)
-        subprocess.run([str(binary)], check=True)
+        # Normal speed control, then the calibration voltage from impeller.h.
+        for calibration in ("-DIMPELLER_CALIBRATION_MV=0", None):
+            binary = folder / "test"
+            subprocess.run([
+                *shlex.split(os.environ.get("CC", "cc")), "-std=c99", "-O0",
+                "-Wall", "-Wextra", "-I", str(folder), "-I", str(ROOT / "Core/Lib/Include"),
+                f'-DIMPELLER_SOURCE="{SOURCE}"', *([calibration] if calibration else []),
+                str(folder / "test.c"), "-o", str(binary),
+            ], check=True)
+            subprocess.run([str(binary)], check=True)
 
 
 if __name__ == "__main__":

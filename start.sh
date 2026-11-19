@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
 # Start keyboard teleoperation (tools/teleop.py) over USART1.
 # Usage: ./start.sh [/dev/cu.PORT] [teleop.py options...]
-#   ./start.sh                                   keyboard control (T/Y impeller on/off, </> its speed)
-#   ./start.sh --impeller on --impeller-speed 20 one impeller command and exit
+#   ./start.sh                                   keyboard control (T/Y impeller on/off, </> its speed,
+#                                                J/K reference voltage -/+100 mV, H reference 0 = speed control)
+#   ./start.sh --impeller on                    one impeller command and exit (100 %, --impeller-speed N to change)
 #   ./start.sh --impeller off
+#   ./start.sh --impeller-mv 3300 --impeller on  signal voltage first, then on (0 mV = speed control)
+#   ./start.sh --impeller-press 1000             press the button 1 s, firmware state unchanged
+#   ./start.sh --impeller-sync on                the impeller was turned on by hand: no press
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
