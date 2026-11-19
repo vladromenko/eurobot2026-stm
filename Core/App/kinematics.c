@@ -114,18 +114,18 @@ static void SpeedTo_TPM(struct speed_s* speed, int32_t* tpm)
 	float ms[3];
 
 	// Coefs scale nominal motion into real motion, so commands are divided by them
-	nominal_speed.dx = speed->dx/calibration.x_coef;
-	nominal_speed.dy = speed->dy/calibration.y_coef;
-	nominal_speed.dphi = speed->dphi/calibration.phi_coef;
+	nominal_speed.dx   = speed->dx   / calibration.x_coef;
+	nominal_speed.dy   = speed->dy   / calibration.y_coef;
+	nominal_speed.dphi = speed->dphi / calibration.phi_coef;
 	
 	arm_mat_init_f32(&speed_matrix, 3, 1, (float*)&nominal_speed);
 	arm_mat_init_f32(&ms_matrix, 3, 1, ms);
 											
 	arm_mat_mult_f32(&arm_direct_matrix, &speed_matrix, &ms_matrix);
 
-	tpm[0] = ms[0]/calibration.wheel_coef[0]*ms_to_tpm;
-	tpm[1] = ms[1]/calibration.wheel_coef[1]*ms_to_tpm;
-	tpm[2] = ms[2]/calibration.wheel_coef[2]*ms_to_tpm;
+	tpm[0] = ms[0] / calibration.wheel_coef[0] * ms_to_tpm;
+	tpm[1] = ms[1] / calibration.wheel_coef[1] * ms_to_tpm;
+	tpm[2] = ms[2] / calibration.wheel_coef[2] * ms_to_tpm;
 }
 
 static void TPM_ToSpeed(int32_t* tpm, struct speed_s* speed)
@@ -134,17 +134,17 @@ static void TPM_ToSpeed(int32_t* tpm, struct speed_s* speed)
 	arm_matrix_instance_f32 ms_matrix;
 	float ms[3];
 
-	ms[0] = tpm[0]/ms_to_tpm*calibration.wheel_coef[0];
-	ms[1] = tpm[1]/ms_to_tpm*calibration.wheel_coef[1];
-	ms[2] = tpm[2]/ms_to_tpm*calibration.wheel_coef[2];
+	ms[0] = tpm[0] / ms_to_tpm * calibration.wheel_coef[0];
+	ms[1] = tpm[1] / ms_to_tpm * calibration.wheel_coef[1];
+	ms[2] = tpm[2] / ms_to_tpm * calibration.wheel_coef[2];
 	
 	arm_mat_init_f32(&speed_matrix, 3, 1, (float*)speed);
 	arm_mat_init_f32(&ms_matrix, 3, 1, ms);
 											
 	arm_mat_mult_f32(&arm_inverse_matrix, &ms_matrix, &speed_matrix);
 
-	speed->dx *= calibration.x_coef;
-	speed->dy *= calibration.y_coef;
+	speed->dx   *= calibration.x_coef;
+	speed->dy   *= calibration.y_coef;
 	speed->dphi *= calibration.phi_coef;
 }
 
@@ -153,9 +153,9 @@ static void UpdatePath(int32_t* d_ticks, struct coord_s* path)
 	float d_m[3];
 	struct coord_s d_coord;
 
-	d_m[0] = d_ticks[0]*ticks_to_m*calibration.wheel_coef[0];
-	d_m[1] = d_ticks[1]*ticks_to_m*calibration.wheel_coef[1];
-	d_m[2] = d_ticks[2]*ticks_to_m*calibration.wheel_coef[2];
+	d_m[0] = d_ticks[0] * ticks_to_m * calibration.wheel_coef[0];
+	d_m[1] = d_ticks[1] * ticks_to_m * calibration.wheel_coef[1];
+	d_m[2] = d_ticks[2] * ticks_to_m * calibration.wheel_coef[2];
 
 	arm_matrix_instance_f32 d_ms_matrix;
 	arm_matrix_instance_f32 d_coord_matrix;
