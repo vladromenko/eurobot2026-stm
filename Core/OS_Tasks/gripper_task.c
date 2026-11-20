@@ -186,7 +186,7 @@ uint8_t servo_target_angle = 0;
 /* Cursor params */
 uint8_t dynamixel_cursor_id = 13;
 uint16_t cursor_speed = 600; //0-1024
-uint8_t cursor_hor_angle = 198; //0-300 60
+uint8_t cursor_hor_angle = 140; //0-300 60
 uint8_t cursor_vert_angle = 80; //0-300 150 82
 uint8_t cursor_cmd;
 
@@ -590,10 +590,10 @@ static void Task(void *arg)
         MaxonsStop();
         vTaskDelay(50);
         
-        // cursor init
+        // Start the cursor in its configured horizontal position.
         Dynamixel_AX.SetMovingSpeed(USART3, dynamixel_cursor_id, cursor_speed);
         Dynamixel_AX.TorqueEnable(USART3, dynamixel_cursor_id);
-        Dynamixel_AX.SetAngle(USART3, dynamixel_cursor_id, cursor_vert_angle);
+        Dynamixel_AX.SetAngle(USART3, dynamixel_cursor_id, cursor_hor_angle);
         vTaskDelay(100);
 
         // TEMPORARY: height calibration disabled while the limit switch (28 GPIO pin 26, PC13) is disconnected.
