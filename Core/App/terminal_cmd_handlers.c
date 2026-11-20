@@ -1046,22 +1046,24 @@ static void SendImpellerResponse(uint8_t cmd, uint8_t status)
   terminal_response.cmd = cmd;
   terminal_response.data[0] = status;
   terminal_response.data[1] = (uint8_t)Impeller.GetState();
-  terminal_response.data[2] = Impeller.GetSpeed();
-  terminal_response.data_length = 3;
+  terminal_response.data[2] = Impeller.GetDuty();
+  terminal_response.data[3] = Impeller.GetTargetDuty();
+  terminal_response.data_length = 4;
   Terminal.SendResponse(&terminal_response);
 }
 
 static void ImpellerOn(uint8_t* data, uint8_t data_length)
 {
   /*
-   *  data[0] - speed, 0..100 % (limited by IMPELLER_MAX_SPEED_PCT).
-   *  Turns the impeller on if it is off, otherwise only changes the speed.
-   *  Response: [status, state, current speed %].
+   *  data[0] - PWM duty, 0..100 % (limited by IMPELLER_MAX_DUTY_PCT); no data - keep the set duty.
+   *  Turns the impeller on if it is off, otherwise only changes the duty.
+   *  Response: [status, state, duty on the pin %, set duty %].
    */
   uint8_t status = 0;
 
-  if(COMM_ENABLE && (data_length >= 1) && (data[0] <= 100)){
-    Impeller.SetSpeed(data[0]);
+  if(COMM_ENABLE && ((data_length == 0) || (data[0] <= 100))){
+    if(data_length >= 1)
+      Impeller.SetDuty(data[0]);
     Impeller.TurnOn();
     status = 1;
   }
@@ -1079,30 +1081,13 @@ static void ImpellerOff(uint8_t* data, uint8_t data_length)
   SendImpellerResponse(BOARD_IMPELLER_OFF, 1);
 }
 
-static void ImpellerSetMv(uint8_t* data, uint8_t data_length)
+static void ImpellerGetState(uint8_t* data, uint8_t data_length)
 {
-  /*
-   *  data[0..1] - signal voltage while the impeller is on, mV (uint16), 0 = speed control.
-   *  Kept until changed or reset; not above the voltage of IMPELLER_MAX_SPEED_PCT.
-   *  Response: [status, state, current speed %, applied mV (uint16)].
-   */
-  struct terminal_response_s terminal_response;
-  uint16_t mv;
-  uint8_t status = 0;
+  /*  Response: [1, state, duty on the pin %, set duty %], also after the end of the match  */
+  (void)data;
+  (void)data_length;
 
-  if(COMM_ENABLE && (data_length >= 2)){
-    ByteTo_Word16(data, &mv);
-    status = Impeller.SetRawVolts_mV(mv);
-  }
-
-  mv = Impeller.GetRawVolts_mV();
-  terminal_response.cmd = BOARD_IMPELLER_SET_MV;
-  terminal_response.data[0] = status;
-  terminal_response.data[1] = (uint8_t)Impeller.GetState();
-  terminal_response.data[2] = Impeller.GetSpeed();
-  Word16_ToByte(&mv, &terminal_response.data[3]);
-  terminal_response.data_length = 5;
-  Terminal.SendResponse(&terminal_response);
+  SendImpellerResponse(BOARD_IMPELLER_GET_STATE, 1);
 }
 
 static void ImpellerPress(uint8_t* data, uint8_t data_length)
@@ -1110,7 +1095,7 @@ static void ImpellerPress(uint8_t* data, uint8_t data_length)
   /*
    *  data[0..1] - press length, ms (uint16), 1..IMPELLER_DEBUG_PRESS_MAX_MS.
    *  Only toggles the impeller controller, the firmware state is not changed (see BOARD_IMPELLER_SYNC).
-   *  Response: [status, state, current speed %].
+   *  Response: [status, state, duty on the pin %, set duty %].
    */
   uint16_t ms;
   uint8_t status = 0;
@@ -1131,7 +1116,7 @@ static void ImpellerSync(uint8_t* data, uint8_t data_length)
   /*
    *  data[0] - real impeller state: 0 off, 1 on. No button press.
    *  "Off" is accepted also after the end of the match.
-   *  Response: [status, state, current speed %].
+   *  Response: [status, state, duty on the pin %, set duty %].
    */
   uint8_t status = 0;
 
@@ -1186,7 +1171,7 @@ void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t da
                                                                                               [BOARD_GRIPPER_SLIDE] = SlideGripper,
                                                                                               [BOARD_IMPELLER_ON] = ImpellerOn,
                                                                                               [BOARD_IMPELLER_OFF] = ImpellerOff,
-                                                                                              [BOARD_IMPELLER_SET_MV] = ImpellerSetMv,
+                                                                                              [BOARD_IMPELLER_GET_STATE] = ImpellerGetState,
                                                                                               [BOARD_IMPELLER_PRESS] = ImpellerPress,
                                                                                               [BOARD_IMPELLER_SYNC] = ImpellerSync
 };

@@ -90,7 +90,7 @@ int main(void)
 	TIM1_Steppers_PWM_Init();
 	TIM4_PWM_Group1234_Init();
 	TIM5_PWM_Group5678_Init();
-	Impeller.Init(); // TIM5 -> 20 kHz: PWM5..8 cannot drive RC servos
+	Impeller.Init(); // RC_Servo 8 at 50 Hz, TIM5 timing unchanged
 	TIM8_WS2812B_Init();
 	TIM14_USARTx_TimeoutInit();
 

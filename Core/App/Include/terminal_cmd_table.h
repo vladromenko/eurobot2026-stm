@@ -74,9 +74,9 @@
 #define BOARD_MOVE_RELATIVE_POLL            0x2D    /* [45] Start relative move without immediate response */
 #define BOARD_GET_MOVE_STATUS               0x2E    /* [46] Get completion flag of polled relative move */
 #define BOARD_GRIPPER_SLIDE                 0x2F    /* [47] Slide the gripper through the rack and pinion gear*/
-#define BOARD_IMPELLER_ON                   0x30    /* [48] Turn the impeller on (if off) and set its speed, % */
-#define BOARD_IMPELLER_OFF                  0x31    /* [49] Ramp the impeller down and turn it off */
-#define BOARD_IMPELLER_SET_MV               0x32    /* [50] Impeller signal voltage while on, mV (0 = speed control) */
+#define BOARD_IMPELLER_ON                   0x30    /* [48] Turn the impeller on (if off) and set its PWM duty, % */
+#define BOARD_IMPELLER_OFF                  0x31    /* [49] Duty 0, then turn the impeller off */
+#define BOARD_IMPELLER_GET_STATE            0x32    /* [50] Read the impeller state and duty */
 #define BOARD_IMPELLER_PRESS                0x33    /* [51] Press the impeller button for N ms, state unchanged */
 #define BOARD_IMPELLER_SYNC                 0x34    /* [52] Tell the firmware the real impeller state, no press */
 
