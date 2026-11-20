@@ -47,7 +47,7 @@ static void Task(void *arg)
 	{
         while(Terminal.GetRequest(&terminal_request))
         {
-            if((terminal_cmd_handlers[terminal_request.cmd]!=NULL)&&(terminal_request.cmd<TERMINAL_CMD_TABLE_SIZE))
+            if((terminal_request.cmd<TERMINAL_CMD_TABLE_SIZE)&&(terminal_cmd_handlers[terminal_request.cmd]!=NULL))
                 terminal_cmd_handlers[terminal_request.cmd](terminal_request.data,terminal_request.data_length);
         }
 

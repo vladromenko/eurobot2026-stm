@@ -53,4 +53,6 @@ cmake --build --preset debug --target flash
 
 В `.vscode/` находятся задачи сборки/прошивки и конфигурации Cortex-Debug. IntelliSense использует `build/debug/compile_commands.json`, поэтому сначала нужно собрать Debug.
 
+Импеллер (турбинка): подключение, команды и проверка — в [docs/USAGE_RU.md](docs/USAGE_RU.md#импеллер-турбинка), проверка логики — `python3 tools/test_impeller.py`.
+
 История изменений, а также подробности переноса, результаты проверок и известные ограничения описаны в [docs/CHANGELOG.md](docs/CHANGELOG.md), краткая инструкция — в [docs/USAGE_RU.md](docs/USAGE_RU.md).

@@ -43,9 +43,15 @@
 #define BOARD_POWER_OFF_PUMP                0X0C    /* Command Description  */
 #define BOARD_STEPPER_TEST                  0x0D
 
+#define BOARD_IMPELLER_ON                   0x30    /* [48] Turn the impeller on (if off) and set its PWM duty, % */
+#define BOARD_IMPELLER_OFF                  0x31    /* [49] Duty 0, then turn the impeller off */
+#define BOARD_IMPELLER_GET_STATE            0x32    /* [50] Read the impeller state and duty */
+#define BOARD_IMPELLER_PRESS                0x33    /* [51] Press the impeller button for N ms, state unchanged */
+#define BOARD_IMPELLER_SYNC                 0x34    /* [52] Tell the firmware the real impeller state, no press */
+
 
 /*  Do not forget to update the table size with the last one command! */
-#define TERMINAL_CMD_TABLE_SIZE             (BOARD_STEPPER_TEST + 1)
+#define TERMINAL_CMD_TABLE_SIZE             (BOARD_IMPELLER_SYNC + 1)
 
 
 #ifdef __cplusplus

@@ -1,5 +1,16 @@
 # Changelog
 
+## 2026-11-20 — импеллер (турбинка), перенос с ветки `impeller`
+
+- Новый модуль [impeller.c](../Core/Lib/impeller.c) / [impeller.h](../Core/Lib/Include/impeller.h) и задача [impeller_task.c](../Core/OS_Tasks/impeller_task.c) (приоритет 1, период 10 мс). Сигнал скорости — ШИМ PWM8/PA3 через `RC_Servo` (канал `RC_SERVO_8`, 50 Гц, TIM5 не перенастраивается) + RC-фильтр 10 кОм / 47 мкФ на средний вывод потенциометра; единственный параметр — скважность 0–100 %, после сброса задано 75 % (`IMPELLER_DEFAULT_DUTY_PCT`). Вкл/выкл — «нажатие» кнопки: GPIO5/PA8 (открытый сток) напрямую на сигнальный контакт кнопки.
+- Включение: скважность подаётся сразу, через 2,5 с (зарядка фильтра) — нажатие 200 мс, затем пауза 1 с. Выключение: скважность 0, через 2,5 с — нажатие.
+- Команды терминала `0x30 BOARD_IMPELLER_ON` (скважность или без данных), `0x31 BOARD_IMPELLER_OFF`, `0x32 BOARD_IMPELLER_GET_STATE`, `0x33 BOARD_IMPELLER_PRESS`, `0x34 BOARD_IMPELLER_SYNC`; ответ 4 байта. На этой ветке команды не блокируются после конца матча (нет `COMM_ENABLE`).
+- `StopAllActuators()` (конец матча в `GameTask`) выключает импеллер.
+- `terminal_task.c`: проверка `cmd < TERMINAL_CMD_TABLE_SIZE` теперь стоит до чтения `terminal_cmd_handlers[cmd]` — раньше команда за пределами таблицы читала память за массивом.
+- `tools/teleop.py` / `start.sh`: импеллер — T / Y, `<` / `>`, L (нажатие), 9 / 0 (синхронизация), `/` (состояние, читается и при запуске); разовые `./start.sh --impeller on|off|status [--impeller-duty N]`, `--impeller-press N`, `--impeller-sync on|off`. Клавиши насосов, захвата и шаговиков не изменились.
+- Проверка логики на компьютере: `python3 tools/test_impeller.py`. Описание — [USAGE_RU.md](USAGE_RU.md#импеллер-турбинка), задание и прототип ESP32 — [IMPELLER_TASK_RU.md](IMPELLER_TASK_RU.md).
+- Добавлена задача: `make monitor` видит на одну задачу больше.
+
 ## 2026-10-27 — HwInstance: единая точка доступа к периферии
 
 - Добавлены `Core/App/Include/hw_instance.h` и `Core/App/hw_instance.c`: `struct hw_instance_s` хранит указатели на все драйверы периферии (Stepper, L6474H, PWM, SPI GPO, WS2812B, USARTx, DynamixelMaster, Serial, HL_RTU, Dynamixel AX/MX, Maxon, BMS, RC_Servo, H_Bridge, Button) и таблицу `bus_devices`. Экземпляр объявлен `static const` и лежит во Flash; доступ — только через `const struct hw_instance_s* GetHwInstance(void)`.

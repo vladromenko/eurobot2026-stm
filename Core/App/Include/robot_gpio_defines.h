@@ -22,6 +22,13 @@
 #define	STRATEGY_BTN_GPIO12_PE5				    GPIO23_PE5
 #define	MAXON_ENABLE_BTN_GPIO11_PE2				GPIO21_PE2
 
+/*  Impeller: speed signal PWM8/PA3 (RC_Servo 8), button (open-drain to GND) on GPIO5/PA8  */
+#define	IMPELLER_SPEED_RC_SERVO			RC_SERVO_8
+#define	IMPELLER_SPEED_GPIO_PORT		GPIOA
+#define	IMPELLER_SPEED_PWM8_PA3			PWM8_PA3
+#define	IMPELLER_BTN_GPIO_PORT			GPIOA
+#define	IMPELLER_BTN_GPIO5_PA8			GPIO5_PA8
+
 
 /*  Specific Robot GUIDO Pins  */
 #if defined (ROBOT_GUIDO)

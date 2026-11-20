@@ -17,6 +17,19 @@ BOARD_TOGGLE_GRIPPER = 0x0A
 BOARD_POWER_ON_PUMP = 0x0B
 BOARD_POWER_OFF_PUMP = 0x0C
 BOARD_STEPPER_TEST = 0x0D
+BOARD_IMPELLER_ON = 0x30
+BOARD_IMPELLER_OFF = 0x31
+BOARD_IMPELLER_GET_STATE = 0x32
+BOARD_IMPELLER_PRESS = 0x33
+BOARD_IMPELLER_SYNC = 0x34
+
+# enum impeller_state_e in impeller.h
+IMPELLER_STATES = {0: 'выкл', 1: 'включается', 2: 'ВКЛ', 3: 'выключается'}
+IMPELLER_DUTY_STEP = 5
+IMPELLER_DEFAULT_DUTY = 75  # IMPELLER_DEFAULT_DUTY_PCT, used if the board does not answer
+IMPELLER_PRESS_MAX_MS = 2000  # IMPELLER_DEBUG_PRESS_MAX_MS
+# The firmware keeps one pending impeller request and takes it every 10 ms.
+IMPELLER_CMD_GAP = 0.05
 
 # key -> (stepper subcommand, title); codes match StepperTest in terminal_cmd_handlers.c
 STEPPER_KEYS = {
@@ -48,7 +61,10 @@ HELP = [
     'V          скорость с энкодеров    C / R     координаты / сброс в 0',
     'Z / N      шаговики init / выкл    U / J     шаговики вперёд / назад',
     'H          шаговики в ноль         K         шаговики стоп',
-    'X, Esc     выход (с отправкой нулевой скорости)',
+    'T / Y      импеллер вкл / выкл     < / >     скважность импеллера -/+ 5 %',
+    'L          нажать кнопку импеллера 9 / 0     считать импеллер вкл / выкл (без нажатия)',
+    '/          состояние импеллера',
+    'X, Esc     выход (нулевая скорость; импеллер выключается, если включён)',
 ]
 
 
@@ -131,6 +147,32 @@ class Robot:
         if data[0]:
             raise RuntimeError(STEPPER_ERRORS.get(data[0], f'код {data[0]}'))
 
+    def impeller_answer(self, command, payload, title):
+        """Returns (state, duty on the pin %, set duty %); the answer comes before the press."""
+        data = self.request(command, payload)
+        if len(data) != 4:
+            raise RuntimeError(f'длина ответа импеллера {len(data)} вместо 4')
+        if not data[0]:
+            raise RuntimeError(f'{title} отклонено (неверный параметр)')
+        return data[1], data[2], data[3]
+
+    def impeller(self, on, duty=None):
+        """duty None: turn on with the duty already set in the firmware."""
+        if on:
+            return self.impeller_answer(BOARD_IMPELLER_ON, b'' if duty is None else bytes([duty]), 'включение')
+        return self.impeller_answer(BOARD_IMPELLER_OFF, b'', 'выключение')
+
+    def impeller_status(self):
+        return self.impeller_answer(BOARD_IMPELLER_GET_STATE, b'', 'чтение')
+
+    def impeller_press(self, ms):
+        """Button press only, the firmware state is unchanged."""
+        return self.impeller_answer(BOARD_IMPELLER_PRESS, struct.pack('<H', ms), 'нажатие')
+
+    def impeller_sync(self, on):
+        """Set the firmware state to the real one without a press."""
+        return self.impeller_answer(BOARD_IMPELLER_SYNC, bytes([1 if on else 0]), 'синхронизация')
+
 
 class Teleop:
     def __init__(self, robot, args):
@@ -141,6 +183,9 @@ class Teleop:
         self.armed = False
         self.pump = None
         self.steppers = None
+        self.impeller_duty = args.impeller_duty  # None: read from the board at start
+        self.impeller_state = None
+        self.impeller_current = None
         self.held_key = None
         self.held_deadline = 0.0
         self.sent_speed = None
@@ -159,6 +204,27 @@ class Teleop:
         except (OSError, RuntimeError, ValueError) as error:
             self.message(f'{title}: ОШИБКА {error}')
             return False
+
+    def impeller(self, on):
+        def action():
+            self.impeller_state, self.impeller_current, self.impeller_duty = self.robot.impeller(on, self.impeller_duty)
+            return f'{IMPELLER_STATES.get(self.impeller_state, self.impeller_state)}, на выходе {self.impeller_current}%'
+        self.call(f'импеллер вкл {self.impeller_duty}%' if on else 'импеллер выкл', action)
+
+    def read_impeller(self):
+        def action():
+            self.impeller_state, self.impeller_current, duty = self.robot.impeller_status()
+            if self.impeller_duty is None:
+                self.impeller_duty = duty
+            return (f'{IMPELLER_STATES.get(self.impeller_state, self.impeller_state)}, на выходе {self.impeller_current}%, '
+                    f'задано в прошивке {duty}%')
+        self.call('импеллер', action)
+
+    def impeller_state_call(self, title, action):
+        def run():
+            self.impeller_state, self.impeller_current, _ = action()
+            return IMPELLER_STATES.get(self.impeller_state, self.impeller_state)
+        self.call(title, run)
 
     def target_speed(self, now):
         if not self.armed or self.held_key is None or now > self.held_deadline:
@@ -231,6 +297,25 @@ class Teleop:
             self.call('координаты', lambda: 'x={:.3f} y={:.3f} phi={:.3f}'.format(*self.robot.get_coord()))
         elif char == 'r':
             self.call('сброс координат', lambda: self.robot.set_coord(0.0, 0.0, 0.0))
+        elif char == 't':
+            self.impeller(True)
+        elif char == 'y':
+            self.impeller(False)
+        elif char in ',<.>':
+            step = IMPELLER_DUTY_STEP if char in '.>' else -IMPELLER_DUTY_STEP
+            self.impeller_duty = min(max(self.impeller_duty + step, 0), 100)
+            # Repeated BOARD_IMPELLER_ON on a running impeller only changes its duty.
+            if self.impeller_state in (1, 2):
+                self.impeller(True)
+        elif char == 'l':
+            ms = self.args.impeller_press or 200
+            self.impeller_state_call(f'нажатие {ms} мс', lambda: self.robot.impeller_press(ms))
+        elif char in '90':
+            on = char == '9'
+            self.impeller_state_call('считать ' + ('включённым' if on else 'выключенным'),
+                                     lambda: self.robot.impeller_sync(on))
+        elif char in '/?':
+            self.read_impeller()
         elif char in STEPPER_KEYS:
             subcommand, title = STEPPER_KEYS[char]
             if self.call(title, lambda: self.robot.stepper(subcommand)) and subcommand in (0, 5):
@@ -243,9 +328,11 @@ class Teleop:
         speed = self.sent_speed or (0.0, 0.0, 0.0)
         pump = {None: '?', True: 'ВКЛ', False: 'выкл'}[self.pump]
         steppers = {None: '?', True: 'ВКЛ', False: 'выкл'}[self.steppers]
+        impeller = IMPELLER_STATES.get(self.impeller_state, 'нет ответа')
         lines = [f'Eurobot teleop  {self.args.port}  ' + ('режим фиксации' if self.args.latch else 'режим удержания'), '']
         lines += HELP + ['']
         lines.append(f'Моторы: {"ВКЛЮЧЕНЫ" if self.armed else "выключены"}   Насосы: {pump}   Шаговики: {steppers}')
+        lines.append(f'Импеллер: {impeller}, скважность {self.impeller_duty}% (≈ {self.impeller_duty * 3.3 / 100:.2f} В)')
         lines.append(f'Лимиты: {self.linear:.2f} м/с, {self.angular:.2f} рад/с')
         lines.append(f'Отправлено: dx={speed[0]:+.2f} dy={speed[1]:+.2f} dphi={speed[2]:+.2f}')
         lines += [''] + self.log
@@ -258,6 +345,9 @@ class Teleop:
         screen.keypad(True)
         screen.timeout(20)
         self.call('пинг', lambda: f'{self.robot.ping():.1f} мс')
+        self.read_impeller()
+        if self.impeller_duty is None:
+            self.impeller_duty = IMPELLER_DEFAULT_DUTY
         try:
             while True:
                 now = time.monotonic()
@@ -272,13 +362,40 @@ class Teleop:
             self.stop()
 
     def stop(self):
-        for _ in range(5):
-            try:
-                self.robot.set_speed(0.0, 0.0, 0.0)
-                return
-            except (OSError, RuntimeError):
-                time.sleep(0.05)
-        print('ВНИМАНИЕ: нулевая скорость не подтверждена, остановите робота вручную', file=sys.stderr)
+        actions = [('нулевая скорость', lambda: self.robot.set_speed(0.0, 0.0, 0.0))]
+        if self.impeller_state in (1, 2):
+            actions.append(('выключение импеллера', lambda: self.robot.impeller(False)))
+        for title, action in actions:
+            for _ in range(5):
+                try:
+                    action()
+                    break
+                except (OSError, RuntimeError):
+                    time.sleep(0.05)
+            else:
+                print(f'ВНИМАНИЕ: {title} не подтверждено, остановите робота вручную', file=sys.stderr)
+
+
+def impeller_once(robot, args):
+    """One impeller command without the keyboard UI, e.g. over ssh."""
+    if args.impeller_sync:
+        state, current, _ = robot.impeller_sync(args.impeller_sync == 'on')
+        print(f'OK: прошивка считает импеллер {IMPELLER_STATES.get(state, state)} (без нажатия)')
+        time.sleep(IMPELLER_CMD_GAP)
+    if args.impeller_press:
+        robot.impeller_press(args.impeller_press)
+        print(f'OK: нажатие кнопки {args.impeller_press} мс')
+        time.sleep(args.impeller_press / 1000 + IMPELLER_CMD_GAP)
+    if not args.impeller:
+        return
+    if args.impeller == 'status':
+        state, current, duty = robot.impeller_status()
+        print(f'OK: состояние {IMPELLER_STATES.get(state, state)}, на выходе {current}%, задано в прошивке {duty}%')
+        return
+    on = args.impeller == 'on'
+    state, current, duty = robot.impeller(on, args.impeller_duty)
+    print(f'OK: импеллер {"вкл " + str(duty) + "%" if on else "выкл"}; '
+          f'состояние {IMPELLER_STATES.get(state, state)}, на выходе {current}%')
 
 
 def main():
@@ -300,6 +417,16 @@ def main():
     parser.add_argument('--resend', type=float, default=0.2, help='период повторной отправки скорости, с')
     parser.add_argument('--latch', action='store_true',
                         help='клавиша движения задаёт скорость до пробела (без удержания)')
+    parser.add_argument('--impeller', choices=('on', 'off', 'status'),
+                        help='отправить одну команду импеллеру и выйти, без клавиатурного управления')
+    parser.add_argument('--impeller-duty', '--impeller-speed', dest='impeller_duty', type=int,
+                        help='скважность ШИМ импеллера, %% (0..100): на фильтре 3,3 В × %%; '
+                             'по умолчанию — заданная в прошивке (после сброса 75)')
+    parser.add_argument('--impeller-press', type=int, metavar='MS',
+                        help='нажать кнопку импеллера на MS мс (1..2000), состояние в прошивке не меняется; '
+                             'в клавиатурном режиме — длина нажатия для L (по умолчанию 200)')
+    parser.add_argument('--impeller-sync', choices=('on', 'off'),
+                        help='сказать прошивке реальное состояние импеллера, без нажатия кнопки')
     args = parser.parse_args()
     try:
         import serial
@@ -315,6 +442,10 @@ def main():
         return
     if not args.port:
         parser.error('укажите --port из списка --list')
+    if args.impeller_duty is not None and not 0 <= args.impeller_duty <= 100:
+        parser.error('--impeller-duty должна быть 0..100')
+    if args.impeller_press is not None and not 0 < args.impeller_press <= IMPELLER_PRESS_MAX_MS:
+        parser.error('--impeller-press должно быть 1..2000 мс')
     if min(args.linear, args.angular, args.linear_step, args.angular_step, args.timeout) <= 0:
         parser.error('скорости, шаги и таймаут должны быть > 0')
     args.linear = min(args.linear, args.max_linear)
@@ -322,6 +453,9 @@ def main():
     with serial.Serial(args.port, args.baudrate, bytesize=8, parity='N', stopbits=1,
                        timeout=0.01, write_timeout=1, xonxoff=False, rtscts=False, dsrdtr=False) as port:
         port.reset_input_buffer()
+        if args.impeller or args.impeller_sync or args.impeller_press:
+            impeller_once(Robot(port, args.timeout), args)
+            return
         curses.wrapper(Teleop(Robot(port, args.timeout), args).run)
 
 
