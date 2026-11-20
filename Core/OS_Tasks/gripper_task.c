@@ -590,10 +590,10 @@ static void Task(void *arg)
         MaxonsStop();
         vTaskDelay(50);
         
-        // Start the cursor in its configured horizontal position.
+        // cursor init
         Dynamixel_AX.SetMovingSpeed(USART3, dynamixel_cursor_id, cursor_speed);
         Dynamixel_AX.TorqueEnable(USART3, dynamixel_cursor_id);
-        Dynamixel_AX.SetAngle(USART3, dynamixel_cursor_id, cursor_hor_angle);
+        Dynamixel_AX.SetAngle(USART3, dynamixel_cursor_id, cursor_vert_angle);
         vTaskDelay(100);
 
         // TEMPORARY: height calibration disabled while the limit switch (28 GPIO pin 26, PC13) is disconnected.
