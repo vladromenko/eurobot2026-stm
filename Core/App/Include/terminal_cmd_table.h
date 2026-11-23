@@ -41,16 +41,17 @@
 #define BOARD_TOGGLE_GRIPPER                0X0A    /* Command Description  */
 #define BOARD_POWER_ON_PUMP                 0X0B    /* Command Description  */
 #define BOARD_POWER_OFF_PUMP                0X0C    /* Command Description  */
-#define BOARD_STEPPER_TEST                  0x0D
+#define BOARD_STEPPER_TEST                  0x0D    /* [13] Stepper 1 and 2 test: init/forward/backward/disable */
 
-#define BOARD_IMPELLER_ON                   0x30    /* [48] Turn the impeller on (if off) and set its PWM duty, % */
-#define BOARD_IMPELLER_OFF                  0x31    /* [49] Duty 0, then turn the impeller off */
+#define BOARD_IMPELLER_ON                   0x0E    /* [14] Turn the impeller on (if off) and set its PWM duty, % */
+#define BOARD_IMPELLER_OFF                  0x0F    /* [15] Duty 0, then turn the impeller off */
+#define BOARD_IMPELLER_GET_STATE            0x10    /* [16] Read the impeller state and duty */
+#define BOARD_IMPELLER_SET_DUTY             0x11    /* [17] Set the impeller PWM duty, %, the state is unchanged */
 
-#define BOARD_TOGGLE_GRAIL_PICK_GRIPPER     0x37    /* [55] Toggle the PCA9685 CH13 servo between its closed and open angles */
-#define BOARD_TOGGLE_GRAIL_SHELF_GRIPPER    0x38    /* [56] Toggle the PCA9685 CH14 servo between its closed and open angles */
-#define BOARD_GRAIL_LIFT_UP                 0x39    /* [57] Raise the grail lift (Stepper 2) by N mm */
-#define BOARD_GRAIL_LIFT_DOWN               0x3A    /* [58] Lower the grail lift (Stepper 2) by N mm */
-
+#define BOARD_TOGGLE_GRAIL_PICK_GRIPPER     0x12    /* [18] Toggle the PCA9685 CH13 servo between its closed and open angles */
+#define BOARD_TOGGLE_GRAIL_SHELF_GRIPPER    0x13    /* [19] Toggle the PCA9685 CH14 servo between its closed and open angles */
+#define BOARD_GRAIL_LIFT_UP                 0x14    /* [20] Raise the grail lift (Stepper 2) by N mm */
+#define BOARD_GRAIL_LIFT_DOWN               0x15    /* [21] Lower the grail lift (Stepper 2) by N mm */
 
 /*  Do not forget to update the table size with the last one command! */
 #define TERMINAL_CMD_TABLE_SIZE             (BOARD_GRAIL_LIFT_DOWN + 1)

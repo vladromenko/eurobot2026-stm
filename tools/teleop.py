@@ -17,12 +17,14 @@ BOARD_TOGGLE_GRIPPER = 0x0A
 BOARD_POWER_ON_PUMP = 0x0B
 BOARD_POWER_OFF_PUMP = 0x0C
 BOARD_STEPPER_TEST = 0x0D
-BOARD_IMPELLER_ON = 0x30
-BOARD_IMPELLER_OFF = 0x31
-BOARD_TOGGLE_GRAIL_PICK_GRIPPER = 0x37
-BOARD_TOGGLE_GRAIL_SHELF_GRIPPER = 0x38
-BOARD_GRAIL_LIFT_UP = 0x39
-BOARD_GRAIL_LIFT_DOWN = 0x3A
+BOARD_IMPELLER_ON = 0x0E
+BOARD_IMPELLER_OFF = 0x0F
+BOARD_IMPELLER_GET_STATE = 0x10
+BOARD_IMPELLER_SET_DUTY = 0x11
+BOARD_TOGGLE_GRAIL_PICK_GRIPPER = 0x12
+BOARD_TOGGLE_GRAIL_SHELF_GRIPPER = 0x13
+BOARD_GRAIL_LIFT_UP = 0x14
+BOARD_GRAIL_LIFT_DOWN = 0x15
 
 # The firmware answers the grail lift command after the move, it gives up after 10 s.
 GRAIL_LIFT_TIMEOUT = 12.0
@@ -30,7 +32,7 @@ GRAIL_LIFT_TIMEOUT = 12.0
 # enum impeller_state_e in impeller.h
 IMPELLER_STATES = {0: 'выкл', 1: 'включается', 2: 'ВКЛ', 3: 'выключается'}
 IMPELLER_DUTY_STEP = 5
-IMPELLER_DEFAULT_DUTY = 75  # IMPELLER_DEFAULT_DUTY_PCT, the duty after reset
+IMPELLER_DEFAULT_DUTY = 75  # IMPELLER_DEFAULT_DUTY_PCT, used if the board does not answer
 
 # key -> (stepper subcommand, title); codes match StepperTest in terminal_cmd_handlers.c
 STEPPER_KEYS = {
@@ -60,6 +62,7 @@ HELP = [
     'V          скорость с энкодеров    C / R     координаты / сброс в 0',
     'Z / N      шаговики init / выкл    U / J     шаговики вперёд / назад',
     'T / Y      импеллер вкл / выкл     < / >     скважность импеллера -/+ 5 %',
+    '/          состояние импеллера',
     '1 / 2      захват / полка грааля   3 / 4      лифт грааля вверх / вниз',
     'X, Esc     выход (нулевая скорость; импеллер выключается, если включён)',
 ]
@@ -175,6 +178,13 @@ class Robot:
             return self.impeller_answer(BOARD_IMPELLER_ON, b'' if duty is None else bytes([duty]), 'включение')
         return self.impeller_answer(BOARD_IMPELLER_OFF, b'', 'выключение')
 
+    def impeller_status(self):
+        return self.impeller_answer(BOARD_IMPELLER_GET_STATE, b'', 'чтение')
+
+    def impeller_set_duty(self, duty):
+        """Duty only, the impeller is not turned on or off."""
+        return self.impeller_answer(BOARD_IMPELLER_SET_DUTY, bytes([duty]), 'скважность')
+
 
 
 class Teleop:
@@ -186,7 +196,7 @@ class Teleop:
         self.armed = False
         self.pump = None
         self.steppers = None
-        self.impeller_duty = IMPELLER_DEFAULT_DUTY if args.impeller_duty is None else args.impeller_duty
+        self.impeller_duty = args.impeller_duty  # None: read from the board at start
         self.impeller_state = None
         self.impeller_current = None
         self.held_key = None
@@ -213,6 +223,21 @@ class Teleop:
             self.impeller_state, self.impeller_current, self.impeller_duty = self.robot.impeller(on, self.impeller_duty)
             return f'{IMPELLER_STATES.get(self.impeller_state, self.impeller_state)}, на выходе {self.impeller_current}%'
         self.call(f'импеллер вкл {self.impeller_duty}%' if on else 'импеллер выкл', action)
+
+    def read_impeller(self):
+        def action():
+            self.impeller_state, self.impeller_current, duty = self.robot.impeller_status()
+            if self.impeller_duty is None:
+                self.impeller_duty = duty
+            return (f'{IMPELLER_STATES.get(self.impeller_state, self.impeller_state)}, на выходе {self.impeller_current}%, '
+                    f'задано в прошивке {duty}%')
+        self.call('импеллер', action)
+
+    def set_impeller_duty(self):
+        def action():
+            self.impeller_state, self.impeller_current, self.impeller_duty = self.robot.impeller_set_duty(self.impeller_duty)
+            return f'{IMPELLER_STATES.get(self.impeller_state, self.impeller_state)}, на выходе {self.impeller_current}%'
+        self.call(f'скважность импеллера {self.impeller_duty}%', action)
 
     def target_speed(self, now):
         if not self.armed or self.held_key is None or now > self.held_deadline:
@@ -292,9 +317,9 @@ class Teleop:
         elif char in ',<.>':
             step = IMPELLER_DUTY_STEP if char in '.>' else -IMPELLER_DUTY_STEP
             self.impeller_duty = min(max(self.impeller_duty + step, 0), 100)
-            # Repeated BOARD_IMPELLER_ON on a running impeller only changes its duty.
-            if self.impeller_state in (1, 2):
-                self.impeller(True)
+            self.set_impeller_duty()
+        elif char in '/?':
+            self.read_impeller()
         elif char == '1':
             self.call('захват грааля', lambda: self.robot.grail_toggle(BOARD_TOGGLE_GRAIL_PICK_GRIPPER))
         elif char == '2':
@@ -332,6 +357,9 @@ class Teleop:
         screen.keypad(True)
         screen.timeout(20)
         self.call('пинг', lambda: f'{self.robot.ping():.1f} мс')
+        self.read_impeller()
+        if self.impeller_duty is None:
+            self.impeller_duty = IMPELLER_DEFAULT_DUTY
         try:
             while True:
                 now = time.monotonic()
@@ -362,6 +390,14 @@ class Teleop:
 
 def impeller_once(robot, args):
     """One impeller command without the keyboard UI, e.g. over ssh."""
+    if args.impeller == 'status':
+        state, current, duty = robot.impeller_status()
+        print(f'OK: состояние {IMPELLER_STATES.get(state, state)}, на выходе {current}%, задано в прошивке {duty}%')
+        return
+    if args.impeller is None:
+        state, current, duty = robot.impeller_set_duty(args.impeller_duty)
+        print(f'OK: скважность {duty}%; состояние {IMPELLER_STATES.get(state, state)}, на выходе {current}%')
+        return
     on = args.impeller == 'on'
     state, current, duty = robot.impeller(on, args.impeller_duty)
     print(f'OK: импеллер {"вкл " + str(duty) + "%" if on else "выкл"}; '
@@ -388,11 +424,12 @@ def main():
     parser.add_argument('--latch', action='store_true',
                         help='клавиша движения задаёт скорость до пробела (без удержания)')
     parser.add_argument('--grail-step', type=int, default=10, help='ход лифта грааля на клавишу 3/4, мм (1..255)')
-    parser.add_argument('--impeller', choices=('on', 'off'),
+    parser.add_argument('--impeller', choices=('on', 'off', 'status'),
                         help='отправить одну команду импеллеру и выйти, без клавиатурного управления')
     parser.add_argument('--impeller-duty', '--impeller-speed', dest='impeller_duty', type=int,
                         help='скважность ШИМ импеллера, %% (0..100): на фильтре 3,3 В × %%; '
-                             'по умолчанию — заданная в прошивке (после сброса 75)')
+                             'по умолчанию — заданная в прошивке (после сброса 75); '
+                             'без --impeller — только задать скважность, не включая и не выключая')
     args = parser.parse_args()
     try:
         import serial
@@ -419,7 +456,7 @@ def main():
     with serial.Serial(args.port, args.baudrate, bytesize=8, parity='N', stopbits=1,
                        timeout=0.01, write_timeout=1, xonxoff=False, rtscts=False, dsrdtr=False) as port:
         port.reset_input_buffer()
-        if args.impeller:
+        if args.impeller or args.impeller_duty is not None:
             impeller_once(Robot(port, args.timeout), args)
             return
         curses.wrapper(Teleop(Robot(port, args.timeout), args).run)

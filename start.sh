@@ -6,6 +6,8 @@
 #   ./start.sh --impeller on                    one impeller command and exit (duty set in the firmware, 75 % after reset)
 #   ./start.sh --impeller on --impeller-duty 60  duty 60 % = 2 V on the filter (3.3 V x duty)
 #   ./start.sh --impeller off
+#   ./start.sh --impeller status                 state and duty read from the board
+#   ./start.sh --impeller-duty 60                set the duty only, the impeller is not turned on or off
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

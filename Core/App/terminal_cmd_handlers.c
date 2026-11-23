@@ -400,6 +400,32 @@ static void ImpellerOff(uint8_t* data, uint8_t data_length)
   SendImpellerResponse(BOARD_IMPELLER_OFF, 1);
 }
 
+static void ImpellerGetState(uint8_t* data, uint8_t data_length)
+{
+  /*  Response: [1, state, duty on the pin %, set duty %]  */
+  (void)data;
+  (void)data_length;
+
+  SendImpellerResponse(BOARD_IMPELLER_GET_STATE, 1);
+}
+
+static void ImpellerSetDuty(uint8_t* data, uint8_t data_length)
+{
+  /*
+   *  data[0] - PWM duty, 0..100 % (limited by IMPELLER_MAX_DUTY_PCT).
+   *  Applied at once while starting or on, otherwise used by the next turn on. No press.
+   *  Response: [status, state, duty on the pin %, set duty %].
+   */
+  uint8_t status = 0;
+
+  if((data_length >= 1) && (data[0] <= 100)){
+    Impeller.SetDuty(data[0]);
+    status = 1;
+  }
+
+  SendImpellerResponse(BOARD_IMPELLER_SET_DUTY, status);
+}
+
 /* data[0] - travel, mm. Response after the move: 1 - moved, 0 - fault, timeout, bottom switch or busy */
 static void GrailLiftStep(uint8_t cmd, uint8_t direction, uint8_t* data, uint8_t data_length)
 {
@@ -472,6 +498,8 @@ void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t da
                                                                                               [BOARD_STEPPER_TEST] = StepperTest,
                                                                                               [BOARD_IMPELLER_ON] = ImpellerOn,
                                                                                               [BOARD_IMPELLER_OFF] = ImpellerOff,
+                                                                                              [BOARD_IMPELLER_GET_STATE] = ImpellerGetState,
+                                                                                              [BOARD_IMPELLER_SET_DUTY] = ImpellerSetDuty,
                                                                                               [BOARD_TOGGLE_GRAIL_PICK_GRIPPER] = ToggleGrailPickGripper,
                                                                                               [BOARD_TOGGLE_GRAIL_SHELF_GRIPPER] = ToggleGrailShelfGripper,
                                                                                               [BOARD_GRAIL_LIFT_UP] = GrailLiftUp,
