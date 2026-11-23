@@ -85,7 +85,7 @@ void StepperMotor_2_Init(void)
 		
 	/* Lift2 used 500 mA at 1/16 step before enabling the bridge. */
 	L6474H.SetStepMode(STEPPER_MOTOR_2, L6474_STEP_MODE_16);
-	L6474H.SetCurrentLimit_mA(STEPPER_MOTOR_2, 500);
+	L6474H.SetCurrentLimit_mA(STEPPER_MOTOR_2, 1100);
 		
     L6474H.SetDirection(STEPPER_MOTOR_2, DIRECTION_FORWARD);
 }
