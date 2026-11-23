@@ -1,0 +1,210 @@
+--- a/Core/BSP/l6474_drvr.c
++++ b/Core/BSP/l6474_drvr.c
+@@ -41,13 +41,30 @@
+ uint32_t dir_pin[] = {DIR1_PE8,DIR2_PE10,DIR3_PE12,DIR4_PE15};
+ 
+ 
++/* At 168 MHz, 168 single-cycle NOPs alone take 1 us. The L6474
++   requires 800 ns deselected and 350 ns selected before the clock. */
++static void WaitChipSelect(void)
++{
++    __DSB();
++    for (unsigned i = 0; i < 168U; ++i) {
++        __NOP();
++    }
++}
++
++static inline void SelectDriver(enum l6474h_motor_s motor)
++{
++    if (motor == STEPPER_MOTOR_2) WaitChipSelect();
++    LL_GPIO_ResetOutputPin(spi_ncs_gpio[motor], spi_ncs_pin[motor]);
++    if (motor == STEPPER_MOTOR_2) WaitChipSelect();
++}
++
+ static void SetParam(enum l6474h_motor_s motor, uint8_t address, uint32_t data, uint8_t length)
+ {
+ 	vTaskSuspendAll();
+ 
+ 	LL_SPI_SetBaudRatePrescaler(SPI1,LL_SPI_BAUDRATEPRESCALER_DIV32);
+ 	
+-	LL_GPIO_ResetOutputPin(spi_ncs_gpio[motor], spi_ncs_pin[motor]);
++	SelectDriver(motor);
+ 	
+ 	LL_SPI_TransmitData8(SPI1, L6474_SetParam_CMD|(address&0x1F));
+ 	while(LL_SPI_IsActiveFlag_BSY(SPI1)!=0);
+@@ -55,7 +72,7 @@
+ 	while(length>0){
+ 		LL_GPIO_SetOutputPin(spi_ncs_gpio[motor], spi_ncs_pin[motor]);
+ 		length--;
+-		LL_GPIO_ResetOutputPin(spi_ncs_gpio[motor], spi_ncs_pin[motor]);
++		SelectDriver(motor);
+ 		
+ 		LL_SPI_TransmitData8(SPI1, (data>>(length*8))&0xFF);
+ 		while(LL_SPI_IsActiveFlag_BSY(SPI1)!=0);
+@@ -77,7 +94,7 @@
+ 	
+ 	LL_SPI_SetBaudRatePrescaler(SPI1,LL_SPI_BAUDRATEPRESCALER_DIV32);
+ 	
+-	LL_GPIO_ResetOutputPin(spi_ncs_gpio[motor], spi_ncs_pin[motor]);
++	SelectDriver(motor);
+ 	
+ 	LL_SPI_TransmitData8(SPI1, L6474_GetParam_CMD|(address&0x1F));
+ 	while(LL_SPI_IsActiveFlag_BSY(SPI1)!=0);
+@@ -88,7 +105,7 @@
+ 	while(length>0){
+ 		LL_GPIO_SetOutputPin(spi_ncs_gpio[motor], spi_ncs_pin[motor]);
+ 		length--;
+-		LL_GPIO_ResetOutputPin(spi_ncs_gpio[motor], spi_ncs_pin[motor]);
++		SelectDriver(motor);
+ 		
+ 		LL_SPI_TransmitData8(SPI1, L6474_NOP_CMD);
+ 		while(LL_SPI_IsActiveFlag_BSY(SPI1)!=0);
+@@ -113,7 +130,7 @@
+ 	
+ 	LL_SPI_SetBaudRatePrescaler(SPI1,LL_SPI_BAUDRATEPRESCALER_DIV32);
+ 	
+-	LL_GPIO_ResetOutputPin(spi_ncs_gpio[motor], spi_ncs_pin[motor]);
++	SelectDriver(motor);
+ 	
+ 	LL_SPI_TransmitData8(SPI1, L6474_GetStatus_CMD);
+ 	while(LL_SPI_IsActiveFlag_BSY(SPI1)!=0);
+@@ -123,7 +140,7 @@
+ 	
+ 	
+ 	LL_GPIO_SetOutputPin(spi_ncs_gpio[motor], spi_ncs_pin[motor]);
+-	LL_GPIO_ResetOutputPin(spi_ncs_gpio[motor], spi_ncs_pin[motor]);
++	SelectDriver(motor);
+ 	
+ 	LL_SPI_TransmitData8(SPI1, L6474_NOP_CMD);
+ 	while(LL_SPI_IsActiveFlag_BSY(SPI1)!=0);
+@@ -131,7 +148,7 @@
+ 	temp = ((uint32_t)LL_SPI_ReceiveData8(SPI1))<<8;
+ 	
+ 	LL_GPIO_SetOutputPin(spi_ncs_gpio[motor], spi_ncs_pin[motor]);
+-	LL_GPIO_ResetOutputPin(spi_ncs_gpio[motor], spi_ncs_pin[motor]);
++	SelectDriver(motor);
+ 	
+ 	LL_SPI_TransmitData8(SPI1, L6474_NOP_CMD);
+ 	while(LL_SPI_IsActiveFlag_BSY(SPI1)!=0);
+@@ -155,7 +172,7 @@
+ 
+ 	LL_SPI_SetBaudRatePrescaler(SPI1,LL_SPI_BAUDRATEPRESCALER_DIV32);
+ 	
+-	LL_GPIO_ResetOutputPin(spi_ncs_gpio[motor], spi_ncs_pin[motor]);
++	SelectDriver(motor);
+ 	
+ 	LL_SPI_TransmitData8(SPI1, L6474_ENABLE_CMD);
+ 	while(LL_SPI_IsActiveFlag_BSY(SPI1)!=0);
+@@ -173,7 +190,7 @@
+ 
+ 	LL_SPI_SetBaudRatePrescaler(SPI1,LL_SPI_BAUDRATEPRESCALER_DIV32);
+ 	
+-	LL_GPIO_ResetOutputPin(spi_ncs_gpio[motor], spi_ncs_pin[motor]);
++	SelectDriver(motor);
+ 	
+ 	LL_SPI_TransmitData8(SPI1, L6474_DISABLE_CMD);
+ 	while(LL_SPI_IsActiveFlag_BSY(SPI1)!=0);
+--- a/Core/Lib/Include/lift2.h
++++ b/Core/Lib/Include/lift2.h
+@@ -28,7 +28,8 @@
+   LIFT2_INVALID_ARGUMENT = 1,
+   LIFT2_NOT_ARMED = 2,
+   LIFT2_BUSY = 3,
+-  LIFT2_OUT_OF_RANGE = 4
++  LIFT2_OUT_OF_RANGE = 4,
++  LIFT2_DRIVER_FAULT = 5
+ };
+ 
+ enum lift2_flags_e {
+@@ -52,6 +53,7 @@
+ struct lift2_s {
+   void (*Init)(void);
+   void (*Update)(void);
++  void (*PrepareDriver)(void);
+   enum lift2_result_e (*Arm)(void);
+   enum lift2_result_e (*MoveRelative)(int32_t steps);
+   enum lift2_result_e (*Stop)(void);
+--- a/Core/Lib/lift2.c
++++ b/Core/Lib/lift2.c
+@@ -9,6 +9,8 @@
+ #include "stepper.h"
+ #include "l6474_drvr.h"
+ #include "rc_servo.h"
++#include "FreeRTOS.h"
++#include "task.h"
+ 
+ #include <limits.h>
+ #include <string.h>
+@@ -85,17 +87,36 @@
+   UpdateOneServo(&servo3);
+ }
+ 
+-static enum lift2_result_e Arm(void)
++static void PrepareDriver(void)
+ {
+   if(initialized == 0U){
+     Stepper.Init(LIFT2_STEPPER);
+     L6474H.SetStepMode(LIFT2_STEPPER, L6474_STEP_MODE_16);
+     L6474H.SetCurrentLimit_mA(LIFT2_STEPPER, LIFT2_STEPPER_CURRENT_MA);
+     Stepper.SetZeroPosisition(LIFT2_STEPPER);
++    (void)L6474H.GetStatus(LIFT2_STEPPER); /* clear power-on UVLO once, while disabled */
+     initialized = 1U;
+   }
+ 
++}
++
++static enum lift2_result_e Arm(void)
++{
++  const uint16_t healthy = L6474_OCD_MASK | L6474_TH_SD_MASK | L6474_UVLO_MASK;
++  PrepareDriver();
++  uint16_t status = L6474H.GetParam(LIFT2_STEPPER, L6474_STATUS, L6474_STATUS_LENGTH);
++  if (status == 0xFFFFU || (status & healthy) != healthy) {
++    armed = 0U;
++    return LIFT2_DRIVER_FAULT;
++  }
+   Stepper.Enable(LIFT2_STEPPER);
++  vTaskDelay(pdMS_TO_TICKS(2));
++  status = L6474H.GetParam(LIFT2_STEPPER, L6474_STATUS, L6474_STATUS_LENGTH);
++  if ((status & (healthy | L6474_HiZ_MASK)) != healthy) {
++    Stepper.Disable(LIFT2_STEPPER);
++    armed = 0U;
++    return LIFT2_DRIVER_FAULT;
++  }
+   armed = 1U;
+   return LIFT2_OK;
+ }
+@@ -221,6 +242,7 @@
+ }
+ 
+ const struct lift2_s Lift2 = {.Init = Init,
++                              .PrepareDriver = PrepareDriver,
+                               .Update = Update,
+                               .Arm = Arm,
+                               .MoveRelative = MoveRelative,
+--- a/Core/App/terminal_cmd_handlers.c
++++ b/Core/App/terminal_cmd_handlers.c
+@@ -1113,7 +1113,23 @@
+ 
+ static void Lift2GetState(uint8_t* data, uint8_t data_length)
+ {
+-  (void)data;
++  if (data_length == 1U && data[0] == 1U) {
++    struct terminal_response_s response = {0};
++    const enum l6474h_motor_s motors[] = {STEPPER_MOTOR_1, STEPPER_MOTOR_2};
++    const uint8_t regs[] = {L6474_TVAL, L6474_STEP_MODE, L6474_OCD_TH, L6474_TOFF_MIN};
++    Lift2.PrepareDriver(); /* first use configures channel 2 in HiZ, without ENABLE */
++    response.cmd = BOARD_LIFT2_GET_STATE;
++    response.data[response.data_length++] = 0xD2U;
++    for (unsigned i = 0; i < 2U; ++i) {
++      for (unsigned j = 0; j < sizeof(regs); ++j)
++        response.data[response.data_length++] = L6474H.GetParam(motors[i], regs[j], 1U);
++      uint16_t status = L6474H.GetParam(motors[i], L6474_STATUS, L6474_STATUS_LENGTH);
++      Word16_ToByte(&status, &response.data[response.data_length]);
++      response.data_length += 2U;
++    }
++    Terminal.SendResponse(&response);
++    return;
++  }
+   SendLift2Response(BOARD_LIFT2_GET_STATE,
+                     (data_length == 0U) ? LIFT2_OK : LIFT2_INVALID_ARGUMENT);
+ }

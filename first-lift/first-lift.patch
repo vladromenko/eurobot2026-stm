@@ -1,0 +1,823 @@
+diff --git a/Core/App/Include/terminal_cmd_table.h b/Core/App/Include/terminal_cmd_table.h
+index d329bf7..9d3f13a 100644
+--- a/Core/App/Include/terminal_cmd_table.h
++++ b/Core/App/Include/terminal_cmd_table.h
+@@ -74,9 +74,16 @@
+ #define BOARD_MOVE_RELATIVE_POLL            0x2D    /* [45] Start relative move without immediate response */
+ #define BOARD_GET_MOVE_STATUS               0x2E    /* [46] Get completion flag of polled relative move */
+ #define BOARD_GRIPPER_SLIDE                 0x2F    /* [47] Slide the gripper through the rack and pinion gear*/
++#define BOARD_LIFT2_ARM                     0x30    /* [48] Init/enable Stepper Output 2; no movement */
++#define BOARD_LIFT2_MOVE_REL                0x31    /* [49] Bounded int32 relative microstep move */
++#define BOARD_LIFT2_STOP                    0x32    /* [50] Stop Stepper 2 pulses, keep holding */
++#define BOARD_LIFT2_DISARM                  0x33    /* [51] Disable Stepper 2 and S1/PWM5, S3/PWM6 */
++#define BOARD_LIFT2_SET_SERVO               0x34    /* [52] Servo id 1/3 + uint16 pulse us; 0 disables */
++#define BOARD_LIFT2_GET_STATE               0x35    /* [53] Read Stepper 2 / S1/PWM5 / S3/PWM6 state */
++#define BOARD_LIFT2_SET_ZERO                0x36    /* [54] Set current Stepper 2 position to zero */
+ 
+ /*  Do not forget to update the table size with the last one command! */
+-#define TERMINAL_CMD_TABLE_SIZE             (BOARD_GRIPPER_SLIDE + 1)
++#define TERMINAL_CMD_TABLE_SIZE             (BOARD_LIFT2_SET_ZERO + 1)
+ 
+ 
+ #ifdef __cplusplus
+diff --git a/Core/App/main.c b/Core/App/main.c
+index e67e9f4..b399eff 100644
+--- a/Core/App/main.c
++++ b/Core/App/main.c
+@@ -46,6 +46,7 @@
+ #include "hl_rtu.h"
+ #include "serial.h"
+ #include "pca9685.h"
++#include "lift2.h"
+ 
+ volatile int PCA9685_InitStatus;
+ 
+@@ -89,6 +90,7 @@ int main(void)
+ 	TIM1_Steppers_PWM_Init();
+ 	TIM4_PWM_Group1234_Init();
+ 	TIM5_PWM_Group5678_Init();
++	Lift2.Init(); /* Stepper 2 and PWM5/PWM6 remain disabled until ARM command. */
+ 	TIM8_WS2812B_Init();
+ 	TIM14_USARTx_TimeoutInit();
+ 
+@@ -132,6 +134,7 @@ int main(void)
+   //DemoTask.CreateTask(4);
+ 	StepperTask.CreateTask(1);
+ 	GripperTask.CreateTask(1);
++	Lift2Task.CreateTask(1);
+   //DebugTerminalTask.CreateTask(1);
+ 	
+   /*  Run scheduler  */
+diff --git a/Core/App/robot_behavior_routine.c b/Core/App/robot_behavior_routine.c
+index 6412f06..58da55d 100644
+--- a/Core/App/robot_behavior_routine.c
++++ b/Core/App/robot_behavior_routine.c
+@@ -28,6 +28,7 @@
+ #include "spi_gpo.h" 
+ #include "spi_gpo_defines.h"
+ #include "stepper.h"
++#include "lift2.h"
+ 
+ struct robot_ctrl_s robot_ctrl;
+ QueueHandle_t button_callbacks_queue_handle = NULL;
+@@ -79,6 +80,7 @@ void StopAllActuators(void)
+ 	MaxonsDisable();
+ 	SPI_GPO_ResetOutputPin(SPI_GPO_ALL);
+ 	Stepper.StopMotor(STEPPER_MOTOR_1);
++	Lift2.Disarm();
+ }
+ 
+ 
+diff --git a/Core/App/terminal_cmd_handlers.c b/Core/App/terminal_cmd_handlers.c
+index 2421d28..2439f3d 100644
+--- a/Core/App/terminal_cmd_handlers.c
++++ b/Core/App/terminal_cmd_handlers.c
+@@ -46,6 +46,7 @@
+ #include "pca9685.h"
+ #include "maxon.h"
+ #include "math.h"
++#include "lift2.h"
+ 
+ #include "FreeRTOS.h"
+ #include "task.h"
+@@ -1038,6 +1039,94 @@ static void SlideGripper(uint8_t* data, uint8_t data_length)
+   Terminal.SendResponse(&terminal_response);
+ }
+ 
++static void SendLift2Response(uint8_t cmd, enum lift2_result_e result)
++{
++  struct lift2_state_s state;
++  struct terminal_response_s response = {0};
++
++  Lift2.GetState(&state);
++  response.cmd = cmd;
++  response.data[0] = (uint8_t)result;
++  response.data[1] = state.flags;
++  Word32_ToByte(&state.position_steps, &response.data[2]);
++  Word16_ToByte(&state.l6474_status, &response.data[6]);
++  Word16_ToByte(&state.servo1_current_us, &response.data[8]);
++  Word16_ToByte(&state.servo1_target_us, &response.data[10]);
++  Word16_ToByte(&state.servo3_current_us, &response.data[12]);
++  Word16_ToByte(&state.servo3_target_us, &response.data[14]);
++  response.data_length = 16;
++  Terminal.SendResponse(&response);
++}
++
++static void Lift2Arm(uint8_t* data, uint8_t data_length)
++{
++  enum lift2_result_e result = LIFT2_INVALID_ARGUMENT;
++  (void)data;
++  if(data_length == 0U)
++    result = Lift2.Arm();
++  SendLift2Response(BOARD_LIFT2_ARM, result);
++}
++
++static void Lift2MoveRelative(uint8_t* data, uint8_t data_length)
++{
++  enum lift2_result_e result = LIFT2_INVALID_ARGUMENT;
++  int32_t steps;
++
++  if(data_length == 4U){
++    ByteTo_Word32(data, &steps);
++    result = Lift2.MoveRelative(steps);
++  }
++  SendLift2Response(BOARD_LIFT2_MOVE_REL, result);
++}
++
++static void Lift2Stop(uint8_t* data, uint8_t data_length)
++{
++  enum lift2_result_e result = LIFT2_INVALID_ARGUMENT;
++  (void)data;
++  if(data_length == 0U)
++    result = Lift2.Stop();
++  SendLift2Response(BOARD_LIFT2_STOP, result);
++}
++
++static void Lift2Disarm(uint8_t* data, uint8_t data_length)
++{
++  enum lift2_result_e result = LIFT2_INVALID_ARGUMENT;
++  (void)data;
++  if(data_length == 0U){
++    Lift2.Disarm();
++    result = LIFT2_OK;
++  }
++  SendLift2Response(BOARD_LIFT2_DISARM, result);
++}
++
++static void Lift2SetServo(uint8_t* data, uint8_t data_length)
++{
++  enum lift2_result_e result = LIFT2_INVALID_ARGUMENT;
++  uint16_t pulse_us;
++
++  if(data_length == 3U){
++    ByteTo_Word16(&data[1], &pulse_us);
++    result = Lift2.SetServoTarget(data[0], pulse_us);
++  }
++  SendLift2Response(BOARD_LIFT2_SET_SERVO, result);
++}
++
++static void Lift2GetState(uint8_t* data, uint8_t data_length)
++{
++  (void)data;
++  SendLift2Response(BOARD_LIFT2_GET_STATE,
++                    (data_length == 0U) ? LIFT2_OK : LIFT2_INVALID_ARGUMENT);
++}
++
++static void Lift2SetZero(uint8_t* data, uint8_t data_length)
++{
++  enum lift2_result_e result = LIFT2_INVALID_ARGUMENT;
++  (void)data;
++  if(data_length == 0U)
++    result = Lift2.SetZero();
++  SendLift2Response(BOARD_LIFT2_SET_ZERO, result);
++}
++
+ void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t data_length) = {[BOARD_Ping] = Ping,
+                                                                                               [BOARD_SetSpeed] = SetRobotSpeed,
+                                                                                               [BOARD_GetSpeed] = GetRobotSpeed,
+@@ -1078,7 +1167,14 @@ void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t da
+                                                                                               [BOARD_GET_KEY] = GetKey,
+                                                                                               [BOARD_GRIPPER_VERTICAL] = GripperVertical,
+                                                                                               [BOARD_ROTATE_WHEEL_ONCE] = RotateWheelOnce,
+-                                                                                              [BOARD_GRIPPER_SLIDE] = SlideGripper
++                                                                                              [BOARD_GRIPPER_SLIDE] = SlideGripper,
++                                                                                              [BOARD_LIFT2_ARM] = Lift2Arm,
++                                                                                              [BOARD_LIFT2_MOVE_REL] = Lift2MoveRelative,
++                                                                                              [BOARD_LIFT2_STOP] = Lift2Stop,
++                                                                                              [BOARD_LIFT2_DISARM] = Lift2Disarm,
++                                                                                              [BOARD_LIFT2_SET_SERVO] = Lift2SetServo,
++                                                                                              [BOARD_LIFT2_GET_STATE] = Lift2GetState,
++                                                                                              [BOARD_LIFT2_SET_ZERO] = Lift2SetZero
+ };
+ 
+ /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+diff --git a/Core/BSP/Include/stepper.h b/Core/BSP/Include/stepper.h
+index 00bb6f7..4af0fe0 100644
+--- a/Core/BSP/Include/stepper.h
++++ b/Core/BSP/Include/stepper.h
+@@ -33,6 +33,7 @@ struct stepper_s{
+     void (*SetZeroPosisition)(enum l6474h_motor_s motor);
+     void (*StepToPosisition)(enum l6474h_motor_s m_index, int32_t position, uint32_t edge_div, uint32_t working_div, uint32_t acc_ramp_ms);
+     int32_t (*GetPresentPosisition)(enum l6474h_motor_s motor);
++    uint8_t (*IsMoving)(enum l6474h_motor_s motor);
+     void (*StopMotor)(enum l6474h_motor_s motor);
+     void (*Enable)(enum l6474h_motor_s motor);
+     void (*Disable)(enum l6474h_motor_s motor);
+diff --git a/Core/BSP/stepper.c b/Core/BSP/stepper.c
+index 393f910..8cb268f 100644
+--- a/Core/BSP/stepper.c
++++ b/Core/BSP/stepper.c
+@@ -142,7 +142,7 @@ struct speed_s{
+ struct motor_s{
+ 	uint32_t ll_tim_channel;
+ 	volatile int32_t present_position;
+-	int32_t goal_position;
++	volatile int32_t goal_position;
+ 	uint32_t acc_dwcntr;
+ 	uint32_t div_dwcntr;
+ 	uint32_t div_dwcntr_atrld;
+@@ -158,6 +158,11 @@ static struct motor_s motor[MOTORS_NUMBER] = {	[0].ll_tim_channel = LL_TIM_CHANN
+ 												[2].ll_tim_channel = LL_TIM_CHANNEL_CH3,
+ 												[3].ll_tim_channel = LL_TIM_CHANNEL_CH4};
+ 
++static uint8_t MotorIsValid(enum l6474h_motor_s m_index)
++{
++	return ((uint32_t)m_index < MOTORS_NUMBER) ? 1U : 0U;
++}
++
+ 
+ 
+ static inline uint32_t TIM_IsActiveFlag_CC(TIM_TypeDef *TIMx, uint32_t m_index)
+@@ -268,14 +273,21 @@ void TIM1_Steppers_PWM_CC_IRQ_Process(void)
+ /*  Stop Stepper Motor  */
+ static void StopMotor(enum l6474h_motor_s m_index)
+ {
++	if(!MotorIsValid(m_index))
++		return;
++
+ 	TIM_CC_DisableChannel(TIM1, m_index);
+ 	LL_TIM_OC_SetMode(TIM1, motor[m_index].ll_tim_channel, LL_TIM_OCMODE_FORCED_INACTIVE);
+ 	LL_TIM_GenerateEvent_COM(TIM1);
+ 	TIM_DisableIT_CC(TIM1, m_index);
++	motor[m_index].goal_position = motor[m_index].present_position;
+ }
+ 
+ static void SetZeroPosisition(enum l6474h_motor_s m_index)
+ {
++	if(!MotorIsValid(m_index))
++		return;
++
+ 	StopMotor(m_index);
+ 	motor[m_index].present_position = 0;
+ 	motor[m_index].goal_position = 0;
+@@ -283,9 +295,20 @@ static void SetZeroPosisition(enum l6474h_motor_s m_index)
+ 
+ static int32_t GetPresentPosisition(enum l6474h_motor_s m_index)
+ {
++	if(!MotorIsValid(m_index))
++		return 0;
++
+ 	return motor[m_index].present_position;
+ }
+ 
++static uint8_t IsMoving(enum l6474h_motor_s m_index)
++{
++	if(!MotorIsValid(m_index))
++		return 0U;
++
++	return (motor[m_index].present_position != motor[m_index].goal_position) ? 1U : 0U;
++}
++
+ 
+ /**
+  * Step "m_index" motor to "position" with start/end speed division of "edge_div",
+@@ -297,6 +320,9 @@ static int32_t GetPresentPosisition(enum l6474h_motor_s m_index)
+ */
+ static void StepToPosisition(enum l6474h_motor_s m_index, int32_t position, uint32_t edge_div, uint32_t working_div, uint32_t acc_ramp_ms)
+ {
++	if(!MotorIsValid(m_index) || (working_div == 0U))
++		return;
++
+ 	if(motor[m_index].present_position == position)
+ 		return;
+ 
+@@ -311,8 +337,8 @@ static void StepToPosisition(enum l6474h_motor_s m_index, int32_t position, uint
+ 
+ 	StopMotor(m_index);
+ 
+-	static float tg, v1;
+-	static uint32_t dx, steps, speed_seq_len;
++	float tg, v1;
++	uint32_t dx, steps, speed_seq_len;
+ 
+ 
+ 	motor[m_index].goal_position = position;
+@@ -401,11 +427,17 @@ static void StepToPosisition(enum l6474h_motor_s m_index, int32_t position, uint
+ 
+ static void Enable(enum l6474h_motor_s m_index)
+ {
++	if(!MotorIsValid(m_index))
++		return;
++
+ 	L6474H.Enable(m_index);
+ }
+ 
+ static void Disable(enum l6474h_motor_s m_index)
+ {
++	if(!MotorIsValid(m_index))
++		return;
++
+ 	L6474H.Disable(m_index);
+ }
+ 
+@@ -413,12 +445,16 @@ static void (*MotorInit[MOTORS_NUMBER])(void) = {StepperMotor_1_Init, StepperMot
+ 
+ static void Init(enum l6474h_motor_s m_index)
+ {
++	if(!MotorIsValid(m_index))
++		return;
++
+ 	MotorInit[m_index]();
+ }
+ 
+ const struct stepper_s Stepper = {	.SetZeroPosisition = SetZeroPosisition,
+ 									.StepToPosisition = StepToPosisition,
+ 									.GetPresentPosisition = GetPresentPosisition,
++									.IsMoving = IsMoving,
+ 									.StopMotor = StopMotor,
+ 									.Enable = Enable,
+ 									.Disable = Disable,
+diff --git a/Core/Lib/Include/lift2.h b/Core/Lib/Include/lift2.h
+new file mode 100644
+index 0000000..8a754bd
+--- /dev/null
++++ b/Core/Lib/Include/lift2.h
+@@ -0,0 +1,70 @@
++/**
++  ******************************************************************************
++  * @file    lift2.h
++  * @brief   Safe incremental control for Stepper Output 2 and S1/PWM5, S3/PWM6.
++  ******************************************************************************
++  */
++
++#ifndef __LIFT2_H
++#define __LIFT2_H
++
++#ifdef __cplusplus
++extern "C" {
++#endif
++
++#include "std_def.h"
++
++#define LIFT2_SERVO_MIN_US             1000U
++#define LIFT2_SERVO_NEUTRAL_US         1500U
++#define LIFT2_SERVO_MAX_US             2000U
++#define LIFT2_SERVO_SLEW_US_PER_TICK   10U
++#define LIFT2_UPDATE_PERIOD_MS         20U
++#define LIFT2_MAX_RELATIVE_STEPS       4000L
++#define LIFT2_MIN_POSITION_STEPS       (-32000L)
++#define LIFT2_MAX_POSITION_STEPS       32000L
++
++enum lift2_result_e {
++  LIFT2_OK = 0,
++  LIFT2_INVALID_ARGUMENT = 1,
++  LIFT2_NOT_ARMED = 2,
++  LIFT2_BUSY = 3,
++  LIFT2_OUT_OF_RANGE = 4
++};
++
++enum lift2_flags_e {
++  LIFT2_FLAG_INITIALIZED = 1U << 0,
++  LIFT2_FLAG_ARMED       = 1U << 1,
++  LIFT2_FLAG_MOVING      = 1U << 2,
++  LIFT2_FLAG_SERVO_1     = 1U << 3,
++  LIFT2_FLAG_SERVO_3     = 1U << 4
++};
++
++struct lift2_state_s {
++  uint8_t flags;
++  int32_t position_steps;
++  uint16_t l6474_status;
++  uint16_t servo1_current_us;
++  uint16_t servo1_target_us;
++  uint16_t servo3_current_us;
++  uint16_t servo3_target_us;
++};
++
++struct lift2_s {
++  void (*Init)(void);
++  void (*Update)(void);
++  enum lift2_result_e (*Arm)(void);
++  enum lift2_result_e (*MoveRelative)(int32_t steps);
++  enum lift2_result_e (*Stop)(void);
++  void (*Disarm)(void);
++  enum lift2_result_e (*SetServoTarget)(uint8_t servo_id, uint16_t pulse_us);
++  enum lift2_result_e (*SetZero)(void);
++  void (*GetState)(struct lift2_state_s *state);
++};
++
++extern const struct lift2_s Lift2;
++
++#ifdef __cplusplus
++}
++#endif
++
++#endif
+diff --git a/Core/Lib/Include/rc_servo.h b/Core/Lib/Include/rc_servo.h
+index 0ab2307..de60930 100644
+--- a/Core/Lib/Include/rc_servo.h
++++ b/Core/Lib/Include/rc_servo.h
+@@ -40,6 +40,7 @@ enum rc_servo_e{
+ 
+ struct rc_servo_s{
+   void (*SetServoAngle)(enum rc_servo_e servo, uint32_t pulse_min_us, uint32_t pulse_max_us, uint32_t angle_range, uint32_t angle);
++  void (*SetPulseUs)(enum rc_servo_e servo, uint16_t pulse_us);
+   void (*Enable)(enum rc_servo_e servo);
+   void (*Disable)(enum rc_servo_e servo);
+ };
+diff --git a/Core/Lib/lift2.c b/Core/Lib/lift2.c
+new file mode 100644
+index 0000000..b5a9fcc
+--- /dev/null
++++ b/Core/Lib/lift2.c
+@@ -0,0 +1,231 @@
++/**
++  ******************************************************************************
++  * @file    lift2.c
++  * @brief   Explicitly armed, bounded and ramped Stepper 2 / PWM5 / PWM6 control.
++  ******************************************************************************
++  */
++
++#include "lift2.h"
++#include "stepper.h"
++#include "l6474_drvr.h"
++#include "rc_servo.h"
++
++#include <limits.h>
++#include <string.h>
++
++#define LIFT2_STEPPER                 STEPPER_MOTOR_2
++#define LIFT2_SERVO_1_OUTPUT          RC_SERVO_5
++#define LIFT2_SERVO_3_OUTPUT          RC_SERVO_6
++#define LIFT2_STEPPER_EDGE_DIV        32U
++#define LIFT2_STEPPER_WORKING_DIV     24U
++#define LIFT2_STEPPER_RAMP_MS         800U
++#define LIFT2_STEPPER_CURRENT_MA      500.0f
++
++struct servo_state_s {
++  enum rc_servo_e output;
++  uint16_t current_us;
++  uint16_t target_us;
++  uint8_t enabled;
++};
++
++static uint8_t initialized;
++static uint8_t armed;
++static struct servo_state_s servo1 = {LIFT2_SERVO_1_OUTPUT, 0U, 0U, 0U};
++static struct servo_state_s servo3 = {LIFT2_SERVO_3_OUTPUT, 0U, 0U, 0U};
++
++static struct servo_state_s *ServoById(uint8_t servo_id)
++{
++  if(servo_id == 1U)
++    return &servo1;
++  if(servo_id == 3U)
++    return &servo3;
++  return NULL;
++}
++
++static void ClearServoState(struct servo_state_s *servo)
++{
++  servo->current_us = 0U;
++  servo->target_us = 0U;
++  servo->enabled = 0U;
++}
++
++static void Init(void)
++{
++  initialized = 0U;
++  armed = 0U;
++  ClearServoState(&servo1);
++  ClearServoState(&servo3);
++  RC_Servo.Disable(LIFT2_SERVO_1_OUTPUT);
++  RC_Servo.Disable(LIFT2_SERVO_3_OUTPUT);
++}
++
++static void UpdateOneServo(struct servo_state_s *servo)
++{
++  uint16_t delta;
++
++  if((servo->enabled == 0U) || (servo->current_us == servo->target_us))
++    return;
++
++  if(servo->current_us < servo->target_us){
++    delta = servo->target_us - servo->current_us;
++    servo->current_us += (delta > LIFT2_SERVO_SLEW_US_PER_TICK)
++                           ? LIFT2_SERVO_SLEW_US_PER_TICK : delta;
++  }else{
++    delta = servo->current_us - servo->target_us;
++    servo->current_us -= (delta > LIFT2_SERVO_SLEW_US_PER_TICK)
++                           ? LIFT2_SERVO_SLEW_US_PER_TICK : delta;
++  }
++
++  RC_Servo.SetPulseUs(servo->output, servo->current_us);
++}
++
++static void Update(void)
++{
++  UpdateOneServo(&servo1);
++  UpdateOneServo(&servo3);
++}
++
++static enum lift2_result_e Arm(void)
++{
++  if(initialized == 0U){
++    Stepper.Init(LIFT2_STEPPER);
++    L6474H.SetStepMode(LIFT2_STEPPER, L6474_STEP_MODE_16);
++    L6474H.SetCurrentLimit_mA(LIFT2_STEPPER, LIFT2_STEPPER_CURRENT_MA);
++    Stepper.SetZeroPosisition(LIFT2_STEPPER);
++    initialized = 1U;
++  }
++
++  Stepper.Enable(LIFT2_STEPPER);
++  armed = 1U;
++  return LIFT2_OK;
++}
++
++static enum lift2_result_e MoveRelative(int32_t steps)
++{
++  int32_t present;
++  int32_t target;
++
++  if(armed == 0U)
++    return LIFT2_NOT_ARMED;
++  if(Stepper.IsMoving(LIFT2_STEPPER) != 0U)
++    return LIFT2_BUSY;
++  if((steps == 0) || (steps > LIFT2_MAX_RELATIVE_STEPS) ||
++     (steps < -LIFT2_MAX_RELATIVE_STEPS))
++    return LIFT2_OUT_OF_RANGE;
++
++  present = Stepper.GetPresentPosisition(LIFT2_STEPPER);
++  if(((steps > 0) && (present > INT32_MAX - steps)) ||
++     ((steps < 0) && (present < INT32_MIN - steps)))
++    return LIFT2_OUT_OF_RANGE;
++
++  target = present + steps;
++  if((target < LIFT2_MIN_POSITION_STEPS) ||
++     (target > LIFT2_MAX_POSITION_STEPS))
++    return LIFT2_OUT_OF_RANGE;
++
++  Stepper.StepToPosisition(LIFT2_STEPPER, target,
++                          LIFT2_STEPPER_EDGE_DIV,
++                          LIFT2_STEPPER_WORKING_DIV,
++                          LIFT2_STEPPER_RAMP_MS);
++  return LIFT2_OK;
++}
++
++static enum lift2_result_e Stop(void)
++{
++  if(initialized == 0U)
++    return LIFT2_NOT_ARMED;
++  Stepper.StopMotor(LIFT2_STEPPER);
++  return LIFT2_OK;
++}
++
++static void DisableOneServo(struct servo_state_s *servo)
++{
++  RC_Servo.Disable(servo->output);
++  ClearServoState(servo);
++}
++
++static void Disarm(void)
++{
++  if(initialized != 0U){
++    Stepper.StopMotor(LIFT2_STEPPER);
++    Stepper.Disable(LIFT2_STEPPER);
++  }
++  armed = 0U;
++  DisableOneServo(&servo1);
++  DisableOneServo(&servo3);
++}
++
++static enum lift2_result_e SetServoTarget(uint8_t servo_id, uint16_t pulse_us)
++{
++  struct servo_state_s *servo = ServoById(servo_id);
++
++  if(armed == 0U)
++    return LIFT2_NOT_ARMED;
++  if(servo == NULL)
++    return LIFT2_INVALID_ARGUMENT;
++
++  if(pulse_us == 0U){
++    DisableOneServo(servo);
++    return LIFT2_OK;
++  }
++
++  if((pulse_us < LIFT2_SERVO_MIN_US) ||
++     (pulse_us > LIFT2_SERVO_MAX_US))
++    return LIFT2_OUT_OF_RANGE;
++
++  if(servo->enabled == 0U){
++    servo->current_us = pulse_us;
++    servo->target_us = pulse_us;
++    RC_Servo.SetPulseUs(servo->output, pulse_us);
++    RC_Servo.Enable(servo->output);
++    servo->enabled = 1U;
++  }else{
++    servo->target_us = pulse_us;
++  }
++
++  return LIFT2_OK;
++}
++
++static enum lift2_result_e SetZero(void)
++{
++  if(armed == 0U)
++    return LIFT2_NOT_ARMED;
++  if(Stepper.IsMoving(LIFT2_STEPPER) != 0U)
++    return LIFT2_BUSY;
++  Stepper.SetZeroPosisition(LIFT2_STEPPER);
++  return LIFT2_OK;
++}
++
++static void GetState(struct lift2_state_s *state)
++{
++  memset(state, 0, sizeof(*state));
++  if(initialized != 0U){
++    state->flags |= LIFT2_FLAG_INITIALIZED;
++    state->position_steps = Stepper.GetPresentPosisition(LIFT2_STEPPER);
++    state->l6474_status = (uint16_t)L6474H.GetParam(
++        LIFT2_STEPPER, L6474_STATUS, L6474_STATUS_LENGTH);
++    if(Stepper.IsMoving(LIFT2_STEPPER) != 0U)
++      state->flags |= LIFT2_FLAG_MOVING;
++  }
++  if(armed != 0U)
++    state->flags |= LIFT2_FLAG_ARMED;
++  if(servo1.enabled != 0U)
++    state->flags |= LIFT2_FLAG_SERVO_1;
++  if(servo3.enabled != 0U)
++    state->flags |= LIFT2_FLAG_SERVO_3;
++
++  state->servo1_current_us = servo1.current_us;
++  state->servo1_target_us = servo1.target_us;
++  state->servo3_current_us = servo3.current_us;
++  state->servo3_target_us = servo3.target_us;
++}
++
++const struct lift2_s Lift2 = {.Init = Init,
++                              .Update = Update,
++                              .Arm = Arm,
++                              .MoveRelative = MoveRelative,
++                              .Stop = Stop,
++                              .Disarm = Disarm,
++                              .SetServoTarget = SetServoTarget,
++                              .SetZero = SetZero,
++                              .GetState = GetState};
+diff --git a/Core/Lib/rc_servo.c b/Core/Lib/rc_servo.c
+index 34a04e0..449fa27 100644
+--- a/Core/Lib/rc_servo.c
++++ b/Core/Lib/rc_servo.c
+@@ -32,15 +32,30 @@
+ static enum pwm_group_e pwm_group[] = {PWM_GROUP_1234,PWM_GROUP_1234,PWM_GROUP_1234,PWM_GROUP_1234,
+                                         PWM_GROUP_5678,PWM_GROUP_5678,PWM_GROUP_5678,PWM_GROUP_5678};
+ 
++static void SetPulseUs(enum rc_servo_e servo, uint16_t pulse_us)
++{
++  uint32_t arr_value;
++  uint32_t cc_value;
++
++  if((servo > RC_SERVO_8) || (pulse_us > SERVO_SIGNAL_PERIOD_US))
++    return;
++
++  arr_value = PWM.GetGroupTimAutoreload(pwm_group[servo]);
++  cc_value = ((uint32_t)pulse_us * (arr_value + 1U)) / SERVO_SIGNAL_PERIOD_US;
++  PWM.SetOutput_CC((enum pwm_output_e)servo, cc_value);
++}
++
+ 
+ 
+ static void SetServoAngle(enum rc_servo_e servo, uint32_t pulse_min_us, uint32_t pulse_max_us, uint32_t angle_range, uint32_t angle)
+ {
+-  uint32_t pulse_us = pulse_min_us + (angle*(pulse_max_us-pulse_min_us))/angle_range;
+-  uint32_t arr_value = PWM.GetGroupTimAutoreload(pwm_group[servo]);
+-  uint32_t cc_value = (pulse_us*(arr_value + 1))/SERVO_SIGNAL_PERIOD_US;
++  uint32_t pulse_us;
+ 
+-  PWM.SetOutput_CC((enum pwm_output_e)servo, cc_value);
++  if((angle_range == 0U) || (angle > angle_range) || (pulse_max_us < pulse_min_us))
++    return;
++
++  pulse_us = pulse_min_us + (angle*(pulse_max_us-pulse_min_us))/angle_range;
++  SetPulseUs(servo, (uint16_t)pulse_us);
+ }
+ 
+ static void Enable(enum rc_servo_e servo)
+@@ -55,6 +70,7 @@ static void Disable(enum rc_servo_e servo)
+ }
+ 
+ struct rc_servo_s RC_Servo = {.SetServoAngle = SetServoAngle,
++                              .SetPulseUs = SetPulseUs,
+                               .Enable = Enable,
+                               .Disable = Disable};
+ 
+diff --git a/Core/OS_Tasks/Include/os_tasks.h b/Core/OS_Tasks/Include/os_tasks.h
+index 8bd62ca..f1919c3 100644
+--- a/Core/OS_Tasks/Include/os_tasks.h
++++ b/Core/OS_Tasks/Include/os_tasks.h
+@@ -46,6 +46,7 @@ extern const struct os_task_base_s OdometryTask;
+ extern const struct os_task_base_s TerminalTask;
+ extern const struct os_task_base_s GripperTask;
+ extern const struct os_task_base_s StepperTask;
++extern const struct os_task_base_s Lift2Task;
+ extern const struct os_task_base_s DebugTerminalTask;
+ 
+ #ifdef __cplusplus
+diff --git a/Core/OS_Tasks/lift2_task.c b/Core/OS_Tasks/lift2_task.c
+new file mode 100644
+index 0000000..2861c59
+--- /dev/null
++++ b/Core/OS_Tasks/lift2_task.c
+@@ -0,0 +1,38 @@
++/**
++  ******************************************************************************
++  * @file    lift2_task.c
++  * @brief   Applies bounded PWM servo motion at a fixed 50 Hz update rate.
++  ******************************************************************************
++  */
++
++#include "os_tasks.h"
++#include "lift2.h"
++
++#define TASK_STACK_SIZE 256
++
++static TaskHandle_t task_handle;
++static StackType_t stack_buffer[TASK_STACK_SIZE];
++static StaticTask_t task_buffer;
++
++static void Task(void *arg)
++{
++  (void)arg;
++  while(1){
++    Lift2.Update();
++    vTaskDelay(pdMS_TO_TICKS(LIFT2_UPDATE_PERIOD_MS));
++  }
++}
++
++static TaskHandle_t GetTaskHandle(void)
++{
++  return task_handle;
++}
++
++static void CreateTask(UBaseType_t uxPriority)
++{
++  task_handle = xTaskCreateStatic(Task, "Lift2Task", TASK_STACK_SIZE,
++                                  NULL, uxPriority, stack_buffer, &task_buffer);
++}
++
++const struct os_task_base_s Lift2Task = {.CreateTask = CreateTask,
++                                         .GetTaskHandle = GetTaskHandle};
+diff --git a/STEPPER2_TEST_RU.md b/STEPPER2_TEST_RU.md
+new file mode 100644
+index 0000000..4da66ca
+--- /dev/null
++++ b/STEPPER2_TEST_RU.md
+@@ -0,0 +1,40 @@
++# Тестовая прошивка Stepper Output 2
++
++Основа: отдельная тестовая копия исходников ветки `lymunt-2026`; изменения не пушатся в основную ветку.
++Штатная папка и ветка не изменялись.
++
++## Что добавлено
++
++- Stepper Motor 2 из разъёма `Stepper Output 2`.
++- Серва `S1` подключается к `PWM5`, серва `S3` — к `PWM6`.
++- Явное разрешение пошагового мотора: после старта всё отключено.
++- Плавный разгон/торможение за 800 мс, микрошаг 1/16.
++- Консервативный ток 500 мА до уточнения паспортного тока обмотки.
++- Команды относительного шага, остановки, отключения, нуля и состояния.
++- Сервы изменяют импульс постепенно: 10 мкс каждые 20 мс.
++
++## Сборка
++
++```bash
++cd ~/test_stm32_stepper2_lymunt
++cmake --preset bench
++cmake --build --preset bench
++```
++
++Ожидаемый файл для записи:
++
++```text
++~/test_stm32_stepper2_lymunt/build/bench/firmware.hex
++```
++
++## Запись, когда механика будет подключена
++
++```bash
++mkdir -p ~/stm32_backups
++cp ~/contoller2027.hex ~/stm32_backups/contoller2027-before-stepper2-$(date +%Y%m%d_%H%M%S).hex
++cp ~/test_stm32_stepper2_lymunt/build/bench/firmware.hex ~/contoller2027.hex
++cd ~
++./flash_stm32.sh
++```
++
++До этого момента `flash_stm32.sh` не запускать.
+diff --git a/cmake/sources.cmake b/cmake/sources.cmake
+index 192404d..2460711 100644
+--- a/cmake/sources.cmake
++++ b/cmake/sources.cmake
+@@ -7,6 +7,7 @@ set(EUROBOT_SOURCES
+   "Core/OS_Tasks/freertos_routine_plug.c"
+   "Core/OS_Tasks/game_task.c"
+   "Core/OS_Tasks/gripper_task.c"
++  "Core/OS_Tasks/lift2_task.c"
+   "Core/OS_Tasks/odometry_task.c"
+   "Core/OS_Tasks/terminal_task.c"
+   "Core/OS_Tasks/stepper_task.c"
+@@ -21,6 +22,7 @@ set(EUROBOT_SOURCES
+   "Core/Lib/rc_servo.c"
+   "Core/Lib/serial.c"
+   "Core/Lib/hl_rtu.c"
++  "Core/Lib/lift2.c"
+   "Core/Lib/pca9685.c"
+   "Core/BSP/board_gpio_config.c"
+   "Core/BSP/board_hw_config.c"
