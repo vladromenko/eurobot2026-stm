@@ -7,6 +7,7 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Debug CACHE STRING "Build type" FORCE)
 endif()
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+option(EUROBOT_MECHANISM_ONLY "Run only manual UART and Stepper 2/PWM5/PWM6 tasks" OFF)
 option(EUROBOT_MATCH_TIMEOUT "Stop actuators and block control after 99 seconds of a match" ON)
 message(STATUS "99-second match timeout: ${EUROBOT_MATCH_TIMEOUT}")
 include(cmake/sources.cmake)
@@ -15,6 +16,7 @@ set_target_properties(firmware PROPERTIES SUFFIX ".elf" C_STANDARD 99 C_STANDARD
 target_include_directories(firmware PRIVATE ${EUROBOT_INCLUDES})
 target_compile_definitions(firmware PRIVATE STM32F407xx
   USE_FULL_LL_DRIVER ARM_MATH_CM4 __FPU_PRESENT=1U
+  EUROBOT_MECHANISM_ONLY=$<BOOL:${EUROBOT_MECHANISM_ONLY}>
   EUROBOT_MATCH_TIMEOUT=$<BOOL:${EUROBOT_MATCH_TIMEOUT}>)
 set(_cpu -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard)
 target_compile_options(firmware PRIVATE ${_cpu}

@@ -36,9 +36,8 @@ void SPI_GPO_SetOutputPin(uint32_t SPI_GPO_PIN)
 {
 	uint8_t temp;
 	
-	SPI_GPO_REG |= SPI_GPO_PIN;
-
 	vTaskSuspendAll();
+	SPI_GPO_REG |= SPI_GPO_PIN;
 	
 	LL_GPIO_ResetOutputPin(GPIOA, STCP_PA4);
 	
@@ -61,9 +60,8 @@ void SPI_GPO_ResetOutputPin(uint32_t SPI_GPO_PIN)
 {
 	uint8_t temp;
 	
-	SPI_GPO_REG &= ~SPI_GPO_PIN;
-
 	vTaskSuspendAll();
+	SPI_GPO_REG &= ~SPI_GPO_PIN;
 	
 	LL_GPIO_ResetOutputPin(GPIOA, STCP_PA4);
 	

@@ -122,6 +122,10 @@ int main(void)
 	
   
   /*  Creating tasks  */
+#if EUROBOT_MECHANISM_ONLY
+  TerminalTask.CreateTask(1);
+  MechanismTask.CreateTask(1);
+#else
 	ButtonsPollTask.CreateTask(3);
   ButtonsCallbackTask.CreateTask(2);
 	OdometryTask.CreateTask(1);
@@ -134,6 +138,7 @@ int main(void)
 	MechanismTask.CreateTask(1);
 	GripperTask.CreateTask(1);
   //DebugTerminalTask.CreateTask(1);
+#endif
 	
   /*  Run scheduler  */
   vTaskStartScheduler();

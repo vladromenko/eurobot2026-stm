@@ -1163,7 +1163,7 @@ static void MechanismGetDiagnostics(uint8_t* data, uint8_t data_length)
   (void)data;
   (void)data_length;
 
-  driver_status = (uint16_t)L6474H.GetStatus(STEPPER_MOTOR_2);
+  driver_status = (uint16_t)L6474H.GetParam(STEPPER_MOTOR_2, L6474_STATUS, L6474_STATUS_LENGTH);
   step_mode = (uint8_t)L6474H.GetParam(STEPPER_MOTOR_2, L6474_STEP_MODE,
                                       L6474_STEP_MODE_LENGTH);
   current_setting = (uint8_t)L6474H.GetParam(STEPPER_MOTOR_2, L6474_TVAL,

@@ -33,6 +33,14 @@
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release"
       }
+    },
+    {
+      "name": "mechanism",
+      "inherits": "bench",
+      "binaryDir": "${sourceDir}/build/mechanism",
+      "cacheVariables": {
+        "EUROBOT_MECHANISM_ONLY": "ON"
+      }
     }
   ],
   "buildPresets": [
@@ -47,6 +55,10 @@
     {
       "name": "release",
       "configurePreset": "release"
+    },
+    {
+      "name": "mechanism",
+      "configurePreset": "mechanism"
     }
   ]
 }

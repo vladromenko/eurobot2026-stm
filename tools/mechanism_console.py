@@ -107,6 +107,8 @@ def get_state(port: serial.Serial, show: bool = True) -> dict[str, int]:
             f"moving={bool(data[0] & 2)}, PWM5_on={bool(data[0] & 4)}, "
             f"PWM6_on={bool(data[0] & 8)}"
         )
+        if state["flags"] & 0x10:
+            print("Stepper 2: драйвер не подтвердил готовность, импульсы STEP остановлены. Введите diag.")
     return state
 
 

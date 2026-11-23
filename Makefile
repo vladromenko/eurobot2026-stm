@@ -2,7 +2,7 @@
 
 REMOTE ?= reset10
 
-.PHONY: all debug release check check-release flash flash-release flash-remote reset monitor clean help
+.PHONY: flash-mechanism all debug release check check-release flash flash-release flash-remote reset monitor clean help
 
 all: debug
 
@@ -18,6 +18,11 @@ check-release: release
 
 flash: debug
 	cmake --build --preset debug --target flash
+
+flash-mechanism:
+	cmake --preset mechanism
+	cmake --build --preset mechanism --target check
+	cmake --build --preset mechanism --target flash
 
 flash-release: release
 	cmake --build --preset release --target flash

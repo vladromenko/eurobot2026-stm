@@ -2,6 +2,8 @@
 #include "mechanism_task.h"
 #include "rc_servo.h"
 #include "stepper.h"
+#include "spi_gpo.h"
+#include "spi_gpo_defines.h"
 
 #define TASK_STACK_SIZE                 512
 #define COMMAND_QUEUE_LENGTH            8
@@ -140,17 +142,49 @@ static void UpdateServos(TickType_t *last_update)
     }
 }
 
+static uint8_t StepModeConfigured(void)
+{
+    return (L6474H.GetParam(STEPPER_MOTOR_2, L6474_STEP_MODE, L6474_STEP_MODE_LENGTH)
+            & L6474_STEP_SEL_MASK) == L6474_STEP_MODE_16;
+}
+
+static uint8_t EnableStepper(void)
+{
+    /* A global stop asserts NRST2 on the shared shift register. An SPI
+       ENABLE command alone cannot release reset or restore the registers. */
+    if ((SPI_GPO_REG & SPI_L6474_NRST2) == 0U || !StepModeConfigured()) {
+        Stepper.Init(STEPPER_MOTOR_2);
+        if (!StepModeConfigured()) return 0;
+    }
+    if (emergency_stop_requested) {
+        return 0;
+    }
+    Stepper.Enable(STEPPER_MOTOR_2);
+    uint16_t status = L6474H.GetParam(STEPPER_MOTOR_2, L6474_STATUS, L6474_STATUS_LENGTH);
+    return status != 0 && (status & L6474_HiZ_MASK) == 0U && !emergency_stop_requested;
+}
+
 static void ProcessCommand(const struct mechanism_command_s *command)
 {
     if (command->type == MECHANISM_COMMAND_SET_POSITION) {
         uint8_t speed_index = mechanism_state.stepper_speed_level - SPEED_LEVEL_MIN;
         Stepper.StopMotor(STEPPER_MOTOR_2);
-        Stepper.Enable(STEPPER_MOTOR_2);
+        if (!EnableStepper()) {
+            Stepper.Disable(STEPPER_MOTOR_2);
+            taskENTER_CRITICAL();
+            mechanism_state.current_position = Stepper.GetPresentPosisition(STEPPER_MOTOR_2);
+            mechanism_state.goal_position = mechanism_state.current_position;
+            mechanism_state.flags &= (uint8_t)~MECHANISM_FLAG_STEPPER_BUSY;
+            mechanism_state.flags |= MECHANISM_FLAG_DRIVER_ERROR;
+            taskEXIT_CRITICAL();
+            return;
+        }
         Stepper.StepToPosisition(STEPPER_MOTOR_2, command->position,
                                 STEPPER_EDGE_DIV, stepper_working_div[speed_index],
                                 STEPPER_ACCELERATION_MS);
 
         taskENTER_CRITICAL();
+        mechanism_state.flags &= (uint8_t)~MECHANISM_FLAG_DRIVER_ERROR;
         mechanism_state.goal_position = command->position;
         mechanism_state.flags |= MECHANISM_FLAG_STEPPER_BUSY;
         taskEXIT_CRITICAL();
@@ -312,8 +346,7 @@ static void Task(void *arg)
 
     Stepper.Init(STEPPER_MOTOR_2);
     Stepper.SetZeroPosisition(STEPPER_MOTOR_2);
-    /* Match the known-good test sequence: initialize, zero, then enable. */
-    Stepper.Enable(STEPPER_MOTOR_2);
+    Stepper.Disable(STEPPER_MOTOR_2);
     RC_Servo.Disable(RC_SERVO_5);
     RC_Servo.Disable(RC_SERVO_6);
     last_servo_update = xTaskGetTickCount();
@@ -336,7 +369,7 @@ static void Task(void *arg)
         }
 
         if (xQueueReceive(command_queue, &command, pdMS_TO_TICKS(10)) == pdPASS) {
-            ProcessCommand(&command);
+            if (!emergency_stop_requested) ProcessCommand(&command);
         }
 
         current_position = Stepper.GetPresentPosisition(STEPPER_MOTOR_2);
