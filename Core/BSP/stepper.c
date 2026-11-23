@@ -83,9 +83,9 @@ void StepperMotor_2_Init(void)
 					|(0x00<<L6474_EXT_CLK_POS)|(0x03<<L6474_OSC_SEL_POS);
 	L6474H.SetParam(STEPPER_MOTOR_2, L6474_CONFIG, temp, L6474_CONFIG_LENGTH);
 		
-	/* Parameters from the previously verified Stepper 2 test. */
+	/* Lift2 used 500 mA at 1/16 step before enabling the bridge. */
 	L6474H.SetStepMode(STEPPER_MOTOR_2, L6474_STEP_MODE_16);
-	L6474H.SetCurrentLimit_mA(STEPPER_MOTOR_2, 800);
+	L6474H.SetCurrentLimit_mA(STEPPER_MOTOR_2, 500);
 		
     L6474H.SetDirection(STEPPER_MOTOR_2, DIRECTION_FORWARD);
 }
