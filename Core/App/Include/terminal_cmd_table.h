@@ -49,9 +49,13 @@
 #define BOARD_IMPELLER_PRESS                0x33    /* [51] Press the impeller button for N ms, state unchanged */
 #define BOARD_IMPELLER_SYNC                 0x34    /* [52] Tell the firmware the real impeller state, no press */
 
+#define BOARD_TOGGLE_GRAIL_PICK_GRIPPER     0x37    /* [55] Toggle the PCA9685 CH13 servo between its closed and open angles */
+#define BOARD_TOGGLE_GRAIL_SHELF_GRIPPER    0x38    /* [56] Toggle the PCA9685 CH14 servo between its closed and open angles */
+#define BOARD_GRIPPER_GRAIL_VERTICAL        0x39    /* [57] Control the grail lift height (Stepper 2), mm */
+
 
 /*  Do not forget to update the table size with the last one command! */
-#define TERMINAL_CMD_TABLE_SIZE             (BOARD_IMPELLER_SYNC + 1)
+#define TERMINAL_CMD_TABLE_SIZE             (BOARD_GRIPPER_GRAIL_VERTICAL + 1)
 
 
 #ifdef __cplusplus

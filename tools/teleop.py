@@ -22,6 +22,13 @@ BOARD_IMPELLER_OFF = 0x31
 BOARD_IMPELLER_GET_STATE = 0x32
 BOARD_IMPELLER_PRESS = 0x33
 BOARD_IMPELLER_SYNC = 0x34
+BOARD_TOGGLE_GRAIL_PICK_GRIPPER = 0x37
+BOARD_TOGGLE_GRAIL_SHELF_GRIPPER = 0x38
+BOARD_GRIPPER_GRAIL_VERTICAL = 0x39
+
+# The firmware answers the grail lift command after the move, it gives up after 10 s.
+GRAIL_LIFT_TIMEOUT = 12.0
+GRAIL_LIFT_MAX_MM = 255
 
 # enum impeller_state_e in impeller.h
 IMPELLER_STATES = {0: 'выкл', 1: 'включается', 2: 'ВКЛ', 3: 'выключается'}
@@ -64,6 +71,7 @@ HELP = [
     'T / Y      импеллер вкл / выкл     < / >     скважность импеллера -/+ 5 %',
     'L          нажать кнопку импеллера 9 / 0     считать импеллер вкл / выкл (без нажатия)',
     '/          состояние импеллера',
+    '1 / 2      захват / полка грааля   3 / 4 / 5 лифт грааля вверх / вниз / в 0',
     'X, Esc     выход (нулевая скорость; импеллер выключается, если включён)',
 ]
 
@@ -147,6 +155,22 @@ class Robot:
         if data[0]:
             raise RuntimeError(STEPPER_ERRORS.get(data[0], f'код {data[0]}'))
 
+    def grail_toggle(self, command):
+        data = self.request(command)
+        if data != b'\x01':
+            raise RuntimeError(f'ответ {data.hex()} вместо 01')
+        return 'ок'
+
+    def grail_lift(self, height_mm):
+        timeout, self.timeout = self.timeout, GRAIL_LIFT_TIMEOUT
+        try:
+            data = self.request(BOARD_GRIPPER_GRAIL_VERTICAL, bytes([height_mm]))
+        finally:
+            self.timeout = timeout
+        if data != b'\x01':
+            raise RuntimeError('не дошёл: авария L6474, таймаут или лифт занят')
+        return 'ок'
+
     def impeller_answer(self, command, payload, title):
         """Returns (state, duty on the pin %, set duty %); the answer comes before the press."""
         data = self.request(command, payload)
@@ -183,6 +207,7 @@ class Teleop:
         self.armed = False
         self.pump = None
         self.steppers = None
+        self.grail_height = 0  # mm, the firmware counts from the power-on position
         self.impeller_duty = args.impeller_duty  # None: read from the board at start
         self.impeller_state = None
         self.impeller_current = None
@@ -316,6 +341,15 @@ class Teleop:
                                      lambda: self.robot.impeller_sync(on))
         elif char in '/?':
             self.read_impeller()
+        elif char == '1':
+            self.call('захват грааля', lambda: self.robot.grail_toggle(BOARD_TOGGLE_GRAIL_PICK_GRIPPER))
+        elif char == '2':
+            self.call('полка грааля', lambda: self.robot.grail_toggle(BOARD_TOGGLE_GRAIL_SHELF_GRIPPER))
+        elif char in '345':
+            step = {'3': self.args.grail_step, '4': -self.args.grail_step, '5': -self.grail_height}[char]
+            height = min(max(self.grail_height + step, 0), GRAIL_LIFT_MAX_MM)
+            if self.call(f'лифт грааля {height} мм', lambda: self.robot.grail_lift(height)):
+                self.grail_height = height
         elif char in STEPPER_KEYS:
             subcommand, title = STEPPER_KEYS[char]
             if self.call(title, lambda: self.robot.stepper(subcommand)) and subcommand in (0, 5):
@@ -332,6 +366,7 @@ class Teleop:
         lines = [f'Eurobot teleop  {self.args.port}  ' + ('режим фиксации' if self.args.latch else 'режим удержания'), '']
         lines += HELP + ['']
         lines.append(f'Моторы: {"ВКЛЮЧЕНЫ" if self.armed else "выключены"}   Насосы: {pump}   Шаговики: {steppers}')
+        lines.append(f'Лифт грааля: {self.grail_height} мм')
         lines.append(f'Импеллер: {impeller}, скважность {self.impeller_duty}% (≈ {self.impeller_duty * 3.3 / 100:.2f} В)')
         lines.append(f'Лимиты: {self.linear:.2f} м/с, {self.angular:.2f} рад/с')
         lines.append(f'Отправлено: dx={speed[0]:+.2f} dy={speed[1]:+.2f} dphi={speed[2]:+.2f}')
@@ -417,6 +452,7 @@ def main():
     parser.add_argument('--resend', type=float, default=0.2, help='период повторной отправки скорости, с')
     parser.add_argument('--latch', action='store_true',
                         help='клавиша движения задаёт скорость до пробела (без удержания)')
+    parser.add_argument('--grail-step', type=int, default=10, help='ход лифта грааля на клавишу 3/4, мм')
     parser.add_argument('--impeller', choices=('on', 'off', 'status'),
                         help='отправить одну команду импеллеру и выйти, без клавиатурного управления')
     parser.add_argument('--impeller-duty', '--impeller-speed', dest='impeller_duty', type=int,

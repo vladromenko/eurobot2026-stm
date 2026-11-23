@@ -53,6 +53,30 @@ cmake --build --preset debug --target flash
 
 В `.vscode/` находятся задачи сборки/прошивки и конфигурации Cortex-Debug. IntelliSense использует `build/debug/compile_commands.json`, поэтому сначала нужно собрать Debug.
 
+Пресет `bench` — Debug без остановки по таймеру матча (`EUROBOT_MATCH_TIMEOUT=OFF`).
+Пресет `mechanism` — только терминал и `GrailGripperTask` (`make flash-mechanism`).
+
+### Захваты грааля (PCA9685 CH13/CH14)
+
+Задача `GrailGripperTask` ([grail_gripper_task.c](Core/OS_Tasks/grail_gripper_task.c)) управляет двумя серво на плате PCA9685 (I2C2, PB10/PB11, адрес `0x40`):
+
+| Команда | Код | Серво |
+|---|---|---|
+| `BOARD_TOGGLE_GRAIL_PICK_GRIPPER` | `0x37` | PCA9685 CH13 |
+| `BOARD_TOGGLE_GRAIL_SHELF_GRIPPER` | `0x38` | PCA9685 CH14 |
+
+Данных у команд нет, ответ — `0x01`. Каждая команда переключает серво между
+закрытым и открытым углом (`GRAIL_*_ANGLE` в задаче); первая после старта открывает.
+Если запись по I2C не прошла, угол не меняется, и следующая команда повторяет тот же поворот.
+
+Лифт грааля на Stepper 2 — `BOARD_GRIPPER_GRAIL_VERTICAL` (`0x39`): один байт — высота
+в мм от положения при включении. Ответ приходит после хода (не дольше ~11 с): `0x01` — дошёл,
+`0x00` — авария L6474, таймаут 10 с или лифт ещё занят. После хода драйвер держит вал.
+Пересчёт `GRAIL_MM_TO_STEPS` и скорость не откалиброваны под механику лифта.
+`BOARD_STEPPER_TEST` (`0x0D`) тоже управляет Stepper 2 — не используйте их одновременно.
+
+Клавиатурный пульт `./start.sh`: `1`/`2` — захваты грааля, `3`/`4`/`5` — лифт вверх/вниз/в 0.
+
 Импеллер (турбинка): подключение, команды и проверка — в [docs/USAGE_RU.md](docs/USAGE_RU.md#импеллер-турбинка), проверка логики — `python3 tools/test_impeller.py`.
 
 История изменений, а также подробности переноса, результаты проверок и известные ограничения описаны в [docs/CHANGELOG.md](docs/CHANGELOG.md), краткая инструкция — в [docs/USAGE_RU.md](docs/USAGE_RU.md).

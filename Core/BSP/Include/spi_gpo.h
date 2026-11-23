@@ -28,6 +28,7 @@
 
 void SPI_GPO_SetOutputPin(uint32_t SPI_GPO_PIN);
 void SPI_GPO_ResetOutputPin(uint32_t SPI_GPO_PIN);
+extern uint32_t SPI_GPO_REG;
 
 struct spi_gpo_s{
     void (*SetOutputPin)(uint32_t SPI_GPO_PIN);

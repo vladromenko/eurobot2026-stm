@@ -33,6 +33,8 @@ void HW_ClockConfig(void);
 
 void SPI1_Board_HW_Init(void);
 
+void I2C2_Init(void);
+
 void USART1_TerminalInit(void);
 void USART3_DynamixelInit(void);
 void UART4_RS485_Init(void);

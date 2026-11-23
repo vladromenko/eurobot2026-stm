@@ -1,0 +1,42 @@
+--- a/Core/Lib/lift2.c
++++ b/Core/Lib/lift2.c
+@@ -15,7 +15,7 @@
+ #include <limits.h>
+ #include <string.h>
+ 
+-#define LIFT2_STEPPER                 STEPPER_MOTOR_2
++#define LIFT2_STEPPER                 STEPPER_MOTOR_3
+ #define LIFT2_SERVO_1_OUTPUT          RC_SERVO_5
+ #define LIFT2_SERVO_3_OUTPUT          RC_SERVO_6
+ #define LIFT2_STEPPER_EDGE_DIV        32U
+--- a/Core/BSP/l6474_drvr.c
++++ b/Core/BSP/l6474_drvr.c
+@@ -53,9 +53,9 @@
+ 
+ static inline void SelectDriver(enum l6474h_motor_s motor)
+ {
+-    if (motor == STEPPER_MOTOR_2) WaitChipSelect();
++    if (motor == STEPPER_MOTOR_3) WaitChipSelect();
+     LL_GPIO_ResetOutputPin(spi_ncs_gpio[motor], spi_ncs_pin[motor]);
+-    if (motor == STEPPER_MOTOR_2) WaitChipSelect();
++    if (motor == STEPPER_MOTOR_3) WaitChipSelect();
+ }
+ 
+ static void SetParam(enum l6474h_motor_s motor, uint8_t address, uint32_t data, uint8_t length)
+--- a/Core/App/terminal_cmd_handlers.c
++++ b/Core/App/terminal_cmd_handlers.c
+@@ -1115,11 +1115,11 @@
+ {
+   if (data_length == 1U && data[0] == 1U) {
+     struct terminal_response_s response = {0};
+-    const enum l6474h_motor_s motors[] = {STEPPER_MOTOR_1, STEPPER_MOTOR_2};
++    const enum l6474h_motor_s motors[] = {STEPPER_MOTOR_1, STEPPER_MOTOR_3};
+     const uint8_t regs[] = {L6474_TVAL, L6474_STEP_MODE, L6474_OCD_TH, L6474_TOFF_MIN};
+-    Lift2.PrepareDriver(); /* first use configures channel 2 in HiZ, without ENABLE */
++    Lift2.PrepareDriver(); /* first use configures channel 3 in HiZ, without ENABLE */
+     response.cmd = BOARD_LIFT2_GET_STATE;
+-    response.data[response.data_length++] = 0xD2U;
++    response.data[response.data_length++] = 0xD3U;
+     for (unsigned i = 0; i < 2U; ++i) {
+       for (unsigned j = 0; j < sizeof(regs); ++j)
+         response.data[response.data_length++] = L6474H.GetParam(motors[i], regs[j], 1U);

@@ -27,6 +27,7 @@
 #include "dynamixel_ax.h"
 #include "hw_instance.h"
 #include "impeller.h"
+#include "stepper.h"
 
 struct robot_ctrl_s robot_ctrl;
 QueueHandle_t button_callbacks_queue_handle = NULL;
@@ -83,6 +84,7 @@ void StopAllActuators(void)
 {
 					// MaxonsDisable(); // DBG off
 	Impeller.TurnOff();
+	Stepper.StopMotor(STEPPER_MOTOR_2);
 }
 
 

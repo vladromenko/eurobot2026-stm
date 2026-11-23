@@ -37,7 +37,9 @@ static StaticTask_t TaskBuffer;
 
 static void Task(void *arg)
 {
+#if EUROBOT_MATCH_TIMEOUT
   TickType_t xGameStartTime;
+#endif
 
   robot_ctrl.starting_cord = STARTING_CORD_ATTACHED;
   robot_ctrl.robot_mode = DEBUG_MODE;
@@ -57,16 +59,20 @@ static void Task(void *arg)
       taskYIELD();
 
     /*  INITIALISE GAMING 100 SECONDS TIMEOUT  */
+#if EUROBOT_MATCH_TIMEOUT
     xGameStartTime = xTaskGetTickCount();
+#endif
 
     /*  START THE GAME AND WAIT UNTIL 100 SECONDS ARE RUNNNING OUT OR THE STARTING CORD IS ATTACHED AGAIN  */
     while(robot_ctrl.starting_cord == STARTING_CORD_RELEASED)
     {
+#if EUROBOT_MATCH_TIMEOUT
       if(((xTaskGetTickCount() - xGameStartTime) >= 100000) && (robot_ctrl.robot_mode == GAME_MODE)){
         /*  STOP THE GAME AND TURN OF ALL ACTUATORS ACCORDING TO THE EUROBOT RULES */
         StopAllActuators();
         break;
       }
+#endif
         taskYIELD();
     }
 

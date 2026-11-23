@@ -43,6 +43,12 @@
 #include "stepper.h"
 #include "impeller.h"
 
+extern volatile uint8_t grail_pick_toggle;
+extern volatile uint8_t grail_shelf_toggle;
+extern volatile uint8_t grail_lift_cmd;
+extern volatile uint8_t grail_lift_height;
+extern volatile uint8_t grail_lift_status;
+
 
 static void Ping(uint8_t* data, uint8_t data_length)
 {
@@ -472,6 +478,53 @@ static void ImpellerSync(uint8_t* data, uint8_t data_length)
 }
 
 
+static void GripperGrailVertical(uint8_t* data, uint8_t data_length)
+{
+  uint8_t status = 0;
+  if(data_length == 1 && !grail_lift_cmd){
+    grail_lift_height = data[0]; // height in mm
+    grail_lift_cmd = 1;
+
+    // grail_gripper_task gives up after 10 s, so the loop ends before this limit
+    TickType_t start_time = xTaskGetTickCount();
+    while(grail_lift_cmd && (xTaskGetTickCount() - start_time) < pdMS_TO_TICKS(11000)){
+      vTaskDelay(10);
+    }
+    if(!grail_lift_cmd){
+      status = grail_lift_status;
+    }
+  }
+
+  // terminal response
+  struct terminal_response_s terminal_response;
+  terminal_response.cmd = BOARD_GRIPPER_GRAIL_VERTICAL;
+  terminal_response.data[0] = status;
+  terminal_response.data_length = 1;
+  Terminal.SendResponse(&terminal_response);
+}
+
+static void ToggleGrailPickGripper(uint8_t* data, uint8_t data_length)
+{
+  grail_pick_toggle = 1;
+
+  struct terminal_response_s terminal_response;
+  terminal_response.cmd = BOARD_TOGGLE_GRAIL_PICK_GRIPPER;
+  terminal_response.data[0] = 0x01;
+  terminal_response.data_length = 1;
+  Terminal.SendResponse(&terminal_response);
+}
+
+static void ToggleGrailShelfGripper(uint8_t* data, uint8_t data_length)
+{
+  grail_shelf_toggle = 1;
+
+  struct terminal_response_s terminal_response;
+  terminal_response.cmd = BOARD_TOGGLE_GRAIL_SHELF_GRIPPER;
+  terminal_response.data[0] = 0x01;
+  terminal_response.data_length = 1;
+  Terminal.SendResponse(&terminal_response);
+}
+
 void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t data_length) = {[BOARD_Ping] = Ping,
                                                                                               [BOARD_AX_GetAngle] = AX_GetAngle,
                                                                                               [BOARD_AX_SetAngle] = AX_SetAngle,
@@ -489,7 +542,10 @@ void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t da
                                                                                               [BOARD_IMPELLER_OFF] = ImpellerOff,
                                                                                               [BOARD_IMPELLER_GET_STATE] = ImpellerGetState,
                                                                                               [BOARD_IMPELLER_PRESS] = ImpellerPress,
-                                                                                              [BOARD_IMPELLER_SYNC] = ImpellerSync
+                                                                                              [BOARD_IMPELLER_SYNC] = ImpellerSync,
+                                                                                              [BOARD_TOGGLE_GRAIL_PICK_GRIPPER] = ToggleGrailPickGripper,
+                                                                                              [BOARD_TOGGLE_GRAIL_SHELF_GRIPPER] = ToggleGrailShelfGripper,
+                                                                                              [BOARD_GRIPPER_GRAIL_VERTICAL] = GripperGrailVertical
                                                                                             };
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

@@ -47,9 +47,11 @@
 #include "serial.h"
 #include "hw_instance.h"
 #include "impeller.h"
+#include "pca9685.h"
 #include "stm32f4xx_ll_usart.h"
 
 
+volatile int PCA9685_InitStatus;
 
 /**
   * @brief  The application entry point.
@@ -77,6 +79,11 @@ int main(void)
 	HW_ClockConfig();
 	Board_GPIO_Config();
 	Robot_GPIO_Config();
+
+	I2C2_Init();
+	/* PCA9685 for the grail servos: I2C2, 50 Hz, 500..2500 us over 180 degrees.
+	   The status is kept for debugging, an error does not block FreeRTOS. */
+	PCA9685_InitStatus = PCA9685.Init(0x40, 50.0f, 500, 2500, 180);
 
 	SPI1_Board_HW_Init();
 	hw->spi_gpo->ResetOutputPin(SPI_GPO_ALL);
@@ -129,6 +136,10 @@ int main(void)
   Dbg("[init] protocols bound\r\n");
 
   /*  Creating tasks  */
+#if EUROBOT_MECHANISM_ONLY
+  TerminalTask.CreateTask(1);
+  GrailGripperTask.CreateTask(1);
+#else
 	ButtonsPollTask.CreateTask(3);
   ButtonsCallbackTask.CreateTask(2);
 	OdometryTask.CreateTask(1);
@@ -138,6 +149,8 @@ int main(void)
 
   GripperTask.CreateTask(1);
   ImpellerTask.CreateTask(1);
+  GrailGripperTask.CreateTask(1);
+#endif
   Dbg("[init] tasks created\r\n");
   // Experimental_Task_1.CreateTask(1);
 

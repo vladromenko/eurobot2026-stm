@@ -17,12 +17,29 @@
       }
     },
     {
+      "name": "bench",
+      "inherits": "debug",
+      "displayName": "Eurobot 2026 Bench (no match timeout)",
+      "binaryDir": "${sourceDir}/build/bench",
+      "cacheVariables": {
+        "EUROBOT_MATCH_TIMEOUT": "OFF"
+      }
+    },
+    {
       "name": "release",
       "inherits": "debug",
       "displayName": "Eurobot 2025 Release (Os)",
       "binaryDir": "${sourceDir}/build/release",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "mechanism",
+      "inherits": "bench",
+      "binaryDir": "${sourceDir}/build/mechanism",
+      "cacheVariables": {
+        "EUROBOT_MECHANISM_ONLY": "ON"
       }
     }
   ],
@@ -32,8 +49,16 @@
       "configurePreset": "debug"
     },
     {
+      "name": "bench",
+      "configurePreset": "bench"
+    },
+    {
       "name": "release",
       "configurePreset": "release"
+    },
+    {
+      "name": "mechanism",
+      "configurePreset": "mechanism"
     }
   ]
 }

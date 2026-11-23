@@ -84,7 +84,7 @@ void StepperMotor_2_Init(void)
 	L6474H.SetParam(STEPPER_MOTOR_2, L6474_CONFIG, temp, L6474_CONFIG_LENGTH);
 		
 	L6474H.SetStepMode(STEPPER_MOTOR_2, L6474_STEP_MODE_16);
-	L6474H.SetCurrentLimit_mA(STEPPER_MOTOR_2, 800);
+	L6474H.SetCurrentLimit_mA(STEPPER_MOTOR_2, 1100);
 		
     L6474H.SetDirection(STEPPER_MOTOR_2, DIRECTION_FORWARD);
 }
@@ -141,7 +141,7 @@ struct speed_s{
 
 struct motor_s{
 	uint32_t ll_tim_channel;
-	int32_t present_position;
+	volatile int32_t present_position;
 	int32_t goal_position;
 	uint32_t acc_dwcntr;
 	uint32_t div_dwcntr;
@@ -217,17 +217,17 @@ void TIM1_Steppers_PWM_CC_IRQ_Process(void)
 				/*	Update Step Counter	*/
 				if(mode == LL_TIM_OCMODE_PWM1)
 				{
+					if(motor[m_index].present_position < motor[m_index].goal_position)
+						motor[m_index].present_position ++;
+					else
+						motor[m_index].present_position --;
+
+					/* Disable STEP at the compare event of the last pulse. */
 					if(motor[m_index].present_position == motor[m_index].goal_position){
 						TIM_CC_DisableChannel(TIM1, m_index);
 						TIM_DisableIT_CC(TIM1,m_index);
 						continue;
 					}
-
-					/* Just because "motor[m_index].present_position == motor[m_index].goal_position" case was addressed above	*/
-					if(motor[m_index].present_position < motor[m_index].goal_position)
-						motor[m_index].present_position ++;
-					else
-						motor[m_index].present_position --;
 
 					/*	Deceleration Start	*/
 					if(motor[m_index].present_position == motor[m_index].start_dec_point)
@@ -265,13 +265,31 @@ void TIM1_Steppers_PWM_CC_IRQ_Process(void)
 // LL_GPIO_SetOutputPin(GPIOD, PWM1_PD15);
 // LL_GPIO_ResetOutputPin(GPIOD, PWM1_PD15);
 
+/*	TIM1 CC IRQ priority is above configMAX_SYSCALL_INTERRUPT_PRIORITY, so
+	taskENTER_CRITICAL does not mask it. CCER, DIER and CCMR1/CCMR2 are shared
+	by all motors and modified by the ISR, so task-side read-modify-write must
+	run with interrupts masked, otherwise another motor's state can be lost.	*/
+static inline uint32_t TIM1_Lock(void)
+{
+	uint32_t primask = __get_PRIMASK();
+	__disable_irq();
+	return primask;
+}
+
+static inline void TIM1_Unlock(uint32_t primask)
+{
+	__set_PRIMASK(primask);
+}
+
 /*  Stop Stepper Motor  */
 static void StopMotor(enum l6474h_motor_s m_index)
 {
+	uint32_t primask = TIM1_Lock();
 	TIM_CC_DisableChannel(TIM1, m_index);
 	LL_TIM_OC_SetMode(TIM1, motor[m_index].ll_tim_channel, LL_TIM_OCMODE_FORCED_INACTIVE);
 	LL_TIM_GenerateEvent_COM(TIM1);
 	TIM_DisableIT_CC(TIM1, m_index);
+	TIM1_Unlock(primask);
 }
 
 static void SetZeroPosisition(enum l6474h_motor_s m_index)
@@ -311,8 +329,11 @@ static void StepToPosisition(enum l6474h_motor_s m_index, int32_t position, uint
 
 	StopMotor(m_index);
 
-	static float tg, v1;
-	static uint32_t dx, steps, speed_seq_len;
+	float tg = 0.0f;
+	float v1 = 0.0f;
+	uint32_t dx = 0;
+	uint32_t steps = 0;
+	uint32_t speed_seq_len = 0;
 
 
 	motor[m_index].goal_position = position;
@@ -393,10 +414,15 @@ static void StepToPosisition(enum l6474h_motor_s m_index, int32_t position, uint
 		L6474H.SetDirection(m_index,DIRECTION_BACKWARD);
 	}
 
+	uint32_t primask = TIM1_Lock();
 	TIM_CC_EnableChannel(TIM1, m_index);
 	LL_TIM_OC_SetMode(TIM1, motor[m_index].ll_tim_channel, LL_TIM_OCMODE_FORCED_INACTIVE);
 	LL_TIM_GenerateEvent_COM(TIM1);
+	/*	The CC flag is set every period while the motor is idle. A stale flag would run the
+		first ISR at a random counter value and could cut the first STEP pulse short.	*/
+	TIM_ClearFlag_CC(TIM1, m_index);
 	TIM_EnableIT_CC(TIM1, m_index);
+	TIM1_Unlock(primask);
 }
 
 static void Enable(enum l6474h_motor_s m_index)
