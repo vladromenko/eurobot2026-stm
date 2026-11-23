@@ -188,27 +188,7 @@ int main(void) {
     assert(presses == 2 && Impeller.GetState() == IMPELLER_OFF);
     printf("PASS: TurnOff duty 0 at once, OFF after %u ms, TurnOff in OFF ignored\n", t);
 
-    /* Debug press: state unchanged, length limited. */
-    Impeller.PressButton(150);
-    run(1000);
-    assert(presses == 3 && button_ms == 150 && Impeller.GetState() == IMPELLER_OFF);
-    Impeller.PressButton(60000);
-    run(3000);
-    assert(presses == 4 && button_ms == IMPELLER_DEBUG_PRESS_MAX_MS);
-    Impeller.PressButton(0);
-    run(100);
-    assert(presses == 4);
-    printf("PASS: debug press 150 ms, limited to %u ms, state unchanged\n", IMPELLER_DEBUG_PRESS_MAX_MS);
-
-    /* Sync: the duty follows the believed state, no press. */
     Impeller.SetDuty(40);
-    Impeller.SyncState(1);
-    run(DT);
-    assert(Impeller.GetState() == IMPELLER_ON && cc == duty_cc(40) && presses == 4);
-    Impeller.SyncState(0);
-    run(DT);
-    assert(Impeller.GetState() == IMPELLER_OFF && cc == 0 && presses == 4);
-    printf("PASS: sync ON / OFF without a press\n");
 
     /* TurnOff during STARTING: the start is finished, then it is turned off. */
     Impeller.TurnOn();
@@ -216,7 +196,7 @@ int main(void) {
     Impeller.TurnOff();
     run_until(IMPELLER_ON, 10000);
     run_until(IMPELLER_OFF, 10000);
-    assert(presses == 6 && !button && cc == 0);
+    assert(presses == 4 && !button && cc == 0);
     printf("PASS: TurnOff during STARTING -> ON -> OFF, 2 presses\n");
 
     /* TurnOn during STOPPING. */
@@ -227,7 +207,7 @@ int main(void) {
     Impeller.TurnOn();
     run_until(IMPELLER_OFF, 10000);
     run_until(IMPELLER_ON, 10000);
-    assert(presses == 9 && cc == duty_cc(40));
+    assert(presses == 7 && cc == duty_cc(40));
     printf("PASS: TurnOn during STOPPING -> OFF -> ON, presses=%u\n", presses);
     assert(irq_disabled > 0);
     return 0;

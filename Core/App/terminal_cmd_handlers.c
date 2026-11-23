@@ -46,7 +46,7 @@
 extern volatile uint8_t grail_pick_toggle;
 extern volatile uint8_t grail_shelf_toggle;
 extern volatile uint8_t grail_lift_cmd;
-extern volatile uint8_t grail_lift_height;
+extern volatile uint8_t grail_lift_step;
 extern volatile uint8_t grail_lift_status;
 
 
@@ -330,37 +330,6 @@ static void StepperTest(uint8_t* data, uint8_t data_length)
             break;
         }
 
-        case 3: // RETURN TO ZERO
-        {
-            if (!steppers_ready)
-            {
-                response.data[0] = 2;
-                break;
-            }
-
-            hw->stepper->StepToPosisition(
-                STEPPER_MOTOR_1, 0, 32, 32, 0
-            );
-
-            hw->stepper->StepToPosisition(
-                STEPPER_MOTOR_2, 0, 32, 32, 0
-            );
-            break;
-        }
-
-        case 4: // STOP
-        {
-            if (!steppers_ready)
-            {
-                response.data[0] = 2;
-                break;
-            }
-
-            hw->stepper->StopMotor(STEPPER_MOTOR_1);
-            hw->stepper->StopMotor(STEPPER_MOTOR_2);
-            break;
-        }
-
         case 5: // DISABLE
         {
             if (!steppers_ready)
@@ -431,59 +400,13 @@ static void ImpellerOff(uint8_t* data, uint8_t data_length)
   SendImpellerResponse(BOARD_IMPELLER_OFF, 1);
 }
 
-static void ImpellerGetState(uint8_t* data, uint8_t data_length)
-{
-  /*  Response: [1, state, duty on the pin %, set duty %]  */
-  (void)data;
-  (void)data_length;
-
-  SendImpellerResponse(BOARD_IMPELLER_GET_STATE, 1);
-}
-
-static void ImpellerPress(uint8_t* data, uint8_t data_length)
-{
-  /*
-   *  data[0..1] - press length, ms (uint16), 1..IMPELLER_DEBUG_PRESS_MAX_MS.
-   *  Only toggles the impeller controller, the firmware state is not changed (see BOARD_IMPELLER_SYNC).
-   *  Response: [status, state, duty on the pin %, set duty %].
-   */
-  uint16_t ms;
-  uint8_t status = 0;
-
-  if(data_length >= 2){
-    ByteTo_Word16(data, &ms);
-    if((ms > 0) && (ms <= IMPELLER_DEBUG_PRESS_MAX_MS)){
-      Impeller.PressButton(ms);
-      status = 1;
-    }
-  }
-
-  SendImpellerResponse(BOARD_IMPELLER_PRESS, status);
-}
-
-static void ImpellerSync(uint8_t* data, uint8_t data_length)
-{
-  /*
-   *  data[0] - real impeller state: 0 off, 1 on. No button press.
-   *  Response: [status, state, duty on the pin %, set duty %].
-   */
-  uint8_t status = 0;
-
-  if((data_length >= 1) && (data[0] <= 1)){
-    Impeller.SyncState(data[0]);
-    status = 1;
-  }
-
-  SendImpellerResponse(BOARD_IMPELLER_SYNC, status);
-}
-
-
-static void GripperGrailVertical(uint8_t* data, uint8_t data_length)
+/* data[0] - travel, mm. Response after the move: 1 - moved, 0 - fault, timeout, bottom switch or busy */
+static void GrailLiftStep(uint8_t cmd, uint8_t direction, uint8_t* data, uint8_t data_length)
 {
   uint8_t status = 0;
   if(data_length == 1 && !grail_lift_cmd){
-    grail_lift_height = data[0]; // height in mm
-    grail_lift_cmd = 1;
+    grail_lift_step = data[0];
+    grail_lift_cmd = direction;
 
     // grail_gripper_task gives up after 10 s, so the loop ends before this limit
     TickType_t start_time = xTaskGetTickCount();
@@ -495,12 +418,21 @@ static void GripperGrailVertical(uint8_t* data, uint8_t data_length)
     }
   }
 
-  // terminal response
   struct terminal_response_s terminal_response;
-  terminal_response.cmd = BOARD_GRIPPER_GRAIL_VERTICAL;
+  terminal_response.cmd = cmd;
   terminal_response.data[0] = status;
   terminal_response.data_length = 1;
   Terminal.SendResponse(&terminal_response);
+}
+
+static void GrailLiftUp(uint8_t* data, uint8_t data_length)
+{
+  GrailLiftStep(BOARD_GRAIL_LIFT_UP, GRAIL_LIFT_UP, data, data_length);
+}
+
+static void GrailLiftDown(uint8_t* data, uint8_t data_length)
+{
+  GrailLiftStep(BOARD_GRAIL_LIFT_DOWN, GRAIL_LIFT_DOWN, data, data_length);
 }
 
 static void ToggleGrailPickGripper(uint8_t* data, uint8_t data_length)
@@ -540,12 +472,10 @@ void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t da
                                                                                               [BOARD_STEPPER_TEST] = StepperTest,
                                                                                               [BOARD_IMPELLER_ON] = ImpellerOn,
                                                                                               [BOARD_IMPELLER_OFF] = ImpellerOff,
-                                                                                              [BOARD_IMPELLER_GET_STATE] = ImpellerGetState,
-                                                                                              [BOARD_IMPELLER_PRESS] = ImpellerPress,
-                                                                                              [BOARD_IMPELLER_SYNC] = ImpellerSync,
                                                                                               [BOARD_TOGGLE_GRAIL_PICK_GRIPPER] = ToggleGrailPickGripper,
                                                                                               [BOARD_TOGGLE_GRAIL_SHELF_GRIPPER] = ToggleGrailShelfGripper,
-                                                                                              [BOARD_GRIPPER_GRAIL_VERTICAL] = GripperGrailVertical
+                                                                                              [BOARD_GRAIL_LIFT_UP] = GrailLiftUp,
+                                                                                              [BOARD_GRAIL_LIFT_DOWN] = GrailLiftDown
                                                                                             };
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

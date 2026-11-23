@@ -20,10 +20,7 @@
 enum impeller_cmd_e{
   IMPELLER_CMD_NONE,
   IMPELLER_CMD_ON,
-  IMPELLER_CMD_OFF,
-  IMPELLER_CMD_PRESS,
-  IMPELLER_CMD_SYNC_ON,
-  IMPELLER_CMD_SYNC_OFF
+  IMPELLER_CMD_OFF
 };
 
 enum impeller_phase_e{
@@ -35,7 +32,6 @@ enum impeller_phase_e{
 
 /*  Requests, written by any task  */
 static volatile uint8_t pending_cmd = IMPELLER_CMD_NONE;
-static volatile uint16_t pending_arg;
 static volatile uint8_t target_pct = IMPELLER_DEFAULT_DUTY_PCT;
 
 /*  State, written by Update() only  */
@@ -43,7 +39,6 @@ static volatile enum impeller_state_e state = IMPELLER_OFF;
 static volatile uint8_t duty_pct;             /* on the pin now */
 static enum impeller_phase_e phase = IMPELLER_PHASE_IDLE;
 static uint32_t phase_timer_ms;
-static uint32_t debug_press_ms;
 
 
 
@@ -59,19 +54,17 @@ static void Unlock(uint32_t primask)
   __set_PRIMASK(primask);
 }
 
-static void PostCmd(enum impeller_cmd_e cmd, uint16_t arg)
+static void PostCmd(enum impeller_cmd_e cmd)
 {
   uint32_t primask = Lock();
-  pending_arg = arg;
   pending_cmd = cmd;
   Unlock(primask);
 }
 
-static enum impeller_cmd_e TakeCmd(uint16_t* arg)
+static enum impeller_cmd_e TakeCmd(void)
 {
   uint32_t primask = Lock();
   enum impeller_cmd_e cmd = (enum impeller_cmd_e)pending_cmd;
-  *arg = pending_arg;
   pending_cmd = IMPELLER_CMD_NONE;
   Unlock(primask);
   return cmd;
@@ -141,19 +134,13 @@ static void Init(void)
 static void Update(uint32_t dt_ms)
 {
   enum impeller_cmd_e cmd;
-  uint16_t arg;
-
-  if(debug_press_ms && TimerElapsed(&debug_press_ms, dt_ms))
-    SetButton(0);
 
   switch(state)
   {
     case IMPELLER_OFF:
     case IMPELLER_ON:
       /*  Requests are taken only here, so a press sequence is never interrupted  */
-      if(debug_press_ms)
-        break;
-      cmd = TakeCmd(&arg);
+      cmd = TakeCmd();
       /*  On and off: the duty (or 0) is applied below, press once the RC filter has settled  */
       if((cmd == IMPELLER_CMD_ON) && (state == IMPELLER_OFF)){
         StartPhase(IMPELLER_PHASE_SETTLE, IMPELLER_SIGNAL_SETTLE_MS);
@@ -162,17 +149,6 @@ static void Update(uint32_t dt_ms)
       else if((cmd == IMPELLER_CMD_OFF) && (state == IMPELLER_ON)){
         StartPhase(IMPELLER_PHASE_SETTLE, IMPELLER_SIGNAL_SETTLE_MS);
         state = IMPELLER_STOPPING;
-      }
-      else if(cmd == IMPELLER_CMD_PRESS){
-        debug_press_ms = arg;
-        SetButton(1);
-      }
-      /*  The real state is known only to the user: no press  */
-      else if(cmd == IMPELLER_CMD_SYNC_ON){
-        state = IMPELLER_ON;
-      }
-      else if(cmd == IMPELLER_CMD_SYNC_OFF){
-        state = IMPELLER_OFF;
       }
       break;
 
@@ -198,12 +174,12 @@ static void Update(uint32_t dt_ms)
 
 static void TurnOn(void)
 {
-  PostCmd(IMPELLER_CMD_ON, 0);
+  PostCmd(IMPELLER_CMD_ON);
 }
 
 static void TurnOff(void)
 {
-  PostCmd(IMPELLER_CMD_OFF, 0);
+  PostCmd(IMPELLER_CMD_OFF);
 }
 
 static void SetDuty(uint8_t percent)
@@ -211,20 +187,6 @@ static void SetDuty(uint8_t percent)
   if(percent > IMPELLER_MAX_DUTY_PCT)
     percent = IMPELLER_MAX_DUTY_PCT;
   target_pct = percent;
-}
-
-static void PressButton(uint16_t ms)
-{
-  if(ms == 0)
-    return;
-  if(ms > IMPELLER_DEBUG_PRESS_MAX_MS)
-    ms = IMPELLER_DEBUG_PRESS_MAX_MS;
-  PostCmd(IMPELLER_CMD_PRESS, ms);
-}
-
-static void SyncState(uint8_t on)
-{
-  PostCmd(on ? IMPELLER_CMD_SYNC_ON : IMPELLER_CMD_SYNC_OFF, 0);
 }
 
 static enum impeller_state_e GetState(void)
@@ -247,8 +209,6 @@ const struct impeller_s Impeller = {.Init = Init,
                                     .TurnOn = TurnOn,
                                     .TurnOff = TurnOff,
                                     .SetDuty = SetDuty,
-                                    .PressButton = PressButton,
-                                    .SyncState = SyncState,
                                     .GetState = GetState,
                                     .GetDuty = GetDuty,
                                     .GetTargetDuty = GetTargetDuty};

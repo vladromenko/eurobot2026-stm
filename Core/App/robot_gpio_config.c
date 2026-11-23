@@ -66,6 +66,15 @@ void Robot_GPIO_Config(void)
 	GPIO_Struct.Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH;
 	
 	LL_GPIO_Init(GPIOE, &GPIO_Struct);
+
+	/*	GRAIL_BOTTOM_SWITCH_GPIO28_PC14	*/
+	GPIO_Struct.Pin = GRAIL_BOTTOM_SWITCH_GPIO28_PC14;
+	GPIO_Struct.Mode = LL_GPIO_MODE_INPUT;
+	GPIO_Struct.OutputType = LL_GPIO_OUTPUT_OPENDRAIN;
+	GPIO_Struct.Pull = LL_GPIO_PULL_DOWN;
+	GPIO_Struct.Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH;
+
+	LL_GPIO_Init(GRAIL_BOTTOM_SWITCH_GPIO_PORT, &GPIO_Struct);
 	
 
 	/*	Specific Robot Pins ------------------------------------------------------------------*/

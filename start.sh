@@ -2,13 +2,10 @@
 # Start keyboard teleoperation (tools/teleop.py) over USART1.
 # Usage: ./start.sh [/dev/PORT] [teleop.py options...]
 #   ./start.sh                                   keyboard control (T/Y impeller on/off, </> its PWM duty -/+5 %,
-#                                                1/2 grail grippers, 3/4/5 grail lift)
+#                                                1/2 grail grippers, 3/4 grail lift up/down)
 #   ./start.sh --impeller on                    one impeller command and exit (duty set in the firmware, 75 % after reset)
 #   ./start.sh --impeller on --impeller-duty 60  duty 60 % = 2 V on the filter (3.3 V x duty)
 #   ./start.sh --impeller off
-#   ./start.sh --impeller status                 state and duty read from the board
-#   ./start.sh --impeller-press 1000             press the button 1 s, firmware state unchanged
-#   ./start.sh --impeller-sync on                the impeller was turned on by hand: no press
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

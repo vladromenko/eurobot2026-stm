@@ -30,12 +30,11 @@
 #define IMPELLER_INVERT               0       /* 1 if the controller treats 0 V as maximum */
 #define IMPELLER_SPEED_OPEN_DRAIN     0       /* 1: PA3 open-drain, needs an external pull-up to +5 V; 0: push-pull 0..3.3 V */
 #define IMPELLER_PRESS_MS             200     /* button press length, NOT VERIFIED */
-#define IMPELLER_SIGNAL_SETTLE_MS     2500    /* RC filter settles before a press: 5 x 10 kOhm x 47 uF */
+#define IMPELLER_SIGNAL_SETTLE_MS     1000    /* RC filter (10 kOhm x 47 uF, tau 0.47 s) charges to ~88 % before a press */
 #define IMPELLER_BOOT_DELAY_MS        1000    /* pause after the press that turns it on */
 #define IMPELLER_DEFAULT_DUTY_PCT     75      /* duty after reset, used by TurnOn() until SetDuty(); it starts from 75 % */
 #define IMPELLER_MAX_DUTY_PCT         100     /* limits every duty command; was 30 for the first tests */
 #define IMPELLER_PWM_PERIOD_US        20000   /* RC_Servo period (50 Hz): pulse 0..20000 us = duty 0..100 % */
-#define IMPELLER_DEBUG_PRESS_MAX_MS   2000    /* limit for Impeller.PressButton() */
 
 enum impeller_state_e{
   IMPELLER_OFF,
@@ -50,8 +49,6 @@ struct impeller_s{
   void (*TurnOn)(void);                     // request: apply the duty, wait for the filter, press the button
   void (*TurnOff)(void);                    // request: duty 0, wait for the filter, press the button
   void (*SetDuty)(uint8_t percent);         // 0..100, limited by IMPELLER_MAX_DUTY_PCT; applied while STARTING/ON
-  void (*PressButton)(uint16_t ms);         // debug: single press, does not change the state
-  void (*SyncState)(uint8_t on);            // set the believed state to the real one, no press (in OFF/ON)
   enum impeller_state_e (*GetState)(void);
   uint8_t (*GetDuty)(void);                 // duty on the pin now, %
   uint8_t (*GetTargetDuty)(void);           // duty applied while STARTING/ON, %

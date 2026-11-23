@@ -48,6 +48,10 @@ extern const struct os_task_base_s GripperTask;
 extern const struct os_task_base_s ImpellerTask;
 extern const struct os_task_base_s GrailGripperTask;
 
+/* grail_lift_cmd values */
+#define GRAIL_LIFT_UP               1
+#define GRAIL_LIFT_DOWN             2
+
 void Dbg(const char* s);
 
 #ifdef __cplusplus
