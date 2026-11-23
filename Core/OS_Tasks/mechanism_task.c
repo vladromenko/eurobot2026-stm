@@ -9,8 +9,8 @@
 #define STEPPER_MAX_POSITION_STEPS      200000
 #define STEPPER_EDGE_DIV                32
 #define STEPPER_ACCELERATION_MS         300
-#define SERVO_MIN_PULSE_US              1000
-#define SERVO_MAX_PULSE_US              2000
+#define SERVO_MIN_PULSE_US              500
+#define SERVO_MAX_PULSE_US              2500
 #define SERVO_ANGLE_RANGE               180
 #define SPEED_LEVEL_MIN                 1
 #define SPEED_LEVEL_MAX                 8
@@ -312,7 +312,8 @@ static void Task(void *arg)
 
     Stepper.Init(STEPPER_MOTOR_2);
     Stepper.SetZeroPosisition(STEPPER_MOTOR_2);
-    Stepper.Disable(STEPPER_MOTOR_2);
+    /* Match the known-good test sequence: initialize, zero, then enable. */
+    Stepper.Enable(STEPPER_MOTOR_2);
     RC_Servo.Disable(RC_SERVO_5);
     RC_Servo.Disable(RC_SERVO_6);
     last_servo_update = xTaskGetTickCount();
@@ -351,7 +352,6 @@ static void Task(void *arg)
 
         if (position_reached != 0U) {
             Stepper.StopMotor(STEPPER_MOTOR_2);
-            Stepper.Disable(STEPPER_MOTOR_2);
         }
 
         UpdateServos(&last_servo_update);
