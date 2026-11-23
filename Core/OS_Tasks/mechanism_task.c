@@ -30,6 +30,7 @@ struct mechanism_command_s {
     int32_t position;
     uint8_t left_angle;
     uint8_t right_angle;
+    uint8_t servo_mask;
     uint8_t stepper_speed_level;
     uint8_t servo_speed_level;
 };
@@ -115,16 +116,26 @@ static void UpdateServos(TickType_t *last_update)
     left_angle = MoveAngleToward(mechanism_state.left_angle, left_target, step);
     right_angle = MoveAngleToward(mechanism_state.right_angle, right_target, step);
 
-    if ((left_angle != mechanism_state.left_angle) ||
-        (right_angle != mechanism_state.right_angle)) {
+    if ((left_angle != mechanism_state.left_angle) &&
+        ((mechanism_state.flags & MECHANISM_FLAG_PWM5_ENABLED) != 0U)) {
         RC_Servo.SetServoAngle(RC_SERVO_5, SERVO_MIN_PULSE_US, SERVO_MAX_PULSE_US,
                                SERVO_ANGLE_RANGE, left_angle);
+    }
+    if ((right_angle != mechanism_state.right_angle) &&
+        ((mechanism_state.flags & MECHANISM_FLAG_PWM6_ENABLED) != 0U)) {
         RC_Servo.SetServoAngle(RC_SERVO_6, SERVO_MIN_PULSE_US, SERVO_MAX_PULSE_US,
                                SERVO_ANGLE_RANGE, right_angle);
+    }
 
+    if ((left_angle != mechanism_state.left_angle) ||
+        (right_angle != mechanism_state.right_angle)) {
         taskENTER_CRITICAL();
-        mechanism_state.left_angle = left_angle;
-        mechanism_state.right_angle = right_angle;
+        if ((mechanism_state.flags & MECHANISM_FLAG_PWM5_ENABLED) != 0U) {
+            mechanism_state.left_angle = left_angle;
+        }
+        if ((mechanism_state.flags & MECHANISM_FLAG_PWM6_ENABLED) != 0U) {
+            mechanism_state.right_angle = right_angle;
+        }
         taskEXIT_CRITICAL();
     }
 }
@@ -144,19 +155,28 @@ static void ProcessCommand(const struct mechanism_command_s *command)
         mechanism_state.flags |= MECHANISM_FLAG_STEPPER_BUSY;
         taskEXIT_CRITICAL();
     } else if (command->type == MECHANISM_COMMAND_SET_SERVOS) {
-        if ((mechanism_state.flags & MECHANISM_FLAG_SERVOS_ENABLED) == 0U) {
+        if (((command->servo_mask & MECHANISM_SERVO_PWM5) != 0U) &&
+            ((mechanism_state.flags & MECHANISM_FLAG_PWM5_ENABLED) == 0U)) {
             RC_Servo.SetServoAngle(RC_SERVO_5, SERVO_MIN_PULSE_US, SERVO_MAX_PULSE_US,
                                    SERVO_ANGLE_RANGE, mechanism_state.left_angle);
+            RC_Servo.Enable(RC_SERVO_5);
+        }
+        if (((command->servo_mask & MECHANISM_SERVO_PWM6) != 0U) &&
+            ((mechanism_state.flags & MECHANISM_FLAG_PWM6_ENABLED) == 0U)) {
             RC_Servo.SetServoAngle(RC_SERVO_6, SERVO_MIN_PULSE_US, SERVO_MAX_PULSE_US,
                                    SERVO_ANGLE_RANGE, mechanism_state.right_angle);
-            RC_Servo.Enable(RC_SERVO_5);
             RC_Servo.Enable(RC_SERVO_6);
         }
 
         taskENTER_CRITICAL();
-        mechanism_state.left_target_angle = command->left_angle;
-        mechanism_state.right_target_angle = command->right_angle;
-        mechanism_state.flags |= MECHANISM_FLAG_SERVOS_ENABLED;
+        if ((command->servo_mask & MECHANISM_SERVO_PWM5) != 0U) {
+            mechanism_state.left_target_angle = command->left_angle;
+            mechanism_state.flags |= MECHANISM_FLAG_PWM5_ENABLED;
+        }
+        if ((command->servo_mask & MECHANISM_SERVO_PWM6) != 0U) {
+            mechanism_state.right_target_angle = command->right_angle;
+            mechanism_state.flags |= MECHANISM_FLAG_PWM6_ENABLED;
+        }
         taskEXIT_CRITICAL();
     } else if (command->type == MECHANISM_COMMAND_SET_ZERO) {
         if ((mechanism_state.flags & MECHANISM_FLAG_STEPPER_BUSY) == 0U) {
@@ -208,17 +228,19 @@ uint8_t MechanismSetStepperPosition(int32_t position)
     return SendCommand(&command);
 }
 
-uint8_t MechanismSetServoAngles(uint8_t left_angle, uint8_t right_angle)
+uint8_t MechanismSetServoAngles(uint8_t left_angle, uint8_t right_angle, uint8_t servo_mask)
 {
     struct mechanism_command_s command = {0};
 
-    if ((left_angle > SERVO_ANGLE_RANGE) || (right_angle > SERVO_ANGLE_RANGE)) {
+    if ((left_angle > SERVO_ANGLE_RANGE) || (right_angle > SERVO_ANGLE_RANGE) ||
+        (servo_mask == 0U) || ((servo_mask & (uint8_t)~MECHANISM_SERVO_BOTH) != 0U)) {
         return 0;
     }
 
     command.type = MECHANISM_COMMAND_SET_SERVOS;
     command.left_angle = left_angle;
     command.right_angle = right_angle;
+    command.servo_mask = servo_mask;
     return SendCommand(&command);
 }
 

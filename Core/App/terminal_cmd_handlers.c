@@ -1073,11 +1073,15 @@ static void MechanismSetPosition(uint8_t* data, uint8_t data_length)
 static void MechanismSetServos(uint8_t* data, uint8_t data_length)
 {
   uint8_t result = MECHANISM_RESULT_INVALID;
+  uint8_t servo_mask = MECHANISM_SERVO_BOTH;
 
   if (COMM_ENABLE == 0U) {
     result = MECHANISM_RESULT_DISABLED;
-  } else if (data_length == 2U) {
-    result = (MechanismSetServoAngles(data[0], data[1]) != 0U) ?
+  } else if ((data_length == 2U) || (data_length == 3U)) {
+    if (data_length == 3U) {
+      servo_mask = data[2];
+    }
+    result = (MechanismSetServoAngles(data[0], data[1], servo_mask) != 0U) ?
              MECHANISM_RESULT_OK : MECHANISM_RESULT_INVALID;
   }
 

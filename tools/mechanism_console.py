@@ -19,6 +19,9 @@ CMD_SET_ZERO = 0x32
 CMD_STOP = 0x33
 CMD_GET_STATE = 0x34
 CMD_SET_SPEED = 0x35
+SERVO_PWM5 = 0x01
+SERVO_PWM6 = 0x02
+SERVO_BOTH = SERVO_PWM5 | SERVO_PWM6
 
 
 def make_packet(command: int, data: bytes = b"") -> bytes:
@@ -100,7 +103,8 @@ def get_state(port: serial.Serial, show: bool = True) -> dict[str, int]:
             f"PWM5={state['left']}° -> {state['left_target']}°, "
             f"PWM6={state['right']}° -> {state['right_target']}° "
             f"(скорость {state['servo_speed']}/8), initialized={bool(data[0] & 1)}, "
-            f"moving={bool(data[0] & 2)}, servos={bool(data[0] & 4)}"
+            f"moving={bool(data[0] & 2)}, PWM5_on={bool(data[0] & 4)}, "
+            f"PWM6_on={bool(data[0] & 8)}"
         )
     return state
 
@@ -179,12 +183,13 @@ def execute(port: serial.Serial, line: str) -> bool:
             right += delta
         if not (0 <= left <= 180 and 0 <= right <= 180):
             raise ValueError("угол выходит за диапазон 0..180")
-        check_result(request(port, CMD_SET_SERVOS, bytes((left, right))))
+        servo_mask = SERVO_PWM5 if name == "pwm5" else SERVO_PWM6
+        check_result(request(port, CMD_SET_SERVOS, bytes((left, right, servo_mask))))
     elif name == "servos" and len(parts) == 3:
         left, right = int(parts[1]), int(parts[2])
         if not (0 <= left <= 180 and 0 <= right <= 180):
             raise ValueError("углы должны быть в диапазоне 0..180")
-        check_result(request(port, CMD_SET_SERVOS, bytes((left, right))))
+        check_result(request(port, CMD_SET_SERVOS, bytes((left, right, SERVO_BOTH))))
     elif name == "speed" and len(parts) == 3 and parts[1] in ("stepper", "servos"):
         state = get_state(port, show=False)
         stepper_level = state["stepper_speed"] or 1
