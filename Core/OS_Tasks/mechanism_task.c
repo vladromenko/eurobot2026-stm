@@ -11,6 +11,8 @@
 #define STEPPER_MAX_POSITION_STEPS      200000
 #define STEPPER_EDGE_DIV                32
 #define STEPPER_ACCELERATION_MS         300
+#define STEPPER_ENABLE_SETTLE_MS        2
+#define STEPPER_FAULT_RECOVERY_MS       5
 #define SERVO_MIN_PULSE_US              500
 #define SERVO_MAX_PULSE_US              2500
 #define SERVO_ANGLE_RANGE               180
@@ -169,9 +171,21 @@ static uint8_t EnableStepper(void)
     (void)L6474H.GetStatus(STEPPER_MOTOR_2);
     vTaskDelay(pdMS_TO_TICKS(1));
     Stepper.Enable(STEPPER_MOTOR_2);
-    vTaskDelay(pdMS_TO_TICKS(1));
+    vTaskDelay(pdMS_TO_TICKS(STEPPER_ENABLE_SETTLE_MS));
     status = (uint16_t)L6474H.GetParam(STEPPER_MOTOR_2, L6474_STATUS,
                                       L6474_STATUS_LENGTH);
+
+    /* A reset or the first bridge commutation can leave a recoverable OCD
+       latch. Keep OC_SD enabled, clear the latch once and retry once. A real
+       persistent overcurrent immediately returns the bridge to HiZ again. */
+    if ((status & L6474_HiZ_MASK) != 0U && !emergency_stop_requested) {
+        (void)L6474H.GetStatus(STEPPER_MOTOR_2);
+        vTaskDelay(pdMS_TO_TICKS(STEPPER_FAULT_RECOVERY_MS));
+        Stepper.Enable(STEPPER_MOTOR_2);
+        vTaskDelay(pdMS_TO_TICKS(STEPPER_ENABLE_SETTLE_MS));
+        status = (uint16_t)L6474H.GetParam(STEPPER_MOTOR_2, L6474_STATUS,
+                                          L6474_STATUS_LENGTH);
+    }
     return status != 0 && (status & L6474_HiZ_MASK) == 0U && !emergency_stop_requested;
 }
 
