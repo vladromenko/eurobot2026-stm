@@ -9,6 +9,8 @@
 
 #include "pca9685.h"
 #include "stm32f4xx_ll_i2c.h"
+#include "FreeRTOS.h"
+#include "task.h"
 
 #define PCA9685_I2C_TIMEOUT_MS       20U
 #define PCA9685_I2C_MAX_POLL_COUNT   5000000U
@@ -122,7 +124,7 @@ static int I2C2_StartAndAddress(uint8_t address_byte)
   return I2C2_WaitSR1Set(I2C_SR1_ADDR);
 }
 
-int PCA9685_I2C_Write(uint8_t dev_addr_7bit, uint8_t reg,
+static int I2C2_Write(uint8_t dev_addr_7bit, uint8_t reg,
                       const uint8_t *data, uint16_t size)
 {
   int status;
@@ -161,7 +163,7 @@ fail:
   return status;
 }
 
-int PCA9685_I2C_Read(uint8_t dev_addr_7bit, uint8_t reg,
+static int I2C2_Read(uint8_t dev_addr_7bit, uint8_t reg,
                      uint8_t *data, uint16_t size)
 {
   int status;
@@ -245,6 +247,30 @@ int PCA9685_I2C_Read(uint8_t dev_addr_7bit, uint8_t reg,
 
 fail:
   I2C2_FinishTransaction();
+  return status;
+}
+
+/* gripper_task and grail_gripper_task share the bus. Waits are bounded by DWT
+   cycles, not by ticks, so a transaction is safe with the scheduler suspended. */
+int PCA9685_I2C_Write(uint8_t dev_addr_7bit, uint8_t reg,
+                      const uint8_t *data, uint16_t size)
+{
+  int status;
+
+  vTaskSuspendAll();
+  status = I2C2_Write(dev_addr_7bit, reg, data, size);
+  xTaskResumeAll();
+  return status;
+}
+
+int PCA9685_I2C_Read(uint8_t dev_addr_7bit, uint8_t reg,
+                     uint8_t *data, uint16_t size)
+{
+  int status;
+
+  vTaskSuspendAll();
+  status = I2C2_Read(dev_addr_7bit, reg, data, size);
+  xTaskResumeAll();
   return status;
 }
 

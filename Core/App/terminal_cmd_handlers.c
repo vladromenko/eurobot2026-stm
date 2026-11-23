@@ -43,8 +43,6 @@
 #include "spi_gpo_defines.h" 
 #include "rc_servo.h" 
 #include "stepper.h"
-#include "l6474_drvr.h"
-#include "mechanism_task.h"
 #include "pca9685.h"
 #include "maxon.h"
 #include "math.h"
@@ -74,6 +72,11 @@ extern uint8_t gripper_cmd;
 extern uint8_t lift_cmd;
 extern uint8_t gripper_id;
 extern uint8_t gripper_height;
+extern volatile uint8_t grail_pick_toggle;
+extern volatile uint8_t grail_shelf_toggle;
+extern volatile uint8_t grail_lift_cmd;
+extern volatile uint8_t grail_lift_height;
+extern volatile uint8_t grail_lift_status;
 extern int32_t move_rel_dx_mm;
 extern int32_t move_rel_dy_mm;
 extern uint8_t move_rel_speed_cms;
@@ -1040,162 +1043,61 @@ static void SlideGripper(uint8_t* data, uint8_t data_length)
   Terminal.SendResponse(&terminal_response);
 }
 
-enum mechanism_result_e {
-  MECHANISM_RESULT_OK = 0,
-  MECHANISM_RESULT_INVALID = 1,
-  MECHANISM_RESULT_DISABLED = 2
-};
-
-static void SendMechanismResult(uint8_t command, uint8_t result)
+static void GripperGrailVertical(uint8_t* data, uint8_t data_length)
 {
-  struct terminal_response_s terminal_response = {0};
-  terminal_response.cmd = command;
-  terminal_response.data[0] = result;
+  uint8_t status = 0;
+  if(COMM_ENABLE && data_length == 1 && !grail_lift_cmd){
+    grail_lift_height = data[0]; // height in mm
+    grail_lift_cmd = 1;
+
+    // grail_gripper_task gives up after 10 s, so the loop ends before this limit
+    TickType_t start_time = xTaskGetTickCount();
+    while(grail_lift_cmd && (xTaskGetTickCount() - start_time) < pdMS_TO_TICKS(11000)){
+      vTaskDelay(10);
+    }
+    if(!grail_lift_cmd){
+      status = grail_lift_status;
+    }
+  }
+
+  // terminal response
+  struct terminal_response_s terminal_response;
+  terminal_response.cmd = BOARD_GRIPPER_GRAIL_VERTICAL;
+  terminal_response.data[0] = status;
   terminal_response.data_length = 1;
   Terminal.SendResponse(&terminal_response);
 }
 
-static void MechanismSetPosition(uint8_t* data, uint8_t data_length)
+static void ToggleGrailPickGripper(uint8_t* data, uint8_t data_length)
 {
-  int32_t position = 0;
-  uint8_t result = MECHANISM_RESULT_INVALID;
-
-  if (COMM_ENABLE == 0U) {
-    result = MECHANISM_RESULT_DISABLED;
-  } else if (data_length == 4U) {
-    ByteTo_Word32(data, &position);
-    result = (MechanismSetStepperPosition(position) != 0U) ?
-             MECHANISM_RESULT_OK : MECHANISM_RESULT_INVALID;
+  uint8_t status = 0;
+  if(COMM_ENABLE){
+    grail_pick_toggle = 1;
+    status = 1;
   }
 
-  SendMechanismResult(BOARD_MECHANISM_SET_POSITION, result);
-}
-
-static void MechanismSetServos(uint8_t* data, uint8_t data_length)
-{
-  uint8_t result = MECHANISM_RESULT_INVALID;
-  uint8_t servo_mask = MECHANISM_SERVO_BOTH;
-
-  if (COMM_ENABLE == 0U) {
-    result = MECHANISM_RESULT_DISABLED;
-  } else if ((data_length == 2U) || (data_length == 3U)) {
-    if (data_length == 3U) {
-      servo_mask = data[2];
-    }
-    result = (MechanismSetServoAngles(data[0], data[1], servo_mask) != 0U) ?
-             MECHANISM_RESULT_OK : MECHANISM_RESULT_INVALID;
-  }
-
-  SendMechanismResult(BOARD_MECHANISM_SET_SERVOS, result);
-}
-
-static void MechanismSetZero(uint8_t* data, uint8_t data_length)
-{
-  uint8_t result = MECHANISM_RESULT_INVALID;
-  (void)data;
-
-  if (COMM_ENABLE == 0U) {
-    result = MECHANISM_RESULT_DISABLED;
-  } else if (data_length == 0U) {
-    result = (MechanismSetStepperZero() != 0U) ?
-             MECHANISM_RESULT_OK : MECHANISM_RESULT_INVALID;
-  }
-
-  SendMechanismResult(BOARD_MECHANISM_SET_ZERO, result);
-}
-
-static void MechanismStopCommand(uint8_t* data, uint8_t data_length)
-{
-  uint8_t result = MECHANISM_RESULT_INVALID;
-  (void)data;
-
-  if (data_length == 0U) {
-    result = (MechanismStop() != 0U) ? MECHANISM_RESULT_OK : MECHANISM_RESULT_INVALID;
-  }
-
-  SendMechanismResult(BOARD_MECHANISM_STOP, result);
-}
-
-static void MechanismGetStateCommand(uint8_t* data, uint8_t data_length)
-{
-  struct terminal_response_s terminal_response = {0};
-  struct mechanism_state_s state = {0};
-  (void)data;
-  (void)data_length;
-
-  MechanismGetState(&state);
-  terminal_response.cmd = BOARD_MECHANISM_GET_STATE;
-  terminal_response.data[0] = state.flags;
-  Word32_ToByte(&state.current_position, &terminal_response.data[1]);
-  Word32_ToByte(&state.goal_position, &terminal_response.data[5]);
-  terminal_response.data[9] = state.left_angle;
-  terminal_response.data[10] = state.right_angle;
-  terminal_response.data[11] = state.left_target_angle;
-  terminal_response.data[12] = state.right_target_angle;
-  terminal_response.data[13] = state.stepper_speed_level;
-  terminal_response.data[14] = state.servo_speed_level;
-  terminal_response.data_length = 15;
+  // 1 - accepted, 0 - ignored because communication is disabled (match timeout)
+  struct terminal_response_s terminal_response;
+  terminal_response.cmd = BOARD_TOGGLE_GRAIL_PICK_GRIPPER;
+  terminal_response.data[0] = status;
+  terminal_response.data_length = 1;
   Terminal.SendResponse(&terminal_response);
 }
 
-static void MechanismSetSpeed(uint8_t* data, uint8_t data_length)
+static void ToggleGrailShelfGripper(uint8_t* data, uint8_t data_length)
 {
-  uint8_t result = MECHANISM_RESULT_INVALID;
-
-  if (COMM_ENABLE == 0U) {
-    result = MECHANISM_RESULT_DISABLED;
-  } else if (data_length == 2U) {
-    result = (MechanismSetSpeedLevels(data[0], data[1]) != 0U) ?
-             MECHANISM_RESULT_OK : MECHANISM_RESULT_INVALID;
+  uint8_t status = 0;
+  if(COMM_ENABLE){
+    grail_shelf_toggle = 1;
+    status = 1;
   }
 
-  SendMechanismResult(BOARD_MECHANISM_SET_SPEED, result);
-}
-
-static void MechanismGetDiagnostics(uint8_t* data, uint8_t data_length)
-{
-  struct terminal_response_s response = {0};
-  uint16_t driver_status;
-  uint16_t driver_config;
-  uint8_t step_mode;
-  uint8_t current_setting;
-  uint32_t value;
-  (void)data;
-  (void)data_length;
-
-  driver_status = (uint16_t)L6474H.GetParam(STEPPER_MOTOR_2, L6474_STATUS, L6474_STATUS_LENGTH);
-  step_mode = (uint8_t)L6474H.GetParam(STEPPER_MOTOR_2, L6474_STEP_MODE,
-                                      L6474_STEP_MODE_LENGTH);
-  current_setting = (uint8_t)L6474H.GetParam(STEPPER_MOTOR_2, L6474_TVAL,
-                                             L6474_TVAL_LENGTH);
-  driver_config = (uint16_t)L6474H.GetParam(STEPPER_MOTOR_2, L6474_CONFIG,
-                                            L6474_CONFIG_LENGTH);
-
-  response.cmd = BOARD_MECHANISM_GET_DIAGNOSTICS;
-  response.data[0] = 0xD5U;
-  response.data[1] = 0xA6U;
-  Word16_ToByte(&driver_status, &response.data[2]);
-  response.data[4] = step_mode;
-  response.data[5] = current_setting;
-  Word16_ToByte(&driver_config, &response.data[6]);
-
-  value = TIM1->CCER;
-  Word32_ToByte(&value, &response.data[8]);
-  value = TIM5->CCER;
-  Word32_ToByte(&value, &response.data[12]);
-  value = TIM5->CCR1;
-  Word32_ToByte(&value, &response.data[16]);
-  value = TIM5->CCR2;
-  Word32_ToByte(&value, &response.data[20]);
-  value = SPI_GPO_REG;
-  Word32_ToByte(&value, &response.data[24]);
-
-  response.data[28] = (uint8_t)(GPIOA->MODER & 0xFFU);
-  response.data[29] = (uint8_t)(GPIOA->AFR[0] & 0xFFU);
-  response.data[30] = (uint8_t)((GPIOE->MODER >> (11U * 2U)) & 0x3U);
-  response.data[31] = (uint8_t)((GPIOE->AFR[1] >> ((11U - 8U) * 4U)) & 0xFU);
-  response.data_length = 32;
-  Terminal.SendResponse(&response);
+  // 1 - accepted, 0 - ignored because communication is disabled (match timeout)
+  struct terminal_response_s terminal_response;
+  terminal_response.cmd = BOARD_TOGGLE_GRAIL_SHELF_GRIPPER;
+  terminal_response.data[0] = status;
+  terminal_response.data_length = 1;
+  Terminal.SendResponse(&terminal_response);
 }
 
 void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t data_length) = {[BOARD_Ping] = Ping,
@@ -1239,13 +1141,9 @@ void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t da
                                                                                               [BOARD_GRIPPER_VERTICAL] = GripperVertical,
                                                                                               [BOARD_ROTATE_WHEEL_ONCE] = RotateWheelOnce,
                                                                                               [BOARD_GRIPPER_SLIDE] = SlideGripper,
-                                                                                              [BOARD_MECHANISM_SET_POSITION] = MechanismSetPosition,
-                                                                                              [BOARD_MECHANISM_SET_SERVOS] = MechanismSetServos,
-                                                                                              [BOARD_MECHANISM_SET_ZERO] = MechanismSetZero,
-                                                                                              [BOARD_MECHANISM_STOP] = MechanismStopCommand,
-                                                                                              [BOARD_MECHANISM_GET_STATE] = MechanismGetStateCommand,
-                                                                                              [BOARD_MECHANISM_SET_SPEED] = MechanismSetSpeed,
-                                                                                              [BOARD_MECHANISM_GET_DIAGNOSTICS] = MechanismGetDiagnostics
+                                                                                              [BOARD_TOGGLE_GRAIL_PICK_GRIPPER] = ToggleGrailPickGripper,
+                                                                                              [BOARD_TOGGLE_GRAIL_SHELF_GRIPPER] = ToggleGrailShelfGripper,
+                                                                                              [BOARD_GRIPPER_GRAIL_VERTICAL] = GripperGrailVertical
 };
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

@@ -7,7 +7,7 @@ set(EUROBOT_SOURCES
   "Core/OS_Tasks/freertos_routine_plug.c"
   "Core/OS_Tasks/game_task.c"
   "Core/OS_Tasks/gripper_task.c"
-  "Core/OS_Tasks/mechanism_task.c"
+  "Core/OS_Tasks/grail_gripper_task.c"
   "Core/OS_Tasks/odometry_task.c"
   "Core/OS_Tasks/terminal_task.c"
   "Core/OS_Tasks/stepper_task.c"
