@@ -150,6 +150,8 @@ static uint8_t StepModeConfigured(void)
 
 static uint8_t EnableStepper(void)
 {
+    uint16_t status;
+
     /* A global stop asserts NRST2 on the shared shift register. An SPI
        ENABLE command alone cannot release reset or restore the registers. */
     if ((SPI_GPO_REG & SPI_L6474_NRST2) == 0U || !StepModeConfigured()) {
@@ -159,8 +161,17 @@ static uint8_t EnableStepper(void)
     if (emergency_stop_requested) {
         return 0;
     }
+
+    /* UVLO is asserted by every L6474 reset, even when the supply is valid.
+       GetStatus clears the latched startup/fault state and only releases an
+       error whose physical condition has already disappeared. Without this
+       command the following ENABLE can be ignored and the bridge stays HiZ. */
+    (void)L6474H.GetStatus(STEPPER_MOTOR_2);
+    vTaskDelay(pdMS_TO_TICKS(1));
     Stepper.Enable(STEPPER_MOTOR_2);
-    uint16_t status = L6474H.GetParam(STEPPER_MOTOR_2, L6474_STATUS, L6474_STATUS_LENGTH);
+    vTaskDelay(pdMS_TO_TICKS(1));
+    status = (uint16_t)L6474H.GetParam(STEPPER_MOTOR_2, L6474_STATUS,
+                                      L6474_STATUS_LENGTH);
     return status != 0 && (status & L6474_HiZ_MASK) == 0U && !emergency_stop_requested;
 }
 
@@ -345,6 +356,8 @@ static void Task(void *arg)
     vTaskDelay(150);
 
     Stepper.Init(STEPPER_MOTOR_2);
+    /* Clear the reset-time UVLO/OCD latch before the first ENABLE. */
+    (void)L6474H.GetStatus(STEPPER_MOTOR_2);
     Stepper.SetZeroPosisition(STEPPER_MOTOR_2);
     Stepper.Disable(STEPPER_MOTOR_2);
     RC_Servo.Disable(RC_SERVO_5);

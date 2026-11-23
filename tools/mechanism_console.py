@@ -149,11 +149,25 @@ def show_diagnostics(port: serial.Serial) -> None:
     )
     step_mode = data[4] & 0x07
     current_ma = (data[5] + 1) * 31.25
+    active_faults = []
+    if not driver_status & 0x1000:
+        active_faults.append("OCD")
+    if not driver_status & 0x0800:
+        active_faults.append("TH_SD")
+    if not driver_status & 0x0400:
+        active_faults.append("TH_WRN")
+    if not driver_status & 0x0200:
+        active_faults.append("UVLO")
+    if driver_status & 0x0100:
+        active_faults.append("WRONG_CMD")
+    if driver_status & 0x0080:
+        active_faults.append("NOTPERF_CMD")
     print(
         f"FW_DIAG=D5A6, L6474_STATUS=0x{driver_status:04X} "
         f"(HiZ={bool(driver_status & 0x0001)}), STEP_MODE={step_mode}/7, "
         f"TVAL=0x{data[5]:02X} (~{current_ma:.0f} mA), CONFIG=0x{driver_config:04X}"
     )
+    print(f"L6474_FAULTS={','.join(active_faults) if active_faults else 'none'}")
     print(
         f"TIM1_CCER=0x{tim1_ccer:08X} (Stepper2_CH2={bool(tim1_ccer & 0x10)}), "
         f"TIM5_CCER=0x{tim5_ccer:08X} "
