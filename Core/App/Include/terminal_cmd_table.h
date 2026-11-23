@@ -80,9 +80,10 @@
 #define BOARD_MECHANISM_STOP                0x33    /* [51] Stop Stepper 2 and disable PWM5/PWM6 */
 #define BOARD_MECHANISM_GET_STATE           0x34    /* [52] Read mechanism state */
 #define BOARD_MECHANISM_SET_SPEED           0x35    /* [53] Stepper/servo speed levels, 1..8 */
+#define BOARD_MECHANISM_GET_DIAGNOSTICS     0x36    /* [54] Read timer/GPIO/L6474 diagnostics */
 
 /*  Do not forget to update the table size with the last one command! */
-#define TERMINAL_CMD_TABLE_SIZE             (BOARD_MECHANISM_SET_SPEED + 1)
+#define TERMINAL_CMD_TABLE_SIZE             (BOARD_MECHANISM_GET_DIAGNOSTICS + 1)
 
 
 #ifdef __cplusplus

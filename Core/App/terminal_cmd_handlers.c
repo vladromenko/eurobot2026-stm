@@ -43,6 +43,7 @@
 #include "spi_gpo_defines.h" 
 #include "rc_servo.h" 
 #include "stepper.h"
+#include "l6474_drvr.h"
 #include "mechanism_task.h"
 #include "pca9685.h"
 #include "maxon.h"
@@ -1151,6 +1152,52 @@ static void MechanismSetSpeed(uint8_t* data, uint8_t data_length)
   SendMechanismResult(BOARD_MECHANISM_SET_SPEED, result);
 }
 
+static void MechanismGetDiagnostics(uint8_t* data, uint8_t data_length)
+{
+  struct terminal_response_s response = {0};
+  uint16_t driver_status;
+  uint16_t driver_config;
+  uint8_t step_mode;
+  uint8_t current_setting;
+  uint32_t value;
+  (void)data;
+  (void)data_length;
+
+  driver_status = (uint16_t)L6474H.GetStatus(STEPPER_MOTOR_2);
+  step_mode = (uint8_t)L6474H.GetParam(STEPPER_MOTOR_2, L6474_STEP_MODE,
+                                      L6474_STEP_MODE_LENGTH);
+  current_setting = (uint8_t)L6474H.GetParam(STEPPER_MOTOR_2, L6474_TVAL,
+                                             L6474_TVAL_LENGTH);
+  driver_config = (uint16_t)L6474H.GetParam(STEPPER_MOTOR_2, L6474_CONFIG,
+                                            L6474_CONFIG_LENGTH);
+
+  response.cmd = BOARD_MECHANISM_GET_DIAGNOSTICS;
+  response.data[0] = 0xD5U;
+  response.data[1] = 0xA6U;
+  Word16_ToByte(&driver_status, &response.data[2]);
+  response.data[4] = step_mode;
+  response.data[5] = current_setting;
+  Word16_ToByte(&driver_config, &response.data[6]);
+
+  value = TIM1->CCER;
+  Word32_ToByte(&value, &response.data[8]);
+  value = TIM5->CCER;
+  Word32_ToByte(&value, &response.data[12]);
+  value = TIM5->CCR1;
+  Word32_ToByte(&value, &response.data[16]);
+  value = TIM5->CCR2;
+  Word32_ToByte(&value, &response.data[20]);
+  value = SPI_GPO_REG;
+  Word32_ToByte(&value, &response.data[24]);
+
+  response.data[28] = (uint8_t)(GPIOA->MODER & 0xFFU);
+  response.data[29] = (uint8_t)(GPIOA->AFR[0] & 0xFFU);
+  response.data[30] = (uint8_t)((GPIOE->MODER >> (11U * 2U)) & 0x3U);
+  response.data[31] = (uint8_t)((GPIOE->AFR[1] >> ((11U - 8U) * 4U)) & 0xFU);
+  response.data_length = 32;
+  Terminal.SendResponse(&response);
+}
+
 void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t data_length) = {[BOARD_Ping] = Ping,
                                                                                               [BOARD_SetSpeed] = SetRobotSpeed,
                                                                                               [BOARD_GetSpeed] = GetRobotSpeed,
@@ -1197,7 +1244,8 @@ void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t da
                                                                                               [BOARD_MECHANISM_SET_ZERO] = MechanismSetZero,
                                                                                               [BOARD_MECHANISM_STOP] = MechanismStopCommand,
                                                                                               [BOARD_MECHANISM_GET_STATE] = MechanismGetStateCommand,
-                                                                                              [BOARD_MECHANISM_SET_SPEED] = MechanismSetSpeed
+                                                                                              [BOARD_MECHANISM_SET_SPEED] = MechanismSetSpeed,
+                                                                                              [BOARD_MECHANISM_GET_DIAGNOSTICS] = MechanismGetDiagnostics
 };
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

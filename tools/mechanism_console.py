@@ -19,6 +19,7 @@ CMD_SET_ZERO = 0x32
 CMD_STOP = 0x33
 CMD_GET_STATE = 0x34
 CMD_SET_SPEED = 0x35
+CMD_GET_DIAGNOSTICS = 0x36
 SERVO_PWM5 = 0x01
 SERVO_PWM6 = 0x02
 SERVO_BOTH = SERVO_PWM5 | SERVO_PWM6
@@ -134,9 +135,42 @@ def set_speed(port: serial.Serial, stepper_level: int, servo_level: int) -> None
     check_result(request(port, CMD_SET_SPEED, bytes((stepper_level, servo_level))))
 
 
+def show_diagnostics(port: serial.Serial) -> None:
+    data = request(port, CMD_GET_DIAGNOSTICS)
+    if len(data) != 32 or data[:2] != bytes((0xD5, 0xA6)):
+        raise ValueError("некорректный ответ аппаратной диагностики")
+
+    driver_status, = struct.unpack_from("<H", data, 2)
+    driver_config, = struct.unpack_from("<H", data, 6)
+    tim1_ccer, tim5_ccer, pwm5_ccr, pwm6_ccr, spi_gpo = struct.unpack_from(
+        "<IIIII", data, 8
+    )
+    step_mode = data[4] & 0x07
+    current_ma = (data[5] + 1) * 31.25
+    print(
+        f"FW_DIAG=D5A6, L6474_STATUS=0x{driver_status:04X} "
+        f"(HiZ={bool(driver_status & 0x0001)}), STEP_MODE={step_mode}/7, "
+        f"TVAL=0x{data[5]:02X} (~{current_ma:.0f} mA), CONFIG=0x{driver_config:04X}"
+    )
+    print(
+        f"TIM1_CCER=0x{tim1_ccer:08X} (Stepper2_CH2={bool(tim1_ccer & 0x10)}), "
+        f"TIM5_CCER=0x{tim5_ccer:08X} "
+        f"(PWM5_CH1={bool(tim5_ccer & 0x01)}, PWM6_CH2={bool(tim5_ccer & 0x10)})"
+    )
+    print(
+        f"TIM5_CCR1={pwm5_ccr} us, TIM5_CCR2={pwm6_ccr} us, "
+        f"SPI_GPO=0x{spi_gpo:06X} (L6474_NRST2={bool(spi_gpo & (1 << 9))})"
+    )
+    print(
+        f"PA0/PA1_MODER=0x{data[28] & 0x0F:X}, PA0/PA1_AF=0x{data[29]:02X}, "
+        f"PE11_MODE={data[30]}, PE11_AF={data[31]}"
+    )
+
+
 def print_help() -> None:
     print("Команды:")
     print("  status                 показать состояние")
+    print("  diag                   аппаратные регистры Stepper2 и PWM5/PWM6")
     print("  zero                   принять текущее положение за 0")
     print("  stepper +/- [steps]    Stepper 2 вперёд/назад; по умолчанию 10 шагов")
     print("  pwm5 +/- [degrees]     PWM5 в обе стороны; по умолчанию 1 градус")
@@ -160,6 +194,8 @@ def execute(port: serial.Serial, line: str) -> bool:
     name = parts[0].lower()
     if name == "status" and len(parts) == 1:
         get_state(port)
+    elif name == "diag" and len(parts) == 1:
+        show_diagnostics(port)
     elif name == "zero" and len(parts) == 1:
         check_result(request(port, CMD_SET_ZERO))
     elif name == "move" and len(parts) == 2:

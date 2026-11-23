@@ -28,6 +28,7 @@
 
 void SPI_GPO_SetOutputPin(uint32_t SPI_GPO_PIN);
 void SPI_GPO_ResetOutputPin(uint32_t SPI_GPO_PIN);
+extern uint32_t SPI_GPO_REG;
 
 #ifdef __cplusplus
 }
