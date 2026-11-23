@@ -18,11 +18,16 @@ struct mechanism_state_s {
     int32_t goal_position;
     uint8_t left_angle;
     uint8_t right_angle;
+    uint8_t left_target_angle;
+    uint8_t right_target_angle;
+    uint8_t stepper_speed_level;
+    uint8_t servo_speed_level;
     uint8_t flags;
 };
 
 uint8_t MechanismSetStepperPosition(int32_t position);
 uint8_t MechanismSetServoAngles(uint8_t left_angle, uint8_t right_angle);
+uint8_t MechanismSetSpeedLevels(uint8_t stepper_level, uint8_t servo_level);
 uint8_t MechanismSetStepperZero(void);
 uint8_t MechanismStop(void);
 void MechanismEmergencyStop(void);

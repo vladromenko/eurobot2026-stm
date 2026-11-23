@@ -18,6 +18,7 @@ CMD_SET_SERVOS = 0x31
 CMD_SET_ZERO = 0x32
 CMD_STOP = 0x33
 CMD_GET_STATE = 0x34
+CMD_SET_SPEED = 0x35
 
 
 def make_packet(command: int, data: bytes = b"") -> bytes:
@@ -79,7 +80,7 @@ def check_result(data: bytes) -> None:
 
 def get_state(port: serial.Serial, show: bool = True) -> dict[str, int]:
     data = request(port, CMD_GET_STATE)
-    if len(data) != 11:
+    if len(data) != 15:
         raise ValueError("некорректная длина состояния")
     current, goal = struct.unpack_from("<ii", data, 1)
     state = {
@@ -88,23 +89,60 @@ def get_state(port: serial.Serial, show: bool = True) -> dict[str, int]:
         "goal": goal,
         "left": data[9],
         "right": data[10],
+        "left_target": data[11],
+        "right_target": data[12],
+        "stepper_speed": data[13],
+        "servo_speed": data[14],
     }
     if show:
         print(
-            f"position={current}, goal={goal}, PWM5={state['left']}°, "
-            f"PWM6={state['right']}°, initialized={bool(data[0] & 1)}, "
+            f"Stepper2={current} -> {goal} шагов (скорость {state['stepper_speed']}/8), "
+            f"PWM5={state['left']}° -> {state['left_target']}°, "
+            f"PWM6={state['right']}° -> {state['right_target']}° "
+            f"(скорость {state['servo_speed']}/8), initialized={bool(data[0] & 1)}, "
             f"moving={bool(data[0] & 2)}, servos={bool(data[0] & 4)}"
         )
     return state
+
+
+def signed_step(parts: list[str], default_step: int) -> int:
+    if len(parts) not in (2, 3) or parts[1] not in ("+", "-"):
+        raise ValueError("укажите направление + или - и, при необходимости, размер шага")
+    amount = default_step if len(parts) == 2 else int(parts[2])
+    if amount <= 0:
+        raise ValueError("размер шага должен быть положительным")
+    return amount if parts[1] == "+" else -amount
+
+
+def changed_speed(current: int, value: str) -> int:
+    if value == "+":
+        result = current + 1
+    elif value == "-":
+        result = current - 1
+    else:
+        result = int(value)
+    if not 1 <= result <= 8:
+        raise ValueError("уровень скорости должен быть в диапазоне 1..8")
+    return result
+
+
+def set_speed(port: serial.Serial, stepper_level: int, servo_level: int) -> None:
+    check_result(request(port, CMD_SET_SPEED, bytes((stepper_level, servo_level))))
 
 
 def print_help() -> None:
     print("Команды:")
     print("  status                 показать состояние")
     print("  zero                   принять текущее положение за 0")
+    print("  stepper +/- [steps]    Stepper 2 вперёд/назад; по умолчанию 10 шагов")
+    print("  pwm5 +/- [degrees]     PWM5 в обе стороны; по умолчанию 1 градус")
+    print("  pwm6 +/- [degrees]     PWM6 в обе стороны; по умолчанию 1 градус")
+    print("  speed stepper +/-      увеличить/уменьшить скорость Stepper 2")
+    print("  speed servos +/-       увеличить/уменьшить скорость PWM5/PWM6")
+    print("  speed stepper 1..8     установить уровень скорости")
+    print("  speed servos 1..8      установить уровень скорости")
     print("  move <steps>           абсолютная позиция Stepper 2")
-    print("  step <steps>           относительный шаг от текущей позиции")
-    print("  servos <pwm5> <pwm6>  углы 0..180 градусов")
+    print("  servos <pwm5> <pwm6>  абсолютные углы 0..180 градусов")
     print("  stop                   остановить мотор и снять PWM5/PWM6")
     print("  help                   эта справка")
     print("  quit                   выход")
@@ -123,15 +161,39 @@ def execute(port: serial.Serial, line: str) -> bool:
     elif name == "move" and len(parts) == 2:
         position = int(parts[1])
         check_result(request(port, CMD_SET_POSITION, struct.pack("<i", position)))
-    elif name == "step" and len(parts) == 2:
+    elif name == "stepper":
         state = get_state(port, show=False)
-        position = state["current"] + int(parts[1])
+        base = state["goal"] if state["flags"] & 2 else state["current"]
+        position = base + signed_step(parts, 10)
+        if not -200000 <= position <= 200000:
+            raise ValueError("позиция Stepper 2 выходит за диапазон ±200000")
         check_result(request(port, CMD_SET_POSITION, struct.pack("<i", position)))
+    elif name in ("pwm5", "pwm6"):
+        state = get_state(port, show=False)
+        left = state["left_target"]
+        right = state["right_target"]
+        delta = signed_step(parts, 1)
+        if name == "pwm5":
+            left += delta
+        else:
+            right += delta
+        if not (0 <= left <= 180 and 0 <= right <= 180):
+            raise ValueError("угол выходит за диапазон 0..180")
+        check_result(request(port, CMD_SET_SERVOS, bytes((left, right))))
     elif name == "servos" and len(parts) == 3:
         left, right = int(parts[1]), int(parts[2])
         if not (0 <= left <= 180 and 0 <= right <= 180):
             raise ValueError("углы должны быть в диапазоне 0..180")
         check_result(request(port, CMD_SET_SERVOS, bytes((left, right))))
+    elif name == "speed" and len(parts) == 3 and parts[1] in ("stepper", "servos"):
+        state = get_state(port, show=False)
+        stepper_level = state["stepper_speed"] or 1
+        servo_level = state["servo_speed"] or 1
+        if parts[1] == "stepper":
+            stepper_level = changed_speed(stepper_level, parts[2])
+        else:
+            servo_level = changed_speed(servo_level, parts[2])
+        set_speed(port, stepper_level, servo_level)
     elif name == "stop" and len(parts) == 1:
         check_result(request(port, CMD_STOP))
     elif name == "help" and len(parts) == 1:

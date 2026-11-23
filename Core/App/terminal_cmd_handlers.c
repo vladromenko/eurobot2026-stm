@@ -1125,8 +1125,26 @@ static void MechanismGetStateCommand(uint8_t* data, uint8_t data_length)
   Word32_ToByte(&state.goal_position, &terminal_response.data[5]);
   terminal_response.data[9] = state.left_angle;
   terminal_response.data[10] = state.right_angle;
-  terminal_response.data_length = 11;
+  terminal_response.data[11] = state.left_target_angle;
+  terminal_response.data[12] = state.right_target_angle;
+  terminal_response.data[13] = state.stepper_speed_level;
+  terminal_response.data[14] = state.servo_speed_level;
+  terminal_response.data_length = 15;
   Terminal.SendResponse(&terminal_response);
+}
+
+static void MechanismSetSpeed(uint8_t* data, uint8_t data_length)
+{
+  uint8_t result = MECHANISM_RESULT_INVALID;
+
+  if (COMM_ENABLE == 0U) {
+    result = MECHANISM_RESULT_DISABLED;
+  } else if (data_length == 2U) {
+    result = (MechanismSetSpeedLevels(data[0], data[1]) != 0U) ?
+             MECHANISM_RESULT_OK : MECHANISM_RESULT_INVALID;
+  }
+
+  SendMechanismResult(BOARD_MECHANISM_SET_SPEED, result);
 }
 
 void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t data_length) = {[BOARD_Ping] = Ping,
@@ -1174,7 +1192,8 @@ void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t da
                                                                                               [BOARD_MECHANISM_SET_SERVOS] = MechanismSetServos,
                                                                                               [BOARD_MECHANISM_SET_ZERO] = MechanismSetZero,
                                                                                               [BOARD_MECHANISM_STOP] = MechanismStopCommand,
-                                                                                              [BOARD_MECHANISM_GET_STATE] = MechanismGetStateCommand
+                                                                                              [BOARD_MECHANISM_GET_STATE] = MechanismGetStateCommand,
+                                                                                              [BOARD_MECHANISM_SET_SPEED] = MechanismSetSpeed
 };
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
