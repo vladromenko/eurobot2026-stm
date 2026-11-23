@@ -28,6 +28,7 @@
 #include "spi_gpo.h" 
 #include "spi_gpo_defines.h"
 #include "stepper.h"
+#include "mechanism_task.h"
 
 struct robot_ctrl_s robot_ctrl;
 QueueHandle_t button_callbacks_queue_handle = NULL;
@@ -76,6 +77,7 @@ void MaxonsStop(void)
 
 void StopAllActuators(void)
 {
+	MechanismEmergencyStop();
 	MaxonsDisable();
 	SPI_GPO_ResetOutputPin(SPI_GPO_ALL);
 	Stepper.StopMotor(STEPPER_MOTOR_1);

@@ -131,6 +131,7 @@ int main(void)
 
   //DemoTask.CreateTask(4);
 	StepperTask.CreateTask(1);
+	MechanismTask.CreateTask(1);
 	GripperTask.CreateTask(1);
   //DebugTerminalTask.CreateTask(1);
 	

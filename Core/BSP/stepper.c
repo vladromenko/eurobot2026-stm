@@ -311,8 +311,8 @@ static void StepToPosisition(enum l6474h_motor_s m_index, int32_t position, uint
 
 	StopMotor(m_index);
 
-	static float tg, v1;
-	static uint32_t dx, steps, speed_seq_len;
+	float tg, v1;
+	uint32_t dx, steps, speed_seq_len;
 
 
 	motor[m_index].goal_position = position;

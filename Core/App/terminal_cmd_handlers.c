@@ -43,6 +43,7 @@
 #include "spi_gpo_defines.h" 
 #include "rc_servo.h" 
 #include "stepper.h"
+#include "mechanism_task.h"
 #include "pca9685.h"
 #include "maxon.h"
 #include "math.h"
@@ -1038,6 +1039,96 @@ static void SlideGripper(uint8_t* data, uint8_t data_length)
   Terminal.SendResponse(&terminal_response);
 }
 
+enum mechanism_result_e {
+  MECHANISM_RESULT_OK = 0,
+  MECHANISM_RESULT_INVALID = 1,
+  MECHANISM_RESULT_DISABLED = 2
+};
+
+static void SendMechanismResult(uint8_t command, uint8_t result)
+{
+  struct terminal_response_s terminal_response = {0};
+  terminal_response.cmd = command;
+  terminal_response.data[0] = result;
+  terminal_response.data_length = 1;
+  Terminal.SendResponse(&terminal_response);
+}
+
+static void MechanismSetPosition(uint8_t* data, uint8_t data_length)
+{
+  int32_t position = 0;
+  uint8_t result = MECHANISM_RESULT_INVALID;
+
+  if (COMM_ENABLE == 0U) {
+    result = MECHANISM_RESULT_DISABLED;
+  } else if (data_length == 4U) {
+    ByteTo_Word32(data, &position);
+    result = (MechanismSetStepperPosition(position) != 0U) ?
+             MECHANISM_RESULT_OK : MECHANISM_RESULT_INVALID;
+  }
+
+  SendMechanismResult(BOARD_MECHANISM_SET_POSITION, result);
+}
+
+static void MechanismSetServos(uint8_t* data, uint8_t data_length)
+{
+  uint8_t result = MECHANISM_RESULT_INVALID;
+
+  if (COMM_ENABLE == 0U) {
+    result = MECHANISM_RESULT_DISABLED;
+  } else if (data_length == 2U) {
+    result = (MechanismSetServoAngles(data[0], data[1]) != 0U) ?
+             MECHANISM_RESULT_OK : MECHANISM_RESULT_INVALID;
+  }
+
+  SendMechanismResult(BOARD_MECHANISM_SET_SERVOS, result);
+}
+
+static void MechanismSetZero(uint8_t* data, uint8_t data_length)
+{
+  uint8_t result = MECHANISM_RESULT_INVALID;
+  (void)data;
+
+  if (COMM_ENABLE == 0U) {
+    result = MECHANISM_RESULT_DISABLED;
+  } else if (data_length == 0U) {
+    result = (MechanismSetStepperZero() != 0U) ?
+             MECHANISM_RESULT_OK : MECHANISM_RESULT_INVALID;
+  }
+
+  SendMechanismResult(BOARD_MECHANISM_SET_ZERO, result);
+}
+
+static void MechanismStopCommand(uint8_t* data, uint8_t data_length)
+{
+  uint8_t result = MECHANISM_RESULT_INVALID;
+  (void)data;
+
+  if (data_length == 0U) {
+    result = (MechanismStop() != 0U) ? MECHANISM_RESULT_OK : MECHANISM_RESULT_INVALID;
+  }
+
+  SendMechanismResult(BOARD_MECHANISM_STOP, result);
+}
+
+static void MechanismGetStateCommand(uint8_t* data, uint8_t data_length)
+{
+  struct terminal_response_s terminal_response = {0};
+  struct mechanism_state_s state = {0};
+  (void)data;
+  (void)data_length;
+
+  MechanismGetState(&state);
+  terminal_response.cmd = BOARD_MECHANISM_GET_STATE;
+  terminal_response.data[0] = state.flags;
+  Word32_ToByte(&state.current_position, &terminal_response.data[1]);
+  Word32_ToByte(&state.goal_position, &terminal_response.data[5]);
+  terminal_response.data[9] = state.left_angle;
+  terminal_response.data[10] = state.right_angle;
+  terminal_response.data_length = 11;
+  Terminal.SendResponse(&terminal_response);
+}
+
 void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t data_length) = {[BOARD_Ping] = Ping,
                                                                                               [BOARD_SetSpeed] = SetRobotSpeed,
                                                                                               [BOARD_GetSpeed] = GetRobotSpeed,
@@ -1078,7 +1169,12 @@ void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t da
                                                                                               [BOARD_GET_KEY] = GetKey,
                                                                                               [BOARD_GRIPPER_VERTICAL] = GripperVertical,
                                                                                               [BOARD_ROTATE_WHEEL_ONCE] = RotateWheelOnce,
-                                                                                              [BOARD_GRIPPER_SLIDE] = SlideGripper
+                                                                                              [BOARD_GRIPPER_SLIDE] = SlideGripper,
+                                                                                              [BOARD_MECHANISM_SET_POSITION] = MechanismSetPosition,
+                                                                                              [BOARD_MECHANISM_SET_SERVOS] = MechanismSetServos,
+                                                                                              [BOARD_MECHANISM_SET_ZERO] = MechanismSetZero,
+                                                                                              [BOARD_MECHANISM_STOP] = MechanismStopCommand,
+                                                                                              [BOARD_MECHANISM_GET_STATE] = MechanismGetStateCommand
 };
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

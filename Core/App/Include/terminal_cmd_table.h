@@ -74,9 +74,14 @@
 #define BOARD_MOVE_RELATIVE_POLL            0x2D    /* [45] Start relative move without immediate response */
 #define BOARD_GET_MOVE_STATUS               0x2E    /* [46] Get completion flag of polled relative move */
 #define BOARD_GRIPPER_SLIDE                 0x2F    /* [47] Slide the gripper through the rack and pinion gear*/
+#define BOARD_MECHANISM_SET_POSITION        0x30    /* [48] Stepper 2 absolute position, int32 steps */
+#define BOARD_MECHANISM_SET_SERVOS          0x31    /* [49] PWM5/PWM6 angles, uint8 degrees */
+#define BOARD_MECHANISM_SET_ZERO            0x32    /* [50] Set current Stepper 2 position as software zero */
+#define BOARD_MECHANISM_STOP                0x33    /* [51] Stop Stepper 2 and disable PWM5/PWM6 */
+#define BOARD_MECHANISM_GET_STATE           0x34    /* [52] Read mechanism state */
 
 /*  Do not forget to update the table size with the last one command! */
-#define TERMINAL_CMD_TABLE_SIZE             (BOARD_GRIPPER_SLIDE + 1)
+#define TERMINAL_CMD_TABLE_SIZE             (BOARD_MECHANISM_GET_STATE + 1)
 
 
 #ifdef __cplusplus
