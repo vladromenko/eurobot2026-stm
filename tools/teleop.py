@@ -29,7 +29,7 @@ BOARD_TOGGLE_CURSOR = 0x16
 BOARD_GRIPPER_SLIDE = 0x17
 
 # The firmware answers the grail lift command after the move, it gives up after 10 s.
-GRAIL_LIFT_TIMEOUT = 6.0
+GRAIL_LIFT_TIMEOUT = 12.0
 # The firmware answers after the move: vertical gives up after 4 s, cursor and rack after 1.5 s.
 GRIPPER_TIMEOUT = 6.0
 GRIPPER_MAX_MM = 255
@@ -162,7 +162,7 @@ class Robot:
         finally:
             self.timeout = timeout
         if data != b'\x01':
-            raise RuntimeError('не дошёл: таймаут, нижний концевик, лифт занят или едет гриппер')
+            raise RuntimeError('не дошёл: таймаут, идёт калибровка, лифт занят или едет гриппер')
         return 'ок'
 
     def impeller_answer(self, command, payload, title):

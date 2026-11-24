@@ -21,7 +21,9 @@ volatile uint8_t grail_pick_toggle = 0;
 volatile uint8_t grail_shelf_toggle = 0;
 volatile uint8_t grail_lift_cmd = 0;     // GRAIL_LIFT_UP or GRAIL_LIFT_DOWN
 volatile uint8_t grail_lift_step = 0;    // mm
-volatile uint8_t grail_lift_status = 0;  // 1 - moved, 0 - driver fault, timeout or bottom switch
+volatile uint8_t grail_lift_status = 0;  // 1 - reached the target or the bottom limit, 0 - timeout or busy
+volatile uint8_t grail_lift_ready = 0;   // set after homing to the bottom switch at startup
+volatile uint8_t grail_lift_homed = 0;   // 1 - the zero is at the bottom switch, 0 - the switch was not reached
 
 
 #define TASK_STACK_SIZE             512
@@ -36,15 +38,15 @@ volatile uint8_t grail_lift_status = 0;  // 1 - moved, 0 - driver fault, timeout
 #define GRAIL_SHELF_CLOSED_ANGLE    0
 #define GRAIL_SHELF_OPEN_ANGLE      180
 
-/* The same as the gripper vertical on Stepper 1 (gripper_task.c): full step (StepperMotor_2_Init),
-   25 steps per mm, 19200 Hz / 10 = 1920 steps/s. NOT CALIBRATED for the grail lift */
-#define GRAIL_MM_TO_STEPS           25
-#define GRAIL_NORMAL_CURRENT_MA     1100.0f
-#define GRAIL_DOWN_CURRENT_MA       320.0f
-#define GRAIL_STEPPER_EDGE_DIV      64
-#define GRAIL_STEPPER_WORKING_DIV   10
-#define GRAIL_STEPPER_RAMP_MS       200
-#define GRAIL_LIFT_TIMEOUT_MS       4000    // the terminal handler waits a bit longer
+/* Stepper 2 runs at 1/16 microstep and 1100 mA both ways (StepperMotor_2_Init): in full step its motor
+   stalls and whines after the first turn. 25 full steps per mm, NOT CALIBRATED for the grail lift */
+#define GRAIL_MM_TO_STEPS           (25 * 16)
+#define GRAIL_STEPPER_EDGE_DIV      32
+#define GRAIL_STEPPER_WORKING_DIV   8       // 19200 Hz / 8 = 2400 microsteps/s = 6 mm/s
+#define GRAIL_STEPPER_RAMP_MS       300
+#define GRAIL_LIFT_TIMEOUT_MS       10000   // ~60 mm, the terminal handler waits a bit longer
+#define GRAIL_HOMING_MAX_MM         150     // homing gives up after this travel or the timeout
+#define GRAIL_HOMING_TIMEOUT_MS     30000
 
 
 static TaskHandle_t task_handle;
@@ -75,13 +77,24 @@ static void ToggleServo(enum pca9685_channel_e channel, uint8_t closed_angle, ui
     }
 }
 
+/* Normally closed switch to GND: released keeps the input low, pressed opens it and the pull-up
+   sets it high. A broken wire also reads as pressed, so the lift does not drive down into the end */
 static uint8_t BottomSwitchPressed(void)
 {
-    return LL_GPIO_IsInputPinSet(GRAIL_BOTTOM_SWITCH_GPIO_PORT, GRAIL_BOTTOM_SWITCH_GPIO28_PC14);
+    return LL_GPIO_IsInputPinSet(GRAIL_BOTTOM_SWITCH_GPIO_PORT, GRAIL_BOTTOM_SWITCH_GPIO8_PD0);
 }
 
-/* As the gripper vertical: lowering uses a lower current, the driver is disabled after the move.
-   Moving down also stops at the bottom switch. */
+/* The zero is where the bottom switch is pressed, it is set again every time the switch is pressed.
+   Once calibrated (grail_lift_homed), the lift never goes below the zero. */
+static void SetBottomZero(void)
+{
+    Stepper.SetZeroPosisition(STEPPER_MOTOR_2);
+    grail_lift_homed = 1;
+}
+
+/* The driver is disabled after the move, as on the gripper vertical.
+   Moves by the step in both directions, moving down stops at the bottom switch or at the zero.
+   Returns 1 if the lift reached the target, the zero or the bottom switch. */
 static uint8_t MoveLift(uint8_t direction, uint8_t step_mm)
 {
     int32_t step = (int32_t)step_mm * GRAIL_MM_TO_STEPS;
@@ -90,11 +103,17 @@ static uint8_t MoveLift(uint8_t direction, uint8_t step_mm)
     TickType_t start_time;
     uint8_t reached;
 
-    if (step == 0 || (moving_down && BottomSwitchPressed())) {
-        return 0;
+    if (moving_down && BottomSwitchPressed()) {
+        SetBottomZero();
+        return 1;
+    }
+    if (moving_down && grail_lift_homed && target_position < 0) {
+        target_position = 0;
+    }
+    if (target_position == Stepper.GetPresentPosisition(STEPPER_MOTOR_2)) {
+        return 1;
     }
 
-    L6474H.SetCurrentLimit_mA(STEPPER_MOTOR_2, moving_down ? GRAIL_DOWN_CURRENT_MA : GRAIL_NORMAL_CURRENT_MA);
     // Every L6474 reset latches UVLO: without GetStatus the ENABLE command is ignored
     L6474H.GetStatus(STEPPER_MOTOR_2);
     Stepper.Enable(STEPPER_MOTOR_2);
@@ -111,9 +130,41 @@ static uint8_t MoveLift(uint8_t direction, uint8_t step_mm)
     reached = (Stepper.GetPresentPosisition(STEPPER_MOTOR_2) == target_position);
 
     Stepper.StopMotor(STEPPER_MOTOR_2);
+    if (moving_down && BottomSwitchPressed()) {
+        SetBottomZero();
+        reached = 1;
+    }
     Stepper.Disable(STEPPER_MOTOR_2);
-    L6474H.SetCurrentLimit_mA(STEPPER_MOTOR_2, GRAIL_NORMAL_CURRENT_MA);
     return reached;
+}
+
+/* Startup calibration: down until the bottom switch closes, the zero is set there.
+   Without the switch the lift stops after GRAIL_HOMING_MAX_MM or the timeout and stays not calibrated. */
+static uint8_t HomeLift(void)
+{
+    int32_t target_position = -(int32_t)GRAIL_HOMING_MAX_MM * GRAIL_MM_TO_STEPS;
+    TickType_t start_time;
+
+    if (!BottomSwitchPressed()) {
+        L6474H.GetStatus(STEPPER_MOTOR_2);
+        Stepper.Enable(STEPPER_MOTOR_2);
+        vTaskDelay(10);
+        Stepper.StepToPosisition(STEPPER_MOTOR_2, target_position, GRAIL_STEPPER_EDGE_DIV,
+                                 GRAIL_STEPPER_WORKING_DIV, GRAIL_STEPPER_RAMP_MS);
+
+        start_time = xTaskGetTickCount();
+        while (!BottomSwitchPressed() &&
+               Stepper.GetPresentPosisition(STEPPER_MOTOR_2) != target_position &&
+               xTaskGetTickCount() - start_time < pdMS_TO_TICKS(GRAIL_HOMING_TIMEOUT_MS)) {
+            vTaskDelay(1);
+        }
+        Stepper.StopMotor(STEPPER_MOTOR_2);
+        Stepper.Disable(STEPPER_MOTOR_2);
+    }
+    if (BottomSwitchPressed()) {
+        SetBottomZero();
+    }
+    return grail_lift_homed;
 }
 
 static void Task(void *arg)
@@ -127,9 +178,22 @@ static void Task(void *arg)
     Stepper.SetZeroPosisition(STEPPER_MOTOR_2);
     Stepper.Disable(STEPPER_MOTOR_2);
 
+    // Stepper 1 does not move at startup, the lock only keeps the rule
+    while (!Stepper.TryLock(STEPPER_MOTOR_2)) {
+        vTaskDelay(10);
+    }
+    HomeLift();
+    Stepper.Unlock(STEPPER_MOTOR_2);
+    grail_lift_ready = 1;
+
     while(1)
     {
         vTaskDelay(10);
+
+        // The lift can slip onto the switch while the driver is off: keep the zero at the switch
+        if (!grail_lift_cmd && BottomSwitchPressed()) {
+            SetBottomZero();
+        }
 
         if (grail_lift_cmd) {
             // Busy while the gripper vertical (Stepper 1) is moving

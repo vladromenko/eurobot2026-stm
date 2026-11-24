@@ -54,6 +54,7 @@ extern volatile uint8_t grail_shelf_toggle;
 extern volatile uint8_t grail_lift_cmd;
 extern volatile uint8_t grail_lift_step;
 extern volatile uint8_t grail_lift_status;
+extern volatile uint8_t grail_lift_ready;
 
 
 static void Ping(uint8_t* data, uint8_t data_length)
@@ -318,13 +319,14 @@ static void ImpellerSetDuty(uint8_t* data, uint8_t data_length)
 static void GrailLiftStep(uint8_t cmd, uint8_t direction, uint8_t* data, uint8_t data_length)
 {
   uint8_t status = 0;
-  if(data_length == 1 && !grail_lift_cmd){
+  // Rejected while the lift is homing at startup
+  if(data_length == 1 && grail_lift_ready && !grail_lift_cmd){
     grail_lift_step = data[0];
     grail_lift_cmd = direction;
 
-    // grail_gripper_task gives up after 4 s, so the loop ends before this limit
+    // grail_gripper_task gives up after 10 s, so the loop ends before this limit
     TickType_t start_time = xTaskGetTickCount();
-    while(grail_lift_cmd && (xTaskGetTickCount() - start_time) < pdMS_TO_TICKS(5000)){
+    while(grail_lift_cmd && (xTaskGetTickCount() - start_time) < pdMS_TO_TICKS(11000)){
       vTaskDelay(10);
     }
     if(!grail_lift_cmd){

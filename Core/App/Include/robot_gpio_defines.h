@@ -29,9 +29,10 @@
 #define	IMPELLER_BTN_GPIO_PORT			GPIOA
 #define	IMPELLER_BTN_GPIO5_PA8			GPIO5_PA8
 
-/*  Grail lift bottom switch on Stepper 2, closes to 3.3 V, stops moving down  */
-#define	GRAIL_BOTTOM_SWITCH_GPIO_PORT		GPIOC
-#define	GRAIL_BOTTOM_SWITCH_GPIO28_PC14	GPIO28_PC14
+/*  Grail lift bottom switch on Stepper 2, normally closed to GND (internal pull-up, high = pressed):
+    homing at startup, stops moving down  */
+#define	GRAIL_BOTTOM_SWITCH_GPIO_PORT		GPIOD
+#define	GRAIL_BOTTOM_SWITCH_GPIO8_PD0		GPIO8_PD0
 
 
 /*  Specific Robot GUIDO Pins  */
