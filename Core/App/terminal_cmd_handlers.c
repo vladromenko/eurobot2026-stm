@@ -64,7 +64,7 @@ static void Ping(uint8_t* data, uint8_t data_length)
 
   struct terminal_response_s terminal_response;
 
-  terminal_response.cmd = BOARD_Ping;
+  terminal_response.cmd = BOARD_PING;
   terminal_response.data_length = 0;
 
   Terminal.SendResponse(&terminal_response);
@@ -76,7 +76,7 @@ static void AX_GetAngle(uint8_t* data, uint8_t data_length)
   uint16_t angle;
   struct terminal_response_s terminal_response;
 
-  terminal_response.cmd = BOARD_AX_GetAngle;
+  terminal_response.cmd = BOARD_AX_GET_ANGLE;
   terminal_response.data[0] = hw->dynamixel_ax->GetAngle(USART3, data[0], &angle);
   Word16_ToByte(&angle, &terminal_response.data[1]);
   terminal_response.data_length = 3;
@@ -98,7 +98,7 @@ static void AX_SetAngle(uint8_t* data, uint8_t data_length)
 
   struct terminal_response_s terminal_response;
 
-  terminal_response.cmd = BOARD_AX_SetAngle;
+  terminal_response.cmd = BOARD_AX_SET_ANGLE;
   terminal_response.data_length = 0;
 
   Terminal.SendResponse(&terminal_response);
@@ -116,7 +116,7 @@ static void SetRobotSpeed(uint8_t* data, uint8_t data_length)
 
   Odometry.SetSpeed(&speed);
 
-  terminal_response.cmd = BOARD_SetSpeed;
+  terminal_response.cmd = BOARD_SET_SPEED;
   terminal_response.data_length = 0;
 
   Terminal.SendResponse(&terminal_response);
@@ -134,7 +134,7 @@ static void GetRobotSpeed(uint8_t* data, uint8_t data_length)
   Word32_ToByte(&speed.dy,terminal_response.data+4);
   Word32_ToByte(&speed.dphi,terminal_response.data+8);
 
-  terminal_response.cmd = BOARD_GetSpeed;
+  terminal_response.cmd = BOARD_GET_SPEED;
   terminal_response.data_length = 12;
 
   Terminal.SendResponse(&terminal_response);
@@ -152,7 +152,7 @@ static void SetRobotCoord(uint8_t* data, uint8_t data_length)
 
   Odometry.SetCoord(&coord);
 
-  terminal_response.cmd = BOARD_SetCoord;
+  terminal_response.cmd = BOARD_SET_COORD;
   terminal_response.data_length = 0;
 
   Terminal.SendResponse(&terminal_response);
@@ -170,7 +170,7 @@ static void GetRobotCoord(uint8_t* data, uint8_t data_length)
   Word32_ToByte(&coord.y,terminal_response.data+4);
   Word32_ToByte(&coord.phi,terminal_response.data+8);
 
-  terminal_response.cmd = BOARD_GetCoord;
+  terminal_response.cmd = BOARD_GET_COORD;
   terminal_response.data_length = 12;
   
   Terminal.SendResponse(&terminal_response);
@@ -185,7 +185,7 @@ static void GetBatteryState(uint8_t* data, uint8_t data_length)
   hw->bms->GetBatteryState(hw->bus_devices[BMS_BOARD].usart, hw->bus_devices[BMS_BOARD].id, &battery_state);
   memcpy(terminal_response.data, &battery_state, 18);
 
-  terminal_response.cmd = BOARD_GetBatteryState;
+  terminal_response.cmd = BOARD_GET_BATTERY_STATE;
   terminal_response.data_length = 18;
   
   Terminal.SendResponse(&terminal_response);
@@ -201,7 +201,7 @@ static void Set_BMS_CalibrationValue(uint8_t* data, uint8_t data_length)
 
   hw->bms->SetCalibrationValue(hw->bus_devices[BMS_BOARD].usart, hw->bus_devices[BMS_BOARD].id, data[0], calibration_value);
   
-  terminal_response.cmd = BOARD_Set_BMS_CalibrationValue;
+  terminal_response.cmd = BOARD_SET_BMS_CALIBRATION_VALUE;
   terminal_response.data_length = 0;
   
   Terminal.SendResponse(&terminal_response);
@@ -451,15 +451,15 @@ static void GetImu(uint8_t* data, uint8_t data_length)
   Terminal.SendResponse(&terminal_response);
 }
 
-void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t data_length) = {[BOARD_Ping] = Ping,
-                                                                                              [BOARD_AX_GetAngle] = AX_GetAngle,
-                                                                                              [BOARD_AX_SetAngle] = AX_SetAngle,
-                                                                                              [BOARD_SetSpeed] = SetRobotSpeed,
-                                                                                              [BOARD_GetSpeed] = GetRobotSpeed,
-                                                                                              [BOARD_SetCoord] = SetRobotCoord,
-                                                                                              [BOARD_GetCoord] = GetRobotCoord,
-                                                                                              [BOARD_GetBatteryState] = GetBatteryState,
-                                                                                              [BOARD_Set_BMS_CalibrationValue] = Set_BMS_CalibrationValue,
+void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t data_length) = {[BOARD_PING] = Ping,
+                                                                                              [BOARD_AX_GET_ANGLE] = AX_GetAngle,
+                                                                                              [BOARD_AX_SET_ANGLE] = AX_SetAngle,
+                                                                                              [BOARD_SET_SPEED] = SetRobotSpeed,
+                                                                                              [BOARD_GET_SPEED] = GetRobotSpeed,
+                                                                                              [BOARD_SET_COORD] = SetRobotCoord,
+                                                                                              [BOARD_GET_COORD] = GetRobotCoord,
+                                                                                              [BOARD_GET_BATTERY_STATE] = GetBatteryState,
+                                                                                              [BOARD_SET_BMS_CALIBRATION_VALUE] = Set_BMS_CalibrationValue,
                                                                                               [BOARD_TOGGLE_GRIPPER] = ToggleGripper,
                                                                                               [BOARD_POWER_ON_PUMP] = PumpOn,
                                                                                               [BOARD_POWER_OFF_PUMP] = PumpOff,

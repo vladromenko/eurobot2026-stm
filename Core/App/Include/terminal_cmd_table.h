@@ -27,20 +27,20 @@
 
 
 
-#define BOARD_Ping            	            0X00    /* Command Description  */
-#define BOARD_AX_GetAngle            	      0X02    /* Command Description  */
-#define BOARD_AX_SetAngle                   0X03    /* Command Description  */
+#define BOARD_PING                          0x00    /* [0]  Link check, empty response */
+#define BOARD_AX_GET_ANGLE                  0x02    /* [2]  AX dynamixel on USART3: id -> bus error, angle deg (uint16) */
+#define BOARD_AX_SET_ANGLE                  0x03    /* [3]  AX dynamixel on USART3: id, angle deg (uint16); enables torque */
 
-#define BOARD_SetSpeed            	        0X04    /* Command Description  */
-#define BOARD_GetSpeed                      0X05    /* Command Description  */
-#define BOARD_SetCoord            	        0X06    /* Command Description  */
-#define BOARD_GetCoord                      0X07    /* Command Description  */
-#define BOARD_GetBatteryState               0X08    /* Command Description  */
-#define BOARD_Set_BMS_CalibrationValue      0X09    /* Command Description  */
+#define BOARD_SET_SPEED                     0x04    /* [4]  Robot speed: dx, dy m/s, dphi rad/s (3 x float) */
+#define BOARD_GET_SPEED                     0x05    /* [5]  Robot speed from the wheel encoders: dx, dy, dphi (3 x float) */
+#define BOARD_SET_COORD                     0x06    /* [6]  Odometry coordinates: x, y m, phi rad (3 x float) */
+#define BOARD_GET_COORD                     0x07    /* [7]  Odometry coordinates: x, y, phi (3 x float) */
+#define BOARD_GET_BATTERY_STATE             0x08    /* [8]  BMS state, 18 bytes: power, cell voltages, voltage, current, charge, cells */
+#define BOARD_SET_BMS_CALIBRATION_VALUE     0x09    /* [9]  BMS calibration: index, value (uint16) */
 
-#define BOARD_TOGGLE_GRIPPER                0X0A    /* Command Description  */
-#define BOARD_POWER_ON_PUMP                 0X0B    /* Command Description  */
-#define BOARD_POWER_OFF_PUMP                0X0C    /* Command Description  */
+#define BOARD_TOGGLE_GRIPPER                0x0A    /* [10] Top and bottom gripper dynamixels: 0 close, 1 open-close cycle */
+#define BOARD_POWER_ON_PUMP                 0x0B    /* [11] Turn on the pumps on power outputs 1-4 */
+#define BOARD_POWER_OFF_PUMP                0x0C    /* [12] Turn off the pumps on power outputs 1-4 */
 
 #define BOARD_IMPELLER_ON                   0x0D    /* [13] Turn the impeller on (if off) and set its PWM duty, % */
 #define BOARD_IMPELLER_OFF                  0x0E    /* [14] Duty 0, then turn the impeller off */
