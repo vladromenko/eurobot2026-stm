@@ -84,6 +84,7 @@ void StopAllActuators(void)
 {
 					// MaxonsDisable(); // DBG off
 	Impeller.TurnOff();
+	Stepper.StopMotor(STEPPER_MOTOR_1);
 	Stepper.StopMotor(STEPPER_MOTOR_2);
 }
 

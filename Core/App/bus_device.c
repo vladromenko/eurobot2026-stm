@@ -29,6 +29,9 @@ const struct bus_device_s bus_devices[BUS_DEVICES_NUMBER] = {[ MAXON_MOTOR_1] = 
                                                              [ MAXON_MOTOR_3] = {USART6, 0x23},
                                                              [     BMS_BOARD] = { UART4, 0x11},
                                                              [   GRIPPER_TOP] = {USART3,  103},
-                                                             [GRIPPER_BOTTOM] = {USART3,  102}};
+                                                             [GRIPPER_BOTTOM] = {USART3,  102},
+                                                             /*  Cursor and rack pinion, IDs as on lymunt-2026  */
+                                                             [  GRIPPER_CURSOR] = {USART3,   13},
+                                                             [  GRIPPER_PINION] = {USART3,  106}};
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

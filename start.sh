@@ -2,7 +2,8 @@
 # Start keyboard teleoperation (tools/teleop.py) over USART1.
 # Usage: ./start.sh [/dev/PORT] [teleop.py options...]
 #   ./start.sh                                   keyboard control (T/Y impeller on/off, </> its PWM duty -/+5 %,
-#                                                1/2 grail grippers, 3/4 grail lift up/down)
+#                                                1/2 grail grippers, 3/4 grail lift up/down,
+#                                                U/J gripper height, H cursor, K/L rack)
 #   ./start.sh --impeller on                    one impeller command and exit (duty set in the firmware, 75 % after reset)
 #   ./start.sh --impeller on --impeller-duty 60  duty 60 % = 2 V on the filter (3.3 V x duty)
 #   ./start.sh --impeller off

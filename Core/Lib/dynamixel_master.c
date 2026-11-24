@@ -171,12 +171,13 @@ static void SyncWriteCmd(USART_TypeDef* usart, uint8_t* device_id_array, uint8_t
 
     uint8_t data_length_p1 = data_length + 1;
 
-    do{
-        uint8_t devices_number_m1 = boards_number - 1;
-        tx_fifo_data.packet.param_crc[2+data_length_p1*devices_number_m1] = device_id_array[devices_number_m1];
-        memcpy(&tx_fifo_data.packet.param_crc[3+data_length_p1*devices_number_m1], &data_array[data_length*devices_number_m1], data_length);
-        response_array[devices_number_m1].is_data_ready = 0;
-    }while(boards_number--);
+    /*  Sync Write gets no status packet, so response_array may be NULL  */
+    for(uint8_t ik=0; ik<boards_number; ik++){
+        tx_fifo_data.packet.param_crc[2+data_length_p1*ik] = device_id_array[ik];
+        memcpy(&tx_fifo_data.packet.param_crc[3+data_length_p1*ik], &data_array[data_length*ik], data_length);
+        if(response_array != NULL)
+            response_array[ik].is_data_ready = 0;
+    }
     
     tx_fifo_data.packet.param_crc[tx_fifo_data.packet.length-2] = Calc_CRC(&(tx_fifo_data.packet));
 

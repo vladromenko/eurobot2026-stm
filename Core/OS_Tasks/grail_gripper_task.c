@@ -36,13 +36,15 @@ volatile uint8_t grail_lift_status = 0;  // 1 - moved, 0 - driver fault, timeout
 #define GRAIL_SHELF_CLOSED_ANGLE    0
 #define GRAIL_SHELF_OPEN_ANGLE      180
 
-/* Stepper 2 runs at 1/16 microstep (StepperMotor_2_Init): 25 full steps per mm
-   as on the gripper lift, NOT CALIBRATED for the grail lift */
-#define GRAIL_MM_TO_STEPS           (25 * 16)
-#define GRAIL_STEPPER_EDGE_DIV      32
-#define GRAIL_STEPPER_WORKING_DIV   8       // 19200 Hz / 8 = 2400 microsteps/s = 6 mm/s
-#define GRAIL_STEPPER_RAMP_MS       300
-#define GRAIL_LIFT_TIMEOUT_MS       10000   // the terminal handler waits a bit longer
+/* The same as the gripper vertical on Stepper 1 (gripper_task.c): full step (StepperMotor_2_Init),
+   25 steps per mm, 19200 Hz / 10 = 1920 steps/s. NOT CALIBRATED for the grail lift */
+#define GRAIL_MM_TO_STEPS           25
+#define GRAIL_NORMAL_CURRENT_MA     1100.0f
+#define GRAIL_DOWN_CURRENT_MA       320.0f
+#define GRAIL_STEPPER_EDGE_DIV      64
+#define GRAIL_STEPPER_WORKING_DIV   10
+#define GRAIL_STEPPER_RAMP_MS       200
+#define GRAIL_LIFT_TIMEOUT_MS       4000    // the terminal handler waits a bit longer
 
 
 static TaskHandle_t task_handle;
@@ -73,64 +75,45 @@ static void ToggleServo(enum pca9685_channel_e channel, uint8_t closed_angle, ui
     }
 }
 
-static uint8_t StepperFault(void)
-{
-    return (L6474H.GetParam(STEPPER_MOTOR_2, L6474_STATUS, L6474_STATUS_LENGTH) & L6474_HiZ_MASK) != 0;
-}
-
 static uint8_t BottomSwitchPressed(void)
 {
     return LL_GPIO_IsInputPinSet(GRAIL_BOTTOM_SWITCH_GPIO_PORT, GRAIL_BOTTOM_SWITCH_GPIO28_PC14);
 }
 
-static uint8_t EnableLift(void)
-{
-    // Every L6474 reset latches UVLO: without GetStatus the ENABLE command is ignored
-    L6474H.GetStatus(STEPPER_MOTOR_2);
-    Stepper.Enable(STEPPER_MOTOR_2);
-    vTaskDelay(10);
-    if (StepperFault()) {
-        Stepper.Disable(STEPPER_MOTOR_2);
-        return 0;
-    }
-    return 1;
-}
-
-/* Moving down stops at the bottom switch. The driver keeps holding the lift after the move,
-   it is disabled only on a failure. */
+/* As the gripper vertical: lowering uses a lower current, the driver is disabled after the move.
+   Moving down also stops at the bottom switch. */
 static uint8_t MoveLift(uint8_t direction, uint8_t step_mm)
 {
     int32_t step = (int32_t)step_mm * GRAIL_MM_TO_STEPS;
     int32_t target_position = Stepper.GetPresentPosisition(STEPPER_MOTOR_2) + ((direction == GRAIL_LIFT_UP) ? step : -step);
     uint8_t moving_down = (direction == GRAIL_LIFT_DOWN);
     TickType_t start_time;
+    uint8_t reached;
 
-    if (step == 0 || (moving_down && BottomSwitchPressed()) || !EnableLift()) {
+    if (step == 0 || (moving_down && BottomSwitchPressed())) {
         return 0;
     }
 
+    L6474H.SetCurrentLimit_mA(STEPPER_MOTOR_2, moving_down ? GRAIL_DOWN_CURRENT_MA : GRAIL_NORMAL_CURRENT_MA);
+    // Every L6474 reset latches UVLO: without GetStatus the ENABLE command is ignored
+    L6474H.GetStatus(STEPPER_MOTOR_2);
+    Stepper.Enable(STEPPER_MOTOR_2);
+    vTaskDelay(10);
     Stepper.StepToPosisition(STEPPER_MOTOR_2, target_position, GRAIL_STEPPER_EDGE_DIV,
                              GRAIL_STEPPER_WORKING_DIV, GRAIL_STEPPER_RAMP_MS);
 
     start_time = xTaskGetTickCount();
-    while (Stepper.GetPresentPosisition(STEPPER_MOTOR_2) != target_position) {
-        if ((moving_down && BottomSwitchPressed()) ||
-            (xTaskGetTickCount() - start_time >= pdMS_TO_TICKS(GRAIL_LIFT_TIMEOUT_MS))) {
-            break;
-        }
+    while (Stepper.GetPresentPosisition(STEPPER_MOTOR_2) != target_position &&
+           !(moving_down && BottomSwitchPressed()) &&
+           xTaskGetTickCount() - start_time < pdMS_TO_TICKS(GRAIL_LIFT_TIMEOUT_MS)) {
         vTaskDelay(1);
     }
-    Stepper.StopMotor(STEPPER_MOTOR_2);
+    reached = (Stepper.GetPresentPosisition(STEPPER_MOTOR_2) == target_position);
 
-    // Overcurrent/thermal shutdown puts the bridge in HiZ while STEP pulses are still counted
-    if (Stepper.GetPresentPosisition(STEPPER_MOTOR_2) != target_position || StepperFault()) {
-        // Stopped by the bottom switch: keep holding the lift there
-        if (StepperFault() || !(moving_down && BottomSwitchPressed())) {
-            Stepper.Disable(STEPPER_MOTOR_2);
-        }
-        return 0;
-    }
-    return 1;
+    Stepper.StopMotor(STEPPER_MOTOR_2);
+    Stepper.Disable(STEPPER_MOTOR_2);
+    L6474H.SetCurrentLimit_mA(STEPPER_MOTOR_2, GRAIL_NORMAL_CURRENT_MA);
+    return reached;
 }
 
 static void Task(void *arg)
@@ -149,7 +132,12 @@ static void Task(void *arg)
         vTaskDelay(10);
 
         if (grail_lift_cmd) {
-            grail_lift_status = MoveLift(grail_lift_cmd, grail_lift_step);
+            // Busy while the gripper vertical (Stepper 1) is moving
+            grail_lift_status = 0;
+            if (Stepper.TryLock(STEPPER_MOTOR_2)) {
+                grail_lift_status = MoveLift(grail_lift_cmd, grail_lift_step);
+                Stepper.Unlock(STEPPER_MOTOR_2);
+            }
             grail_lift_cmd = 0;
         }
 

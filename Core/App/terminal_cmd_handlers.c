@@ -43,6 +43,12 @@
 #include "stepper.h"
 #include "impeller.h"
 
+extern uint8_t gripper_state;
+extern volatile uint8_t gripper_cmd;
+extern volatile uint8_t gripper_cmd_status;
+extern uint8_t gripper_height;
+extern uint8_t cursor_pos;
+extern int32_t rack_distance_mm;
 extern volatile uint8_t grail_pick_toggle;
 extern volatile uint8_t grail_shelf_toggle;
 extern volatile uint8_t grail_lift_cmd;
@@ -201,24 +207,13 @@ static void Set_BMS_CalibrationValue(uint8_t* data, uint8_t data_length)
 
 static void ToggleGripper(uint8_t* data, uint8_t data_length)
 {
-  extern uint8_t gripper_state;
   struct terminal_response_s terminal_response;
 
-  gripper_state = data[0];
-  vTaskResume(GripperTask.GetTaskHandle());
+  if(data_length >= 1 && gripper_cmd == GRIPPER_CMD_NONE){
+    gripper_state = data[0];
+    gripper_cmd = GRIPPER_CMD_TOGGLE;
+  }
 
-  // switch (data[0])
-  // {
-  //   case 0:
-  //     Dynamixel_AX.SetAngle(bus_devices[GRIPPER_TOP].usart, bus_devices[GRIPPER_TOP].id, 0);
-  //     Dynamixel_AX.SetAngle(bus_devices[GRIPPER_BOTTOM].usart, bus_devices[GRIPPER_BOTTOM].id, 0);
-  //     break;
-  //   case 1:
-  //     Dynamixel_AX.SetAngle(bus_devices[GRIPPER_TOP].usart, bus_devices[GRIPPER_TOP].id, 100);
-  //     Dynamixel_AX.SetAngle(bus_devices[GRIPPER_BOTTOM].usart, bus_devices[GRIPPER_BOTTOM].id, 100);
-  //     break;
-  // }
-  
   terminal_response.cmd = BOARD_TOGGLE_GRIPPER;
   terminal_response.data_length = 0;
   
@@ -249,113 +244,6 @@ static void PumpOff(uint8_t* data, uint8_t data_length)
   terminal_response.data_length = 0;
 
   Terminal.SendResponse(&terminal_response);
-}
-
-
-static uint8_t steppers_ready = 0;
-
-static void StepperTest(uint8_t* data, uint8_t data_length)
-{
-    const struct hw_instance_s* hw = GetHwInstance();
-
-    struct terminal_response_s response = {0};
-    response.cmd = BOARD_STEPPER_TEST;
-    response.data_length = 1;
-
-    // 0 — команда принята
-    // 1 — неверная команда
-    // 2 — двигатели не инициализированы
-    response.data[0] = 0;
-
-    if (data_length != 1)
-    {
-        response.data[0] = 1;
-        Terminal.SendResponse(&response);
-        return;
-    }
-
-    switch (data[0])
-    {
-        case 0: // INIT
-        {
-            if (!steppers_ready)
-            {
-                hw->stepper->Init(STEPPER_MOTOR_1);
-                hw->stepper->Init(STEPPER_MOTOR_2);
-
-                hw->stepper->SetZeroPosisition(STEPPER_MOTOR_1);
-                hw->stepper->SetZeroPosisition(STEPPER_MOTOR_2);
-
-                hw->stepper->Enable(STEPPER_MOTOR_1);
-                hw->stepper->Enable(STEPPER_MOTOR_2);
-
-                steppers_ready = 1;
-            }
-            break;
-        }
-
-        case 1: // FORWARD
-        {
-            if (!steppers_ready)
-            {
-                response.data[0] = 2;
-                break;
-            }
-
-            hw->stepper->StepToPosisition(
-                STEPPER_MOTOR_1, 20000, 32, 6, 800
-            );
-
-            hw->stepper->StepToPosisition(
-                STEPPER_MOTOR_2, 20000, 32, 6, 800
-            );
-            break;
-        }
-
-        case 2: // BACKWARD
-        {
-            if (!steppers_ready)
-            {
-                response.data[0] = 2;
-                break;
-            }
-
-            hw->stepper->StepToPosisition(
-                STEPPER_MOTOR_1, -32, 32, 32, 0
-            );
-
-            hw->stepper->StepToPosisition(
-                STEPPER_MOTOR_2, -32, 32, 32, 0
-            );
-            break;
-        }
-
-        case 5: // DISABLE
-        {
-            if (!steppers_ready)
-            {
-                response.data[0] = 2;
-                break;
-            }
-
-            hw->stepper->StopMotor(STEPPER_MOTOR_1);
-            hw->stepper->StopMotor(STEPPER_MOTOR_2);
-
-            hw->stepper->Disable(STEPPER_MOTOR_1);
-            hw->stepper->Disable(STEPPER_MOTOR_2);
-
-            steppers_ready = 0;
-            break;
-        }
-
-        default:
-        {
-            response.data[0] = 1;
-            break;
-        }
-    }
-
-    Terminal.SendResponse(&response);
 }
 
 
@@ -434,9 +322,9 @@ static void GrailLiftStep(uint8_t cmd, uint8_t direction, uint8_t* data, uint8_t
     grail_lift_step = data[0];
     grail_lift_cmd = direction;
 
-    // grail_gripper_task gives up after 10 s, so the loop ends before this limit
+    // grail_gripper_task gives up after 4 s, so the loop ends before this limit
     TickType_t start_time = xTaskGetTickCount();
-    while(grail_lift_cmd && (xTaskGetTickCount() - start_time) < pdMS_TO_TICKS(11000)){
+    while(grail_lift_cmd && (xTaskGetTickCount() - start_time) < pdMS_TO_TICKS(5000)){
       vTaskDelay(10);
     }
     if(!grail_lift_cmd){
@@ -483,6 +371,54 @@ static void ToggleGrailShelfGripper(uint8_t* data, uint8_t data_length)
   Terminal.SendResponse(&terminal_response);
 }
 
+/* Runs one gripper_task request and waits for it. Response: 1 - done, 0 - failed, timeout or busy */
+static void RunGripperCmd(uint8_t terminal_cmd, uint8_t cmd, uint32_t timeout_ms)
+{
+  uint8_t status = 0;
+
+  if(gripper_cmd == GRIPPER_CMD_NONE){
+    gripper_cmd = cmd;
+
+    TickType_t start_time = xTaskGetTickCount();
+    while(gripper_cmd != GRIPPER_CMD_NONE && (xTaskGetTickCount() - start_time) < pdMS_TO_TICKS(timeout_ms)){
+      vTaskDelay(10);
+    }
+    if(gripper_cmd == GRIPPER_CMD_NONE){
+      status = gripper_cmd_status;
+    }
+  }
+
+  struct terminal_response_s terminal_response;
+  terminal_response.cmd = terminal_cmd;
+  terminal_response.data[0] = status;
+  terminal_response.data_length = 1;
+  Terminal.SendResponse(&terminal_response);
+}
+
+static void GripperVertical(uint8_t* data, uint8_t data_length)
+{
+  /*  data[0] - height, mm from the power-on position (Stepper 1)  */
+  if(data_length >= 1 && gripper_cmd == GRIPPER_CMD_NONE)
+    gripper_height = data[0];
+  RunGripperCmd(BOARD_GRIPPER_VERTICAL, (data_length >= 1) ? GRIPPER_CMD_VERTICAL : GRIPPER_CMD_NONE, 5000);
+}
+
+static void ToggleCursor(uint8_t* data, uint8_t data_length)
+{
+  /*  data[0] - 1 horizontal, 0 vertical  */
+  if(data_length >= 1 && gripper_cmd == GRIPPER_CMD_NONE)
+    cursor_pos = data[0];
+  RunGripperCmd(BOARD_TOGGLE_CURSOR, (data_length >= 1) ? GRIPPER_CMD_CURSOR : GRIPPER_CMD_NONE, 2000);
+}
+
+static void SlideGripper(uint8_t* data, uint8_t data_length)
+{
+  /*  data[0..3] - distance along the rack, mm (int32) from the start position  */
+  if(data_length >= 4 && gripper_cmd == GRIPPER_CMD_NONE)
+    ByteTo_Word32(data, &rack_distance_mm);
+  RunGripperCmd(BOARD_GRIPPER_SLIDE, (data_length >= 4) ? GRIPPER_CMD_SLIDE : GRIPPER_CMD_NONE, 2000);
+}
+
 void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t data_length) = {[BOARD_Ping] = Ping,
                                                                                               [BOARD_AX_GetAngle] = AX_GetAngle,
                                                                                               [BOARD_AX_SetAngle] = AX_SetAngle,
@@ -495,7 +431,6 @@ void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t da
                                                                                               [BOARD_TOGGLE_GRIPPER] = ToggleGripper,
                                                                                               [BOARD_POWER_ON_PUMP] = PumpOn,
                                                                                               [BOARD_POWER_OFF_PUMP] = PumpOff,
-                                                                                              [BOARD_STEPPER_TEST] = StepperTest,
                                                                                               [BOARD_IMPELLER_ON] = ImpellerOn,
                                                                                               [BOARD_IMPELLER_OFF] = ImpellerOff,
                                                                                               [BOARD_IMPELLER_GET_STATE] = ImpellerGetState,
@@ -503,7 +438,10 @@ void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t da
                                                                                               [BOARD_TOGGLE_GRAIL_PICK_GRIPPER] = ToggleGrailPickGripper,
                                                                                               [BOARD_TOGGLE_GRAIL_SHELF_GRIPPER] = ToggleGrailShelfGripper,
                                                                                               [BOARD_GRAIL_LIFT_UP] = GrailLiftUp,
-                                                                                              [BOARD_GRAIL_LIFT_DOWN] = GrailLiftDown
+                                                                                              [BOARD_GRAIL_LIFT_DOWN] = GrailLiftDown,
+                                                                                              [BOARD_GRIPPER_VERTICAL] = GripperVertical,
+                                                                                              [BOARD_TOGGLE_CURSOR] = ToggleCursor,
+                                                                                              [BOARD_GRIPPER_SLIDE] = SlideGripper
                                                                                             };
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

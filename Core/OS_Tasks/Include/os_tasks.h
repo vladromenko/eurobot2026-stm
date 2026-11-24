@@ -52,6 +52,13 @@ extern const struct os_task_base_s GrailGripperTask;
 #define GRAIL_LIFT_UP               1
 #define GRAIL_LIFT_DOWN             2
 
+/* gripper_cmd values */
+#define GRIPPER_CMD_NONE            0
+#define GRIPPER_CMD_TOGGLE          1
+#define GRIPPER_CMD_VERTICAL        2
+#define GRIPPER_CMD_CURSOR          3
+#define GRIPPER_CMD_SLIDE           4
+
 void Dbg(const char* s);
 
 #ifdef __cplusplus

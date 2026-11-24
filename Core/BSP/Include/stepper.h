@@ -37,6 +37,8 @@ struct stepper_s{
     void (*Enable)(enum l6474h_motor_s motor);
     void (*Disable)(enum l6474h_motor_s motor);
     void (*Init)(enum l6474h_motor_s motor);
+    uint8_t (*TryLock)(enum l6474h_motor_s motor);   // 1 - no other motor is moving, this one may move
+    void (*Unlock)(enum l6474h_motor_s motor);
 }; 
 
 extern const struct stepper_s Stepper;

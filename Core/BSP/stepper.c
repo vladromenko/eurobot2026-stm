@@ -61,8 +61,9 @@ void StepperMotor_1_Init(void)
 	temp = 0x1F<<L6474_TOFF_MIN_POS;
 	L6474H.SetParam(STEPPER_MOTOR_1, L6474_TOFF_MIN, temp, L6474_TOFF_MIN_LENGTH);
 		
-	L6474H.SetStepMode(STEPPER_MOTOR_1, L6474_STEP_MODE_16);
-	L6474H.SetCurrentLimit_mA(STEPPER_MOTOR_1, 800);
+	/* Gripper vertical: full step, 25 steps per mm, as calibrated on lymunt-2026 */
+	L6474H.SetStepMode(STEPPER_MOTOR_1, L6474_FULL_STEP);
+	L6474H.SetCurrentLimit_mA(STEPPER_MOTOR_1, 1100);
 		
     L6474H.SetDirection(STEPPER_MOTOR_1, DIRECTION_FORWARD);
 }
@@ -75,15 +76,20 @@ void StepperMotor_2_Init(void)
 	L6474H.HardReset(STEPPER_MOTOR_2);
 		
 	/*	Set L6474 parameters	*/
-	temp = L6474_OVERCURRENT_MASK|L6474_THERMAL_SHUTDOWN_MASK|L6474_THERMAL_WARNING_MASK|L6474_WRONG_COMMAND_MASK;
+	// temp = L6474_OVERCURRENT_MASK|L6474_THERMAL_SHUTDOWN_MASK|L6474_THERMAL_WARNING_MASK|L6474_WRONG_COMMAND_MASK;
+	temp = L6474_OVERCURRENT_MASK|L6474_THERMAL_SHUTDOWN_MASK;
 	L6474H.SetParam(STEPPER_MOTOR_2, L6474_ALARM_EN, temp, L6474_ALARM_EN_LENGTH);
 		
-	temp = (0x0A<<L6474_TOFF_POS)|(0x00<<L6474_POW_SR_POS)
-					|(0x01<<L6474_OC_SD_POS)|(0x00<<L6474_EN_TQREG_POS)
+	temp = (0x1F<<L6474_TOFF_POS)|(0x00<<L6474_POW_SR_POS)
+					|(0x00<<L6474_OC_SD_POS)|(0x00<<L6474_EN_TQREG_POS)
 					|(0x00<<L6474_EXT_CLK_POS)|(0x03<<L6474_OSC_SEL_POS);
 	L6474H.SetParam(STEPPER_MOTOR_2, L6474_CONFIG, temp, L6474_CONFIG_LENGTH);
+
+	temp = 0x1F<<L6474_TOFF_MIN_POS;
+	L6474H.SetParam(STEPPER_MOTOR_2, L6474_TOFF_MIN, temp, L6474_TOFF_MIN_LENGTH);
 		
-	L6474H.SetStepMode(STEPPER_MOTOR_2, L6474_STEP_MODE_16);
+	/* Grail lift: the same setup as the gripper vertical on Stepper 1 */
+	L6474H.SetStepMode(STEPPER_MOTOR_2, L6474_FULL_STEP);
 	L6474H.SetCurrentLimit_mA(STEPPER_MOTOR_2, 1100);
 		
     L6474H.SetDirection(STEPPER_MOTOR_2, DIRECTION_FORWARD);
@@ -425,6 +431,28 @@ static void StepToPosisition(enum l6474h_motor_s m_index, int32_t position, uint
 	TIM1_Unlock(primask);
 }
 
+/*	The gripper vertical (Stepper 1) and the grail lift (Stepper 2) never move at the same time:
+	a task takes the lock before a move and gives it back after it.	*/
+static volatile int8_t lock_owner = -1;
+
+static uint8_t TryLock(enum l6474h_motor_s m_index)
+{
+	uint32_t primask = TIM1_Lock();
+	uint8_t taken = (lock_owner < 0) || (lock_owner == (int8_t)m_index);
+	if(taken)
+		lock_owner = (int8_t)m_index;
+	TIM1_Unlock(primask);
+	return taken;
+}
+
+static void Unlock(enum l6474h_motor_s m_index)
+{
+	uint32_t primask = TIM1_Lock();
+	if(lock_owner == (int8_t)m_index)
+		lock_owner = -1;
+	TIM1_Unlock(primask);
+}
+
 static void Enable(enum l6474h_motor_s m_index)
 {
 	L6474H.Enable(m_index);
@@ -448,6 +476,8 @@ const struct stepper_s Stepper = {	.SetZeroPosisition = SetZeroPosisition,
 									.StopMotor = StopMotor,
 									.Enable = Enable,
 									.Disable = Disable,
-									.Init = Init};
+									.Init = Init,
+									.TryLock = TryLock,
+									.Unlock = Unlock};
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
