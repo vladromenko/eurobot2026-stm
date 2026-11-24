@@ -80,6 +80,7 @@ int main(void)
 	Board_GPIO_Config();
 	Robot_GPIO_Config();
 
+	I2C1_Init();
 	I2C2_Init();
 	/* PCA9685 for the grail servos: I2C2, 50 Hz, 500..2500 us over 180 degrees.
 	   The status is kept for debugging, an error does not block FreeRTOS. */
@@ -150,6 +151,7 @@ int main(void)
   GripperTask.CreateTask(1);
   ImpellerTask.CreateTask(1);
   GrailGripperTask.CreateTask(1);
+  ImuTask.CreateTask(1);
 #endif
   Dbg("[init] tasks created\r\n");
   // Experimental_Task_1.CreateTask(1);

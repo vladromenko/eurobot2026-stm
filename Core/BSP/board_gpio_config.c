@@ -323,6 +323,25 @@ void Board_GPIO_Config(void)
 	LL_GPIO_Init(GPIOE, &GPIO_Struct);
 	
 	
+	/*	I2C1 (PB8=SCL, PB9=SDA): I2C1 connector -----------------------------------*/
+
+	GPIO_Struct.Pin = I2C1_2_SCL_PB8;
+	GPIO_Struct.Mode = LL_GPIO_MODE_ALTERNATE;
+	GPIO_Struct.OutputType = LL_GPIO_OUTPUT_OPENDRAIN;
+	GPIO_Struct.Pull = LL_GPIO_PULL_UP;
+	GPIO_Struct.Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH;
+	GPIO_Struct.Alternate  = LL_GPIO_AF_4;
+	LL_GPIO_Init(GPIOB, &GPIO_Struct);
+
+	GPIO_Struct.Pin = I2C1_3_SDA_PB9;
+	GPIO_Struct.Mode = LL_GPIO_MODE_ALTERNATE;
+	GPIO_Struct.OutputType = LL_GPIO_OUTPUT_OPENDRAIN;
+	GPIO_Struct.Pull = LL_GPIO_PULL_UP;
+	GPIO_Struct.Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH;
+	GPIO_Struct.Alternate  = LL_GPIO_AF_4;
+	LL_GPIO_Init(GPIOB, &GPIO_Struct);
+
+
 	/*	I2C2 (PB10=SCL, PB11=SDA) -----------------------------------------------*/
 
 	GPIO_Struct.Pin = I2C2_2_SCL_PB10;

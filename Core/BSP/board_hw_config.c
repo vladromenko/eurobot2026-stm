@@ -118,6 +118,22 @@ void HW_ClockConfig(void)
 	LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_DMA1);
 }
 
+void I2C1_Init(void)
+{
+	/* Enable I2C1 clock */
+	LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_I2C1);
+
+	/* Reset I2C1 */
+	LL_APB1_GRP1_ForceReset(LL_APB1_GRP1_PERIPH_I2C1);
+	LL_APB1_GRP1_ReleaseReset(LL_APB1_GRP1_PERIPH_I2C1);
+
+	/* Configure I2C1: APB1 is 42 MHz, fast mode is 400 kHz (MPU-6050) */
+	LL_I2C_Disable(I2C1);
+	LL_I2C_SetClockSpeedMode(I2C1, LL_I2C_CLOCK_SPEED_FAST_MODE);
+	LL_I2C_ConfigSpeed(I2C1, 42000000U, 400000U, LL_I2C_DUTYCYCLE_2);
+	LL_I2C_Enable(I2C1);
+}
+
 void I2C2_Init(void)
 {
 	/* Enable I2C2 clock */

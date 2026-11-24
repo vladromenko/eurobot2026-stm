@@ -42,6 +42,7 @@
 #include "hw_instance.h"
 #include "stepper.h"
 #include "impeller.h"
+#include "mpu6050.h"
 
 extern uint8_t gripper_state;
 extern volatile uint8_t gripper_cmd;
@@ -421,6 +422,35 @@ static void SlideGripper(uint8_t* data, uint8_t data_length)
   RunGripperCmd(BOARD_GRIPPER_SLIDE, (data_length >= 4) ? GRIPPER_CMD_SLIDE : GRIPPER_CMD_NONE, 2000);
 }
 
+static void GetImu(uint8_t* data, uint8_t data_length)
+{
+  /*
+   *  Response: [status, ax, ay, az, gx, gy, gz, temp] - status 1 if the sensor answers,
+   *  then float32 little-endian: acceleration g, angular rate deg/s, temperature deg C.
+   */
+  struct terminal_response_s terminal_response;
+  struct mpu6050_data_s imu;
+  float values[7];
+
+  (void)data;
+  (void)data_length;
+
+  terminal_response.data[0] = IMU_GetData(&imu);
+  values[0] = imu.ax;
+  values[1] = imu.ay;
+  values[2] = imu.az;
+  values[3] = imu.gx;
+  values[4] = imu.gy;
+  values[5] = imu.gz;
+  values[6] = imu.temp_c;
+  for(uint8_t i = 0; i < 7; i++)
+    Word32_ToByte(&values[i], terminal_response.data + 1 + 4*i);
+
+  terminal_response.cmd = BOARD_GET_IMU;
+  terminal_response.data_length = 1 + 4*7;
+  Terminal.SendResponse(&terminal_response);
+}
+
 void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t data_length) = {[BOARD_Ping] = Ping,
                                                                                               [BOARD_AX_GetAngle] = AX_GetAngle,
                                                                                               [BOARD_AX_SetAngle] = AX_SetAngle,
@@ -443,7 +473,8 @@ void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t da
                                                                                               [BOARD_GRAIL_LIFT_DOWN] = GrailLiftDown,
                                                                                               [BOARD_GRIPPER_VERTICAL] = GripperVertical,
                                                                                               [BOARD_TOGGLE_CURSOR] = ToggleCursor,
-                                                                                              [BOARD_GRIPPER_SLIDE] = SlideGripper
+                                                                                              [BOARD_GRIPPER_SLIDE] = SlideGripper,
+                                                                                              [BOARD_GET_IMU] = GetImu
                                                                                             };
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

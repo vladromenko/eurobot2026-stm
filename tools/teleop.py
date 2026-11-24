@@ -27,6 +27,7 @@ BOARD_GRAIL_LIFT_DOWN = 0x14
 BOARD_GRIPPER_VERTICAL = 0x15
 BOARD_TOGGLE_CURSOR = 0x16
 BOARD_GRIPPER_SLIDE = 0x17
+BOARD_GET_IMU = 0x18
 
 # The firmware answers the grail lift command after the move, it gives up after 10 s.
 GRAIL_LIFT_TIMEOUT = 12.0
@@ -59,7 +60,7 @@ HELP = [
     'I          пинг                    B         батарея',
     'V          скорость с энкодеров    C / R     координаты / сброс в 0',
     'U / J      гриппер вверх / вниз    H         курсор горизонт. / вертик.',
-    'K / L      гриппер по рейке - / +',
+    'K / L      гриппер по рейке - / +  5         IMU: ускорения, скорости, температура',
     'T / Y      импеллер вкл / выкл     < / >     скважность импеллера -/+ 5 %',
     '/          состояние импеллера',
     '1 / 2      захват / полка грааля   3 / 4      лифт грааля вверх / вниз',
@@ -148,6 +149,16 @@ class Robot:
         if data != b'\x01':
             raise RuntimeError(f'{title}: не дошёл (таймаут, ошибка шины, занят или едет другой шаговик)')
         return 'ок'
+
+    def get_imu(self):
+        data = self.request(BOARD_GET_IMU)
+        if len(data) != 29:
+            raise RuntimeError(f'длина данных IMU {len(data)} вместо 29')
+        if not data[0]:
+            raise RuntimeError('датчик не отвечает')
+        ax, ay, az, gx, gy, gz, temp = struct.unpack('<7f', data[1:])
+        return (f'a=({ax:+.2f} {ay:+.2f} {az:+.2f}) g  '
+                f'w=({gx:+.1f} {gy:+.1f} {gz:+.1f}) °/с  {temp:.1f} °C')
 
     def grail_toggle(self, command):
         data = self.request(command)
@@ -324,6 +335,8 @@ class Teleop:
             self.set_impeller_duty()
         elif char in '/?':
             self.read_impeller()
+        elif char == '5':
+            self.call('IMU', self.robot.get_imu)
         elif char == '1':
             self.call('захват грааля', lambda: self.robot.grail_toggle(BOARD_TOGGLE_GRAIL_PICK_GRIPPER))
         elif char == '2':

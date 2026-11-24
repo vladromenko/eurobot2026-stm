@@ -56,8 +56,10 @@
 #define BOARD_TOGGLE_CURSOR                 0x16    /* [22] Cursor dynamixel: 1 horizontal, 0 vertical */
 #define BOARD_GRIPPER_SLIDE                 0x17    /* [23] Slide the gripper along the rack (pinion dynamixel), mm */
 
+#define BOARD_GET_IMU                       0x18    /* [24] Last MPU-6050 sample: accel g, gyro deg/s, temperature */
+
 /*  Do not forget to update the table size with the last one command! */
-#define TERMINAL_CMD_TABLE_SIZE             (BOARD_GRIPPER_SLIDE + 1)
+#define TERMINAL_CMD_TABLE_SIZE             (BOARD_GET_IMU + 1)
 
 
 #ifdef __cplusplus

@@ -47,6 +47,11 @@ extern const struct os_task_base_s TerminalTask;
 extern const struct os_task_base_s GripperTask;
 extern const struct os_task_base_s ImpellerTask;
 extern const struct os_task_base_s GrailGripperTask;
+extern const struct os_task_base_s ImuTask;
+
+/* Last MPU-6050 sample (imu_task.c), returns 1 if the sensor answers */
+struct mpu6050_data_s;
+uint8_t IMU_GetData(struct mpu6050_data_s* data);
 
 /* grail_lift_cmd values */
 #define GRAIL_LIFT_UP               1

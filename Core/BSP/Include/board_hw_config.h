@@ -33,6 +33,7 @@ void HW_ClockConfig(void);
 
 void SPI1_Board_HW_Init(void);
 
+void I2C1_Init(void);
 void I2C2_Init(void);
 
 void USART1_TerminalInit(void);
