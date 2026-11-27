@@ -20,6 +20,9 @@
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
+
+#include "spi_gpo.h"
+#include "spi_gpo_defines.h"
 #include "robot_behavior_routine.h" 
 #include "robot_gpio_defines.h"
 #include "bus_device.h"
@@ -82,12 +85,29 @@ void MaxonsStop(void)
 
 void StopAllActuators(void)
 {
-					// MaxonsDisable(); // DBG off
-	Impeller.TurnOff();
-	Stepper.StopMotor(STEPPER_MOTOR_1);
-	Stepper.StopMotor(STEPPER_MOTOR_2);
-}
+    // MaxonsDisable(); // DBG off
 
+    Impeller.TurnOff();
+
+    Stepper.StopMotor(STEPPER_MOTOR_1);
+    Stepper.StopMotor(STEPPER_MOTOR_2);
+
+    /* Turn off all vacuum pumps and solenoid valves */
+    SPI_GPO_ResetOutputPin(
+        SPI_POWER_OUTPUT_1  |
+        SPI_POWER_OUTPUT_2  |
+        SPI_POWER_OUTPUT_3  |
+        SPI_POWER_OUTPUT_4  |
+        SPI_POWER_OUTPUT_5  |
+        SPI_POWER_OUTPUT_6  |
+        SPI_POWER_OUTPUT_7  |
+        SPI_POWER_OUTPUT_8  |
+        SPI_POWER_OUTPUT_9  |
+        SPI_POWER_OUTPUT_10 |
+        SPI_POWER_OUTPUT_11 |
+        SPI_POWER_OUTPUT_12
+    );
+}
 
 
 

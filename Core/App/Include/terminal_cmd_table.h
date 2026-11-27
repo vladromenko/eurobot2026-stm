@@ -39,8 +39,8 @@
 #define BOARD_Set_BMS_CalibrationValue      0X09    /* Command Description  */
 
 #define BOARD_TOGGLE_GRIPPER                0X0A    /* Command Description  */
-#define BOARD_POWER_ON_PUMP                 0X0B    /* Command Description  */
-#define BOARD_POWER_OFF_PUMP                0X0C    /* Command Description  */
+#define BOARD_POWER_ON_PUMP                 0x0B    /* [11] Turn on all six vacuum pumps */
+#define BOARD_POWER_OFF_PUMP                0x0C    /* [12] Turn off all six vacuum pumps */
 
 #define BOARD_IMPELLER_ON                   0x0D    /* [13] Turn the impeller on (if off) and set its PWM duty, % */
 #define BOARD_IMPELLER_OFF                  0x0E    /* [14] Duty 0, then turn the impeller off */
@@ -56,8 +56,11 @@
 #define BOARD_TOGGLE_CURSOR                 0x16    /* [22] Cursor dynamixel: 1 horizontal, 0 vertical */
 #define BOARD_GRIPPER_SLIDE                 0x17    /* [23] Slide the gripper along the rack (pinion dynamixel), mm */
 
+#define BOARD_POWER_ON_VALVE                0x18    /* [24] Turn on all six solenoid valves */
+#define BOARD_POWER_OFF_VALVE               0x19    /* [25] Turn off all six solenoid valves */
+
 /*  Do not forget to update the table size with the last one command! */
-#define TERMINAL_CMD_TABLE_SIZE             (BOARD_GRIPPER_SLIDE + 1)
+#define TERMINAL_CMD_TABLE_SIZE             (BOARD_POWER_OFF_VALVE + 1)
 
 
 #ifdef __cplusplus

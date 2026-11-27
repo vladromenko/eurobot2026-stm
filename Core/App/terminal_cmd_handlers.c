@@ -64,7 +64,7 @@ static void Ping(uint8_t* data, uint8_t data_length)
   struct terminal_response_s terminal_response;
 
   terminal_response.cmd = BOARD_Ping;
-  terminal_response.data_length = 0;
+  terminal_response.data_lengаspi_gpoth = 0;
 
   Terminal.SendResponse(&terminal_response);
 }
@@ -221,17 +221,24 @@ static void ToggleGripper(uint8_t* data, uint8_t data_length)
   Terminal.SendResponse(&terminal_response);
 }
 
-static void PumpOn(uint8_t* data, uint8_t data_length)
+static void PumpOff(uint8_t* data, uint8_t data_length)
 {
-  const struct hw_instance_s* hw = GetHwInstance();
-  struct terminal_response_s terminal_response;
+    const struct hw_instance_s* hw = GetHwInstance();
+    struct terminal_response_s terminal_response;
 
-  hw->spi_gpo->SetOutputPin(SPI_POWER_OUTPUT_1|SPI_POWER_OUTPUT_2|SPI_POWER_OUTPUT_3|SPI_POWER_OUTPUT_4);
+    hw->spi_gpo->ResetOutputPin(
+        SPI_POWER_OUTPUT_1 |
+        SPI_POWER_OUTPUT_2 |
+        SPI_POWER_OUTPUT_3 |
+        SPI_POWER_OUTPUT_4 |
+        SPI_POWER_OUTPUT_5 |
+        SPI_POWER_OUTPUT_6
+    );
 
-  terminal_response.cmd = BOARD_POWER_ON_PUMP;
-  terminal_response.data_length = 0;
+    terminal_response.cmd = BOARD_POWER_OFF_PUMP;
+    terminal_response.data_length = 0;
 
-  Terminal.SendResponse(&terminal_response);
+    Terminal.SendResponse(&terminal_response);
 }
 
 static void PumpOff(uint8_t* data, uint8_t data_length)
@@ -239,12 +246,52 @@ static void PumpOff(uint8_t* data, uint8_t data_length)
   const struct hw_instance_s* hw = GetHwInstance();
   struct terminal_response_s terminal_response;
 
-  hw->spi_gpo->ResetOutputPin(SPI_POWER_OUTPUT_1|SPI_POWER_OUTPUT_2|SPI_POWER_OUTPUT_3|SPI_POWER_OUTPUT_4);
+  hw->spi_gpo->ResetOutputPin(SPI_POWER_OUTPUT_1|SPI_POWER_OUTPUT_2|SPI_POWER_OUTPUT_3|SPI_POWER_OUTPUT_4|SPI_POWER_OUTPUT_5|SPI_POWER_OUTPUT_6);
 
   terminal_response.cmd = BOARD_POWER_OFF_PUMP;
   terminal_response.data_length = 0;
 
   Terminal.SendResponse(&terminal_response);
+}
+
+static void ValveOn(uint8_t* data, uint8_t data_length)
+{
+    const struct hw_instance_s* hw = GetHwInstance();
+    struct terminal_response_s terminal_response;
+
+    hw->spi_gpo->SetOutputPin(
+        SPI_POWER_OUTPUT_7  |
+        SPI_POWER_OUTPUT_8  |
+        SPI_POWER_OUTPUT_9  |
+        SPI_POWER_OUTPUT_10 |
+        SPI_POWER_OUTPUT_11 |
+        SPI_POWER_OUTPUT_12
+    );
+
+    terminal_response.cmd = BOARD_POWER_ON_VALVE;
+    terminal_response.data_length = 0;
+
+    Terminal.SendResponse(&terminal_response);
+}
+
+static void ValveOff(uint8_t* data, uint8_t data_length)
+{
+    const struct hw_instance_s* hw = GetHwInstance();
+    struct terminal_response_s terminal_response;
+
+    hw->spi_gpo->ResetOutputPin(
+        SPI_POWER_OUTPUT_7  |
+        SPI_POWER_OUTPUT_8  |
+        SPI_POWER_OUTPUT_9  |
+        SPI_POWER_OUTPUT_10 |
+        SPI_POWER_OUTPUT_11 |
+        SPI_POWER_OUTPUT_12
+    );
+
+    terminal_response.cmd = BOARD_POWER_OFF_VALVE;
+    terminal_response.data_length = 0;
+
+    Terminal.SendResponse(&terminal_response);
 }
 
 
@@ -443,7 +490,9 @@ void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t da
                                                                                               [BOARD_GRAIL_LIFT_DOWN] = GrailLiftDown,
                                                                                               [BOARD_GRIPPER_VERTICAL] = GripperVertical,
                                                                                               [BOARD_TOGGLE_CURSOR] = ToggleCursor,
-                                                                                              [BOARD_GRIPPER_SLIDE] = SlideGripper
+                                                                                              [BOARD_GRIPPER_SLIDE] = SlideGripper,
+                                                                                              [BOARD_POWER_ON_VALVE] = ValveOn,
+                                                                                              [BOARD_POWER_OFF_VALVE] = ValveOff,
                                                                                             };
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
