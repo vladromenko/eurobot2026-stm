@@ -221,6 +221,26 @@ static void ToggleGripper(uint8_t* data, uint8_t data_length)
   Terminal.SendResponse(&terminal_response);
 }
 
+static void PumpOn(uint8_t* data, uint8_t data_length)
+{
+    const struct hw_instance_s* hw = GetHwInstance();
+    struct terminal_response_s terminal_response;
+
+    hw->spi_gpo->SetOutputPin(
+        SPI_POWER_OUTPUT_1 |
+        SPI_POWER_OUTPUT_2 |
+        SPI_POWER_OUTPUT_3 |
+        SPI_POWER_OUTPUT_4 |
+        SPI_POWER_OUTPUT_5 |
+        SPI_POWER_OUTPUT_6
+    );
+
+    terminal_response.cmd = BOARD_POWER_ON_PUMP;
+    terminal_response.data_length = 0;
+
+    Terminal.SendResponse(&terminal_response);
+}
+
 static void PumpOff(uint8_t* data, uint8_t data_length)
 {
     const struct hw_instance_s* hw = GetHwInstance();
@@ -239,19 +259,6 @@ static void PumpOff(uint8_t* data, uint8_t data_length)
     terminal_response.data_length = 0;
 
     Terminal.SendResponse(&terminal_response);
-}
-
-static void PumpOff(uint8_t* data, uint8_t data_length)
-{
-  const struct hw_instance_s* hw = GetHwInstance();
-  struct terminal_response_s terminal_response;
-
-  hw->spi_gpo->ResetOutputPin(SPI_POWER_OUTPUT_1|SPI_POWER_OUTPUT_2|SPI_POWER_OUTPUT_3|SPI_POWER_OUTPUT_4|SPI_POWER_OUTPUT_5|SPI_POWER_OUTPUT_6);
-
-  terminal_response.cmd = BOARD_POWER_OFF_PUMP;
-  terminal_response.data_length = 0;
-
-  Terminal.SendResponse(&terminal_response);
 }
 
 static void ValveOn(uint8_t* data, uint8_t data_length)

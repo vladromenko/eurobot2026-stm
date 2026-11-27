@@ -109,8 +109,6 @@ void StopAllActuators(void)
     );
 }
 
-
-
 void ButtonsCallback(enum buttons_e button_id, enum button_callback_type_s callback_type, enum button_action_e button_action, enum button_state_e button_state)
 {
 	switch (button_id)
