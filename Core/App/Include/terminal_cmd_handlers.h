@@ -31,6 +31,7 @@
 
 extern void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t data_length);
 extern void (*debug_terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t data_length);
+extern volatile uint8_t COMM_ENABLE;
 
 
 

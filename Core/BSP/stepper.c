@@ -78,13 +78,14 @@ void StepperMotor_2_Init(void)
 	temp = L6474_OVERCURRENT_MASK|L6474_THERMAL_SHUTDOWN_MASK|L6474_THERMAL_WARNING_MASK|L6474_WRONG_COMMAND_MASK;
 	L6474H.SetParam(STEPPER_MOTOR_2, L6474_ALARM_EN, temp, L6474_ALARM_EN_LENGTH);
 		
+	/* Grail lift: with the Stepper 1 setup (TOFF 0x1F, TOFF_MIN 0x1F, full step) its motor buzzes and stalls */
 	temp = (0x0A<<L6474_TOFF_POS)|(0x00<<L6474_POW_SR_POS)
 					|(0x01<<L6474_OC_SD_POS)|(0x00<<L6474_EN_TQREG_POS)
 					|(0x00<<L6474_EXT_CLK_POS)|(0x03<<L6474_OSC_SEL_POS);
 	L6474H.SetParam(STEPPER_MOTOR_2, L6474_CONFIG, temp, L6474_CONFIG_LENGTH);
 		
-	L6474H.SetStepMode(STEPPER_MOTOR_2, L6474_FULL_STEP);
-	L6474H.SetCurrentLimit_mA(STEPPER_MOTOR_2, 1500);
+	L6474H.SetStepMode(STEPPER_MOTOR_2, L6474_STEP_MODE_16);
+	L6474H.SetCurrentLimit_mA(STEPPER_MOTOR_2, 1100);
 		
     L6474H.SetDirection(STEPPER_MOTOR_2, DIRECTION_FORWARD);
 }
@@ -265,13 +266,31 @@ void TIM1_Steppers_PWM_CC_IRQ_Process(void)
 // LL_GPIO_SetOutputPin(GPIOD, PWM1_PD15);
 // LL_GPIO_ResetOutputPin(GPIOD, PWM1_PD15);
 
+/*	TIM1 CC IRQ priority is above configMAX_SYSCALL_INTERRUPT_PRIORITY, so
+	taskENTER_CRITICAL does not mask it. CCER, DIER and CCMR1/CCMR2 are shared
+	by all motors and modified by the ISR, so task-side read-modify-write must
+	run with interrupts masked, otherwise another motor's state can be lost.	*/
+static inline uint32_t TIM1_Lock(void)
+{
+	uint32_t primask = __get_PRIMASK();
+	__disable_irq();
+	return primask;
+}
+
+static inline void TIM1_Unlock(uint32_t primask)
+{
+	__set_PRIMASK(primask);
+}
+
 /*  Stop Stepper Motor  */
 static void StopMotor(enum l6474h_motor_s m_index)
 {
+	uint32_t primask = TIM1_Lock();
 	TIM_CC_DisableChannel(TIM1, m_index);
 	LL_TIM_OC_SetMode(TIM1, motor[m_index].ll_tim_channel, LL_TIM_OCMODE_FORCED_INACTIVE);
 	LL_TIM_GenerateEvent_COM(TIM1);
 	TIM_DisableIT_CC(TIM1, m_index);
+	TIM1_Unlock(primask);
 }
 
 static void SetZeroPosisition(enum l6474h_motor_s m_index)
@@ -311,8 +330,11 @@ static void StepToPosisition(enum l6474h_motor_s m_index, int32_t position, uint
 
 	StopMotor(m_index);
 
-	static float tg, v1;
-	static uint32_t dx, steps, speed_seq_len;
+	float tg = 0.0f;
+	float v1 = 0.0f;
+	uint32_t dx = 0;
+	uint32_t steps = 0;
+	uint32_t speed_seq_len = 0;
 
 
 	motor[m_index].goal_position = position;
@@ -393,10 +415,37 @@ static void StepToPosisition(enum l6474h_motor_s m_index, int32_t position, uint
 		L6474H.SetDirection(m_index,DIRECTION_BACKWARD);
 	}
 
+	uint32_t primask = TIM1_Lock();
 	TIM_CC_EnableChannel(TIM1, m_index);
 	LL_TIM_OC_SetMode(TIM1, motor[m_index].ll_tim_channel, LL_TIM_OCMODE_FORCED_INACTIVE);
 	LL_TIM_GenerateEvent_COM(TIM1);
+	/*	The CC flag is set every period while the motor is idle. A stale flag would run the
+		first ISR at a random counter value and could cut the first STEP pulse short.	*/
+	TIM_ClearFlag_CC(TIM1, m_index);
 	TIM_EnableIT_CC(TIM1, m_index);
+	TIM1_Unlock(primask);
+}
+
+/*	The gripper vertical (Stepper 1) and the grail lift (Stepper 2) never move at the same time:
+	a task takes the lock before a move and gives it back after it.	*/
+static volatile int8_t lock_owner = -1;
+
+static uint8_t TryLock(enum l6474h_motor_s m_index)
+{
+	uint32_t primask = TIM1_Lock();
+	uint8_t taken = (lock_owner < 0) || (lock_owner == (int8_t)m_index);
+	if(taken)
+		lock_owner = (int8_t)m_index;
+	TIM1_Unlock(primask);
+	return taken;
+}
+
+static void Unlock(enum l6474h_motor_s m_index)
+{
+	uint32_t primask = TIM1_Lock();
+	if(lock_owner == (int8_t)m_index)
+		lock_owner = -1;
+	TIM1_Unlock(primask);
 }
 
 static void Enable(enum l6474h_motor_s m_index)
@@ -422,6 +471,8 @@ const struct stepper_s Stepper = {	.SetZeroPosisition = SetZeroPosisition,
 									.StopMotor = StopMotor,
 									.Enable = Enable,
 									.Disable = Disable,
-									.Init = Init};
+									.Init = Init,
+									.TryLock = TryLock,
+									.Unlock = Unlock};
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

@@ -44,6 +44,9 @@
 #include "rc_servo.h" 
 #include "stepper.h"
 #include "pca9685.h"
+#include "impeller.h"
+#include "cup_lift.h"
+#include "gripper_addons.h"
 #include "maxon.h"
 #include "math.h"
 
@@ -68,7 +71,7 @@ extern uint8_t cursor_cmd;
 extern uint8_t grips_cmd;
 
 extern uint8_t cmd_isFinished;
-extern uint8_t gripper_cmd;
+extern volatile uint8_t gripper_cmd;
 extern uint8_t lift_cmd;
 extern uint8_t gripper_id;
 extern uint8_t gripper_height;
@@ -97,7 +100,7 @@ extern uint8_t last_cmd_status;
 extern uint8_t stepper1_calibrate;
 extern int32_t stepper1_goal_position;
 
-uint8_t COMM_ENABLE = 1;
+volatile uint8_t COMM_ENABLE = 1;
 
 #define CALIBRATION_WHEEL_TICKS_PER_REV   ((int32_t)(28.0f * 4096.0f))
 #define CALIBRATION_WHEEL_TPM             ((int32_t)400000)
@@ -587,22 +590,26 @@ static void BlocksRotateMask(uint8_t* data, uint8_t data_length)
 
 static void ToggleCursor(uint8_t* data, uint8_t data_length)
 {
-  if(COMM_ENABLE){
+  uint8_t status = 0;
+  if(COMM_ENABLE && data_length >= 1 && gripper_cmd == 0xFF){
     // Clear old notify flags to prevent false execution
     ulTaskNotifyTake(pdTRUE, 0); 
     // Point this FreeRTOS task as a reciever
     xTerminalTaskHandle = xTaskGetCurrentTaskHandle();
     
+    last_cmd_status = 0;
     cursor_cmd = data[0];
     gripper_cmd = 0;
 
-    WaitForGripperCompletion();
+    if (WaitForGripperCompletion()) {
+      status = last_cmd_status;
+    }
 	}
 
   // terminal response
   struct terminal_response_s terminal_response;
   terminal_response.cmd = BOARD_TOGGLE_CURSOR;
-  terminal_response.data[0] = 0x01;
+  terminal_response.data[0] = status;
   terminal_response.data_length = 1;
   Terminal.SendResponse(&terminal_response);
   
@@ -1038,6 +1045,99 @@ static void SlideGripper(uint8_t* data, uint8_t data_length)
   Terminal.SendResponse(&terminal_response);
 }
 
+static void SendMechanismStatus(uint8_t cmd, uint8_t status)
+{
+  struct terminal_response_s response;
+  response.cmd = cmd;
+  response.data[0] = status;
+  response.data_length = 1;
+  Terminal.SendResponse(&response);
+}
+
+static void SendImpellerStatus(uint8_t cmd, uint8_t status)
+{
+  struct terminal_response_s response;
+  response.cmd = cmd;
+  response.data[0] = status;
+  response.data[1] = Impeller.GetState();
+  response.data[2] = Impeller.GetDuty();
+  response.data[3] = Impeller.GetTargetDuty();
+  response.data_length = 4;
+  Terminal.SendResponse(&response);
+}
+
+static void ImpellerStart(uint8_t* data, uint8_t data_length)
+{
+  taskENTER_CRITICAL();
+  uint8_t accepted = COMM_ENABLE && (data_length == 0 || (data_length == 1 && data[0] <= 100));
+  if (accepted) {
+    if (data_length == 1) {
+      Impeller.SetDuty(data[0]);
+    }
+    Impeller.TurnOn();
+  }
+  taskEXIT_CRITICAL();
+  SendImpellerStatus(BOARD_IMPELLER_START, accepted);
+}
+
+static void ImpellerStop(uint8_t* data, uint8_t data_length)
+{
+  (void)data;
+  if (data_length == 0) {
+    Impeller.TurnOff();
+  }
+  SendImpellerStatus(BOARD_IMPELLER_STOP, data_length == 0);
+}
+
+static void ImpellerStatus(uint8_t* data, uint8_t data_length)
+{
+  (void)data;
+  SendImpellerStatus(BOARD_IMPELLER_STATUS, data_length == 0);
+}
+
+static void ImpellerDuty(uint8_t* data, uint8_t data_length)
+{
+  uint8_t accepted = COMM_ENABLE && data_length == 1 && data[0] <= 100;
+  if (accepted) {
+    Impeller.SetDuty(data[0]);
+  }
+  SendImpellerStatus(BOARD_IMPELLER_DUTY, accepted);
+}
+
+static void ToggleCupPick(uint8_t* data, uint8_t data_length)
+{
+  (void)data;
+  SendMechanismStatus(BOARD_CUP_PICK_TOGGLE, data_length == 0 && RunGripperAddon(GRIPPER_ADDON_CUP_PICK, 0));
+}
+
+static void ToggleCupShelf(uint8_t* data, uint8_t data_length)
+{
+  (void)data;
+  SendMechanismStatus(BOARD_CUP_SHELF_TOGGLE, data_length == 0 && RunGripperAddon(GRIPPER_ADDON_CUP_SHELF, 0));
+}
+
+static void RaiseCup(uint8_t* data, uint8_t data_length)
+{
+  SendMechanismStatus(BOARD_CUP_RAISE, data_length == 1 && CupLiftMove(0, data[0]));
+}
+
+static void LowerCup(uint8_t* data, uint8_t data_length)
+{
+  SendMechanismStatus(BOARD_CUP_LOWER, data_length == 1 && CupLiftMove(1, data[0]));
+}
+
+static void SetAxPair(uint8_t* data, uint8_t data_length)
+{
+  uint8_t valid = data_length == 1 && data[0] <= 1;
+  SendMechanismStatus(BOARD_SET_AX_PAIR, valid && RunGripperAddon(GRIPPER_ADDON_AX_PAIR, data[0]));
+}
+
+static void SetPumpGroup(uint8_t* data, uint8_t data_length)
+{
+  uint8_t valid = data_length == 1 && data[0] <= 1;
+  SendMechanismStatus(BOARD_SET_PUMP_GROUP, valid && RunGripperAddon(GRIPPER_ADDON_PUMP_GROUP, data[0]));
+}
+
 void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t data_length) = {[BOARD_Ping] = Ping,
                                                                                               [BOARD_SetSpeed] = SetRobotSpeed,
                                                                                               [BOARD_GetSpeed] = GetRobotSpeed,
@@ -1078,7 +1178,17 @@ void (*terminal_cmd_handlers[TERMINAL_CMD_TABLE_SIZE])(uint8_t* data, uint8_t da
                                                                                               [BOARD_GET_KEY] = GetKey,
                                                                                               [BOARD_GRIPPER_VERTICAL] = GripperVertical,
                                                                                               [BOARD_ROTATE_WHEEL_ONCE] = RotateWheelOnce,
-                                                                                              [BOARD_GRIPPER_SLIDE] = SlideGripper
+                                                                                              [BOARD_GRIPPER_SLIDE] = SlideGripper,
+                                                                                              [BOARD_IMPELLER_START] = ImpellerStart,
+                                                                                              [BOARD_IMPELLER_STOP] = ImpellerStop,
+                                                                                              [BOARD_IMPELLER_STATUS] = ImpellerStatus,
+                                                                                              [BOARD_IMPELLER_DUTY] = ImpellerDuty,
+                                                                                              [BOARD_CUP_PICK_TOGGLE] = ToggleCupPick,
+                                                                                              [BOARD_CUP_SHELF_TOGGLE] = ToggleCupShelf,
+                                                                                              [BOARD_CUP_RAISE] = RaiseCup,
+                                                                                              [BOARD_CUP_LOWER] = LowerCup,
+                                                                                              [BOARD_SET_AX_PAIR] = SetAxPair,
+                                                                                              [BOARD_SET_PUMP_GROUP] = SetPumpGroup
 };
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

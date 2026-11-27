@@ -47,8 +47,7 @@ static TaskHandle_t TaskHandle;
 static StackType_t StackBuffer[TASK_STACK_SIZE];
 static StaticTask_t TaskBuffer;
 
-extern uint8_t COMM_ENABLE; // from terminal_cmd_handlers.c
-extern uint8_t gripper_cmd;
+extern volatile uint8_t gripper_cmd;
 extern uint8_t gripper_id;
 extern uint8_t grips_cmd;
 
@@ -120,9 +119,9 @@ static void Task(void *arg)
 #if EUROBOT_MATCH_TIMEOUT
       if(((xTaskGetTickCount() - xGameStartTime) >= pdMS_TO_TICKS(99000)) && (robot_ctrl.robot_mode == GAME_MODE)){
         /*  STOP THE GAME AND TURN OF ALL ACTUATORS ACCORDING TO THE EUROBOT RULES */
+        COMM_ENABLE = 0; // disable communication with HL
         MaxonsStop();
         StopAllActuators();
-        COMM_ENABLE = 0; // disable communication with HL
         break;
       }
 #endif

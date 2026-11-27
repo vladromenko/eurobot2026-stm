@@ -33,6 +33,11 @@
 #define	LINEAR_SWITCH_8_GPIO14			GPIO14_PB3
 #define	LINEAR_SWITCH_9_GPIO12			GPIO12_PD3
 
+#define IMPELLER_SPEED_GPIO_PORT        GPIOA
+#define IMPELLER_SPEED_PWM8_PA3         PWM8_PA3
+#define CUP_BOTTOM_SWITCH_PORT         GPIOD
+#define CUP_BOTTOM_SWITCH_PIN          GPIO8_PD0
+
 /*  Specific Robot GUIDO Pins  */
 #if defined (ROBOT_GUIDO)
 

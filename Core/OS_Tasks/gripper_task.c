@@ -57,6 +57,8 @@
 #include "bus_device.h"
 #include "pca9685.h"
 #include "math.h"
+#include "gripper_addons.h"
+#include "terminal_cmd_handlers.h"
 
 
 #define NO_CMD 0xFF // Idle task (idle command)
@@ -71,6 +73,11 @@ static StaticTask_t task_buffer;
 #define GRIPPER_INIT
 
 extern volatile TaskHandle_t xTerminalTaskHandle;
+extern volatile int PCA9685_InitStatus;
+
+/* Addresses of the added pair on USART3, separate from the 2026 grippers. */
+#define ADDON_AX_TOP_ID       103
+#define ADDON_AX_BOTTOM_ID    102
 
 #define cos30 	0.8660254f
 #define cos60 	0.5f
@@ -171,6 +178,11 @@ const GripperHardware_t grippers[2] = {
     }
 };
 
+static volatile enum gripper_addon_e addon_request;
+static volatile uint8_t addon_result;
+static volatile uint8_t gripper_ready;
+static uint8_t addon_argument;
+
 
 /* Gripper params */
 uint16_t dynamixel_speed = 150; //0-1024
@@ -223,7 +235,7 @@ uint8_t lift_cmd;
 uint8_t cmd_isFinished;
 uint8_t gripper_id;
 
-uint8_t gripper_cmd = 0xFF; // idle task
+volatile uint8_t gripper_cmd = 0xFF; // idle task
 uint8_t dir = 0; // diretion of movement in SimleMove command [0-forward, 1-backward]
 uint16_t move_delay = 800;
 
@@ -465,13 +477,12 @@ static uint8_t WaitDynamixelAngle(uint8_t id, uint16_t target_angle, uint32_t ti
     uint32_t start_time = xTaskGetTickCount(); // Засекаем время старта (FreeRTOS)
     
     while (1) {
-        Dynamixel_AX.GetAngle(USART3, id, &current_angle);
-        diff = (int32_t)current_angle - (int32_t)target_angle;
-        if (diff < 0) diff = -diff;
-        
-        // Угол достигнут с учетом допуска
-        if (diff < tol_window) {
-            return 1; 
+        if (Dynamixel_AX.GetAngle(USART3, id, &current_angle) == 0) {
+            diff = (int32_t)current_angle - (int32_t)target_angle;
+            if (diff < 0) diff = -diff;
+            if (diff < tol_window) {
+                return 1;
+            }
         }
         
         // Проверка таймаута
@@ -509,6 +520,86 @@ static void SetBlocksShiftState(const GripperHardware_t* hw, uint8_t spread)
     PCA9685.SetServoAngleWithAddr(i2c_addr_1, hw->shift_servo_6,
         spread ? hw->shift_servo_6_end_angle : hw->shift_servo_6_start_angle);
     vTaskDelay(200);
+}
+
+static uint8_t ToggleCupServo(enum pca9685_channel_e channel, uint8_t* angle)
+{
+    if (PCA9685_InitStatus != 0) {
+        PCA9685_InitStatus = PCA9685.Init(i2c_addr_1, 50.0f, 500, 2500, 180);
+    }
+    if (PCA9685_InitStatus != 0) {
+        return 0;
+    }
+    uint8_t target = *angle ? 0 : 180;
+    PCA9685_InitStatus = PCA9685.SetServoAngleWithAddr(i2c_addr_1, channel, target);
+    if (PCA9685_InitStatus != 0) {
+        return 0;
+    }
+    *angle = target;
+    return 1;
+}
+
+static uint8_t MoveAddonPair(uint8_t cycle)
+{
+    static const uint8_t cycle_angles[] = {100, 50, 0};
+    Dynamixel_AX.TorqueEnable(USART3, ADDON_AX_TOP_ID);
+    Dynamixel_AX.TorqueEnable(USART3, ADDON_AX_BOTTOM_ID);
+    for (uint8_t i = cycle ? 0 : 2; i < sizeof(cycle_angles); ++i) {
+        if (!COMM_ENABLE) {
+            return 0;
+        }
+        RotateTwoDynamixels(USART3, ADDON_AX_TOP_ID, ADDON_AX_BOTTOM_ID,
+                            cycle_angles[i], cycle_angles[i]);
+        if (cycle_angles[i] != 0) {
+            vTaskDelay(pdMS_TO_TICKS(1000));
+        }
+    }
+    return 1;
+}
+
+uint8_t RunGripperAddon(enum gripper_addon_e command, uint8_t argument)
+{
+    if (!COMM_ENABLE || !gripper_ready || gripper_cmd != NO_CMD || addon_request) {
+        return 0;
+    }
+    addon_argument = argument;
+    addon_request = command;
+
+    TickType_t start = xTaskGetTickCount();
+    while (addon_request && xTaskGetTickCount() - start < pdMS_TO_TICKS(5000)) {
+        vTaskDelay(pdMS_TO_TICKS(10));
+    }
+    return !addon_request && addon_result;
+}
+
+static uint8_t RunAddon(uint8_t* pick_angle, uint8_t* shelf_angle)
+{
+    if (!COMM_ENABLE) {
+        return 0;
+    }
+    switch (addon_request) {
+    case GRIPPER_ADDON_CUP_PICK:
+        return ToggleCupServo(PCA9685_CH13, pick_angle);
+    case GRIPPER_ADDON_CUP_SHELF:
+        return ToggleCupServo(PCA9685_CH14, shelf_angle);
+    case GRIPPER_ADDON_AX_PAIR:
+        return MoveAddonPair(addon_argument);
+    case GRIPPER_ADDON_PUMP_GROUP: {
+        vTaskSuspendAll();
+        uint8_t accepted = COMM_ENABLE;
+        if (accepted) {
+            if (addon_argument) {
+                SPI_GPO_SetOutputPin(grippers[0].pumps_all_mask);
+            } else {
+                SPI_GPO_ResetOutputPin(grippers[0].pumps_all_mask);
+            }
+        }
+        xTaskResumeAll();
+        return accepted;
+    }
+    default:
+        return 0;
+    }
 }
 
 static void RotateBlocksByMask(const GripperHardware_t* hw, uint8_t mask)
@@ -650,12 +741,20 @@ static void Task(void *arg)
         //SPI_GPO_SetOutputPin(SPI_POWER_OUTPUT_17 | SPI_POWER_OUTPUT_18);
     #endif
 
+    uint8_t cup_pick_angle = 0;
+    uint8_t cup_shelf_angle = 0;
+    gripper_ready = 1;
 	while(1)
 	{
 		vTaskDelay(100);
 
 		#ifdef GRIPPER_INIT
 			vTaskDelay(50);
+
+            if (addon_request) {
+                addon_result = RunAddon(&cup_pick_angle, &cup_shelf_angle);
+                addon_request = GRIPPER_ADDON_IDLE;
+            }
 
 			// Skip the cycle if there are no command to execute
 			if (gripper_cmd == 0xFF) {
@@ -682,13 +781,13 @@ static void Task(void *arg)
 				Dynamixel_AX.SetAngle(USART3, dynamixel_cursor_id, cursor_target_angle);
 				vTaskDelay(50);
 				
-				WaitDynamixelAngle(dynamixel_cursor_id, cursor_target_angle, angle_timeout_ms);
+				last_cmd_status = WaitDynamixelAngle(dynamixel_cursor_id, cursor_target_angle, angle_timeout_ms);
 
 				// send the "wake up!" notification to TerminalTask
+				gripper_cmd = NO_CMD;
 				if (xTerminalTaskHandle != NULL) {
 					xTaskNotifyGive(xTerminalTaskHandle);
 				}
-				gripper_cmd = 0xFF; // go to idle task
 				break;
 			}
 
@@ -1116,19 +1215,24 @@ static void Task(void *arg)
                 int32_t target_position = (int32_t)gripper_height * MM_TO_STEPS;
                 int32_t current_position = Stepper.GetPresentPosisition(STEPPER_MOTOR_1);
 
-                last_cmd_status = 1;
-                if (target_position != current_position) {
-                    float current_limit = target_position < current_position
-                        ? GRIPPER_STEPPER_DOWN_CURRENT_MA : GRIPPER_STEPPER_NORMAL_CURRENT_MA;
-                    L6474H.SetCurrentLimit_mA(STEPPER_MOTOR_1, current_limit);
-                    Stepper.Enable(STEPPER_MOTOR_1);
-                    vTaskDelay(pdMS_TO_TICKS(10));
-                    Stepper.StepToPosisition(STEPPER_MOTOR_1, target_position, 64, 10, 200);
+                last_cmd_status = 0;
+                if (COMM_ENABLE && Stepper.TryLock(STEPPER_MOTOR_1)) {
+                    last_cmd_status = 1;
+                    if (target_position != current_position) {
+                        float current_limit = target_position < current_position
+                            ? GRIPPER_STEPPER_DOWN_CURRENT_MA : GRIPPER_STEPPER_NORMAL_CURRENT_MA;
+                        L6474H.SetCurrentLimit_mA(STEPPER_MOTOR_1, current_limit);
+                        L6474H.GetStatus(STEPPER_MOTOR_1);
+                        Stepper.Enable(STEPPER_MOTOR_1);
+                        vTaskDelay(pdMS_TO_TICKS(10));
+                        Stepper.StepToPosisition(STEPPER_MOTOR_1, target_position, 64, 10, 200);
 
-                    last_cmd_status = WaitStepper1Angle(target_position, 4000);
-                    Stepper.StopMotor(STEPPER_MOTOR_1);
-                    Stepper.Disable(STEPPER_MOTOR_1);
-                    L6474H.SetCurrentLimit_mA(STEPPER_MOTOR_1, GRIPPER_STEPPER_NORMAL_CURRENT_MA);
+                        last_cmd_status = WaitStepper1Angle(target_position, 4000);
+                        Stepper.StopMotor(STEPPER_MOTOR_1);
+                        Stepper.Disable(STEPPER_MOTOR_1);
+                        L6474H.SetCurrentLimit_mA(STEPPER_MOTOR_1, GRIPPER_STEPPER_NORMAL_CURRENT_MA);
+                    }
+                    Stepper.Unlock(STEPPER_MOTOR_1);
                 }
 
                 gripper_cmd = NO_CMD;

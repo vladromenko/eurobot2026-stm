@@ -50,8 +50,12 @@ static void Task(void *arg)
 {
     vTaskDelay(50);
     
+    while (!Stepper.TryLock(STEPPER_MOTOR_1)) {
+        vTaskDelay(pdMS_TO_TICKS(10));
+    }
     Stepper.Init(STEPPER_MOTOR_1);
     Stepper.SetZeroPosisition(STEPPER_MOTOR_1);
+    Stepper.Unlock(STEPPER_MOTOR_1);
     
     // Флаг состояния, чтобы отправлять команды по SPI только один раз
     uint8_t stepper1_enabled = 0; 
@@ -64,6 +68,10 @@ static void Task(void *arg)
             
             // Во время калибровки мотор должен быть включен
             if (!stepper1_enabled) {
+                if (!Stepper.TryLock(STEPPER_MOTOR_1)) {
+                    continue;
+                }
+                L6474H.GetStatus(STEPPER_MOTOR_1);
                 Stepper.Enable(STEPPER_MOTOR_1);
                 stepper1_enabled = 1;
             }
@@ -89,6 +97,7 @@ static void Task(void *arg)
         } else if (stepper1_calibrate == STEPPER_CALIBRATE_BACKOFF &&
                    Stepper.GetPresentPosisition(STEPPER_MOTOR_1) == stepper1_goal_position) {
             Stepper.Disable(STEPPER_MOTOR_1);
+            Stepper.Unlock(STEPPER_MOTOR_1);
             stepper1_enabled = 0;
             stepper1_calibrate = 0;
         }

@@ -67,6 +67,11 @@ void Robot_GPIO_Config(void)
 	
 	LL_GPIO_Init(GPIOE, &GPIO_Struct);
 
+	/* Cup lift: normally closed switch to ground opens at the bottom. */
+	GPIO_Struct.Pin = CUP_BOTTOM_SWITCH_PIN;
+	GPIO_Struct.Pull = LL_GPIO_PULL_UP;
+	LL_GPIO_Init(CUP_BOTTOM_SWITCH_PORT, &GPIO_Struct);
+
 	/* Linear switches pins en*/
 	// linear switch 1
 	GPIO_Struct.Pin = LINEAR_SWITCH_1_GPIO28;

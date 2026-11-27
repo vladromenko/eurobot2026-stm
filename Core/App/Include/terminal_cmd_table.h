@@ -75,8 +75,20 @@
 #define BOARD_GET_MOVE_STATUS               0x2E    /* [46] Get completion flag of polled relative move */
 #define BOARD_GRIPPER_SLIDE                 0x2F    /* [47] Slide the gripper through the rack and pinion gear*/
 
+/* Added mechanisms. Keep the legacy command range and handlers above. */
+#define BOARD_IMPELLER_START                0x30
+#define BOARD_IMPELLER_STOP                 0x31
+#define BOARD_IMPELLER_STATUS               0x32
+#define BOARD_IMPELLER_DUTY                 0x33
+#define BOARD_CUP_PICK_TOGGLE               0x34
+#define BOARD_CUP_SHELF_TOGGLE              0x35
+#define BOARD_CUP_RAISE                     0x36
+#define BOARD_CUP_LOWER                     0x37
+#define BOARD_SET_AX_PAIR                   0x38
+#define BOARD_SET_PUMP_GROUP                0x39
+
 /*  Do not forget to update the table size with the last one command! */
-#define TERMINAL_CMD_TABLE_SIZE             (BOARD_GRIPPER_SLIDE + 1)
+#define TERMINAL_CMD_TABLE_SIZE             (BOARD_SET_PUMP_GROUP + 1)
 
 
 #ifdef __cplusplus

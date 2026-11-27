@@ -34,7 +34,8 @@ struct os_task_base_s {
     void (*CreateTask)(UBaseType_t);
     TaskHandle_t (*GetTaskHandle)(void);
 };
-uint8_t COMM_ENABLE, gripper_cmd, gripper_id, grips_cmd;
+volatile uint8_t COMM_ENABLE, gripper_cmd;
+uint8_t gripper_id, grips_cmd;
 uint8_t dir, move_cmd_speed, move_cmd_time;
 static TickType_t ticks, first_shutdown;
 static unsigned shutdowns, stops, enables;
@@ -57,6 +58,7 @@ static void LL_IWDG_ReloadCounter(void *unused) { (void)unused; }
 static void MaxonsStop(void) { ++stops; }
 static void MaxonsEnable(void) { ++enables; }
 static void StopAllActuators(void) {
+    assert(COMM_ENABLE == 0);
     if (!shutdowns) first_shutdown = ticks;
     ++shutdowns;
 }
