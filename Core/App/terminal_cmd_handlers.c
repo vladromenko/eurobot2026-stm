@@ -64,7 +64,7 @@ static void Ping(uint8_t* data, uint8_t data_length)
   struct terminal_response_s terminal_response;
 
   terminal_response.cmd = BOARD_Ping;
-  terminal_response.data_lengаspi_gpoth = 0;
+  terminal_response.data_length = 0;
 
   Terminal.SendResponse(&terminal_response);
 }
