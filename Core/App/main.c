@@ -28,7 +28,8 @@
 #include "maxon.h" 
 #include "stepper.h" 
 #include "rc_servo.h" 
-#include "byte2word.h" 
+#include "byte2word.h"
+#include "pwm.h"
 
 #include "dynamixel_master.h"
 #include "dynamixel_ax.h" 
@@ -104,7 +105,15 @@ int main(void)
 	TIM4_PWM_Group1234_Init();
 	TIM5_PWM_Group5678_Init();
 	Impeller.Init(); // RC_Servo 8 at 50 Hz, TIM5 timing unchanged
-	TIM8_WS2812B_Init();
+	PWM.SetGroupFrequency(PWM_GROUP_5678, 50);
+
+  PWM.SetOutput_CC(PWM_OUTPUT_5, 1500);
+  PWM.SetOutput_CC(PWM_OUTPUT_6, 1500);
+  
+  PWM.Enable(PWM_OUTPUT_5);
+  PWM.Enable(PWM_OUTPUT_6);
+
+  TIM8_WS2812B_Init();
 	TIM14_USARTx_TimeoutInit();
 	Dbg("[init] timers ok\r\n");
 
