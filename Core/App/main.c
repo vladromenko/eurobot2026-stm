@@ -105,11 +105,11 @@ int main(void)
 	TIM4_PWM_Group1234_Init();
 	TIM5_PWM_Group5678_Init();
 	Impeller.Init(); // RC_Servo 8 at 50 Hz, TIM5 timing unchanged
-	PWM.SetGroupFrequency(PWM_GROUP_5678, 50);
+  PWM.SetGroupFrequency(PWM_GROUP_5678, 50);
 
-  PWM.SetOutput_CC(PWM_OUTPUT_5, 1500);
-  PWM.SetOutput_CC(PWM_OUTPUT_6, 1500);
-  
+  PWM.SetOutput_CC(PWM_OUTPUT_5, 1200);
+  PWM.SetOutput_CC(PWM_OUTPUT_6, 1800);
+
   PWM.Enable(PWM_OUTPUT_5);
   PWM.Enable(PWM_OUTPUT_6);
 
